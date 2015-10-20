@@ -30,11 +30,14 @@ you can create and test them.
 License
 =======
 
-JK2 SDK 1.04 is licensed under GPLv2 as free software. Read
-LICENSE.txt and readme-raven.txt to learn more. According to it, among
-other things, you are obliged to distribute full source code of your
-mods alongside them, or at least a written offer to ship it (eg a
-HTTP download link inside a .pk3 file)
+LCC is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser, and
+David R. Hanson. More information in code/tools/lcc/COPYRIGHT
+
+Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
+software. Read LICENSE.txt and readme-raven.txt to learn
+more. According to it, among other things, you are obliged to
+distribute full source code of your mods alongside them, or at least a
+written offer to ship it (eg a HTTP download link inside a .pk3 file)
 
 Trivia
 ------
