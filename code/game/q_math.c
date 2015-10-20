@@ -1331,6 +1331,7 @@ int irand(int min, int max)
 	return(result);
 }
 
+#ifdef Q3_VM
 float powf ( float x, int y )
 {
 	float r = x;
@@ -1338,4 +1339,4 @@ float powf ( float x, int y )
 		r = r * r;
 	return r;
 }
-
+#endif
