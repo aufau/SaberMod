@@ -30,14 +30,19 @@ you can create and test them.
 License
 =======
 
-LCC is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser, and
-David R. Hanson. More information in code/tools/lcc/COPYRIGHT
+LCC 4.1 is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser and
+David R. Hanson, and available under a non-free licence. You can find
+it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
+comes from ioquake3 and it has been slightly modified by it's
+developers.
 
 Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
 software. Read LICENSE.txt and readme-raven.txt to learn
 more. According to it, among other things, you are obliged to
 distribute full source code of your mods alongside them, or at least a
 written offer to ship it (eg a HTTP download link inside a .pk3 file)
+
+Q3ASM is Copyright (c) id Software and ioquake3 developers.
 
 Trivia
 ------
