@@ -11,10 +11,27 @@ for creating maps, models and other modifications.
 Creating this repository has been made possible thanks to Raven
 Software releasing JK2 source code in 2013. This branch contains an
 altered subset of it, necessary for creating code mods, with few
-indisputable cleanups and bug fixes.
+indisputable bug fixes and cleanups.
 
 Build
 =====
+
+Linux
+-----
+
+You will need GNU Make and GCC or Clang compiler. Type ``make`` to
+build .so files in base/ and .qvm files in base/vm/ You can add
+``-jN`` option to speed up the build process by running N jobs
+simultaneously. Type ``make help`` to learn about other targets.
+
+Assume your mod is called "mymod" and your main JK2 directory is
+~/.jkii In order to test the mod, put .qvm files in ~/.jkii/mymod/vm/
+and launch the game with ``+set fs_game mymod`` commandline parameter.
+
+To debug your mod use generated .so files. Put them in ~/.jkii/mymod/
+and launch the game with ``+set vm_cgame 0`` if you want to debug a
+clientside part of your mod. Use ``set vm_cgame 2`` when you want to
+use .qvm version again.
 
 Windows
 -------
@@ -31,7 +48,7 @@ License
 =======
 
 LCC 4.1 is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser and
-David R. Hanson, and available under a non-free licence. You can find
+David R. Hanson, and available under a non-free license. You can find
 it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
 comes from ioquake3 and it has been slightly modified by it's
 developers.

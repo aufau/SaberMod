@@ -1,0 +1,4 @@
+out/
+bin/
+base/
+code/tools/lcc/src/dagcheck.c
