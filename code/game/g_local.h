@@ -57,7 +57,7 @@ typedef enum //# material_e
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-typedef enum
+enum
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,
@@ -940,7 +940,7 @@ int BotAIStartFrame( int time );
 extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 
-#define	FOFS(x) ((int)&(((gentity_t *)0)->x))
+#define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
 extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;

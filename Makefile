@@ -13,7 +13,7 @@ tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
 CFLAGS		= -g -fvisibility=hidden
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
-DEFS		= -DQAGAME -D"min(x,y)=((x)<(y)?(x):(y))"
+DEFS		= -DQAGAME
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC -lm
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) -S -Wf-target=bytecode -Wf-g	\

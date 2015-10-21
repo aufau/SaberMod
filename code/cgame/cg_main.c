@@ -148,7 +148,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-Q_EXPORT int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11  ) {
+Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11  ) {
 
 	switch ( command ) {
 	case CG_INIT:
@@ -194,12 +194,12 @@ Q_EXPORT int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int ar
 		return 0;
 
 	case CG_GET_GHOUL2:
-		return (int)cg_entities[arg0].ghoul2; //NOTE: This is used by the effect bolting which is actually not used at all.
+		return (intptr_t)cg_entities[arg0].ghoul2; //NOTE: This is used by the effect bolting which is actually not used at all.
 											  //I'm fairly sure if you try to use it with vm's it will just give you total
 											  //garbage. In other words, use at your own risk.
 
 	case CG_GET_MODEL_LIST:
-		return (int)cgs.gameModels;
+		return (intptr_t)cgs.gameModels;
 
 	case CG_CALC_LERP_POSITIONS:
 		CG_CalcEntityLerpPositions( &cg_entities[arg0] );
@@ -222,10 +222,10 @@ Q_EXPORT int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int ar
 		return 0;
 
 	case CG_GET_ORIGIN_TRAJECTORY:
-		return (int)&cg_entities[arg0].nextState.pos;
+		return (intptr_t)&cg_entities[arg0].nextState.pos;
 
 	case CG_GET_ANGLE_TRAJECTORY:
-		return (int)&cg_entities[arg0].nextState.apos;
+		return (intptr_t)&cg_entities[arg0].nextState.apos;
 
 	case CG_ROFF_NOTETRACK_CALLBACK:
 		CG_ROFF_NotetrackCallback( &cg_entities[arg0], (const char *)arg1 );
