@@ -84,6 +84,7 @@ float	FloatSwap (const float *f);
 
 #undef QDECL
 #define	QDECL	__cdecl
+#define Q_EXPORT __declspec(dllexport)
 
 // buildstring will be incorporated into the version string
 #ifdef NDEBUG
@@ -201,6 +202,7 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 
 #define	MAC_STATIC // bk: FIXME
 #define ID_INLINE inline
+#define Q_EXPORT __attribute__((visibility("default")))
 
 #ifdef __i386__
 #define	CPUSTRING	"linux-i386"
