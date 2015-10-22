@@ -20,6 +20,9 @@
 #define Q_EXPORT
 #endif
 
+#define min(x,y) ((x)<(y)?(x):(y))
+#define max(x,y) ((x)>(y)?(x):(y))
+
 /**********************************************************************
   VM Considerations
 
@@ -41,9 +44,6 @@
 #include "bg_lib.h"
 
 #define assert(exp)     ((void)0)
-
-#define min(x,y) ((x)<(y)?(x):(y))
-#define max(x,y) ((x)>(y)?(x):(y))
 
 typedef int intptr_t;
 
@@ -947,7 +947,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 float Com_Clamp( float min, float max, float value );
 
 char	*COM_SkipPath( char *pathname );
-void	COM_StripExtension( const char *in, char *out );
+void	COM_StripExtension( const char *in, char *out, size_t destsize );
 void	COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
 void	COM_BeginParseSession( const char *name );
@@ -995,7 +995,7 @@ void Parse1DMatrix (const char **buf_p, int x, float *m);
 void Parse2DMatrix (const char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (const char **buf_p, int z, int y, int x, float *m);
 
-void	QDECL Com_sprintf (char *dest, int size, const char *fmt, ...);
+void	QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...);
 
 
 // mode parm for FS_FOpenFile
@@ -1028,8 +1028,8 @@ char	*Q_strupr( char *s1 );
 char	*Q_strrchr( const char* string, int c );
 
 // buffer size safe library replacements
-void	Q_strncpyz( char *dest, const char *src, int destsize );
-void	Q_strcat( char *dest, int size, const char *src );
+void	Q_strncpyz( char *dest, const char *src, size_t destsize );
+void	Q_strcat( char *dest, size_t size, const char *src );
 
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );

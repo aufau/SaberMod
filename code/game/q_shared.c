@@ -82,13 +82,23 @@ char *COM_SkipPath (char *pathname)
 /*
 ============
 COM_StripExtension
+
+R_RemapShader exploit
+http://www.exploit-db.com/exploits/1750/
+http://ioqsrc.vampireducks.com/d8/dbe/q__shared_8c-source.html#l00061
 ============
 */
-void COM_StripExtension( const char *in, char *out ) {
-	while ( *in && *in != '.' ) {
-		*out++ = *in++;
+void COM_StripExtension(const char *in, char *out, size_t destsize) {
+	int length;
+	Q_strncpyz(out, in, destsize);
+	length = (int)strlen(out) - 1;
+	while (length > 0 && out[length] != '.') {
+		length--;
+		if (out[length] == '/')
+			return;   // no extension
 	}
-	*out = 0;
+	if (length)
+		out[length] = 0;
 }
 
 
@@ -162,7 +172,7 @@ short	ShortNoSwap (short l)
 	return l;
 }
 
-int    LongSwap (int l)
+int	LongSwap (int l)
 {
 	byte    b1,b2,b3,b4;
 
@@ -811,10 +821,10 @@ Q_strncpyz
 Safe strncpy that ensures a trailing zero
 =============
 */
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
+void Q_strncpyz( char *dest, const char *src, size_t destsize ) {
   // bk001129 - also NULL dest
   if ( !dest ) {
-    Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
+	Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
   }
 	if ( !src ) {
 		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
@@ -914,8 +924,8 @@ char *Q_strupr( char *s1 ) {
 
 
 // never goes past bounds or leaves without a terminating 0
-void Q_strcat( char *dest, int size, const char *src ) {
-	int		l1;
+void Q_strcat( char *dest, size_t size, const char *src ) {
+	size_t		l1;
 
 	l1 = strlen( dest );
 	if ( l1 >= size ) {
@@ -970,7 +980,7 @@ char *Q_CleanStr( char *string ) {
 }
 
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
+void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	int		len;
 	va_list		argptr;
 	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
@@ -983,11 +993,6 @@ void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
 	}
 	if (len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
-#ifdef	_DEBUG
-		__asm {
-			int 3;
-		}
-#endif
 	}
 	Q_strncpyz (dest, bigbuffer, size );
 }
@@ -1172,7 +1177,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 
 		if (!strcmp (key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			memmove(start, s, strlen(s) + 1); // remove this part
 			return;
 		}
 
@@ -1227,7 +1232,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 
 		if (!strcmp (key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			memmove(start, s, strlen(s) + 1); // remove this part
 			return;
 		}
 
@@ -1296,7 +1301,8 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 
 	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
-	if (strlen(newi) + strlen(s) > MAX_INFO_STRING)
+	// q3infoboom exploit
+	if (strlen(newi) + strlen(s) >= MAX_INFO_STRING)
 	{
 		Com_Printf ("Info string length exceeded\n");
 		return;
@@ -1344,7 +1350,8 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 
 	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
-	if (strlen(newi) + strlen(s) > BIG_INFO_STRING)
+	// q3infoboom exploit
+	if (strlen(newi) + strlen(s) >= BIG_INFO_STRING)
 	{
 		Com_Printf ("BIG Info string length exceeded\n");
 		return;

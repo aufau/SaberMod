@@ -15,7 +15,7 @@ CFLAGS		= -g -fvisibility=hidden
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
 DEFS		= -DQAGAME
 
-ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC -lm
+ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) -S -Wf-target=bytecode -Wf-g	\
 -DQ3_VM
 
