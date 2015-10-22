@@ -2,16 +2,17 @@
 JK2 SDK GPL
 ===========
 
-This is an alternative *Star Wars Jedi Knight II: Jedi Outcast* SDK2
-released under the GPLv2 license. Search for *JK2 Editing Tools 2.0*
-if you'd like to get familiar with original SDK for 1.04 version
-released by Raven Software in 2003, containing also tools and guides
-for creating maps, models and other modifications.
+This is an alternative *Star Wars Jedi Knight II: Jedi Outcast* 1.04
+SDK released under the GPLv2 license. Search for *JK2 Editing Tools
+2.0* if you'd like to get familiar with original SDK released by Raven
+in 2003, containing also tools and guides for creating maps, models
+and other modifications.
 
 Creating this repository has been made possible thanks to Raven
-Software releasing JK2 source code in 2013. This branch contains an
-altered subset of it, necessary for creating code mods, with few
-indisputable bug fixes and cleanups.
+releasing JK2 source code in 2013. This branch contains an altered
+subset of it, necessary for creating code mods, with few indisputable
+bug fixes and cleanups that shouldn't change the gameplay in any
+way. Refer to the commits history for more details.
 
 Build
 =====
@@ -29,15 +30,15 @@ Assume your mod is called "mymod" and your main JK2 directory is
 and launch the game with ``+set fs_game mymod`` commandline parameter.
 
 To debug your mod use generated .so files. Put them in ~/.jkii/mymod/
-and launch the game with ``+set vm_cgame 0`` if you want to debug a
-clientside part of your mod. Use ``set vm_cgame 2`` when you want to
-use .qvm version again.
+and launch the game with ``+set vm_game 0 +set vm_cgame 0 +set vm_ui
+0`` commandline parameters. Set the back to 2 when you want to use
+.qvm version again.
 
 Windows
 -------
 
-Currently there is no support for building VM or .dll files on
-Windows. Old ``code/buildvms.bat`` batch file should work for VMs if
+Currently there is no support for building shared libraries on
+Windows. Old ``code/buildvms.bat`` batch file should work for QVMs if
 you can get lcc and q3asm tools (eg from *JK2 Editing Tools 2.0*) and
 put them into bin/ directory.
 
@@ -48,8 +49,8 @@ License
 =======
 
 LCC 4.1 is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser and
-David R. Hanson, and available under a non-free license. You can find
-it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
+David R. Hanson, and available under a non-copyleft license. You can
+find it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
 comes from ioquake3 and it has been slightly modified by it's
 developers.
 
