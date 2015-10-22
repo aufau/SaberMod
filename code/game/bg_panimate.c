@@ -696,7 +696,7 @@ int PM_AnimLength( int index, animNumber_t anim )
 	{
 		return -1;
 	}
-	return pm->animations[anim].numFrames * fabs(pm->animations[anim].frameLerp);
+	return pm->animations[anim].numFrames * abs(pm->animations[anim].frameLerp);
 }
 
 void PM_DebugLegsAnim(int anim)
@@ -1083,7 +1083,7 @@ void PM_SetAnimFinal(int setAnimParts,int anim,int setAnimFlags,
 				int dur;
 				int speedDif;
 
-				dur = (animations[anim].numFrames-1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames-1) * abs(animations[anim].frameLerp);
 				speedDif = dur - (dur * editAnimSpeed);
 				dur += speedDif;
 				if (dur > 1)
@@ -1092,12 +1092,12 @@ void PM_SetAnimFinal(int setAnimParts,int anim,int setAnimFlags,
 				}
 				else
 				{
-					pm->ps->torsoTimer = fabs(animations[anim].frameLerp);
+					pm->ps->torsoTimer = abs(animations[anim].frameLerp);
 				}
 			}
 			else
 			{
-				pm->ps->torsoTimer = ((animations[anim].numFrames ) * fabs(animations[anim].frameLerp));
+				pm->ps->torsoTimer = ((animations[anim].numFrames ) * abs(animations[anim].frameLerp));
 			}
 
 			if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
@@ -1131,7 +1131,7 @@ setAnimLegs:
 				int dur;
 				int speedDif;
 
-				dur = (animations[anim].numFrames-1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames-1) * abs(animations[anim].frameLerp);
 				speedDif = dur - (dur * editAnimSpeed);
 				dur += speedDif;
 				if (dur > 1)
@@ -1140,12 +1140,12 @@ setAnimLegs:
 				}
 				else
 				{
-					pm->ps->legsTimer = fabs(animations[anim].frameLerp);
+					pm->ps->legsTimer = abs(animations[anim].frameLerp);
 				}
 			}
 			else
 			{
-				pm->ps->legsTimer = ((animations[anim].numFrames ) * fabs(animations[anim].frameLerp));
+				pm->ps->legsTimer = ((animations[anim].numFrames ) * abs(animations[anim].frameLerp));
 			}
 
 			if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))

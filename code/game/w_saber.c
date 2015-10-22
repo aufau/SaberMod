@@ -986,7 +986,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 		int attQuadStart = saberMoveData[attacker->client->ps.saberMove].startQuad;
 		int attQuadEnd = saberMoveData[attacker->client->ps.saberMove].endQuad;
 		int defQuad = saberMoveData[defender->client->ps.saberMove].endQuad;
-		int quadDiff = fabs(defQuad-attQuadStart);
+		int quadDiff = abs(defQuad-attQuadStart);
 
 		if ( defender->client->ps.saberMove == LS_READY )
 		{
@@ -1248,7 +1248,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 	int speedDif = 0;
 	int totalDamage = maxDmg;
 	float peakPoint = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * fabs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
 	float currentPoint = 0;
 	float damageFactor = 0;
 	float animSpeedFactor = 1.0f;
@@ -1297,7 +1297,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 float G_GetAnimPoint(gentity_t *self)
 {
 	int speedDif = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * fabs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
 	float currentPoint = 0;
 	float animSpeedFactor = 1.0f;
 	float animPercentage = 0;
