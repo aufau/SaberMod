@@ -542,6 +542,8 @@ Let everyone know about a team change
 */
 void BroadcastTeamChange( gclient_t *client, int oldTeam )
 {
+	int clientnum;
+
 	client->ps.fd.forceDoInit = 1; //every time we change teams make sure our force powers are set right
 
 	if ( client->sess.sessionTeam == TEAM_RED ) {
@@ -551,8 +553,13 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
 		client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBLUETEAM")));
 	} else if ( client->sess.sessionTeam == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR ) {
-		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-		client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHESPECTATORS")));
+		for ( clientnum = 0; clientnum < level.maxclients; clientnum++ ) {
+			if ( level.clients[ clientnum ].pers.connected == CON_CONNECTED
+			     && !level.clients[ clientnum ].ps.duelInProgress ) {
+				trap_SendServerCommand( clientnum, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
+				client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHESPECTATORS")));
+			}
+		}
 	} else if ( client->sess.sessionTeam == TEAM_FREE ) {
 		if (g_gametype.integer == GT_TOURNAMENT)
 		{
@@ -574,8 +581,13 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 		}
 		else
 		{
-			trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-			client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
+			for ( clientnum = 0; clientnum < level.maxclients; clientnum++ ) {
+				if ( level.clients[ clientnum ].pers.connected == CON_CONNECTED
+				     && !level.clients[ clientnum ].ps.duelInProgress ) {
+					trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
+					client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
+				}
+			}
 		}
 	}
 
