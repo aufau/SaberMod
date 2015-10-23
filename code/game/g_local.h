@@ -1038,6 +1038,8 @@ extern	vmCvar_t	g_saberDebugPrint;
 
 extern	vmCvar_t	g_austrian;
 
+extern  vmCvar_t	g_restrictChat;
+
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );

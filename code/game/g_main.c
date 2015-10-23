@@ -122,6 +122,8 @@ vmCvar_t	g_saberDebugPrint;
 
 vmCvar_t	g_austrian;
 
+vmCvar_t	g_restrictChat;
+
 int gDuelist1 = -1;
 int gDuelist2 = -1;
 
@@ -267,6 +269,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_saberDebugPrint, "g_saberDebugPrint", "0", CVAR_CHEAT, 0, qfalse  },
 
 	{ &g_austrian, "g_austrian", "0", CVAR_ARCHIVE, 0, qfalse  },
+
+	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 };
 
 // bk001129 - made static to avoid aliasing

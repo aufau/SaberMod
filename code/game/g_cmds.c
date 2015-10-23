@@ -1036,11 +1036,10 @@ static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, cons
 		 && ent->client->sess.sessionTeam != other->client->sess.sessionTeam ) {
 		return;
 	}
-	// no chatting to players in tournements
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& other->client->sess.sessionTeam == TEAM_FREE
-		&& ent->client->sess.sessionTeam != TEAM_FREE ) {
-		//Hmm, maybe some option to do so if allowed?  Or at least in developer mode...
+	if ( g_restrictChat.integer &&
+		 other->client->ps.duelInProgress &&
+		 other->client->ps.duelIndex != ent->s.number &&
+		 other != ent ) {
 		return;
 	}
 
@@ -1129,6 +1128,11 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 		p = ConcatArgs( 1 );
 	}
 
+	if ( g_restrictChat.integer && mode == SAY_ALL && !level.warmupTime &&
+		 ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+		mode = SAY_TEAM;
+	}
+
 	G_Say( ent, NULL, mode, p );
 }
 
@@ -1159,6 +1163,22 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	p = ConcatArgs( 2 );
+
+	if ( g_restrictChat.integer ) {
+		if ( !level.warmupTime &&
+			 ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+			 target->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+			trap_SendServerCommand( ent-g_entities,
+			"print \"Chatting to players in game is disabled on the server.\n\"" );
+			return;
+		}
+		if ( target->client->ps.duelInProgress &&
+			 target->client->ps.duelIndex != ent->s.number ) {
+			trap_SendServerCommand( ent-g_entities,
+			"print \"Chatting to dueling players is disabled on the server.\n\"" );
+			return;
+		}
+	}
 
 	G_LogPrintf( "tell: %s to %s: %s\n", ent->client->pers.netname, target->client->pers.netname, p );
 	G_Say( ent, target, SAY_TELL, p );
