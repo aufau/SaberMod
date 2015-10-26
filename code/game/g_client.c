@@ -883,84 +883,49 @@ static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) 
 
 /*
 ===========
-ClientCheckName
+ClientCleanName
 ============
 */
 static void ClientCleanName( const char *in, char *out, int outSize ) {
-	int		len, colorlessLen;
-	char	ch;
-	char	*p;
-	int		spaces;
+    int		characters;
+    int		spaces;
+    char	ch;
+    char	*p;
+    char	*end;
 
-	//save room for trailing null byte
-	outSize--;
+    p = out;
+    end = out + outSize;
+    characters = 0;
+    spaces = 0;
 
-	len = 0;
-	colorlessLen = 0;
-	p = out;
-	*p = 0;
-	spaces = 0;
+    for ( ; *in == ' '; in++ );
 
-	while( 1 ) {
-		ch = *in++;
-		if( !ch ) {
-			break;
-		}
+    do {
+        ch = *in++;
 
-		// don't allow leading spaces
-		if( !*p && ch == ' ' ) {
-			continue;
-		}
+        if ( ch == ' ' ) {
+            if ( spaces <= 3 ) {
+                spaces++;
+                *p++ = ch;
+            }
+        } else if ( ch == Q_COLOR_ESCAPE && Q_IsColorChar(*in) ) {
+            if ( p + 1 < end ) {
+                *p++ = ch;
+                *p++ = *in++;
+            }
+        } else if ( isgraph(ch) ) {
+            spaces = 0;
+            characters++;
+            *p++ = ch;
+        }
+    } while ( ch != '\0' && p < end );
 
-		// check colors
-		if( ch == Q_COLOR_ESCAPE ) {
-			// solo trailing carat is not a color prefix
-			if( !*in ) {
-				break;
-			}
+    *p = '\0';
 
-			// don't allow black in a name, period
-			if( ColorIndex(*in) == 0 ) {
-				in++;
-				continue;
-			}
-
-			// make sure room in dest for both chars
-			if( len > outSize - 2 ) {
-				break;
-			}
-
-			*out++ = ch;
-			*out++ = *in++;
-			len += 2;
-			continue;
-		}
-
-		// don't allow too many consecutive spaces
-		if( ch == ' ' ) {
-			spaces++;
-			if( spaces > 3 ) {
-				continue;
-			}
-		}
-		else {
-			spaces = 0;
-		}
-
-		if( len > outSize - 1 ) {
-			break;
-		}
-
-		*out++ = ch;
-		colorlessLen++;
-		len++;
-	}
-	*out = 0;
-
-	// don't allow empty names
-	if( *p == 0 || colorlessLen == 0 ) {
-		Q_strncpyz( p, "Padawan", outSize );
-	}
+    // don't allow empty names
+    if( characters == 0 ) {
+        strncpy( out, "Padawan", outSize );
+    }
 }
 
 #ifdef _DEBUG
