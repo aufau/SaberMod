@@ -329,38 +329,36 @@ void	Svcmd_EntityList_f (void) {
 
 gclient_t	*ClientForString( const char *s ) {
 	gclient_t	*cl;
-	int			i;
 	int			idnum;
 
+	if ( !s || !s[0] ) {
+		return NULL;
+	}
+
 	// numeric values are just slot numbers
-	if ( s[0] >= '0' && s[0] <= '9' ) {
+	if ( StringIsInteger( s ) ) {
 		idnum = atoi( s );
 		if ( idnum < 0 || idnum >= level.maxclients ) {
 			Com_Printf( "Bad client slot: %i\n", idnum );
 			return NULL;
 		}
-
 		cl = &level.clients[idnum];
-		if ( cl->pers.connected == CON_DISCONNECTED ) {
-			G_Printf( "Client %i is not connected\n", idnum );
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			G_Printf( "Client %i is not on the server\n", idnum );
 			return NULL;
 		}
 		return cl;
 	}
 
 	// check for a name match
-	for ( i=0 ; i < level.maxclients ; i++ ) {
-		cl = &level.clients[i];
-		if ( cl->pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-		if ( !Q_stricmp( cl->pers.netname, s ) ) {
-			return cl;
-		}
+	idnum = G_ClientNumberFromPattern(s);
+	if ( idnum >= 0 ) {
+		return &level.clients[idnum];
+	} else if ( idnum == -1 ) {
+		G_Printf( "There is no user matching '%s" S_COLOR_WHITE "' on the server\n", s );
+	} else {
+		G_Printf( "There are multiple users with '%s" S_COLOR_WHITE "' in their names. Please be more specific.\n", s );
 	}
-
-	G_Printf( "User %s is not on the server\n", s );
-
 	return NULL;
 }
 

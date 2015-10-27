@@ -148,25 +148,163 @@ char	*ConcatArgs( int start ) {
 
 /*
 ==================
-SanitizeString
-
-Remove case and control characters
+StringIsInteger
 ==================
 */
-void SanitizeString( char *in, char *out ) {
-	while ( *in ) {
-		if ( *in == 27 ) {
-			in += 2;		// skip color code
-			continue;
+qboolean StringIsInteger( const char * s ) {
+	int			i;
+	int			len;
+	qboolean	foundDigit;
+
+	len = strlen( s );
+	foundDigit = qfalse;
+
+	for ( i=0 ; i < len ; i++ ) {
+		if ( !isdigit( s[i] ) ) {
+			return qfalse;
 		}
-		if ( *in < 32 ) {
-			in++;
-			continue;
-		}
-		*out++ = tolower( *in++ );
+
+		foundDigit = qtrue;
 	}
 
-	*out = 0;
+	return foundDigit;
+}
+
+/*
+G_ClientNumberFromPattern
+
+Returns a client number of a matching player as described below
+-1 when there are no matching players
+-2 when there are multiple matching players
+
+Description: There are 6 test cases: compare (5), compare
+color-insensitive (4), compare color-case-insensitive (3), find
+substring (2), find color-insensitive substring (1) and find
+color-case-insensitive substring (0).
+
+If for one of these test cases there is only a single player name that
+passes it, it's a hit. There can be many hits so more precise (higher
+in the numeration above) match takes precendence.
+
+ 5     4     3
+  *<---*<---*
+  ^    ^    ^
+  |    |    |
+  *<---*<---*
+ 2     1     0
+
+Graph above shows relations between negated test cases (ie not
+satisfying 1 implies that tested string doesn't satisfy 2 4 and 5). It
+has been used for optimization.
+*/
+
+#define MatchedTwice(n) (matchedTwice & 1 << (n))
+#define StoreMatch(n) matchedTwice |= matched & 1 << (n); matched |= 1 << (n); matches[n] = idnum
+
+int G_ClientNumberFromPattern ( const char *pattern ) {
+	gclient_t	*cl;
+	char		ciName[MAX_NETNAME];
+	char		cciName[MAX_NETNAME];
+	char		ciPattern[MAX_NETNAME];
+	char		cciPatter[MAX_NETNAME];
+	char		*name;
+	int			idnum = 0;
+	int			matches[5];			// Element n stores last client number matched in test case n
+	int			matched = 0;		// bit n stores 1 if at least one netname passed test case n
+	int			matchedTwice = 0;	// bit n stores 1 if at least two netnames passed test case n
+
+	Q_strncpyz(ciPattern, pattern, sizeof(ciPattern));
+	Q_CleanStr(ciPattern);
+	Q_strncpyz(cciPatter, ciPattern, sizeof(cciPatter));
+	Q_strlwr(cciPatter);
+
+	for ( cl = level.clients; idnum < level.maxclients; idnum++, cl++ ) {
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+
+		name = cl->pers.netname;
+
+		Q_strncpyz(ciName, name, sizeof(ciName));
+		Q_CleanStr(ciName);
+		Q_strncpyz(cciName, ciName, sizeof(cciName));
+		Q_strlwr(cciName);
+
+		if ( !MatchedTwice(0) ) {
+			if ( strstr(cciName, cciPatter) ) {
+				StoreMatch(0);
+			} else {
+				continue;
+			}
+		}
+		if ( !MatchedTwice(1) ) {
+			if ( strstr(ciName, ciPattern) ) {
+				StoreMatch(1);
+			} else {
+				if ( !MatchedTwice(3) ) {
+					if ( !strcmp(cciName, cciPatter) ) {
+						StoreMatch(3);
+					}
+				}
+				continue;
+			}
+		}
+		if ( !MatchedTwice(2) ) {
+			if ( strstr(name, pattern) ) {
+				StoreMatch(2);
+			} else {
+				if ( !MatchedTwice(3) ) {
+					if ( !strcmp(cciName, cciPatter) ) {
+						StoreMatch(3);
+					} else {
+						continue;
+					}
+				}
+				if ( !MatchedTwice(4) ) {
+					if ( !strcmp(ciName, ciPattern) ) {
+						StoreMatch(4);
+					}
+				}
+				continue;
+			}
+		}
+		if ( !MatchedTwice(3) ) {
+			if ( !strcmp(cciName, cciPatter) ) {
+				StoreMatch(3);
+			} else {
+				continue;
+			}
+		}
+		if ( !MatchedTwice(4) ) {
+			if ( !strcmp(ciName, ciPattern) ) {
+				StoreMatch(4);
+			} else {
+				continue;
+			}
+		}
+		// netnames are distinct so just return when we get an exact match.
+		if ( !strcmp(name, pattern) ) {
+			return idnum;
+		}
+	}
+
+	matched &= ~matchedTwice;		// Matched once
+
+	if ( matched & 16 ) {
+		return matches[4];
+	} else if ( matched & 8 ) {
+		return matches[3];
+	} else if ( matched & 4 ) {
+		return matches[2];
+	} else if ( matched & 2 ) {
+		return matches[1];
+	} else if ( matched & 1 ) {
+		return matches[0];
+	} else if ( matchedTwice ) {
+		return -2;
+	} else {
+		return -1;
+	}
 }
 
 /*
@@ -177,41 +315,40 @@ Returns a player number for either a number or name string
 Returns -1 if invalid
 ==================
 */
-int ClientNumberFromString( gentity_t *to, char *s ) {
+int ClientNumberFromString( gentity_t *to, const char *s ) {
 	gclient_t	*cl;
 	int			idnum;
-	char		s2[MAX_STRING_CHARS];
-	char		n2[MAX_STRING_CHARS];
 
-	// numeric values are just slot numbers
-	if (s[0] >= '0' && s[0] <= '9') {
+	if ( !s || !s[0] ) {
+		return -1;
+	}
+
+	// numeric values could be slot numbers
+	if ( StringIsInteger( s ) ) {
 		idnum = atoi( s );
-		if ( idnum < 0 || idnum >= level.maxclients ) {
+		if ( idnum < 0 && idnum >= level.maxclients ) {
 			trap_SendServerCommand( to-g_entities, va("print \"Bad client slot: %i\n\"", idnum));
 			return -1;
 		}
-
 		cl = &level.clients[idnum];
 		if ( cl->pers.connected != CON_CONNECTED ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Client %i is not active\n\"", idnum));
+			trap_SendServerCommand( to-g_entities, va("print \"Client %i is not on the server\n\"", idnum));
 			return -1;
 		}
 		return idnum;
 	}
 
 	// check for a name match
-	SanitizeString( s, s2 );
-	for ( idnum=0,cl=level.clients ; idnum < level.maxclients ; idnum++,cl++ ) {
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		SanitizeString( cl->pers.netname, n2 );
-		if ( !strcmp( n2, s2 ) ) {
-			return idnum;
-		}
+	idnum = G_ClientNumberFromPattern(s);
+	if ( idnum >= 0 ) {
+		return idnum;
+	} else if ( idnum == -1 ) {
+		trap_SendServerCommand( to-g_entities,
+		va("print \"There is no user matching '%s" S_COLOR_WHITE "' on the server\n\"", s));
+	} else if ( idnum == -2 ) {
+		trap_SendServerCommand( to-g_entities,
+		va("print \"There are multiple users with '%s" S_COLOR_WHITE "' in their names. Please be more specific.\n\"", s));
 	}
-
-	trap_SendServerCommand( to-g_entities, va("print \"User %s is not on the server\n\"", s));
 	return -1;
 }
 
@@ -1152,8 +1289,8 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	targetNum = atoi( arg );
-	if ( targetNum < 0 || targetNum >= level.maxclients ) {
+	targetNum = ClientNumberFromString( ent, arg );
+	if ( targetNum == -1 ) {
 		return;
 	}
 
@@ -1292,8 +1429,8 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	targetNum = atoi( arg );
-	if ( targetNum < 0 || targetNum >= level.maxclients ) {
+	targetNum = ClientNumberFromString( ent, arg );
+	if ( targetNum == -1 ) {
 		return;
 	}
 
@@ -1441,109 +1578,6 @@ static const char *gameNames[] = {
 
 /*
 ==================
-G_ClientNumberFromName
-
-Finds the client number of the client with the given name
-==================
-*/
-int G_ClientNumberFromName ( const char* name )
-{
-	char		s2[MAX_STRING_CHARS];
-	char		n2[MAX_STRING_CHARS];
-	int			i;
-	gclient_t*	cl;
-
-	// check for a name match
-	SanitizeString( (char*)name, s2 );
-	for ( i=0, cl=level.clients ; i < level.numConnectedClients ; i++, cl++ )
-	{
-		SanitizeString( cl->pers.netname, n2 );
-		if ( !strcmp( n2, s2 ) )
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-/*
-==================
-SanitizeString2
-
-Rich's revised version of SanitizeString
-==================
-*/
-void SanitizeString2( char *in, char *out )
-{
-	int i = 0;
-	int r = 0;
-
-	while (in[i])
-	{
-		if (i >= MAX_NAME_LENGTH-1)
-		{ //the ui truncates the name here..
-			break;
-		}
-
-		if (in[i] == '^')
-		{
-			if (in[i+1] >= 48 && //'0'
-				in[i+1] <= 57) //'9'
-			{ //only skip it if there's a number after it for the color
-				i += 2;
-				continue;
-			}
-			else
-			{ //just skip the ^
-				i++;
-				continue;
-			}
-		}
-
-		if (in[i] < 32)
-		{
-			i++;
-			continue;
-		}
-
-		out[r] = in[i];
-		r++;
-		i++;
-	}
-	out[r] = 0;
-}
-
-/*
-==================
-G_ClientNumberFromStrippedName
-
-Same as above, but strips special characters out of the names before comparing.
-==================
-*/
-int G_ClientNumberFromStrippedName ( const char* name )
-{
-	char		s2[MAX_STRING_CHARS];
-	char		n2[MAX_STRING_CHARS];
-	int			i;
-	gclient_t*	cl;
-
-	// check for a name match
-	SanitizeString2( (char*)name, s2 );
-	for ( i=0, cl=level.clients ; i < level.numConnectedClients ; i++, cl++ )
-	{
-		SanitizeString2( cl->pers.netname, n2 );
-		if ( !strcmp( n2, s2 ) )
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-/*
-==================
 Cmd_CallVote_f
 ==================
 */
@@ -1657,17 +1691,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	}
 	else if ( !Q_stricmp ( arg1, "kick" ) )
 	{
-		int clientid = G_ClientNumberFromName ( arg2 );
+		int clientid = ClientNumberFromString( ent, arg2 );
 
 		if ( clientid == -1 )
 		{
-			clientid = G_ClientNumberFromStrippedName(arg2);
-
-			if (clientid == -1)
-			{
-				trap_SendServerCommand( ent-g_entities, va("print \"there is no client named '%s' currently on the server.\n\"", arg2 ) );
-				return;
-			}
+			return;
 		}
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", clientid );
