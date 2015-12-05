@@ -142,6 +142,9 @@ typedef enum {
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
+#define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
+#define GT_Team(x) ((x) >= GT_TEAM)
+
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 extern vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];

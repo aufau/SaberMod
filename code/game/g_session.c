@@ -98,7 +98,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 	sess = &client->sess;
 
 	// initial team determination
-	if ( g_gametype.integer >= GT_TEAM ) {
+	if ( GT_Team(g_gametype.integer) ) {
 		if ( g_teamAutoJoin.integer ) {
 			sess->sessionTeam = PickTeam( -1 );
 			BroadcastTeamChange( client, -1 );

@@ -253,7 +253,7 @@ static void CG_DenyOrder_f (void ) {
 }
 
 static void CG_TaskOffense_f (void ) {
-	if (cgs.gametype == GT_CTF || cgs.gametype == GT_CTY) {
+	if (GT_Flag(cgs.gametype)) {
 		trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONGETFLAG));
 	} else {
 		trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONOFFENSE));

@@ -204,7 +204,7 @@ void ShieldGoNotSolid(gentity_t *self)
 // Somebody (a player) has touched the shield.  See if it is a "friend".
 void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if (g_gametype.integer >= GT_TEAM)
+	if (GT_Team(g_gametype.integer))
 	{ // let teammates through
 		// compare the parent's team to the "other's" team
 		if (self->parent && ( self->parent->client) && (other->client))
@@ -417,7 +417,7 @@ qboolean PlaceShield(gentity_t *playerent)
 
 			shield->s.owner = playerent->s.number;
 			shield->s.shouldtarget = qtrue;
-			if (g_gametype.integer >= GT_TEAM)
+			if (GT_Team(g_gametype.integer))
 			{
 				shield->s.teamowner = playerent->client->sess.sessionTeam;
 			}
@@ -1048,7 +1048,7 @@ void ItemUse_Sentry( gentity_t *ent )
 
 	sentry->s.owner = ent->s.number;
 	sentry->s.shouldtarget = qtrue;
-	if (g_gametype.integer >= GT_TEAM)
+	if (GT_Team(g_gametype.integer))
 	{
 		sentry->s.teamowner = ent->client->sess.sessionTeam;
 	}
@@ -1145,7 +1145,7 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
     // if same team in team game, no sound
     // cannot use OnSameTeam as it expects to g_entities, not clients
-  	if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
+	if ( GT_Team(g_gametype.integer) && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
       continue;
     }
 
@@ -1627,7 +1627,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	VectorCopy( velocity, dropped->s.pos.trDelta );
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY) && item->giType == IT_TEAM) { // Special case for CTF flags
+	if (GT_Flag(g_gametype.integer) && item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem( dropped );
@@ -1797,9 +1797,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 	}
 
-	if (g_gametype.integer != GT_CTF &&
-		g_gametype.integer != GT_CTY &&
-		ent->item->giType == IT_TEAM)
+	if (!GT_Flag(g_gametype.integer) && ent->item->giType == IT_TEAM)
 	{
 		int killMe = 0;
 
@@ -1910,7 +1908,7 @@ void G_CheckTeamItems( void ) {
 	// Set up team stuff
 	Team_InitGame();
 
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY ) {
+	if( GT_Flag(g_gametype.integer) ) {
 		gitem_t	*item;
 
 		// check for the two flags

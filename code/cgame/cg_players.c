@@ -265,7 +265,7 @@ retryModel:
 		trap_G2API_CleanGhoul2Models(&(ci->ghoul2Model));
 	}
 
-	if ( cgs.gametype >= GT_TEAM && !cgs.jediVmerc )
+	if ( GT_Team(cgs.gametype) && !cgs.jediVmerc )
 	{
 		if (ci->team == TEAM_RED)
 		{
@@ -605,7 +605,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 	*/
 
 	teamname[0] = 0;
-	if( cgs.gametype >= GT_TEAM) {
+	if( GT_Team(cgs.gametype)) {
 		if( ci->team == TEAM_BLUE ) {
 			Q_strncpyz(teamname, cg_blueTeamName.string, sizeof(teamname) );
 		} else {
@@ -622,7 +622,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 		//Give it a chance to load default model for this client instead.
 
 		// fall back to default team name
-		if( cgs.gametype >= GT_TEAM) {
+		if( GT_Team(cgs.gametype)) {
 			// keep skin name
 			if( ci->team == TEAM_BLUE ) {
 				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
@@ -660,7 +660,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 
 	// sounds
 	dir = ci->modelName;
-	fallback = DEFAULT_MALE_SOUNDPATH; //(cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
+	fallback = DEFAULT_MALE_SOUNDPATH; //(GT_Team(cgs.gametype)) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 
 	if ( !ci->skinName || !Q_stricmp( "default", ci->skinName ) )
 	{//try default sounds.cfg first
@@ -836,7 +836,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci, int clientNum ) 
 //			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
 			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			&& !Q_stricmp( ci->redTeam, match->redTeam )
-			&& (cgs.gametype < GT_TEAM || ci->team == match->team)
+			&& (!GT_Team(cgs.gametype) || ci->team == match->team)
 			&& match->ghoul2Model
 			&& match->bolt_head) //if the bolts haven't been initialized, this "match" is useless to us
 		{
@@ -919,7 +919,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 			 Q_stricmp( ci->modelName, match->modelName ) ||
 //			 Q_stricmp( ci->headModelName, match->headModelName ) ||
 //			 Q_stricmp( ci->headSkinName, match->headSkinName ) ||
-			 (cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
+			 (GT_Team(cgs.gametype) && ci->team != match->team) ) {
 			continue;
 		}
 		// just load the real info cause it uses the same models and skins
@@ -928,14 +928,14 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 	}
 
 	// if we are in teamplay, only grab a model if the skin is correct
-	if ( cgs.gametype >= GT_TEAM ) {
+	if ( GT_Team(cgs.gametype) ) {
 		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
 			match = &cgs.clientinfo[ i ];
 			if ( !match->infoValid || match->deferred ) {
 				continue;
 			}
 			if ( Q_stricmp( ci->skinName, match->skinName ) ||
-				(cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
+				(GT_Team(cgs.gametype) && ci->team != match->team) ) {
 				continue;
 			}
 			ci->deferred = qtrue;
@@ -1057,7 +1057,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		char modelStr[MAX_QPATH];
 		char *skin;
 
-		if( cgs.gametype >= GT_TEAM ) {
+		if( GT_Team(cgs.gametype) ) {
 			Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
 			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 		} else {
@@ -1072,7 +1072,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			Q_strncpyz( newInfo.modelName, modelStr, sizeof( newInfo.modelName ) );
 		}
 
-		if ( cgs.gametype >= GT_TEAM ) {
+		if ( GT_Team(cgs.gametype) ) {
 			// keep skin name
 			slash = strchr( v, '/' );
 			if ( slash ) {
@@ -1102,7 +1102,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		char modelStr[MAX_QPATH];
 		char *skin;
 
-		if( cgs.gametype >= GT_TEAM ) {
+		if( GT_Team(cgs.gametype) ) {
 			Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
 			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
 		} else {
@@ -1117,7 +1117,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			Q_strncpyz( newInfo.headModelName, modelStr, sizeof( newInfo.headModelName ) );
 		}
 
-		if ( cgs.gametype >= GT_TEAM ) {
+		if ( GT_Team(cgs.gametype) ) {
 			// keep skin name
 			slash = strchr( v, '/' );
 			if ( slash ) {
@@ -1144,7 +1144,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	newInfo.ATST = wasATST;
 
-	if (cgs.gametype >= GT_TEAM	&& !cgs.jediVmerc )
+	if (GT_Team(cgs.gametype) && !cgs.jediVmerc )
 	{
 		if (newInfo.team == TEAM_RED)
 		{
@@ -3242,7 +3242,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
 	if ( !(cent->currentState.eFlags & EF_DEAD) &&
 		cg.snap->ps.persistant[PERS_TEAM] == team &&
-		cgs.gametype >= GT_TEAM) {
+		GT_Team(cgs.gametype)) {
 		if (cg_drawFriend.integer) {
 			CG_PlayerFloatSprite( cent, cgs.media.friendShader );
 		}
@@ -4186,7 +4186,7 @@ Ghoul2 Insert Start
 
 	scolor = cgs.clientinfo[cent->currentState.number].icolor1;
 
-	if (cgs.gametype >= GT_TEAM && !cgs.jediVmerc )
+	if (GT_Team(cgs.gametype) && !cgs.jediVmerc )
 	{
 		if (cgs.clientinfo[cent->currentState.number].team == TEAM_RED)
 		{
@@ -5997,7 +5997,7 @@ void CG_Player( centity_t *cent ) {
 
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
 
-	if (cgs.gametype >= GT_TEAM && cg_drawFriend.integer &&
+	if (GT_Team(cgs.gametype) && cg_drawFriend.integer &&
 		cent->currentState.number != cg.snap->ps.clientNum)			// Don't show a sprite above a player's own head in 3rd person.
 	{	// If the view is either a spectator or on the same team as this character, show a symbol above their head.
 		if ((cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.snap->ps.persistant[PERS_TEAM] == team) &&
@@ -7360,7 +7360,7 @@ doEssentialThree:
 
 	if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) && cg.snap->ps.clientNum != cent->currentState.number && cg_auraShell.integer)
 	{
-		if (cgs.gametype >= GT_TEAM)
+		if (GT_Team(cgs.gametype))
 		{	// A team game
 			switch(cgs.clientinfo[ cent->currentState.clientNum ].team)
 			{

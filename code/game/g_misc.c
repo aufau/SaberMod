@@ -818,8 +818,7 @@ void SP_misc_shield_floor_unit( gentity_t *ent )
 	vec3_t dest;
 	trace_t tr;
 
-	if (g_gametype.integer != GT_CTF &&
-		g_gametype.integer != GT_CTY)
+	if (GT_Flag(g_gametype.integer))
 	{
 		G_FreeEntity( ent );
 		return;

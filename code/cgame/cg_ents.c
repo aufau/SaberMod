@@ -2348,7 +2348,7 @@ CG_TeamBase
 */
 static void CG_TeamBase( centity_t *cent ) {
 	refEntity_t model;
-	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTY ) {
+	if ( GT_Flag(cgs.gametype) ) {
 		// show the flag base
 		memset(&model, 0, sizeof(model));
 		model.reType = RT_MODEL;

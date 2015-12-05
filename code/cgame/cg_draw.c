@@ -1103,7 +1103,7 @@ void CG_DrawHUD(centity_t	*cent)
 		return;
 	}
 
-	if (cgs.gametype >= GT_TEAM)
+	if (GT_Team(cgs.gametype))
 	{	// tint the hud items based on team
 		if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED )
 			hudTintColor = redhudtint;
@@ -1139,7 +1139,7 @@ void CG_DrawHUD(centity_t	*cent)
 		//show current kills out of how many needed
 		scoreStr = va("Score: %i/%i", cg.snap->ps.persistant[PERS_SCORE], cgs.fraglimit);
 	}
-	else if (0 && cgs.gametype < GT_TEAM )
+	else if (0 && !GT_Team(cgs.gametype) )
 	{	// This is a teamless mode, draw the score bias.
 		scoreBias = cg.snap->ps.persistant[PERS_SCORE] - cgs.scores1;
 		if (scoreBias == 0)
@@ -1650,7 +1650,7 @@ static float CG_DrawMiniScoreboard ( float y )
 		return y;
 	}
 
-	if ( cgs.gametype >= GT_TEAM )
+	if ( GT_Team(cgs.gametype) )
 	{
 		strcpy ( temp, "Red: " );
 		Q_strcat ( temp, MAX_QPATH, cgs.scores1==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores1)) );
@@ -2158,7 +2158,7 @@ static void CG_DrawUpperRight( void ) {
 
 	y = 0;
 
-	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 1 ) {
+	if ( GT_Team(cgs.gametype) && cg_drawTeamOverlay.integer == 1 ) {
 		y = CG_DrawTeamOverlay( y, qtrue, qtrue );
 	}
 	if ( cg_drawSnapshot.integer ) {
@@ -2627,7 +2627,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 			if ( crossEnt->currentState.number < MAX_CLIENTS )
 			{
-				if (cgs.gametype >= GT_TEAM &&
+				if (GT_Team(cgs.gametype) &&
 					cgs.clientinfo[crossEnt->currentState.number].team == cgs.clientinfo[cg.snap->ps.clientNum].team )
 				{
 					//Allies are green
@@ -2672,14 +2672,16 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 				}
 
 				if (crossEnt->currentState.owner == cg.snap->ps.clientNum ||
-					(cgs.gametype >= GT_TEAM && crossEnt->currentState.teamowner == cgs.clientinfo[cg.snap->ps.clientNum].team))
+					(GT_Team(cgs.gametype) &&
+					 crossEnt->currentState.teamowner == cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
 					ecolor[0] = 0.0;//R
 					ecolor[1] = 1.0;//G
 					ecolor[2] = 0.0;//B
 				}
 				else if (crossEnt->currentState.teamowner == 16 ||
-					(cgs.gametype >= GT_TEAM && crossEnt->currentState.teamowner && crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
+					(GT_Team(cgs.gametype) && crossEnt->currentState.teamowner &&
+					 crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
 					ecolor[0] = 1.0;//R
 					ecolor[1] = 0.0;//G
@@ -2969,7 +2971,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 	{
 		if (cgs.clientinfo[cg.snap->ps.rocketLockIndex].team == cgs.clientinfo[cg.snap->ps.clientNum].team)
 		{
-			if (cgs.gametype >= GT_TEAM)
+			if (GT_Team(cgs.gametype))
 			{
 				return;
 			}
@@ -3230,7 +3232,7 @@ static void CG_DrawCrosshairNames( void ) {
 
 	name = cgs.clientinfo[ cg.crosshairClientNum ].name;
 
-	if (cgs.gametype >= GT_TEAM)
+	if (GT_Team(cgs.gametype))
 	{
 		if (cgs.clientinfo[cg.crosshairClientNum].team == TEAM_RED)
 		{
@@ -3330,7 +3332,7 @@ static void CG_DrawSpectator(void)
 		s = CG_GetStripEdString("INGAMETEXT", "WAITING_TO_PLAY");	// "waiting to play";
 		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, 3 );
 	}
-	else //if ( cgs.gametype >= GT_TEAM )
+	else //if ( GT_Team(cgs.gametype) )
 	{
 		//s = "press ESC and use the JOIN menu to play";
 		s = CG_GetStripEdString("INGAMETEXT", "SPEC_CHOOSEJOIN");
@@ -3490,7 +3492,7 @@ static qboolean CG_DrawScoreboard() {
 
 
 	if (menuScoreboard == NULL) {
-		if ( cgs.gametype >= GT_TEAM ) {
+		if ( GT_Team(cgs.gametype) ) {
 			menuScoreboard = Menus_FindByName("teamscore_menu");
 		} else {
 			menuScoreboard = Menus_FindByName("score_menu");
@@ -3762,7 +3764,7 @@ void CG_DrawFlagStatus()
 		return;
 	}
 
-	if (cgs.gametype != GT_CTF && cgs.gametype != GT_CTY)
+	if (!GT_Flag(cgs.gametype))
 	{
 		return;
 	}

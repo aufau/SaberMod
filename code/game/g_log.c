@@ -1454,8 +1454,7 @@ int CalculateTeamAward(gentity_t *ent)
 	{
 		teamAwards |= (1<<TEAM_MVP);
 	}
-	if (GT_CTF == g_gametype.integer ||
-		GT_CTY == g_gametype.integer)
+	if (GT_Flag(g_gametype.integer))
 	{
 		if (CalculateTeamDefender(ent))
 		{
@@ -1563,7 +1562,7 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, streak);
 	}
-	if (g_gametype.integer >= GT_TEAM)
+	if (GT_Team(g_gametype.integer))
 	{
 		teamAwards = CalculateTeamAward(ent);
 		if (teamAwards)

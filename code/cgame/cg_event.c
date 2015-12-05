@@ -227,7 +227,7 @@ clientkilled:
 	if ( attacker == cg.snap->ps.clientNum ) {
 		char	*s;
 
-		if ( cgs.gametype < GT_TEAM && cgs.gametype != GT_TOURNAMENT ) {
+		if ( !GT_Team(cgs.gametype) && cgs.gametype != GT_TOURNAMENT ) {
 			if (cgs.gametype == GT_JEDIMASTER &&
 				attacker < MAX_CLIENTS &&
 				!ent->isJediMaster &&

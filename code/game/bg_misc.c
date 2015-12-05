@@ -271,7 +271,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 		i++;
 	}
 
-	if (gametype < GT_TEAM)
+	if (!GT_Team(gametype))
 	{ //don't bother with team powers then
 		final_Powers[FP_TEAM_HEAL] = 0;
 		final_Powers[FP_TEAM_FORCE] = 0;
@@ -1703,7 +1703,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;	// powerups are always picked up
 
 	case IT_TEAM: // team items, such as flags
-		if( gametype == GT_CTF || gametype == GT_CTY ) {
+		if( GT_Flag(gametype) ) {
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
 			// but we can't pick up our flag at base

@@ -348,7 +348,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 			if (!(ent->r.svFlags & SVF_BOT) && g_gametype.integer != GT_TOURNAMENT)
 			{
-				if (g_gametype.integer < GT_TEAM || !g_teamAutoJoin.integer)
+				if (!GT_Team(g_gametype.integer) || !g_teamAutoJoin.integer)
 				{
 					//Make them a spectator so they can set their powerups up without being bothered.
 					ent->client->sess.sessionTeam = TEAM_SPECTATOR;
