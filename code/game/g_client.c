@@ -1882,7 +1882,7 @@ void ClientSpawn(gentity_t *ent) {
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] * 1.25;
 
 	// Start with a small amount of armor as well.
-	client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH] * 0.25;
+	client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH] * g_spawnShield.integer / 100;
 
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
