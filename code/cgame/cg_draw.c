@@ -3680,6 +3680,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_CTY ) {
 			s = "Capture the Ysalamiri";
+		} else if ( cgs.gametype == GT_REDROVER ) {
+			s = "Red Rover";
 		} else {
 			s = "";
 		}

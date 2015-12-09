@@ -983,6 +983,45 @@ void G_UpdateClientBroadcasts ( gentity_t *self )
 	G_UpdateForceSightBroadcasts ( self );
 }
 
+
+static void G_SwitchTeam( gentity_t *ent ) {
+	gclient_t	*client;
+	int			team, oldTeam;
+	int			teamLeader;
+	int			clientNum;
+
+	client = ent->client;
+	clientNum = client - level.clients;
+	oldTeam = client->sess.sessionTeam;
+
+	if (oldTeam == TEAM_RED) {
+		team = TEAM_BLUE;
+	} else if (oldTeam == TEAM_BLUE) {
+		team = TEAM_RED;
+	} else {
+		return;
+	}
+
+	// he starts at 'base'
+	client->pers.teamState.state = TEAM_BEGIN;
+	client->sess.sessionTeam = team;
+
+	client->sess.teamLeader = qfalse;
+	teamLeader = TeamLeader( team );
+	// if there is no team leader or the team leader is a bot and this client is not a bot
+	if ( teamLeader == -1 || ( !(g_entities[clientNum].r.svFlags & SVF_BOT) && (g_entities[teamLeader].r.svFlags & SVF_BOT) ) ) {
+		SetLeader( team, clientNum );
+	}
+	// make sure there is a team leader on the team the player came from
+	CheckTeamLeader( oldTeam );
+
+	BroadcastTeamChange( client, oldTeam );
+
+	// get and distribute relevent paramters
+	CalculateRanks();
+	ClientUserinfoChanged( clientNum );
+}
+
 /*
 ==============
 ClientThink
@@ -1258,6 +1297,9 @@ void ClientThink_real( gentity_t *ent ) {
 		(level.time - FALL_FADE_TIME) > ent->client->ps.fallingToDeath)
 	{ //die!
 		player_die(ent, ent, ent, 100000, MOD_FALLING);
+		if ( g_gametype.integer == GT_REDROVER ) {
+			G_SwitchTeam(ent);
+		}
 		respawn(ent);
 		ent->client->ps.fallingToDeath = 0;
 
@@ -1647,12 +1689,18 @@ void ClientThink_real( gentity_t *ent ) {
 			// forcerespawn is to prevent users from waiting out powerups
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
+				if ( g_gametype.integer == GT_REDROVER ) {
+					G_SwitchTeam(ent);
+				}
 				respawn( ent );
 				return;
 			}
 
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
+				if ( g_gametype.integer == GT_REDROVER ) {
+					G_SwitchTeam(ent);
+				}
 				respawn( ent );
 			}
 		}

@@ -1055,7 +1055,7 @@ void CalculateRanks( void ) {
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -1339,8 +1339,19 @@ void ExitLevel (void) {
 		}
 
 		DuelResetWinsLosses();
-	}
+	} else if ( g_gametype.integer == GT_REDROVER ) {
+		int		team = TEAM_RED;
 
+		// Shuffle players by score
+		for ( i = 0 ; i < level.numConnectedClients ; i++ ) {
+			cl = &level.clients[level.sortedClients[i]];
+
+			if (cl->sess.sessionTeam != TEAM_SPECTATOR) {
+				cl->sess.sessionTeam = team;
+				team = (team == TEAM_RED) ? TEAM_BLUE : TEAM_RED;
+			}
+		}
+	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
 	level.changemap = NULL;
@@ -1431,7 +1442,7 @@ void LogExit( const char *string ) {
 		numSorted = 32;
 	}
 
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
 		G_LogPrintf( "red:%i  blue:%i\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
 	}
@@ -1774,6 +1785,29 @@ void CheckExitRules( void ) {
 
 	if ( level.numPlayingClients < 2 ) {
 		return;
+	}
+
+	if ( g_gametype.integer == GT_REDROVER ) {
+		int		count[TEAM_NUM_TEAMS];
+
+		count[TEAM_RED] = count[TEAM_BLUE] = 0;
+		// REDROVER FIXME: use level.teamScores when we implement rounds
+		for ( i = 0 ; i < level.maxclients ; i++ ) {
+			if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
+				count[level.clients[i].sess.sessionTeam]++;
+			}
+		}
+
+		if ( count[TEAM_RED] == 0 ) {
+			trap_SendServerCommand( -1, "print \"Red team eliminated\n\"");
+			LogExit( "Round finished." );
+			return;
+		}
+		if ( count[TEAM_BLUE] == 0 ) {
+			trap_SendServerCommand( -1, "print \"Blue team eliminated\n\"");
+			LogExit( "Round finished." );
+			return;
+		}
 	}
 
 	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {

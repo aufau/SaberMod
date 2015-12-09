@@ -140,6 +140,7 @@ typedef enum {
 	GT_SAGA,			// saga
 	GT_CTF,				// capture the flag
 	GT_CTY,
+	GT_REDROVER,		// slain join your team
 	GT_MAX_GAME_TYPE
 } gametype_t;
 

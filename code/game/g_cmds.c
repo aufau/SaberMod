@@ -1573,7 +1573,8 @@ static const char *gameNames[] = {
 	"Team FFA",
 	"N/A",
 	"Capture the Flag",
-	"Capture the Ysalamiri"
+	"Capture the Ysalamiri",
+	"Red Rover"
 };
 
 /*

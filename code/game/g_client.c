@@ -767,7 +767,9 @@ respawn
 void respawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	CopyToBodyQue (ent);
+	if (ent->health <= 0) {
+		CopyToBodyQue (ent);
+	}
 
 	if (gEscaping)
 	{

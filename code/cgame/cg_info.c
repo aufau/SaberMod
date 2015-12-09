@@ -227,6 +227,9 @@ void CG_DrawInformation( void ) {
 	case GT_CTY:
 		s = "Capture The Ysalamiri";
 		break;
+	case GT_REDROVER:
+		s = "Red Rover";
+		break;
 	default:
 		s = "Unknown Gametype";
 		break;
