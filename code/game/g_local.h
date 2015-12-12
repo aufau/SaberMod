@@ -19,6 +19,7 @@
 
 #define	INTERMISSION_DELAY_TIME	1000
 #define	SP_INTERMISSION_DELAY_TIME	5000
+#define	ROUND_INTERMISSION_DELAY_TIME	3000
 
 // gentity->flags
 #define	FL_GODMODE				0x00000010
@@ -44,7 +45,8 @@ typedef enum {
 	CV_CLIENTKICK,
 	CV_DOWARMUP,
 	CV_TIMELIMIT,
-	CV_FRAGLIMIT
+	CV_FRAGLIMIT,
+	CV_ROUNDLIMIT
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc

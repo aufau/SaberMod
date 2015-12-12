@@ -1312,6 +1312,7 @@ typedef struct {
 	int				duel_fraglimit;
 	int				capturelimit;
 	int				timelimit;
+	int				roundlimit;
 	int				maxclients;
 	qboolean		needpass;
 	qboolean		jediVmerc;

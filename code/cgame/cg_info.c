@@ -245,7 +245,16 @@ void CG_DrawInformation( void ) {
 		y += iPropHeight;
 	}
 
-	if (!GT_Flag(cgs.gametype)) {
+	if (GT_Round(cgs.gametype)) {
+		value = atoi( Info_ValueForKey( info, "roundlimit" ) );
+		if ( value ) {
+			UI_DrawProportionalString( 320, y, va( "Round Limit: %i", value ),
+				UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+	}
+
+	if (!GT_Flag(cgs.gametype) && !GT_Round(cgs.gametype)) {
 		value = atoi( Info_ValueForKey( info, "fraglimit" ) );
 		if ( value ) {
 			UI_DrawProportionalString( 320, y, va( "%s %i", CG_GetStripEdString("INGAMETEXT", "FRAGLIMIT"), value ),
