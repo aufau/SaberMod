@@ -1888,7 +1888,7 @@ void showDamageStatistics() {
 
 		}
 
-		trap_SendServerCommand(-1, va("print \"" S_COLOR_BLUE"%s ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
+		trap_SendServerCommand(-1, va("print \"" S_COLOR_BLUE"%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
 									  "--------------------------------"));
 		for (i = 0; i < blueTeamSize; i++) {
 			cl = &level.clients[blueTeam[i]];
