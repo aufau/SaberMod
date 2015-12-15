@@ -1554,6 +1554,11 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
+	ent->client->pers.totalDamageTakenFromEnemies = 0;
+	ent->client->pers.totalDamageDealtToEnemies = 0;
+	ent->client->pers.totalDamageTakenFromAllies = 0;
+	ent->client->pers.totalDamageDealtToAllies = 0;
+
 	G_ClearClientLog(clientNum);
 }
 

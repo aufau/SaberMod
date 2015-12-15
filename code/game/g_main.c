@@ -1693,6 +1693,300 @@ qboolean ScoreIsTied( void ) {
 	return a == b;
 }
 
+void showDamageStatistics() {
+	int numSorted, invisibleChars, realLength, bestScore, worstScore, bestDeaths, worstDeaths,
+			bestDamage, worstDamage, bestTaken, worstTaken, bestTeamDamage, worstTeamDamage,
+			bestTeamTaken, worstTeamTaken, redTeamSize, bestNet, worstNet;
+	int redTeam[MAX_CLIENTS];
+	int blueTeamSize;
+	int blueTeam[MAX_CLIENTS];
+	int i, j;
+	gclient_t	*cl;
+	char spaces[MAX_NAME_LENGTH];
+
+	numSorted = level.numConnectedClients;
+	redTeamSize = 0;
+	blueTeamSize = 0;
+
+	if ( numSorted ) {
+		cl = &level.clients[level.sortedClients[i]];
+
+		if (cl->sess.sessionTeam == TEAM_RED) {
+			redTeam[redTeamSize] = level.sortedClients[0];
+			redTeamSize++;
+		}
+		else {
+			blueTeam[blueTeamSize] = level.sortedClients[0];
+			blueTeamSize++;
+		}
+
+		bestScore = cl->ps.persistant[PERS_SCORE];
+		worstScore = cl->ps.persistant[PERS_SCORE];
+		bestDeaths = cl->ps.persistant[PERS_KILLED];
+		worstDeaths = cl->ps.persistant[PERS_KILLED];
+		bestDamage = cl->pers.totalDamageDealtToEnemies;
+		worstDamage = cl->pers.totalDamageDealtToEnemies;
+		bestTaken = cl->pers.totalDamageTakenFromEnemies;
+		worstTaken = cl->pers.totalDamageTakenFromEnemies;
+		bestNet = cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies;
+		worstNet = cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies;
+		bestTeamDamage = cl->pers.totalDamageDealtToAllies;
+		worstTeamDamage = cl->pers.totalDamageDealtToAllies;
+		bestTeamTaken = cl->pers.totalDamageTakenFromAllies;
+		worstTeamTaken = cl->pers.totalDamageTakenFromAllies;
+
+		for (i = 1; i < numSorted; i++) {
+			cl = &level.clients[level.sortedClients[i]];
+			if (cl->sess.sessionTeam == TEAM_RED) {
+				redTeam[redTeamSize] = level.sortedClients[i];
+				redTeamSize++;
+			}
+			else {
+				blueTeam[blueTeamSize] = level.sortedClients[i];
+				blueTeamSize++;
+			}
+
+			if (cl->ps.persistant[PERS_SCORE] > bestScore) {
+				bestScore = cl->ps.persistant[PERS_SCORE];
+			}
+			if (cl->ps.persistant[PERS_SCORE] < worstScore) {
+				worstScore = cl->ps.persistant[PERS_SCORE];
+			}
+			if (cl->ps.persistant[PERS_KILLED] < bestDeaths) {
+				bestDeaths = cl->ps.persistant[PERS_KILLED];
+			}
+			if (cl->ps.persistant[PERS_KILLED] > worstDeaths) {
+				worstDeaths = cl->ps.persistant[PERS_KILLED];
+			}
+			if (cl->pers.totalDamageDealtToEnemies > bestDamage) {
+				bestDamage = cl->pers.totalDamageDealtToEnemies;
+			}
+			if (cl->pers.totalDamageDealtToEnemies < worstDamage) {
+				worstDamage = cl->pers.totalDamageDealtToEnemies;
+			}
+			if (cl->pers.totalDamageTakenFromEnemies < bestTaken) {
+				bestTaken = cl->pers.totalDamageTakenFromEnemies;
+			}
+			if (cl->pers.totalDamageTakenFromEnemies > worstTaken) {
+				worstTaken = cl->pers.totalDamageTakenFromEnemies;
+			}
+			if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies > bestNet) {
+				bestNet = cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies;
+			}
+			if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies < worstNet) {
+				worstNet = cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies;
+			}
+			if (cl->pers.totalDamageDealtToAllies < bestTeamDamage) {
+				bestTeamDamage = cl->pers.totalDamageDealtToAllies;
+			}
+			if (cl->pers.totalDamageDealtToAllies > worstTeamDamage) {
+				worstTeamDamage = cl->pers.totalDamageDealtToAllies;
+			}
+			if (cl->pers.totalDamageTakenFromAllies < bestTeamTaken) {
+				bestTeamTaken = cl->pers.totalDamageTakenFromAllies;
+			}
+			if (cl->pers.totalDamageTakenFromAllies > worstTeamTaken) {
+				worstTeamTaken = cl->pers.totalDamageTakenFromAllies;
+			}
+		}
+
+		trap_SendServerCommand(-1, va("print \"%-32s %-5s %-5s %-5s %-5s %-5s %-5s %-5s" S_COLOR_WHITE "\n\"",
+									  "Name", "K", "D", "Dmg", "Rcv", "Net", "TDmg", "TRcv"));
+		trap_SendServerCommand(-1, va("print \"" S_COLOR_RED "%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
+									  "--------------------------------"));
+		for (i = 0; i < redTeamSize; i++) {
+			cl = &level.clients[redTeam[i]];
+			invisibleChars = 0;
+			for (j = 0; j < strlen(cl->pers.netname); j++) {
+				if (cl->pers.netname[j] == '^' && (j + 1) < strlen(cl->pers.netname) &&
+					cl->pers.netname[j + 1] >= '0' && cl->pers.netname[j + 1] <= '9') { //^[a-zA-Z] tez znika?
+					invisibleChars += 2;
+				}
+			}
+
+			realLength = strlen(cl->pers.netname) - invisibleChars;
+			if (realLength < MAX_NAME_LENGTH) {
+				memset(spaces, ' ', MAX_NAME_LENGTH - realLength);
+				spaces[MAX_NAME_LENGTH - realLength] = '\0';
+				trap_SendServerCommand(-1, va("print \"%s%s \"", cl->pers.netname, spaces));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%s \"", cl->pers.netname));
+			}
+
+			if(cl->ps.persistant[PERS_SCORE] == bestScore) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_SCORE]));
+			}
+			else if(cl->ps.persistant[PERS_SCORE] == worstScore) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_SCORE]));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->ps.persistant[PERS_SCORE]));
+			}
+
+			if(cl->ps.persistant[PERS_KILLED] == bestDeaths) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_KILLED]));
+			}
+			else if(cl->ps.persistant[PERS_KILLED] == worstDeaths) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_KILLED]));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->ps.persistant[PERS_KILLED]));
+			}
+
+			if(cl->pers.totalDamageDealtToEnemies == bestDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies));
+			}
+			else if(cl->pers.totalDamageDealtToEnemies == worstDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToEnemies));
+			}
+
+			if(cl->pers.totalDamageTakenFromEnemies == bestTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromEnemies));
+			}
+			else if(cl->pers.totalDamageTakenFromEnemies == worstTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageTakenFromEnemies));
+			}
+
+			if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies == bestNet) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+			else if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies == worstNet) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+
+			if(cl->pers.totalDamageDealtToAllies == bestTeamDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToAllies));
+			}
+			else if(cl->pers.totalDamageDealtToAllies == worstTeamTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToAllies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToAllies));
+			}
+
+			if(cl->pers.totalDamageTakenFromAllies == worstTeamDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromAllies));
+			}
+			else if(cl->pers.totalDamageTakenFromAllies == worstTeamTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromAllies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageTakenFromAllies));
+			}
+
+			trap_SendServerCommand(-1, va("print \"\n\""));
+
+		}
+
+		trap_SendServerCommand(-1, va("print \"" S_COLOR_BLUE"%s ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
+									  "--------------------------------"));
+		for (i = 0; i < blueTeamSize; i++) {
+			cl = &level.clients[blueTeam[i]];
+			invisibleChars = 0;
+			for (j = 0; j < strlen(cl->pers.netname); j++) {
+				if (cl->pers.netname[j] == '^' && (j + 1) < strlen(cl->pers.netname) &&
+					cl->pers.netname[j + 1] >= '0' && cl->pers.netname[j + 1] <= '9') { //^[a-zA-Z] tez znika?
+					invisibleChars += 2;
+				}
+			}
+
+			realLength = strlen(cl->pers.netname) - invisibleChars;
+			if (realLength < MAX_NAME_LENGTH) {
+				memset(spaces, ' ', MAX_NAME_LENGTH - realLength);
+				spaces[MAX_NAME_LENGTH - realLength] = '\0';
+				trap_SendServerCommand(-1, va("print \"%s%s \"", cl->pers.netname, spaces));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%s \"", cl->pers.netname));
+			}
+
+			if(cl->ps.persistant[PERS_SCORE] == bestScore) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_SCORE]));
+			}
+			else if(cl->ps.persistant[PERS_SCORE] == worstScore) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_SCORE]));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->ps.persistant[PERS_SCORE]));
+			}
+
+			if(cl->ps.persistant[PERS_KILLED] == bestDeaths) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_KILLED]));
+			}
+			else if(cl->ps.persistant[PERS_KILLED] == worstDeaths) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->ps.persistant[PERS_KILLED]));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->ps.persistant[PERS_KILLED]));
+			}
+
+			if(cl->pers.totalDamageDealtToEnemies == bestDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies));
+			}
+			else if(cl->pers.totalDamageDealtToEnemies == worstDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToEnemies));
+			}
+
+			if(cl->pers.totalDamageTakenFromEnemies == bestTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromEnemies));
+			}
+			else if(cl->pers.totalDamageTakenFromEnemies == worstTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageTakenFromEnemies));
+			}
+
+			if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies == bestNet) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+			else if(cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies == worstNet) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToEnemies - cl->pers.totalDamageTakenFromEnemies));
+			}
+
+			if(cl->pers.totalDamageDealtToAllies == bestTeamDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToAllies));
+			}
+			else if(cl->pers.totalDamageDealtToAllies == worstTeamTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageDealtToAllies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageDealtToAllies));
+			}
+
+			if(cl->pers.totalDamageTakenFromAllies == worstTeamDamage) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_GREEN "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromAllies));
+			}
+			else if(cl->pers.totalDamageTakenFromAllies == worstTeamTaken) {
+				trap_SendServerCommand(-1, va("print \"" S_COLOR_YELLOW "%-5i " S_COLOR_WHITE "\"", cl->pers.totalDamageTakenFromAllies));
+			}
+			else {
+				trap_SendServerCommand(-1, va("print \"%-5i \"", cl->pers.totalDamageTakenFromAllies));
+			}
+
+			trap_SendServerCommand(-1, va("print \"\n\""));
+
+		}
+		trap_SendServerCommand(-1, va("print \"\n\""));
+	}
+}
+
 /*
 =================
 CheckExitRules
@@ -1772,6 +2066,7 @@ void CheckExitRules( void ) {
 //			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 			LogExit( "Timelimit hit." );
+			showDamageStatistics();
 			return;
 		}
 	}
@@ -1784,12 +2079,14 @@ void CheckExitRules( void ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
+			showDamageStatistics();
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"Blue %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
+			showDamageStatistics();
 			return;
 		}
 

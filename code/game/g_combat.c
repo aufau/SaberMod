@@ -3294,6 +3294,27 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			targ->health, take, asave );
 	}
 
+	if(targ->client && attacker->client && take) {
+		int damageTaken = 0;
+		if(shieldAbsorbed) {
+			damageTaken += asave;
+		}
+		if((targ->health - take) < 0) {
+			damageTaken += targ->health;
+		}
+		else {
+			damageTaken += take;
+		}
+		if( OnSameTeam( targ, attacker ) ) {
+			targ->client->pers.totalDamageTakenFromAllies += damageTaken;
+			attacker->client->pers.totalDamageDealtToAllies += damageTaken;
+		}
+		else {
+			targ->client->pers.totalDamageTakenFromEnemies += damageTaken;
+			attacker->client->pers.totalDamageDealtToEnemies += damageTaken;
+		}
+	}
+
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame
