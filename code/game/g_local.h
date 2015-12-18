@@ -19,7 +19,7 @@
 
 #define	INTERMISSION_DELAY_TIME	1000
 #define	SP_INTERMISSION_DELAY_TIME	5000
-#define	ROUND_INTERMISSION_DELAY_TIME	3000
+#define	ROUND_INTERMISSION_DELAY_TIME	4000
 
 // gentity->flags
 #define	FL_GODMODE				0x00000010
@@ -521,6 +521,9 @@ typedef struct {
 	int			exitTime;
 	vec3_t		intermission_origin;	// also used for spectator spawns
 	vec3_t		intermission_angle;
+
+	int			roundQueued;			// new round was qualified, but we're
+										// doing a g_roundWarmup sec countdown
 
 	qboolean	locationLinked;			// target_locations get linked
 	gentity_t	*locationHead;			// head of the location list

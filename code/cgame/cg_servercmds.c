@@ -180,13 +180,16 @@ CG_ParseWarmup
 */
 static void CG_ParseWarmup( void ) {
 	const char	*info;
+	const char	*message;
 	int			warmup;
 
 	info = CG_ConfigString( CS_WARMUP );
 
 	warmup = atoi( info );
-	cg.warmupCount = -1;
+	message = strchr( info, ' ' );
 
+	cg.warmupMessage = message ? message + 1 : NULL;
+	cg.warmupCount = -1;
 	cg.warmup = warmup;
 }
 

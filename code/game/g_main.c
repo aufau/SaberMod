@@ -124,6 +124,7 @@ vmCvar_t	g_austrian;
 vmCvar_t	g_restrictChat;
 vmCvar_t	g_spawnShield;
 vmCvar_t	g_roundlimit;
+vmCvar_t	g_roundWarmup;
 
 int gDuelist1 = -1;
 int gDuelist2 = -1;
@@ -272,6 +273,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 };
 
 // bk001129 - made static to avoid aliasing
@@ -1277,6 +1279,13 @@ void BeginIntermission( void ) {
 
 }
 
+void BeginRound( void )
+{
+	level.startTime = level.time;
+	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+	trap_SetConfigstring(CS_WARMUP, "");
+}
+
 void NextRound( void )
 {
 	int			i;
@@ -1285,6 +1294,7 @@ void NextRound( void )
 	gclient_t	*client;
 	gentity_t	*ent;
 	gentity_t	*tent;
+	char		warmup[2];
 
 	for ( i = 0 ; i < level.numConnectedClients ; i++ ) {
 		clientNum = level.sortedClients[i];
@@ -1302,8 +1312,13 @@ void NextRound( void )
 	}
 
 	CalculateRanks();
-	level.startTime = level.time;
-	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
+	if ( warmup[0] == '\0' ) {
+		int	round;
+		round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
+		trap_SetConfigstring(CS_WARMUP, va("%i Round %i", level.roundQueued, round));
+	}
 }
 
 qboolean DuelLimitHit(void)
@@ -1809,6 +1824,12 @@ void CheckExitRules( void ) {
 			} else {
 				BeginIntermission();
 			}
+		}
+		return;
+	} else if ( level.roundQueued ) {
+		if ( level.time - level.roundQueued >= g_roundWarmup.integer ) {
+			level.roundQueued = 0;
+			BeginRound();
 		}
 		return;
 	}
