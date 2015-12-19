@@ -180,7 +180,7 @@ CG_ParseWarmup
 */
 static void CG_ParseWarmup( void ) {
 	const char	*info;
-	const char	*message;
+	char		*message;
 	int			warmup;
 
 	info = CG_ConfigString( CS_WARMUP );

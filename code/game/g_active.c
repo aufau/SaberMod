@@ -1124,15 +1124,13 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		client->ps.pm_type = PM_DEAD;
+	} else if ( GT_Round(g_gametype.integer) &&
+			( level.intermissionQueued || level.roundQueued ) ) {
+		client->ps.pm_type = PM_HARMLESS;
+	} else if (client->ps.forceGripChangeMovetype) {
+		client->ps.pm_type = client->ps.forceGripChangeMovetype;
 	} else {
-		if (client->ps.forceGripChangeMovetype)
-		{
-			client->ps.pm_type = client->ps.forceGripChangeMovetype;
-		}
-		else
-		{
-			client->ps.pm_type = PM_NORMAL;
-		}
+		client->ps.pm_type = PM_NORMAL;
 	}
 
 	client->ps.gravity = g_gravity.value;
@@ -1141,6 +1139,11 @@ void ClientThink_real( gentity_t *ent ) {
 	client->ps.speed = g_speed.value;
 	client->ps.basespeed = g_speed.value;
 
+	if (client->ps.pm_type == PM_HARMLESS) {
+		if (client->ps.weapon == WP_SABER && !client->ps.saberHolstered) {
+			Cmd_ToggleSaber_f(ent);
+		}
+	}
 	if (ent->client->ps.duelInProgress)
 	{
 		gentity_t *duelAgainst = &g_entities[ent->client->ps.duelIndex];
