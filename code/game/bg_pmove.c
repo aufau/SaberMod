@@ -4479,7 +4479,11 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_RUN;
 	}
 
-	if ( pm->ps->pm_type >= PM_DEAD ) {
+	switch ( pm->ps->pm_type ) {
+	case PM_DEAD:
+	case PM_FREEZE:
+	case PM_INTERMISSION:
+	case PM_SPINTERMISSION:
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
 		pm->cmd.upmove = 0;

@@ -903,7 +903,11 @@ Base animation for overall body
 ===================
 */
 static void PM_StartLegsAnim( int anim ) {
-	if ( pm->ps->pm_type >= PM_DEAD ) {
+	switch ( pm->ps->pm_type ) {
+	case PM_DEAD:
+	case PM_FREEZE:
+	case PM_INTERMISSION:
+	case PM_SPINTERMISSION:
 		return;
 	}
 	if ( pm->ps->legsTimer > 0 ) {
@@ -967,7 +971,11 @@ Override animations for upper body
 ===================
 */
 void PM_StartTorsoAnim( int anim ) {
-	if ( pm->ps->pm_type >= PM_DEAD ) {
+	switch ( pm->ps->pm_type ) {
+	case PM_DEAD:
+	case PM_FREEZE:
+	case PM_INTERMISSION:
+	case PM_SPINTERMISSION:
 		return;
 	}
 

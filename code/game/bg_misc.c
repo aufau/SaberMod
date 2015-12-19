@@ -2029,7 +2029,13 @@ void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
 	int effectNum;
 
 	// spectators don't use jump pads
-	if ( ps->pm_type != PM_NORMAL && ps->pm_type != PM_FLOAT ) {
+	switch ( ps->pm_type ) {
+	case PM_NOCLIP:
+	case PM_SPECTATOR:
+	case PM_DEAD:
+	case PM_FREEZE:
+	case PM_INTERMISSION:
+	case PM_SPINTERMISSION:
 		return;
 	}
 
