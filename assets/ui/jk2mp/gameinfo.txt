@@ -1,0 +1,43 @@
+// Game type info
+//
+// description, g_gametype enum
+//
+// 0 - GT_FFA, // free for all
+// 1 - GT_HOLOCRON, // ffa with holocrons
+// 2 - GT_JEDIMASTER, // jedi master
+// 3 - GT_TOURNAMENT, // one on one tournament
+// 4 - GT_SINGLE_PLAYER, // single player ffa
+// 5 - GT_TEAM, // team ffa
+// 6 - GT_SAGA, // saga
+// 7 - GT_CTF, // capture the flag
+// 8 - GT_CTY, // capture the ysalimari
+
+gametypes
+{
+	{ "Free For All" 0 }
+	{ "Holocron FFA" 1 }
+	{ "Jedi Master" 2 }
+	{ "Duel" 3 }
+	{ "Team FFA" 5 }
+	{ "Capture the Flag" 7 }
+	{ "Capture the Ysalimari" 8 }
+}
+
+// english name, map name, vs count, par times per gametype valid gametyes for ui
+//
+maps
+{
+	{ "Bespin" "ffa_bespin" "3" "Kyle" 2 "0" 4 "240" 5 "180" 6 "180" 7 "180" }
+}
+
+joingametypes
+{
+	{ "All" -1 }
+	{ "Free For All" 0 }
+	{ "Holocron FFA" 1 }
+	{ "Jedi Master" 2 }
+	{ "Duel" 3 }
+	{ "Team FFA" 5 }
+	{ "Capture the Flag" 7 }
+	{ "Capture the Ysalimari" 8 }
+}
