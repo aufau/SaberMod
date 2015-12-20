@@ -1094,7 +1094,10 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Round(g_gametype.integer) ) {
+		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED ) ) );
+		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE ) ) );
+	} else if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -1291,6 +1294,7 @@ void NextRound( void )
 	int			i;
 	int			team;
 	int			clientNum;
+	int			round;
 	gclient_t	*client;
 	gentity_t	*ent;
 	gentity_t	*tent;
@@ -1313,10 +1317,10 @@ void NextRound( void )
 
 	CalculateRanks();
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+	round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
+	trap_SetConfigstring(CS_ROUND, va("%i", round));
 	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
 	if ( warmup[0] == '\0' ) {
-		int	round;
-		round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
 		trap_SetConfigstring(CS_WARMUP, va("%i Round %i", level.roundQueued, round));
 	}
 }

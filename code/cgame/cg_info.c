@@ -395,6 +395,14 @@ void CG_DrawInformation( void ) {
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
 		break;
+	case GT_REDROVER:
+		UI_DrawProportionalString( 320, y, "Rules:  Join with your teammates to defeat the players!",
+								   UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		y += iPropHeight;
+		UI_DrawProportionalString( 320, y, "Slain reinforce your team until one team gets eliminated.",
+								   UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+
+		y += iPropHeight;
 	default:
 		break;
 	}

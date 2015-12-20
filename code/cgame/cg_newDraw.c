@@ -369,7 +369,9 @@ const char *CG_GameTypeString(void) {
 		return "Capture the Flag";
 	} else if ( cgs.gametype == GT_CTY ) {
 		return "Capture the Ysalamiri";
-	}
+    } else if ( cgs.gametype == GT_REDROVER ) {
+        return "Red Rover";
+    }
 	return "";
 }
 

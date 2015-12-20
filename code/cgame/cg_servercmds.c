@@ -207,6 +207,7 @@ void CG_SetConfigValues( void )
 
 	cgs.scores1 = atoi( CG_ConfigString( CS_SCORES1 ) );
 	cgs.scores2 = atoi( CG_ConfigString( CS_SCORES2 ) );
+	cgs.round = atoi( CG_ConfigString( CS_ROUND ) );
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	if( GT_Flag(cgs.gametype) ) {
 		s = CG_ConfigString( CS_FLAGSTATUS );
@@ -321,6 +322,8 @@ static void CG_ConfigStringModified( void ) {
 		cgs.scores1 = atoi( str );
 	} else if ( num == CS_SCORES2 ) {
 		cgs.scores2 = atoi( str );
+	} else if ( num == CS_ROUND ) {
+		cgs.round = atoi( str );
 	} else if ( num == CS_CLIENT_JEDIMASTER ) {
 		cgs.jediMaster = atoi ( str );
 	} else if ( num == CS_CLIENT_DUELWINNER ) {

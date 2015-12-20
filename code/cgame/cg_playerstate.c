@@ -400,26 +400,55 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 #else
 	reward = qfalse;
 #endif
+
 	// lead changes
-	if (!reward && cgAnnouncerTime < cg.time) {
-		//
-		if ( !cg.warmup ) {
-			// never play lead changes during warmup
-			if ( ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK] ) {
-				if ( !GT_Team(cgs.gametype)) {
-					if (  ps->persistant[PERS_RANK] == 0 ) {
-						CG_AddBufferedSound(cgs.media.takenLeadSound);
+	if ( !reward && !cg.warmup && cgAnnouncerTime < cg.time ) {
+		// never play lead changes during warmup
+		if ( ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK]
+			 && (!GT_Team(cgs.gametype) || cgs.gametype == GT_REDROVER) ) {
+			if (  ps->persistant[PERS_RANK] == 0 ) {
+				CG_AddBufferedSound(cgs.media.takenLeadSound);
+				cgAnnouncerTime = cg.time + 3000;
+			} else if ( ps->persistant[PERS_RANK] == RANK_TIED_FLAG ) {
+				//CG_AddBufferedSound(cgs.media.tiedLeadSound);
+			} else if ( ( ops->persistant[PERS_RANK] & ~RANK_TIED_FLAG ) == 0 ) {
+				//rww - only bother saying this if you have more than 1 kill already.
+				//joining the server and hearing "the force is not with you" is silly.
+				if (ps->persistant[PERS_SCORE] > 0)
+				{
+					CG_AddBufferedSound(cgs.media.lostLeadSound);
+					cgAnnouncerTime = cg.time + 3000;
+				}
+			}
+		}
+
+		if ( cgs.gametype == GT_REDROVER && cgAnnouncerTime < cg.time ) {
+			highScore = min(cgs.scores1, cgs.scores2);
+			if ( highScore == 1 && cg.fraglimitWarnings != 1 ) {
+				cg.fraglimitWarnings = 1;
+				CG_AddBufferedSound(cgs.media.oneFragSound);
+				cgAnnouncerTime = cg.time + 3000;
+			}
+			else if ( highScore > 1 ) {
+				if ( cgs.scores1 > cgs.scores2 ) {
+					if ( cg.fraglimitWarnings != 2 ) {
+						cg.fraglimitWarnings = 2;
+						CG_AddBufferedSound(cgs.media.redLeadsSound);
 						cgAnnouncerTime = cg.time + 3000;
-					} else if ( ps->persistant[PERS_RANK] == RANK_TIED_FLAG ) {
-						//CG_AddBufferedSound(cgs.media.tiedLeadSound);
-					} else if ( ( ops->persistant[PERS_RANK] & ~RANK_TIED_FLAG ) == 0 ) {
-						//rww - only bother saying this if you have more than 1 kill already.
-						//joining the server and hearing "the force is not with you" is silly.
-						if (ps->persistant[PERS_SCORE] > 0)
-						{
-							CG_AddBufferedSound(cgs.media.lostLeadSound);
-							cgAnnouncerTime = cg.time + 3000;
-						}
+					}
+				}
+				else if ( cgs.scores1 < cgs.scores2 ) {
+					if ( cg.fraglimitWarnings != 4 ) {
+						cg.fraglimitWarnings = 4;
+						CG_AddBufferedSound(cgs.media.blueLeadsSound);
+						cgAnnouncerTime = cg.time + 3000;
+					}
+				}
+				else if ( cgs.scores1 == cgs.scores2 ) {
+					if ( cg.fraglimitWarnings != 8 ) {
+						cg.fraglimitWarnings = 8;
+						CG_AddBufferedSound(cgs.media.teamsTiedSound);
+						cgAnnouncerTime = cg.time + 3000;
 					}
 				}
 			}
@@ -448,7 +477,8 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	}
 
 	// fraglimit warnings
-	if ( cgs.fraglimit > 0 && !GT_Flag(cgs.gametype) && cgs.gametype != GT_TOURNAMENT && cgAnnouncerTime < cg.time) {
+	if ( cgs.fraglimit > 0 && cgAnnouncerTime < cg.time && !GT_Flag(cgs.gametype)
+		 && cgs.gametype != GT_TOURNAMENT && cgs.gametype != GT_REDROVER ) {
 		highScore = cgs.scores1;
 		if ( !( cg.fraglimitWarnings & 4 ) && highScore == (cgs.fraglimit - 1) ) {
 			cg.fraglimitWarnings |= 1 | 2 | 4;
