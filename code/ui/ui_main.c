@@ -6502,6 +6502,7 @@ void _UI_Init( qboolean inGameLoad ) {
 			break;
 	}
 
+	trap_SP_Register("sabermod_menus");
 
 	Init_Display(&uiInfo.uiDC);
 

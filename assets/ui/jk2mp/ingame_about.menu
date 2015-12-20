@@ -106,6 +106,7 @@
 				@MENUS1_SAGA            6
 				@MENUS1_CAPTURE_THE_FLAG 7
 				@MENUS1_CAPTURE_THE_YSALIMARI 8
+				@SABERMENUS_RED_ROVER   9
 			}
 
 			textalignx              110
@@ -168,7 +169,8 @@
 			{
 				"6" ;
 				"7" ;
-				"8"
+				"8" ;
+				"9" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_fraglimit"
@@ -198,6 +200,30 @@
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_capturelimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 140 300 20
+			type                    4
+			style                   0
+			text                    @SABERMENUS_ROUND_LIMIT
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"9" ;
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_roundlimit"
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              160
 			textaligny              2
