@@ -13,11 +13,15 @@ tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
 CFLAGS		= -g -fvisibility=hidden
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
-DEFS		= -DQAGAME
+DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME
+VERSION		= $(shell git describe --always --tags --dirty)
+
+version : FORCE
+	@touch code/game/bg_version.h
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
-LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) -S -Wf-target=bytecode -Wf-g	\
--DQ3_VM
+LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) $(DEFS)
+LCC_CFLAGS += -S -Wf-target=bytecode -Wf-g -DQ3_VM
 
 ifeq ($(findstring -m32, $(ALL_CFLAGS)), -m32)
 	ARCH := i386
@@ -27,7 +31,7 @@ endif
 
 # Sources
 
-srcs_game = g_main ai_main ai_util ai_wpnav bg_lib bg_misc bg_pmove	\
+srcs_game = g_main ai_main ai_util ai_wpnav bg_lib bg_misc bg_pmove		\
 bg_panimate bg_slidemove bg_weapons bg_saber g_active g_arenas g_bot	\
 g_client g_cmds g_combat g_items g_log g_mem g_misc g_missile g_mover	\
 g_object g_saga g_session g_spawn g_svcmds g_target g_team g_trigger	\
@@ -59,15 +63,16 @@ obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 
 # Targets
 
-.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools
+.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
+
 all	: vm shared
 vm	: game cgame ui
 shared	: gameshared cgameshared uishared
-game	: base/vm/jk2mpgame.qvm
-cgame	: base/vm/cgame.qvm
+game	: base/vm/jk2mpgame.qvm version
+cgame	: base/vm/cgame.qvm version
 ui	: base/vm/ui.qvm
-gameshared	: base/jk2mpgame_$(ARCH).so
-cgameshared	: base/cgame_$(ARCH).so
+gameshared	: base/jk2mpgame_$(ARCH).so version
+cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
 help	:
@@ -85,10 +90,11 @@ help	:
 	@echo '  toolsclean	- Remove q3asm and q3lcc'
 	@echo '  depclean	- Remove generated dependency files'
 	@echo '  distclean	- Remove all generated files'
+FORCE :
 
 # QVM Targets
 
-run_as = $(AS) -vq3 -o $@
+run_as = $(AS) $(ASFLAGS) -vq3 -o $@
 
 base/vm/jk2mpgame.qvm : $(asm_game) $(AS) | base/vm/
 	$(run_as) $(asm_game)

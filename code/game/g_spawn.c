@@ -2,6 +2,7 @@
 //
 
 #include "g_local.h"
+#include "bg_version.h"
 
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;

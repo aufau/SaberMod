@@ -11,7 +11,8 @@
 #include "bg_weapons.h"
 #include "anims.h"
 
-#define	GAME_VERSION		"basejk-1"
+// the "gameversion" client command will print this plus compile date
+#define	GAMEVERSION	"SaberMod"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
