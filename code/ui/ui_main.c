@@ -4701,13 +4701,14 @@ static int UI_MapCountByGameType(qboolean singlePlayer) {
 	int i, c, game;
 	c = 0;
 	game = singlePlayer ? uiInfo.gameTypes[ui_gameType.integer].gtEnum : uiInfo.gameTypes[ui_netGameType.integer].gtEnum;
-	if (game == GT_SINGLE_PLAYER) {
+	switch (game) {
+	case GT_SINGLE_PLAYER:
 		game++;
-	}
-	if (game == GT_TEAM) {
-		game = GT_FFA;
-	}
-	if (game == GT_HOLOCRON || game == GT_JEDIMASTER) {
+		break;
+	case GT_HOLOCRON:
+	case GT_JEDIMASTER:
+	case GT_TEAM:
+	case GT_REDROVER:
 		game = GT_FFA;
 	}
 
