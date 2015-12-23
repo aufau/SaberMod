@@ -75,11 +75,15 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
+package : cgame ui | base/
+	set -e; pushd base; $(RM) SaberMod-$(VERSION).pk3; zip -r	\
+	SaberMod-$(VERSION).pk3 vm/cgame.qvm vm/ui.qvm; popd
 help	:
 	@echo 'Targets:'
 	@echo '  all (default)	- Build all targets'
 	@echo '  vm		- Build QVM targets in base/vm/'
 	@echo '  shared		- Build shared libraries in base/'
+	@echo '  package        - Build clientside .pk3 package'
 	@echo '  game/cgame/ui	- Build game/cgame/ui QVM target'
 	@echo '  gameshared/..	- Build game/.. shared libraries'
 	@echo '  tools		- Build q3asm and q3lcc in bin/'
@@ -87,6 +91,7 @@ help	:
 	@echo '  clean		- Same as vmclean sharedclean'
 	@echo '  vmclean	- Remove QVM and intermediate files'
 	@echo '  sharedclean	- Remove shared libraries and intermediate files'
+	@echo '  packageclean   - Remove .pk3 packages'
 	@echo '  toolsclean	- Remove q3asm and q3lcc'
 	@echo '  depclean	- Remove generated dependency files'
 	@echo '  distclean	- Remove all generated files'
@@ -244,7 +249,7 @@ $(eval $(call obj_tools_template,lburg,$(q3lburgsrcdir)))
 
 .PHONY : clean vmclean asmclean objclean sharedclean toolsclean depclean
 
-clean : vmclean sharedclean
+clean : vmclean sharedclean packageclean
 
 vmclean : asmclean
 	$(RM) base/vm/*.qvm base/vm/*.map
@@ -258,6 +263,8 @@ objclean :
 	$(RM) $(obj_game)
 	$(RM) $(obj_cgame)
 	$(RM) $(obj_ui)
+packageclean :
+	$(RM) base/SaberMod-*.pk3
 toolsclean :
 	$(RM) $(tools)
 	$(RM) $(obj_asm) $(obj_lcc) $(obj_rcc) $(obj_cpp) $(obj_lburg)
