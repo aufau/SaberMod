@@ -1765,6 +1765,11 @@ void CheckExitRules( void ) {
  	int			i;
 	int			redCount, blueCount;
 	gclient_t	*cl;
+
+	if (level.warmupTime) {
+		return;
+	}
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime ) {
@@ -1851,7 +1856,7 @@ void CheckExitRules( void ) {
 		blueCount = TeamCount( -1, TEAM_BLUE );
 	}
 
-	if ( g_timelimit.integer && !level.warmupTime ) {
+	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 

@@ -401,8 +401,12 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	reward = qfalse;
 #endif
 
+	if ( cg.warmup ) {
+		return;
+	}
+
 	// lead changes
-	if ( !reward && !cg.warmup && cgAnnouncerTime < cg.time ) {
+	if ( !reward && cgAnnouncerTime < cg.time ) {
 		// never play lead changes during warmup
 		if ( ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK]
 			 && (!GT_Team(cgs.gametype) || cgs.gametype == GT_REDROVER) ) {
