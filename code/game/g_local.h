@@ -35,6 +35,21 @@
 
 #define ANIMENT_SPAWNER //allow animent spawners
 
+// Never remove/rearrange items for backwards compatibility
+// DOCME in g_allowVote description
+typedef enum {
+	CV_INVALID,
+	CV_MAP_RESTART,
+	CV_NEXTMAP,
+	CV_MAP,
+	CV_GAMETYPE,
+	CV_KICK,
+	CV_CLIENTKICK,
+	CV_DOWARMUP,
+	CV_TIMELIMIT,
+	CV_FRAGLIMIT
+} voteCommand_t;
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
