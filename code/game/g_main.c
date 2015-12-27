@@ -743,7 +743,7 @@ void AddTournamentPlayer( void ) {
 	level.warmupTime = -1;
 
 	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
+	SetTeam( &g_entities[ nextInLine - level.clients ], TEAM_FREE );
 }
 
 /*
@@ -767,7 +767,7 @@ void RemoveTournamentLoser( void ) {
 	}
 
 	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
+	SetTeam( &g_entities[ clientNum ], TEAM_SPECTATOR );
 }
 
 void RemoveDuelDrawLoser(void)
@@ -803,11 +803,11 @@ void RemoveDuelDrawLoser(void)
 
 	if (clFailure != 2)
 	{
-		SetTeam( &g_entities[ level.sortedClients[clFailure] ], "s" );
+		SetTeam( &g_entities[ level.sortedClients[clFailure] ], TEAM_SPECTATOR );
 	}
 	else
 	{ //we could be more elegant about this, but oh well.
-		SetTeam( &g_entities[ level.sortedClients[1] ], "s" );
+		SetTeam( &g_entities[ level.sortedClients[1] ], TEAM_SPECTATOR );
 	}
 }
 
@@ -830,7 +830,7 @@ void RemoveTournamentWinner( void ) {
 	}
 
 	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
+	SetTeam( &g_entities[ clientNum ], TEAM_SPECTATOR );
 }
 
 /*
