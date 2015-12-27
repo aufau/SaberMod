@@ -1777,9 +1777,7 @@ void ClientSpawn(gentity_t *ent) {
 				}
 				if ( WP_HasForcePowers( &client->ps ) && client->sess.sessionTeam != forceTeam )
 				{//using force but not on right team, switch him over
-					const char *teamName = TeamName( forceTeam );
-					//client->sess.sessionTeam = forceTeam;
-					SetTeam( ent, (char *)teamName );
+					SetTeam( ent, forceTeam );
 					return;
 				}
 			}
