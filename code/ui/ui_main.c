@@ -1024,8 +1024,10 @@ static void UI_DrawGameType(rectDef_t *rect, float scale, vec4_t color, int text
 }
 
 static void UI_DrawNetGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
-	if (ui_netGameType.integer < 0 || ui_netGameType.integer > uiInfo.numGameTypes) {
-		trap_Cvar_Set("ui_netGameType", "0");
+	if (ui_netGameType.integer < 0 || ui_netGameType.integer >= uiInfo.numGameTypes) {
+		ui_netGameType.integer = 0;
+		trap_Cvar_Set("ui_netGameType_fixed", "0");
+		ui_actualNetGameType.integer = 0;
 		trap_Cvar_Set("ui_actualNetGameType", "0");
 	}
   Text_Paint(rect->x, rect->y, scale, color, uiInfo.gameTypes[ui_netGameType.integer].gameType , 0, 0, textStyle, iMenuFont);
@@ -1060,8 +1062,9 @@ static void UI_DrawAutoSwitch(rectDef_t *rect, float scale, vec4_t color, int te
 }
 
 static void UI_DrawJoinGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
-	if (ui_joinGameType.integer < 0 || ui_joinGameType.integer > uiInfo.numJoinGameTypes) {
-		trap_Cvar_Set("ui_joinGameType", "0");
+	if (ui_joinGameType.integer < 0 || ui_joinGameType.integer >= uiInfo.numJoinGameTypes) {
+		ui_joinGameType.integer = 0;
+		trap_Cvar_Set("ui_joinGameType_fixed", "0");
 	}
   Text_Paint(rect->x, rect->y, scale, color, uiInfo.joinGameTypes[ui_joinGameType.integer].gameType , 0, 0, textStyle, iMenuFont);
 }
@@ -1497,7 +1500,7 @@ static void UI_DrawEffects(rectDef_t *rect, float scale, vec4_t color)
 
 static void UI_DrawMapPreview(rectDef_t *rect, float scale, vec4_t color, qboolean net) {
 	int map = (net) ? ui_currentNetMap.integer : ui_currentMap.integer;
-	if (map < 0 || map > uiInfo.mapCount) {
+	if (map < 0 || map >= uiInfo.mapCount) {
 		if (net) {
 			ui_currentNetMap.integer = 0;
 			trap_Cvar_Set("ui_currentNetMap", "0");
@@ -1522,7 +1525,7 @@ static void UI_DrawMapPreview(rectDef_t *rect, float scale, vec4_t color, qboole
 
 static void UI_DrawMapTimeToBeat(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
 	int minutes, seconds, time;
-	if (ui_currentMap.integer < 0 || ui_currentMap.integer > uiInfo.mapCount) {
+	if (ui_currentMap.integer < 0 || ui_currentMap.integer >= uiInfo.mapCount) {
 		ui_currentMap.integer = 0;
 		trap_Cvar_Set("ui_currentMap", "0");
 	}
@@ -1540,7 +1543,7 @@ static void UI_DrawMapTimeToBeat(rectDef_t *rect, float scale, vec4_t color, int
 static void UI_DrawMapCinematic(rectDef_t *rect, float scale, vec4_t color, qboolean net) {
 
 	int map = (net) ? ui_currentNetMap.integer : ui_currentMap.integer;
-	if (map < 0 || map > uiInfo.mapCount) {
+	if (map < 0 || map >= uiInfo.mapCount) {
 		if (net) {
 			ui_currentNetMap.integer = 0;
 			trap_Cvar_Set("ui_currentNetMap", "0");
@@ -1805,7 +1808,7 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 */
 static void UI_DrawNetSource(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont)
 {
-	if (ui_netSource.integer < 0 || ui_netSource.integer > uiInfo.numGameTypes)
+	if (ui_netSource.integer < 0 || ui_netSource.integer >= numNetSources)
 	{
 		ui_netSource.integer = 0;
 	}
@@ -1825,7 +1828,7 @@ static void UI_DrawNetMapPreview(rectDef_t *rect, float scale, vec4_t color) {
 }
 
 static void UI_DrawNetMapCinematic(rectDef_t *rect, float scale, vec4_t color) {
-	if (ui_currentNetMap.integer < 0 || ui_currentNetMap.integer > uiInfo.mapCount) {
+	if (ui_currentNetMap.integer < 0 || ui_currentNetMap.integer >= uiInfo.mapCount) {
 		ui_currentNetMap.integer = 0;
 		trap_Cvar_Set("ui_currentNetMap", "0");
 	}
@@ -2262,7 +2265,7 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 			s = va("%i. %s", iUse, text);
       break;
 		case UI_NETSOURCE:
-			if (ui_netSource.integer < 0 || ui_netSource.integer > uiInfo.numJoinGameTypes) {
+			if (ui_netSource.integer < 0 || ui_netSource.integer >= uiInfo.numJoinGameTypes) {
 				ui_netSource.integer = 0;
 			}
 			trap_SP_GetStringTextString("MENUS3_SOURCE", holdSPString, sizeof(holdSPString));
@@ -3103,7 +3106,7 @@ static qboolean UI_NetGameType_HandleKey(int flags, float *special, int key) {
       ui_netGameType.integer = 0;
     }
 
-  	trap_Cvar_Set( "ui_netGameType", va("%d", ui_netGameType.integer));
+	trap_Cvar_Set( "ui_netGameType_fixed", va("%d", ui_netGameType.integer));
   	trap_Cvar_Set( "ui_actualnetGameType", va("%d", uiInfo.gameTypes[ui_netGameType.integer].gtEnum));
   	trap_Cvar_Set( "ui_currentNetMap", "0");
 		UI_MapCountByGameType(qfalse);
@@ -3153,7 +3156,7 @@ static qboolean UI_JoinGameType_HandleKey(int flags, float *special, int key) {
 			ui_joinGameType.integer = 0;
 		}
 
-		trap_Cvar_Set( "ui_joinGameType", va("%d", ui_joinGameType.integer));
+		trap_Cvar_Set( "ui_joinGameType_fixed", va("%d", ui_joinGameType.integer));
 		UI_BuildServerDisplayList(qtrue);
 		return qtrue;
 	}
@@ -3281,7 +3284,7 @@ static qboolean UI_NetSource_HandleKey(int flags, float *special, int key) {
 		if (ui_netSource.integer != AS_GLOBAL) {
 			UI_StartServerRefresh(qtrue);
 		}
-  	trap_Cvar_Set( "ui_netSource", va("%d", ui_netSource.integer));
+	trap_Cvar_Set( "ui_netSource_fixed", va("%d", ui_netSource.integer));
     return qtrue;
   }
   return qfalse;
@@ -4157,7 +4160,7 @@ static void UI_RunMenuScript(char **args)
 			trap_Cvar_Set("cg_cameraOrbit", "0");
 			trap_Cvar_Set("ui_singlePlayerActive", "0");
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
-			trap_Cvar_SetValue( "g_gametype", Com_Clamp( 0, 8, uiInfo.gameTypes[ui_netGameType.integer].gtEnum ) );
+			trap_Cvar_SetValue( "g_gametype", Com_Clamp( 0, GT_MAX_GAME_TYPE, uiInfo.gameTypes[ui_netGameType.integer].gtEnum ) );
 			trap_Cvar_Set("g_redTeam", UI_Cvar_VariableString("ui_teamName"));
 			trap_Cvar_Set("g_blueTeam", UI_Cvar_VariableString("ui_opponentName"));
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n", uiInfo.mapList[ui_currentNetMap.integer].mapLoadName ) );
@@ -7188,8 +7191,8 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_blueteam, "ui_blueteam", "Rebellion", CVAR_ARCHIVE },
 	{ &ui_dedicated, "ui_dedicated", "0", CVAR_ARCHIVE },
 	{ &ui_gameType, "ui_gametype", "0", CVAR_ARCHIVE },
-	{ &ui_joinGameType, "ui_joinGametype", "0", CVAR_ARCHIVE },
-	{ &ui_netGameType, "ui_netGametype", "0", CVAR_ARCHIVE },
+	{ &ui_joinGameType, "ui_joinGametype_fixed", "0", CVAR_ARCHIVE },
+	{ &ui_netGameType, "ui_netGametype_fixed", "0", CVAR_ARCHIVE },
 	{ &ui_actualNetGameType, "ui_actualNetGametype", "3", CVAR_ARCHIVE },
 	{ &ui_redteam1, "ui_redteam1", "1", CVAR_ARCHIVE }, //rww - these used to all default to 0 (closed).. I changed them to 1 (human)
 	{ &ui_redteam2, "ui_redteam2", "1", CVAR_ARCHIVE },
@@ -7207,7 +7210,7 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_blueteam6, "ui_blueteam6", "1", CVAR_ARCHIVE },
 	{ &ui_blueteam7, "ui_blueteam7", "1", CVAR_ARCHIVE },
 	{ &ui_blueteam8, "ui_blueteam8", "1", CVAR_ARCHIVE },
-	{ &ui_netSource, "ui_netSource", "0", CVAR_ARCHIVE },
+	{ &ui_netSource, "ui_netSource_fixed", "0", CVAR_ARCHIVE },
 	{ &ui_menuFiles, "ui_menuFilesMP", "ui/jk2mpmenus.txt", CVAR_ARCHIVE },
 	{ &ui_currentTier, "ui_currentTier", "0", CVAR_ARCHIVE },
 	{ &ui_currentMap, "ui_currentMap", "0", CVAR_ARCHIVE },
