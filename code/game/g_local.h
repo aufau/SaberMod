@@ -44,7 +44,8 @@ typedef enum {
 	CV_CLIENTKICK,
 	CV_DOWARMUP,
 	CV_TIMELIMIT,
-	CV_FRAGLIMIT
+	CV_FRAGLIMIT,
+	CV_TEAMSIZE
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc
@@ -961,6 +962,7 @@ extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;
 extern	vmCvar_t	g_maxclients;			// allow this many total, including spectators
 extern	vmCvar_t	g_maxGameClients;		// allow this many active
+extern  vmCvar_t	g_teamsize;
 extern	vmCvar_t	g_restarted;
 
 extern	vmCvar_t	g_trueJedi;

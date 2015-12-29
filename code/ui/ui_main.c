@@ -5050,6 +5050,7 @@ serverStatusCvar_t serverStatusCvars[] = {
 	{"protocol", ""},
 	{"timelimit", ""},
 	{"fraglimit", ""},
+	{"teamsize", ""},
 	{NULL, NULL}
 };
 
@@ -6502,6 +6503,7 @@ void _UI_Init( qboolean inGameLoad ) {
 			break;
 	}
 
+	trap_SP_Register("sabermod_menus");
 
 	Init_Display(&uiInfo.uiDC);
 

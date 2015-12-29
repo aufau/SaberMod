@@ -759,12 +759,12 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 	//
 
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
+		int		counts[TEAM_NUM_TEAMS];
+
+		counts[TEAM_BLUE] = TeamCount( clientNum, TEAM_BLUE );
+		counts[TEAM_RED] = TeamCount( clientNum, TEAM_RED );
+
 		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
-			int		counts[TEAM_NUM_TEAMS];
-
-			counts[TEAM_BLUE] = TeamCount( clientNum, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( clientNum, TEAM_RED );
-
 			// We allow a spread of two
 			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 ) {
 				trap_SendServerCommand( clientNum,
@@ -772,6 +772,19 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 				return -1;
 			}
 			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
+				return -1;
+			}
+		}
+
+		if ( g_teamsize.integer > 0 ) {
+			if ( team == TEAM_RED && counts[TEAM_RED] >= g_teamsize.integer ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
+				return -1;
+			}
+			if ( team == TEAM_BLUE && counts[TEAM_BLUE] >= g_teamsize.integer ) {
 				trap_SendServerCommand( clientNum,
 					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
 				return -1;
@@ -1591,11 +1604,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) voteCmd = CV_DOWARMUP;
 	else if ( !Q_stricmp( arg1, "timelimit" ) )  voteCmd = CV_TIMELIMIT;
 	else if ( !Q_stricmp( arg1, "fraglimit" ) )  voteCmd = CV_FRAGLIMIT;
+	else if ( !Q_stricmp( arg1, "teamsize" ) )   voteCmd = CV_TEAMSIZE;
 	else                                         voteCmd = CV_INVALID;
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, teamsize <size>.\n\"" );
 		return;
 	}
 

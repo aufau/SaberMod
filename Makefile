@@ -63,6 +63,10 @@ obj_game	:= $(srcs_game:%=out/mod/%.o)
 obj_cgame	:= $(srcs_cgame:%=out/mod/%.o)
 obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 
+pk3			:= SaberMod-$(VERSION).pk3
+pk3doc		:= README.rst LICENSE.txt
+pk3assets	:= SOURCE.txt ui/jk2mp/ingame_about.menu
+
 # Targets
 
 .PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
@@ -77,11 +81,10 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
-pk3		= SaberMod-$(VERSION).pk3
 package : cgame ui | base/
 	set -e; pushd base; $(RM) $(pk3); zip -r $(pk3) vm/cgame.qvm	\
-	vm/ui.qvm; popd; zip base/$(pk3) README.rst LICENSE.txt; pushd	\
-	assets; zip ../base/$(pk3) SOURCE.txt; popd
+	vm/ui.qvm; popd; zip base/$(pk3) $(pk3doc); pushd assets; zip	\
+	../base/$(pk3) $(pk3assets); popd
 help	:
 	@echo 'Targets:'
 	@echo '  all (default)	- Build all targets'
