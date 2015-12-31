@@ -1158,21 +1158,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	Q_strncpyz( forcePowers, Info_ValueForKey (userinfo, "forcepowers"), sizeof( forcePowers ) );
 
-	// bots set their team a few frames later
-	if (GT_Team(g_gametype.integer) && g_entities[clientNum].r.svFlags & SVF_BOT) {
-		s = Info_ValueForKey( userinfo, "team" );
-		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
-			team = TEAM_RED;
-		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
-			team = TEAM_BLUE;
-		} else {
-			// pick the team with the least number of players
-			team = PickTeam( clientNum );
-		}
-	}
-	else {
-		team = client->sess.sessionTeam;
-	}
+	team = client->sess.sessionTeam;
 
 /*	NOTE: all client side now
 
@@ -1189,7 +1175,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	// don't ever use a default skin in teamplay, it would just waste memory
 	// however bots will always join a team but they spawn in as spectator
-	if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
+	if ( GT_Team(g_gametype.integer) && team == TEAM_SPECTATOR) {
 		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headModel, "red");
 	}
@@ -1356,9 +1342,10 @@ void G_WriteClientSessionData( gclient_t *client );
 ===========
 ClientBegin
 
-called when a client has finished connecting, and is ready
-to be placed into the level.  This will happen every level load,
-and on transition between teams, but doesn't happen on respawns
+called when a client has finished connecting, and is ready to be
+placed into the level. This will happen every level load (after
+ClientConnect) and on transition between teams, but doesn't happen on
+respawns. allowTeamReset will be set on map_restart.
 ============
 */
 void ClientBegin( int clientNum, qboolean allowTeamReset ) {
