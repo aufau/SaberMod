@@ -748,49 +748,11 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 		&& level.numNonSpectatorClients >= 2 ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_NOT;
-	} else if ( g_maxGameClients.integer > 0 &&
-		level.numNonSpectatorClients >= g_maxGameClients.integer ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_NOT;
 	}
 
 	//
 	// decide if we will allow the change
 	//
-
-	if ( team == TEAM_RED || team == TEAM_BLUE ) {
-		int		counts[TEAM_NUM_TEAMS];
-
-		counts[TEAM_BLUE] = TeamCount( clientNum, TEAM_BLUE );
-		counts[TEAM_RED] = TeamCount( clientNum, TEAM_RED );
-
-		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
-			// We allow a spread of two
-			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 ) {
-				trap_SendServerCommand( clientNum,
-					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
-				return -1;
-			}
-			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 ) {
-				trap_SendServerCommand( clientNum,
-					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
-				return -1;
-			}
-		}
-
-		if ( g_teamsize.integer > 0 ) {
-			if ( team == TEAM_RED && counts[TEAM_RED] >= g_teamsize.integer ) {
-				trap_SendServerCommand( clientNum,
-					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
-				return -1;
-			}
-			if ( team == TEAM_BLUE && counts[TEAM_BLUE] >= g_teamsize.integer ) {
-				trap_SendServerCommand( clientNum,
-					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
-				return -1;
-			}
-		}
-	}
 
 	oldTeam = client->sess.sessionTeam;
 	if ( team == oldTeam && team != TEAM_SPECTATOR ) {
@@ -897,16 +859,33 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
+			if ( !ValidateTeam(clientNum, TEAM_RED) ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
+				return;
+			}
 			team = TEAM_RED;
 		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
+			if ( !ValidateTeam(clientNum, TEAM_BLUE) ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
+				return;
+			}
 			team = TEAM_BLUE;
 		} else {
 			// pick the team with the least number of players
 			team = PickTeam( clientNum );
+			if ( team == TEAM_SPECTATOR ) {
+				trap_SendServerCommand( clientNum, "print \"Teams are full.\n\""); // TRANSLATE
+				return;
+			}
 		}
 	} else {
-		// force them to spectators if there aren't any spots free
 		team = TEAM_FREE;
+		if ( !ValidateTeam(clientNum, TEAM_FREE) ) {
+			trap_SendServerCommand( clientNum, "print \"Game is full.\n\""); // TRANSLATE
+			return;
+		}
 	}
 
 	if ( SetTeamSpec( ent, team, specState, specClient ) == 0 ) {

@@ -835,11 +835,46 @@ int TeamLeader( int team ) {
 	return -1;
 }
 
+/*
+================
+ValidateTeam
+
+Checks if client can join/stay in a given team. PickTeam does
+validation on it's own.
+================
+*/
+qboolean ValidateTeam( int ignoreClientNum, team_t team )
+{
+	int count, otherCount;
+
+	// Works in FFA and counts CON_CONNECTING clients unlike
+	// level.numNonSpectatorClients
+	count = TeamCount( ignoreClientNum, team );
+
+	if ( g_teamsize.integer > 0 ) {
+		if ( count >= g_teamsize.integer ) {
+			return qfalse;
+		}
+	}
+	if ( team == TEAM_RED || team == TEAM_BLUE ) {
+		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
+			otherCount = TeamCount( ignoreClientNum,
+				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
+
+			if ( count - otherCount  > 1 ) {
+				return qfalse;
+			}
+		}
+	}
+	return qtrue;
+}
 
 /*
 ================
 PickTeam
 
+Picks a weaker team. If it's not valid (see ValidateTeam), returns
+TEAM_SPECTATOR.
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
@@ -848,6 +883,10 @@ team_t PickTeam( int ignoreClientNum ) {
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
 
+	if ( g_teamsize.integer > 0
+		&& min(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
+		return TEAM_SPECTATOR;
+	}
 	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
 		return TEAM_RED;
 	}
@@ -1361,25 +1400,23 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	{
 		if (allowTeamReset)
 		{
-			const char *team = "Red";
+			const char *team;
 			int preSess;
 
 			//SetTeam(ent, "");
 			ent->client->sess.sessionTeam = PickTeam(-1);
 			trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
 
-			if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
-			{
-				ent->client->sess.sessionTeam = TEAM_RED;
-			}
-
 			if (ent->client->sess.sessionTeam == TEAM_RED)
 			{
 				team = "Red";
 			}
-			else
+			else if (ent->client->sess.sessionTeam == TEAM_BLUE)
 			{
 				team = "Blue";
+			}
+			else {
+				team = "Spectator";
 			}
 
 			Info_SetValueForKey( userinfo, "team", team );

@@ -65,7 +65,6 @@ vmCvar_t	g_friendlySaber;
 vmCvar_t	g_password;
 vmCvar_t	g_needpass;
 vmCvar_t	g_maxclients;
-vmCvar_t	g_maxGameClients;
 vmCvar_t	g_teamsize;
 vmCvar_t	g_dedicated;
 vmCvar_t	g_speed;
@@ -144,7 +143,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
 	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_teamsize, "teamsize", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue  },
 
 	// change anytime vars

@@ -26,6 +26,12 @@ Console Commands
 players
   List players connected to server with some additional info.
 
+Callvote
+........
+
+teamsize <size>
+  Set maximum team size to `size`. No players will be removed.
+
 Server-Side
 -----------
 
@@ -34,10 +40,16 @@ Cvars
 
 New and modified cvars with default values.
 
+teamsize
+  See callvote_ teamsize.
+
 g_allowVote 1
   0 / 1 - disable / enable all votes
   Moreover you can decide what votes should be available using
   bitmask: TODO-RELEASE
+
+g_maxGameClients 0
+  Removed. Use teamsize instead.
 
 g_restrictChat 0
   Prevent spectators from speaking to players and all clients from
