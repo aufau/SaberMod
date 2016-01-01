@@ -962,6 +962,7 @@ extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;
 extern	vmCvar_t	g_maxclients;			// allow this many total, including spectators
 extern  vmCvar_t	g_teamsize;
+extern  vmCvar_t    g_teamsizeMin;
 extern	vmCvar_t	g_restarted;
 
 extern	vmCvar_t	g_trueJedi;

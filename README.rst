@@ -30,7 +30,8 @@ Callvote
 ........
 
 teamsize <size>
-  Set maximum team size to `size`. No players will be removed.
+  Set maximum team size to `size`. 0 means unlimited. No players will
+  be removed.
 
 Server-Side
 -----------
@@ -57,6 +58,9 @@ g_restrictChat 0
 
 g_spawnShield 25
   Ammount of shield player gets on spawn.
+
+g_teamsizeMin 2
+  Minimum votable teamsize
 
 Build
 =====

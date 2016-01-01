@@ -1542,7 +1542,7 @@ Cmd_CallVote_f
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
 	voteCommand_t	voteCmd;
-	int				i;
+	int				i, bound;
 	char			arg1[MAX_STRING_TOKENS];
 	char			arg2[MAX_STRING_TOKENS];
 	char			s[MAX_STRING_CHARS];
@@ -1675,6 +1675,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "vstr nextmap");
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+		break;
+	case CV_TEAMSIZE:
+		i = atoi( arg2 );
+
+		if ( i != 0 && g_teamsizeMin.integer > 0 && i < g_teamsizeMin.integer ) {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"teamsize must be greater than %d.\n\"",	g_teamsizeMin.integer - 1 ) );
+			return;
+		}
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
 		break;
 	default:
