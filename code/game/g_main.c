@@ -1693,7 +1693,7 @@ qboolean ScoreIsTied( void ) {
 	return a == b;
 }
 
-void showDamageStatistics() {
+void ShowDamageStatistics() {
 	int numSorted, invisibleChars, realLength, bestScore, worstScore, bestDeaths, worstDeaths,
 			bestDamage, worstDamage, bestTaken, worstTaken, bestTeamDamage, worstTeamDamage,
 			bestTeamTaken, worstTeamTaken, redTeamSize, bestNet, worstNet;
@@ -2066,7 +2066,7 @@ void CheckExitRules( void ) {
 //			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 			LogExit( "Timelimit hit." );
-			showDamageStatistics();
+			ShowDamageStatistics();
 			return;
 		}
 	}
@@ -2079,14 +2079,14 @@ void CheckExitRules( void ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
-			showDamageStatistics();
+			ShowDamageStatistics();
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"Blue %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
-			showDamageStatistics();
+			ShowDamageStatistics();
 			return;
 		}
 
