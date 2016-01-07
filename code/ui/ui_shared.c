@@ -112,11 +112,6 @@ NULL
 };
 
 
-extern int MenuFontToHandle(int iMenuFont);
-
-
-
-
 /*
 ===============
 UI_Alloc
@@ -6667,7 +6662,7 @@ qboolean MenuParse_font( itemDef_t *item, int handle ) {
 	}
 	if (!DC->Assets.fontRegistered) {
 		//DC->registerFont(menu->font, 48, &DC->Assets.textFont);
-		DC->Assets.qhMediumFont = DC->RegisterFont(menu->font);
+		DC->RegisterFont(DC->Assets.qhMediumFont, menu->font);
 		DC->Assets.fontRegistered = qtrue;
 	}
 	return qtrue;

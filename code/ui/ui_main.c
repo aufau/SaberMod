@@ -278,28 +278,59 @@ void _UI_DrawRect( float x, float y, float width, float height, float size, cons
 	trap_R_SetColor( NULL );
 }
 
-int MenuFontToHandle(int iMenuFont)
+int MenuFontToHandle(int iMenuFont, float *scale)
 {
+	fontHandle_t	*face;
+	int				maxSize;
+	int				i;
+
 	switch (iMenuFont)
 	{
-		case 1: return uiInfo.uiDC.Assets.qhSmallFont;
-		case 2: return uiInfo.uiDC.Assets.qhMediumFont;
-		case 3: return uiInfo.uiDC.Assets.qhBigFont;
+	case FONT_SMALL:
+		face = uiInfo.uiDC.Assets.qhSmallFont;
+		break;
+	case FONT_LARGE:
+        face = uiInfo.uiDC.Assets.qhBigFont;
+		break;
+	default:
+		face = uiInfo.uiDC.Assets.qhMediumFont;
+		break;
 	}
 
-	return uiInfo.uiDC.Assets.qhMediumFont;	// 0;
+	// Shrinking font vertically may produce ugly artifacts.
+	maxSize = face[0].size * ui_fontSharpness.value * *scale * uiInfo.uiDC.yscale + 0.001f;
+
+	for (i = 1; i < MAX_FONT_VARIANTS; i++) {
+		if (face[i].index == 0) {
+			break;
+		}
+
+		// for adjusting font with jk2mv patches:
+		// face[i].size = trap_R_Font_HeightPixels(face[i].index, 1.0f);
+
+		if (face[i].size > maxSize) {
+			break;
+		}
+	}
+
+	i--;
+	*scale *= (float) face[0].size / face[i].size;
+
+	return face[i].index;
 }
 
 int Text_Width(const char *text, float scale, int iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex;
+
+	iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
 	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
 int Text_Height(const char *text, float scale, int iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
 	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
@@ -307,8 +338,8 @@ int Text_Height(const char *text, float scale, int iMenuFont)
 void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
 {
 	int iStyleOR = 0;
+	int iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
-	int iFontIndex = MenuFontToHandle(iMenuFont);
 	//
 	// kludge.. convert JK2 menu styles to SOF2 printstring ctrl codes...
 	//
@@ -352,7 +383,7 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 					sTemp[iCopyCount] = '\0';
 
 			{
-				int iFontIndex = MenuFontToHandle( iMenuFont );
+				int iFontIndex = MenuFontToHandle( iMenuFont, &scale );
 				int iNextXpos  = trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale );
 
 				Text_Paint(x+iNextXpos, y, scale, color, va("%c",cursor), 0, limit, style|ITEM_TEXTSTYLE_BLINK, iMenuFont);
@@ -365,12 +396,8 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 //
 static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t color, const char* text, float adjust, int limit, int iMenuFont)
 {
-	// this is kinda dirty, but...
-	//
-	int iFontIndex = MenuFontToHandle(iMenuFont);
-
 	//float fMax = *maxX;
-	int iPixelLen = trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	int iPixelLen = Text_Width(text, scale, iMenuFont);
 	if (x + iPixelLen > *maxX)
 	{
 		// whole text won't fit, so we need to print just the amount that does...
@@ -382,7 +409,7 @@ static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t 
 		char *psOutLastGood = psOut;
 		unsigned int uiLetter;
 
-		while (*psText && (x + trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale)<=*maxX)
+		while (*psText && (x + Text_Width(sTemp, scale, iMenuFont)<=*maxX)
 			   && psOut < &sTemp[sizeof(sTemp)-1]	// sanity
 				)
 		{
@@ -624,6 +651,65 @@ void _UI_Shutdown( void ) {
 	trap_LAN_SaveCachedServers();
 }
 
+/*
+=======================
+UI_RegisterFont
+
+=======================
+*/
+void UI_RegisterFont(fontHandle_t face[MAX_FONT_VARIANTS], const char *fontName)
+{
+	fileHandle_t	f;
+	char			fileName[MAX_QPATH];
+	int				index;
+	int				i, j;
+	qboolean		sorted;
+
+	Com_sprintf(fileName, sizeof(fileName), "fonts/%s.fontdat", fontName);
+
+	// RE_RegisterFont is bugged so we need to check ourselves
+	if (trap_FS_FOpenFile(fileName, &f, FS_READ) < 0) {
+		return;
+	}
+	trap_FS_FCloseFile(f);
+
+	memset(face, 0, MAX_FONT_VARIANTS * sizeof(fontHandle_t));
+
+	index = trap_R_RegisterFont(fontName);
+
+	face[0].index = index;
+	face[0].size = trap_R_Font_HeightPixels(index, 1.0f);
+
+	for (i = 1, j = 1; i < MAX_FONT_VARIANTS; i++) {
+		Com_sprintf(fileName, sizeof(fileName), "%s%d", fontName, i);
+
+		if (trap_FS_FOpenFile(va("fonts/%s.fontdat", fileName), &f, FS_READ) < 0) {
+			continue;
+		}
+		trap_FS_FCloseFile(f);
+
+		index = trap_R_RegisterFont(fileName);
+
+		face[j].index = index;
+		face[j].size = trap_R_Font_HeightPixels(index, 1.0f);
+		j++;
+	}
+
+	do {
+		j--;
+		sorted = qtrue;
+
+		for (i = 1; i < j; i++) {
+			if (face[i].size > face[i + 1].size) {
+				fontHandle_t temp = face[i];
+				face[i] = face[i + 1];
+				face[i + 1] = temp;
+				sorted = qfalse;
+			}
+		}
+	} while (!sorted);
+}
+
 char *defaultMenu = NULL;
 
 char *GetMenuBuffer(const char *filename) {
@@ -679,7 +765,7 @@ qboolean Asset_Parse(int handle) {
 				return qfalse;
 			}
 			//trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.textFont);
-			uiInfo.uiDC.Assets.qhMediumFont = trap_R_RegisterFont(tempStr);
+			UI_RegisterFont(uiInfo.uiDC.Assets.qhMediumFont, tempStr);
 			uiInfo.uiDC.Assets.fontRegistered = qtrue;
 			continue;
 		}
@@ -690,7 +776,7 @@ qboolean Asset_Parse(int handle) {
 				return qfalse;
 			}
 			//trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.smallFont);
-			uiInfo.uiDC.Assets.qhSmallFont = trap_R_RegisterFont(tempStr);
+			UI_RegisterFont(uiInfo.uiDC.Assets.qhSmallFont, tempStr);
 			continue;
 		}
 
@@ -700,7 +786,7 @@ qboolean Asset_Parse(int handle) {
 				return qfalse;
 			}
 			//trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.bigFont);
-			uiInfo.uiDC.Assets.qhBigFont = trap_R_RegisterFont(tempStr);
+			UI_RegisterFont(uiInfo.uiDC.Assets.qhBigFont, tempStr);
 			continue;
 		}
 
@@ -6455,7 +6541,7 @@ void _UI_Init( qboolean inGameLoad ) {
 	uiInfo.uiDC.drawSides = &_UI_DrawSides;
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
-	uiInfo.uiDC.RegisterFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.RegisterFont = &UI_RegisterFont;
 	uiInfo.uiDC.Font_StrLenPixels = trap_R_Font_StrLenPixels;
 	uiInfo.uiDC.Font_StrLenChars = trap_R_Font_StrLenChars;
 	uiInfo.uiDC.Font_HeightPixels = trap_R_Font_HeightPixels;
@@ -7123,6 +7209,8 @@ vmCvar_t	ui_realWarmUp;
 vmCvar_t	ui_serverStatusTimeOut;
 vmCvar_t	s_language;
 
+vmCvar_t    ui_fontSharpness;
+
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		cvarTable[] = {
 	{ &ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE },
@@ -7251,6 +7339,7 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_realCaptureLimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART},
 	{ &ui_serverStatusTimeOut, "ui_serverStatusTimeOut", "7000", CVAR_ARCHIVE},
 	{ &s_language, "s_language", "english", CVAR_ARCHIVE | CVAR_NORESTART},
+	{ &ui_fontSharpness, "ui_fontSharpness", "1", CVAR_ARCHIVE},
 };
 
 // bk001129 - made static to avoid aliasing
