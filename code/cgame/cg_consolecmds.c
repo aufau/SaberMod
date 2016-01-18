@@ -397,6 +397,73 @@ static void CG_Camera_f( void ) {
 }
 */
 
+// Same as MAX_NETNAME for now. Reduce if you need more space.
+#define MAX_PRINTNAME 36
+
+static void CG_Players_f( void ) {
+	static const char	spacePad[MAX_PRINTNAME] = "                                   ";
+	static const char	dashPad[MAX_PRINTNAME]  = "-----------------------------------";
+	const char * const	spaces = spacePad + MAX_PRINTNAME - 1;
+	const char * const	dashes = dashPad + MAX_PRINTNAME - 1;
+	clientInfo_t	*ci;
+	const char		*flagColor[3];
+	char			name[MAX_PRINTNAME];
+	int				flag[3];
+	int				len;
+	int				maxNameLen;
+	int				i;
+
+	if (!Q_stricmp(CG_Argv(1), "?")) {
+		CG_Printf(
+			"Flag legend:\n"
+			S_COLOR_CYAN "  Bot" S_COLOR_WHITE " - a bot\n"
+			S_COLOR_MAGENTA "  H" S_COLOR_WHITE " - player uses handicap\n"
+			);
+		return;
+	}
+
+	maxNameLen = 4; // "Name" column label
+	for (i = 0 ; i < cgs.maxclients ; i++) {
+		if (cgs.clientinfo[i].infoValid ) {
+			len = Q_PrintStrlen(cgs.clientinfo[i].name);
+			if (len > maxNameLen) {
+				maxNameLen = len;
+			}
+		}
+	}
+	if (maxNameLen > MAX_PRINTNAME - 1) {
+		maxNameLen = MAX_PRINTNAME - 1;
+	}
+
+	CG_Printf("Num Flg Name%s\n", spaces - maxNameLen + 4);
+	CG_Printf("--- --- ----%s\n", dashes - maxNameLen + 4);
+
+	for (i = 0 ; i < cgs.maxclients ; i++) {
+		if (cgs.clientinfo[i].infoValid ) {
+			flag[0] = flag[1] = flag[2] = ' ';
+			flagColor[0] = flagColor[1] = flagColor[2] = S_COLOR_WHITE;
+			if (cgs.clientinfo[i].botSkill) {
+				flagColor[0] = flagColor[1] = flagColor[2] = S_COLOR_CYAN;
+				flag[0] = 'B';
+				flag[1] = 'o';
+				flag[2] = 't';
+			} else {
+				if (cgs.clientinfo[i].handicap > 0 && cgs.clientinfo[i].handicap < 100) {
+					flagColor[2] = S_COLOR_MAGENTA;
+					flag[2] = 'H';
+				}
+			}
+
+			Q_strncpyz(name, cgs.clientinfo[i].name, sizeof(name));
+			Q_CleanStr(name);
+
+			CG_Printf("%3d %s%c%s%c%s%c" S_COLOR_WHITE " %s%s\n", i,
+				flagColor[0], flag[0], flagColor[1], flag[1], flagColor[2], flag[2],
+				name, spaces - strlen(name));
+		}
+	}
+
+}
 
 typedef struct {
 	char	*cmd;
@@ -452,7 +519,8 @@ static consoleCommand_t	commands[] = {
 	{ "invnext", CG_NextInventory_f },
 	{ "invprev", CG_PrevInventory_f },
 	{ "forcenext", CG_NextForcePower_f },
-	{ "forceprev", CG_PrevForcePower_f }
+	{ "forceprev", CG_PrevForcePower_f },
+	{ "players", CG_Players_f }
 };
 
 
