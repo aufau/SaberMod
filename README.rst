@@ -29,6 +29,12 @@ players
 Callvote
 ........
 
+nk [mode]
+  No Kick. `mode` can be 1 - no dmg, 2 - no knockback
+
+wk
+  With Kick - default JK2 rules.
+
 remove <player>
   Remove `player` to spectator team.
 
@@ -60,6 +66,9 @@ g_allowVote 1
 
 g_maxGameClients 0
   Removed. Use teamsize instead.
+
+g_noKick [type]
+  See callvote_ nk and wk. `type` can be 0, 1 or 2.
 
 g_restrictChat 0
   Prevent spectators from speaking to players and all clients from

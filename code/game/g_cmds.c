@@ -1585,6 +1585,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "fraglimit" ) )  voteCmd = CV_FRAGLIMIT;
 	else if ( !Q_stricmp( arg1, "teamsize" ) )   voteCmd = CV_TEAMSIZE;
 	else if ( !Q_stricmp( arg1, "remove" ) )     voteCmd = CV_REMOVE;
+	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_NOKICK;
+	else if ( !Q_stricmp( arg1, "wk" ) )         voteCmd = CV_WITHKICK;
 	else                                         voteCmd = CV_INVALID;
 
 	if ( voteCmd == CV_INVALID ) {
@@ -1699,6 +1701,21 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
 			"%s %s", arg1, g_entities[i].client->pers.netname );
+		break;
+	case CV_NOKICK:
+		i = atoi ( arg2 );
+
+		if ( i < 1 ) {
+			i = 1;
+		}
+
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_friendlyFire 1; g_noKick %d", i );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick %d", i );
+		// Q_strncpyz( level.voteDisplayString, "No Kick", sizeof( level.voteDisplayString ) );
+		break;
+	case CV_WITHKICK:
+		Q_strncpyz( level.voteString, "g_friendlyFire 0; g_noKick 0", sizeof( level.voteString ));
+		Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

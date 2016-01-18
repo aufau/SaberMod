@@ -1593,16 +1593,21 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *faceKicked = &g_entities[client->ps.forceKickFlip-1];
 
-		if (faceKicked && faceKicked->client && (!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
+		if (faceKicked && faceKicked->client && g_noKick.integer <= 1 &&
+			(!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
 			(!faceKicked->client->ps.duelInProgress || faceKicked->client->ps.duelIndex == ent->s.number) &&
 			(!ent->client->ps.duelInProgress || ent->client->ps.duelIndex == faceKicked->s.number))
 		{
 			if ( faceKicked && faceKicked->client && faceKicked->health && faceKicked->takedamage )
 			{//push them away and do pain
 				vec3_t oppDir;
-				int strength = (int)VectorNormalize2( client->ps.velocity, oppDir );
+				int strength = 0;
 
-				strength *= 0.05;
+				if (g_noKick.integer == 0) {
+					// pmove sets velocity to 150 on XY. Z could go as
+					// low as 200, resulting in strength 12
+					strength = 0.05 * (int)VectorNormalize2( client->ps.velocity, oppDir );
+				}
 
 				VectorScale( oppDir, -1, oppDir );
 

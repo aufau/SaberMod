@@ -124,6 +124,7 @@ vmCvar_t	g_austrian;
 
 vmCvar_t	g_restrictChat;
 vmCvar_t	g_spawnShield;
+vmCvar_t	g_noKick;
 
 int gDuelist1 = -1;
 int gDuelist2 = -1;
@@ -272,6 +273,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
 
 // bk001129 - made static to avoid aliasing
