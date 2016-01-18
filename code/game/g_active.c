@@ -1304,6 +1304,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
+	pm.noKick = ( g_dmflags.integer & DF_NO_KICK ) > 0;
 
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;
@@ -1601,17 +1602,20 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( faceKicked && faceKicked->client && faceKicked->health && faceKicked->takedamage )
 			{//push them away and do pain
 				vec3_t oppDir;
-				int strength = 0;
+				int strength;
+				int dflag = DAMAGE_NO_ARMOR;
 
-				if (g_noKick.integer == 0) {
-					// pmove sets velocity to 150 on XY. Z could go as
-					// low as 200, resulting in strength 12
-					strength = 0.05 * (int)VectorNormalize2( client->ps.velocity, oppDir );
+				// pmove sets velocity to 150 on XY. Z could go as
+				// low as 200, resulting in strength 12
+				strength = 0.05 * (int)VectorNormalize2( client->ps.velocity, oppDir );
+
+				if (g_noKick.integer) {
+					dflag |= DAMAGE_NO_DAMAGE;
 				}
 
 				VectorScale( oppDir, -1, oppDir );
 
-				G_Damage( faceKicked, ent, ent, oppDir, client->ps.origin, strength, DAMAGE_NO_ARMOR, MOD_MELEE );
+				G_Damage( faceKicked, ent, ent, oppDir, client->ps.origin, strength, dflag, MOD_MELEE );
 
 				if ( faceKicked->client->ps.weapon != WP_SABER ||
 					 faceKicked->client->ps.fd.saberAnimLevel < FORCE_LEVEL_3 ||

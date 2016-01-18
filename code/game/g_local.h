@@ -49,6 +49,7 @@ typedef enum {
 	CV_REMOVE,
 	CV_NOKICK,
 	CV_WITHKICK,
+	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc

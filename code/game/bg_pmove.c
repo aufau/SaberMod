@@ -992,7 +992,9 @@ static qboolean PM_CheckJump( void )
 					VectorNormalize( idealNormal );
 				}
 
-				if ( !doTrace || (trace.fraction < 1.0f && (trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7)) )
+				if ( !doTrace ||
+					( trace.fraction < 1.0f && !(pm->noKick && trace.entityNum < MAX_CLIENTS) &&
+						( trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7) ) )
 				{//there is a wall there.. or hit a client
 					int parts;
 					//move me to side
@@ -1146,7 +1148,7 @@ static qboolean PM_CheckJump( void )
 				VectorSubtract( pm->ps->origin, traceto, idealNormal );
 				VectorNormalize( idealNormal );
 
-				if ( trace.fraction < 1.0f )
+				if ( trace.fraction < 1.0f && !(pm->noKick && trace.entityNum < MAX_CLIENTS) )
 				{//there is a wall there
 					int parts = SETANIM_LEGS;
 

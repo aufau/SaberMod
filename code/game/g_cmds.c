@@ -1708,13 +1708,18 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if ( i < 1 ) {
 			i = 1;
 		}
-
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_friendlyFire 1; g_noKick %d", i );
+		if ( i > 2 ) {
+			Com_sprintf( level.voteString, sizeof( level.voteString ),
+				"dmflags %d; g_friendlyFire 1; g_noKick 3; ", g_dmflags.integer | DF_NO_KICK );
+		} else {
+			Com_sprintf( level.voteString, sizeof( level.voteString ),
+				"dmflags %d; g_friendlyFire 1; g_noKick %d; ", i, g_dmflags.integer & ~DF_NO_KICK );
+		}
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick %d", i );
-		// Q_strncpyz( level.voteDisplayString, "No Kick", sizeof( level.voteDisplayString ) );
 		break;
 	case CV_WITHKICK:
-		Q_strncpyz( level.voteString, "g_friendlyFire 0; g_noKick 0", sizeof( level.voteString ));
+		Com_sprintf( level.voteString, sizeof( level.voteString ),
+			"dmflags %d; g_friendlyFire 0; g_noKick 0", g_dmflags.integer & ~DF_NO_KICK );
 		Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		break;
 	default:
