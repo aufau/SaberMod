@@ -1140,7 +1140,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 
 	// set max health
-	health = 100; //atoi( Info_ValueForKey( userinfo, "handicap" ) );
+	health = atoi( Info_ValueForKey( userinfo, "handicap" ) );
 	client->pers.maxHealth = health;
 	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
 		client->pers.maxHealth = 100;
@@ -1483,6 +1483,12 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		ent->bolt_Motion = trap_G2API_AddBolt(ent->client->ghoul2, 0, "Motion");
 	}
 
+	// set max health
+	client->pers.maxHealth = atoi( Info_ValueForKey( userinfo, "handicap" ) );
+	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
+		client->pers.maxHealth = 100;
+	}
+
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
@@ -1664,12 +1670,6 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->airOutTime = level.time + 12000;
 
-//	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
-	// set max health
-	client->pers.maxHealth = 100;//atoi( Info_ValueForKey( userinfo, "handicap" ) );
-	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-		client->pers.maxHealth = 100;
-	}
 	// clear entity values
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	client->ps.eFlags = flags;
