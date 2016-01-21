@@ -6964,7 +6964,6 @@ int BotAIStartFrame(int time) {
 	int i;
 	int elapsed_time, thinktime;
 	static int local_time;
-	static int botlib_residual;
 	static int lastbotthink_time;
 
 	G_CheckBotSpawn();

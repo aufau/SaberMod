@@ -999,9 +999,7 @@ void CalculateRanks( void ) {
 	level.numNonSpectatorClients = 0;
 	level.numPlayingClients = 0;
 	level.numVotingClients = 0;		// don't count bots
-	for ( i = 0; i < TEAM_NUM_TEAMS; i++ ) {
-		level.numteamVotingClients[i] = 0;
-	}
+	level.numteamVotingClients[0] = level.numteamVotingClients[1] = 0;
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
 			level.sortedClients[level.numConnectedClients] = i;

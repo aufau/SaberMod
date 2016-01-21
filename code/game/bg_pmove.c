@@ -4565,11 +4565,11 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_GroundTrace();
 	PM_SetWaterLevel();
 
-	if (pm->cmd.forcesel != -1 && (pm->ps->fd.forcePowersKnown & (1 << pm->cmd.forcesel)))
+	if (pm->ps->fd.forcePowersKnown & (1 << pm->cmd.forcesel))
 	{
 		pm->ps->fd.forcePowerSelected = pm->cmd.forcesel;
 	}
-	if (pm->cmd.invensel != -1 && (pm->ps->stats[STAT_HOLDABLE_ITEMS] & (1 << pm->cmd.invensel)))
+	if (pm->ps->stats[STAT_HOLDABLE_ITEMS] & (1 << pm->cmd.invensel))
 	{
 		pm->ps->stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(pm->cmd.invensel, IT_HOLDABLE);
 	}

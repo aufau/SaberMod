@@ -25,9 +25,9 @@ void Team_InitGame( void ) {
 	switch( g_gametype.integer ) {
 	case GT_CTF:
 	case GT_CTY:
-		teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
+		teamgame.redStatus = FLAG_TAKEN; // Other to force update
+		teamgame.blueStatus = FLAG_ATBASE;
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
-		Team_SetFlagStatus( TEAM_BLUE, FLAG_ATBASE );
 		break;
 	default:
 		break;

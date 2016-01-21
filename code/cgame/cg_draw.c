@@ -2104,7 +2104,7 @@ static void CG_DrawPowerupIcons(int y)
 
 	y += 16;
 
-	for (j = 0; j <= PW_NUM_POWERUPS; j++)
+	for (j = 0; j < PW_NUM_POWERUPS; j++)
 	{
 		if (cg.snap->ps.powerups[j] > cg.time)
 		{
