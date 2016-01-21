@@ -270,14 +270,23 @@ void CG_DrawInformation( void ) {
 		}
 	}
 
-	if (GT_Team(cgs.gametype))
-	{
-		value = atoi( Info_ValueForKey( info, "teamsize" ) );
-		if ( value ) {
+	value = atoi( Info_ValueForKey( info, "teamsize" ) );
+	if ( value ) {
+		if (GT_Team(cgs.gametype))
+		{
 			UI_DrawProportionalString( 320, y, va( "%s %i", CG_GetStripEdString("SABERINGAME", "TEAMSIZE"), value ),
 				UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
-			y += iPropHeight;
 		}
+		else
+		{
+			UI_DrawProportionalString( 320, y, va( "%s %i", CG_GetStripEdString("SABERINGAME", "MAXPLAYERS"), value ),
+				UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		}
+		y += iPropHeight;
+	}
+
+	if (cgs.gametype >= GT_TEAM)
+	{
 		value = atoi( Info_ValueForKey( info, "g_forceBasedTeams" ) );
 		if ( value ) {
 			UI_DrawProportionalString( 320, y, CG_GetStripEdString("INGAMETEXT", "FORCEBASEDTEAMS"),
