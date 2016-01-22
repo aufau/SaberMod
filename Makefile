@@ -77,9 +77,11 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
+pk3		= SaberMod-$(VERSION).pk3
 package : cgame ui | base/
-	set -e; pushd base; $(RM) SaberMod-$(VERSION).pk3; zip -r	\
-	SaberMod-$(VERSION).pk3 vm/cgame.qvm vm/ui.qvm; popd
+	set -e; pushd base; $(RM) $(pk3); zip -r $(pk3) vm/cgame.qvm	\
+	vm/ui.qvm; popd; zip base/$(pk3) README.rst LICENSE.txt; pushd	\
+	assets; zip ../base/$(pk3) SOURCE.txt; popd
 help	:
 	@echo 'Targets:'
 	@echo '  all (default)	- Build all targets'
