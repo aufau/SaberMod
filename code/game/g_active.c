@@ -5,7 +5,7 @@
 
 qboolean PM_SaberInTransition( int move );
 qboolean PM_SaberInStart( int move );
-qboolean PM_SaberInReturn( int move );
+qboolean PM_SaberInReturn( saberMoveName_t move );
 
 void P_SetTwitchInfo(gclient_t	*client)
 {

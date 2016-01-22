@@ -2,7 +2,7 @@
 #include "bg_public.h"
 #include "bg_local.h"
 
-int PM_irand_timesync(int val1, int val2)
+static int PM_irand_timesync(int val1, int val2)
 {
 	int i;
 
@@ -252,7 +252,7 @@ saberMoveData_t	saberMoveData[LS_MOVE_MAX] = {//							NB:randomized
 };
 
 
-int transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
+saberMoveName_t transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
 {
 	LS_NONE,	//Can't transition to same pos!
 	LS_T1_BR__R,//40
@@ -320,41 +320,29 @@ int transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
 	LS_NONE		//No transitions to bottom, and no anims start there, so shouldn't need any
 };
 
-saberMoveName_t PM_AttackMoveForQuad( int quad )
+#if 0
+static saberMoveName_t PM_AttackMoveForQuad( saberQuadrant_t quad )
 {
 	switch ( quad )
 	{
 	case Q_B:
-	case Q_BR:
-		return LS_A_BR2TL;
-		break;
-	case Q_R:
-		return LS_A_R2L;
-		break;
-	case Q_TR:
-		return LS_A_TR2BL;
-		break;
-	case Q_T:
-		return LS_A_T2B;
-		break;
-	case Q_TL:
-		return LS_A_TL2BR;
-		break;
-	case Q_L:
-		return LS_A_L2R;
-		break;
-	case Q_BL:
-		return LS_A_BL2TR;
-		break;
+	case Q_BR: return LS_A_BR2TL;
+	case Q_R:  return LS_A_R2L;
+	case Q_TR: return LS_A_TR2BL;
+	case Q_T:  return LS_A_T2B;
+	case Q_TL: return LS_A_TL2BR;
+	case Q_L:  return LS_A_L2R;
+	case Q_BL: return LS_A_BL2TR;
+	default:   return LS_NONE;
 	}
-	return LS_NONE;
 }
+#endif
 
-qboolean PM_SaberKataDone(int curmove, int newmove);
+static qboolean PM_SaberKataDone( saberMoveName_t curmove, saberMoveName_t newmove );
 
-int PM_SaberAnimTransitionAnim( int curmove, int newmove )
+static saberMoveName_t PM_SaberAnimTransitionAnim( saberMoveName_t curmove, saberMoveName_t newmove )
 {
-	int retmove = newmove;
+	saberMoveName_t retmove = newmove;
 	if ( curmove == LS_READY )
 	{//just standing there
 		switch ( newmove )
@@ -368,6 +356,7 @@ int PM_SaberAnimTransitionAnim( int curmove, int newmove )
 		case LS_A_T2B:
 			//transition is the start
 			retmove = LS_S_TL2BR + (newmove-LS_A_TL2BR);
+		default:
 			break;
 		}
 	}
@@ -389,6 +378,7 @@ int PM_SaberAnimTransitionAnim( int curmove, int newmove )
 			case LS_A_T2B:
 				//transition is the return
 				retmove = LS_R_TL2BR + (newmove-LS_A_TL2BR);
+			default:
 				break;
 			}
 			break;
@@ -494,10 +484,12 @@ int PM_SaberAnimTransitionAnim( int curmove, int newmove )
 				case LS_H1_BR:
 				case LS_H1_BL:
 					retmove = transitionMove[saberMoveData[curmove].endQuad][saberMoveData[newmove].startQuad];
-					break;
 				//NB: transitioning from transitions is fine
+				default:
+					break;
 				}
 			}
+		default:
 			break;
 		//transitioning to any other anim is not supported
 		}
@@ -511,7 +503,7 @@ int PM_SaberAnimTransitionAnim( int curmove, int newmove )
 	return retmove;
 }
 
-int PM_SaberMoveQuadrantForMovement( usercmd_t *ucmd )
+static saberQuadrant_t PM_SaberMoveQuadrantForMovement( usercmd_t *ucmd )
 {
 	if ( ucmd->rightmove > 0 )
 	{//moving right
@@ -561,7 +553,7 @@ int PM_SaberMoveQuadrantForMovement( usercmd_t *ucmd )
 }
 
 //===================================================================
-qboolean PM_SaberInBounce( int move )
+qboolean PM_SaberInBounce( saberMoveName_t move )
 {
 	if ( move >= LS_B1_BR && move <= LS_B1_BL )
 	{
@@ -574,7 +566,7 @@ qboolean PM_SaberInBounce( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInTransition( int move )
+qboolean PM_SaberInTransition( saberMoveName_t move )
 {
 	if ( move >= LS_T1_BR__R && move <= LS_T1_BL__L )
 	{
@@ -651,16 +643,16 @@ int saberMoveTransitionAngle[Q_NUM_QUADS][Q_NUM_QUADS] =
 	0//Q_B,Q_B,
 };
 
-int PM_SaberAttackChainAngle( int move1, int move2 )
+static int PM_SaberAttackChainAngle( saberMoveName_t move1, saberMoveName_t move2 )
 {
-	if ( move1 == -1 || move2 == -1 )
+	if ( move1 == LS_INVALID || move2 == LS_INVALID )
 	{
 		return -1;
 	}
 	return saberMoveTransitionAngle[saberMoveData[move1].endQuad][saberMoveData[move2].startQuad];
 }
 
-qboolean PM_SaberKataDone(int curmove, int newmove)
+static qboolean PM_SaberKataDone( saberMoveName_t curmove, saberMoveName_t newmove )
 {
 	if ( pm->ps->fd.saberAnimLevel == FORCE_LEVEL_3 )
 	{
@@ -736,7 +728,7 @@ void PM_SetAnimFrame( playerState_t *gent, int frame, qboolean torso, qboolean l
 	gent->saberLockFrame = frame;
 }
 
-void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
+static void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
 {
 	int	winAnim = BOTH_STAND1, loseAnim = BOTH_STAND1;
 	qboolean punishLoser = qfalse;
@@ -866,7 +858,7 @@ void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
 }
 
 extern qboolean ValidAnimFileIndex ( int index );
-void PM_SaberLocked( void )
+static void PM_SaberLocked( void )
 {
 	int	remaining = 0;
 
@@ -981,7 +973,7 @@ void PM_SaberLocked( void )
 	}
 }
 
-qboolean PM_SaberInBrokenParry( int move )
+qboolean PM_SaberInBrokenParry( saberMoveName_t move )
 {
 	if ( move >= LS_V1_BR && move <= LS_V1_B_ )
 	{
@@ -995,35 +987,30 @@ qboolean PM_SaberInBrokenParry( int move )
 }
 
 
-int PM_BrokenParryForParry( int move )
+static saberMoveName_t PM_BrokenParryForParry( saberMoveName_t move )
 {
 	switch ( move )
 	{
 	case LS_PARRY_UP:
 		return LS_H1_T_;
-		break;
 	case LS_PARRY_UR:
 		return LS_H1_TR;
-		break;
 	case LS_PARRY_UL:
 		return LS_H1_TL;
-		break;
 	case LS_PARRY_LR:
 		return LS_H1_BL;
-		break;
 	case LS_PARRY_LL:
 		return LS_H1_BR;
-		break;
 	case LS_READY:
 		return LS_H1_B_;
-		break;
+	default:
+		return LS_NONE;
 	}
-	return LS_NONE;
 }
 
 #define BACK_STAB_DISTANCE 128
 
-qboolean PM_CanBackstab(void)
+static qboolean PM_CanBackstab(void)
 {
 	trace_t tr;
 	vec3_t flatAng;
@@ -1133,7 +1120,7 @@ qboolean PM_SomeoneInFront(trace_t *tr)
 	return qfalse;
 }
 
-saberMoveName_t PM_SaberLungeAttackMove( void )
+static saberMoveName_t PM_SaberLungeAttackMove( void )
 {
 	vec3_t fwdAngles, jumpFwd;
 
@@ -1181,9 +1168,9 @@ float PM_GroundDistance(void)
 	return VectorLength(down);
 }
 
-saberMoveName_t PM_SaberAttackForMovement(saberMoveName_t curmove)
+static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 {
-	saberMoveName_t newmove = -1;
+	saberMoveName_t newmove = LS_INVALID;
 
 	if ( pm->cmd.rightmove > 0 )
 	{//moving right
@@ -1311,9 +1298,9 @@ void PM_WeaponLightsaber(void)
 {
 	int			addTime,amount;
 	qboolean	delayed_fire = qfalse;
-	int			anim=-1, curmove, newmove=LS_NONE;
+	animNumber_t	anim = ANIM_INVALID;
+	saberMoveName_t	curmove, newmove=LS_NONE;
 
-	qboolean saberInAir = qtrue;
 	qboolean checkOnlyWeap = qfalse;
 
  	if ( pm->ps->saberLockTime > pm->cmd.serverTime )
@@ -1486,7 +1473,7 @@ void PM_WeaponLightsaber(void)
 			case BLOCKED_PARRY_BROKEN:
 				//whatever parry we were is in now broken, play the appropriate knocked-away anim
 				{
-					int nextMove;
+					saberMoveName_t nextMove;
 
 					if ( PM_SaberInBrokenParry( pm->ps->saberMove ) )
 					{//already have one...?
@@ -1519,11 +1506,11 @@ void PM_WeaponLightsaber(void)
 				}
 				else
 				{
-					int bounceMove;
+					saberMoveName_t bounceMove;
 
 					if ( pm->cmd.buttons & BUTTON_ATTACK )
 					{//transition to a new attack
-						int newQuad = PM_SaberMoveQuadrantForMovement( &pm->cmd );
+						saberQuadrant_t newQuad = PM_SaberMoveQuadrantForMovement( &pm->cmd );
 						while ( newQuad == saberMoveData[pm->ps->saberMove].startQuad )
 						{//player is still in same attack quad, don't repeat that attack because it looks bad,
 							//FIXME: try to pick one that might look cool?
@@ -1720,8 +1707,6 @@ weapChecks:
 		// ***************************************************
 		// Pressing attack, so we must look up the proper attack move.
 
-		saberInAir = qtrue;
-
 		if ( pm->ps->weaponTime > 0 )
 		{	// Last attack is not yet complete.
 			pm->ps->weaponstate = WEAPON_FIRING;
@@ -1729,7 +1714,7 @@ weapChecks:
 		}
 		else
 		{
-			int	both = qfalse;
+			qboolean both = qfalse;
 
 			if ( curmove >= LS_PARRY_UP && curmove <= LS_REFLECT_LL )
 			{//from a parry or deflection, can go directly into an attack (?)
@@ -1749,6 +1734,7 @@ weapChecks:
 					break;
 				case Q_BL:
 					newmove = LS_A_BL2TR;
+				default:
 					break;
 				//shouldn't be a parry that ends at L, R or B
 				}
@@ -1760,7 +1746,7 @@ weapChecks:
 			}
 
 			//FIXME: diagonal dirs use the figure-eight attacks from ready pose?
-			if ( anim == -1 )
+			if ( anim == ANIM_INVALID )
 			{
 				//FIXME: take FP_SABER_OFFENSE into account here somehow?
 				if ( PM_SaberInTransition( curmove ) )
@@ -1778,7 +1764,7 @@ weapChecks:
 				else//if ( pm->cmd.buttons&BUTTON_ATTACK && !(pm->ps->pm_flags&PMF_ATTACK_HELD) )//only do this if just pressed attack button?
 				{//get attack move from movement command
 					saberMoveName_t checkMove = PM_SaberAttackForMovement(curmove);
-					if (checkMove != -1)
+					if (checkMove != LS_INVALID)
 					{
 						newmove = checkMove;
 					}
@@ -1807,7 +1793,7 @@ weapChecks:
 				}
 			}
 
-			if (anim == -1)
+			if (anim == ANIM_INVALID)
 			{//not side-stepping, pick neutral anim
 				// Add randomness for prototype?
 				newmove = saberMoveData[curmove].chain_attack;
@@ -1821,7 +1807,7 @@ weapChecks:
 
 			}
 
-			if ( anim == -1)
+			if ( anim == ANIM_INVALID)
 			{
 				if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1 )
 				{
@@ -1882,10 +1868,10 @@ weapChecks:
 	pm->ps->weaponTime = addTime;
 }
 
-void PM_SetSaberMove(short newMove)
+void PM_SetSaberMove( saberMoveName_t newMove )
 {
 	unsigned int setflags = saberMoveData[newMove].animSetFlags;
-	int	anim = saberMoveData[newMove].animToUse;
+	animNumber_t	anim = saberMoveData[newMove].animToUse;
 	int parts = SETANIM_TORSO;
 
 	if ( newMove == LS_READY || newMove == LS_A_FLIP_STAB || newMove == LS_A_FLIP_SLASH )

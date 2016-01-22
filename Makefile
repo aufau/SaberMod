@@ -16,6 +16,8 @@ INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
 DEFS		= -DQAGAME
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
+ALL_CFLAGS += -Wall -Wno-unused-but-set-variable -Wno-unknown-pragmas	\
+-Wno-missing-braces
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) -S -Wf-target=bytecode -Wf-g	\
 -DQ3_VM
 

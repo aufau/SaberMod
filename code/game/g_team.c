@@ -23,9 +23,9 @@ void Team_InitGame( void ) {
 	memset(&teamgame, 0, sizeof teamgame);
 
 	if (GT_Flag(g_gametype.integer)) {
-		teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
+		teamgame.redStatus = FLAG_TAKEN; // Other to force update
+		teamgame.blueStatus = FLAG_ATBASE;
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
-		Team_SetFlagStatus( TEAM_BLUE, FLAG_ATBASE );
 	}
 }
 
