@@ -2,17 +2,21 @@
 JK2 SDK GPL
 ===========
 
-This is an alternative *Star Wars Jedi Knight II: Jedi Outcast* 1.04
-SDK released under the GPLv2 license. Search for *JK2 Editing Tools
-2.0* if you'd like to get familiar with original SDK released by Raven
-in 2003, containing also tools and guides for creating maps, models
-and other modifications.
+This is an updated *Star Wars Jedi Knight II: Jedi Outcast* 1.04 SDK
+released under the GPLv2 license. Search for *JK2 Editing Tools 2.0*
+if wish to get familiar with original SDK released by Raven in 2003,
+containing also tools and guides for creating maps, models, effects,
+scripts and other modifications.
 
-Creating this repository has been made possible thanks to Raven
-releasing JK2 source code in 2013. This branch contains an altered
-subset of it, necessary for creating code mods, with few indisputable
-bug fixes and cleanups that shouldn't change the gameplay in any
-way. Refer to the commits history for more details.
+Creating this repository was made possible thanks to Raven releasing
+JK2 source code in 2013. This branch contains an altered subset of it
+necessary for creating code mods, with multiple bug-fixes and
+refactored code. The downside is that it may be difficult to apply
+patches based on the original SDK 2.0 source code. This branch is
+recommended for new projects. Check out a ``vanilla`` branch of this
+repository if you're looking for almost unaltered GPL code.
+
+Read Git commit history for a complete list of changes.
 
 Build
 =====
@@ -31,7 +35,7 @@ and launch the game with ``+set fs_game mymod`` commandline parameter.
 
 To debug your mod use generated .so files. Put them in ~/.jkii/mymod/
 and launch the game with ``+set vm_game 0 +set vm_cgame 0 +set vm_ui
-0`` commandline parameters. Set the back to 2 when you want to use
+0`` commandline parameters. Set them back to 2 when you want to use
 .qvm version again.
 
 Windows
@@ -42,7 +46,7 @@ Windows. Old ``code/buildvms.bat`` batch file should work for QVMs if
 you can get lcc and q3asm tools (eg from *JK2 Editing Tools 2.0*) and
 put them into bin/ directory.
 
-I'd be glad to include Windows build scripts, project files etc. if
+I'll be glad to include Windows build scripts, project files etc. if
 you can create and test them.
 
 License
@@ -55,12 +59,23 @@ comes from ioquake3 and it has been slightly modified by it's
 developers.
 
 Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
-software. Read LICENSE.txt and readme-raven.txt to learn
-more. According to it, among other things, you are obliged to
-distribute full source code of your mods alongside them, or at least a
-written offer to ship it (eg a HTTP download link inside a .pk3 file)
+software. Read LICENSE.txt and README-raven.txt to learn
+more. According to the license, among other things, you are obliged to
+distribute full source code of your mod alongsid it, or at least a
+written offer to ship it (eg a HTTP download link inside a .pk3
+file). Moreovery any mod using patches from this repository **has to**
+be released under GPLv2.
 
 Q3ASM is Copyright (c) id Software and ioquake3 developers.
+
+Authors
+-------
+
+* id Software (c) 1999-2000
+* Raven Software (c) 2000-2002
+* SaberMod team (c) 2015-2016
+
+  + Witold *fau* Piłat <witold.pilat@gmail.com> (c) 2015-2016
 
 Trivia
 ------
