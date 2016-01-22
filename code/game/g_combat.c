@@ -854,7 +854,7 @@ void CheckAlmostCapture( gentity_t *self, gentity_t *attacker ) {
 		self->client->ps.powerups[PW_BLUEFLAG] ||
 		self->client->ps.powerups[PW_NEUTRALFLAG] ) {
 		// get the goal flag this player should have been going for
-		if ( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY ) {
+		if ( GT_Flag(g_gametype.integer) ) {
 			if ( self->client->sess.sessionTeam == TEAM_BLUE ) {
 				classname = "team_CTF_blueflag";
 			}
@@ -933,7 +933,7 @@ static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage, i
 	}
 	else if ( G_InKnockDown( &self->client->ps ) )
 	{//since these happen a lot, let's handle them case by case
-		int animLength = bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].numFrames * fabs(bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].frameLerp);
+		int animLength = bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].frameLerp);
 		switch ( self->client->ps.legsAnim&~ANIM_TOGGLEBIT )
 		{
 		case BOTH_KNOCKDOWN1:
@@ -1788,68 +1788,109 @@ gentity_t *G_GetJediMaster(void)
 	return NULL;
 }
 
-/*
-==================
-player_die
-==================
-*/
-extern stringID_table_t animTable[MAX_ANIMATIONS+1];
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
-	gentity_t	*ent;
-	int			anim;
-	int			contents;
-	int			killer;
-	int			i;
-	char		*killerName, *obit;
-	qboolean	wasJediMaster = qfalse;
-
-	if ( self->client->ps.pm_type == PM_DEAD ) {
-		return;
-	}
-
-	if ( level.intermissiontime ) {
-		return;
-	}
-
-	if (g_slowmoDuelEnd.integer && g_gametype.integer == GT_TOURNAMENT && attacker && attacker->inuse && attacker->client)
+static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
+{
+	if (g_gametype.integer == GT_JEDIMASTER)
 	{
-		if (!gDoSlowMoDuel)
+		if (attacker->client->ps.isJediMaster || self->client->ps.isJediMaster)
 		{
-			gDoSlowMoDuel = qtrue;
-			gSlowMoDuelTime = level.time;
+			AddScore( attacker, self->r.currentOrigin, 1 );
+
+			if (self->client->ps.isJediMaster)
+			{
+				ThrowSaberToAttacker(self, attacker);
+				self->client->ps.isJediMaster = qfalse;
+			}
+		}
+		else
+		{
+			gentity_t *jmEnt = G_GetJediMaster();
+
+			if (jmEnt && jmEnt->client)
+			{
+				AddScore( jmEnt, self->r.currentOrigin, 1 );
+			}
 		}
 	}
-
-	if (inflictor && inflictor->activator && !inflictor->client && !attacker->client &&
-		inflictor->activator->client && inflictor->activator->inuse &&
-		inflictor->s.weapon == WP_TURRET)
+	else
 	{
-		attacker = inflictor->activator;
+		AddScore( attacker, self->r.currentOrigin, 1 );
 	}
 
-	if (self->client && self->client->ps.isJediMaster)
-	{
-		wasJediMaster = qtrue;
+	if( meansOfDeath == MOD_STUN_BATON ) {
+
+		// play humiliation on player
+		attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+
+		// add the sprite over the player's head
+		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
+		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+
+		// also play humiliation on target
+		self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
 	}
 
-	//if he was charging or anything else, kill the sound
-	G_MuteSound(self->s.number, CHAN_WEAPON);
+	// check for two kills in a short amount of time
+	// if this is close enough to the last kill, give a reward sound
+	if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
+		// play excellent on player
+		attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
 
-	BlowDetpacks(self); //blow detpacks if they're planted
-
-	self->client->ps.fd.forceDeactivateAll = 1;
-
-	if ((self == attacker || !attacker->client) &&
-		(meansOfDeath == MOD_CRUSH || meansOfDeath == MOD_FALLING || meansOfDeath == MOD_TRIGGER_HURT || meansOfDeath == MOD_UNKNOWN) &&
-		self->client->ps.otherKillerTime > level.time)
-	{
-		attacker = &g_entities[self->client->ps.otherKiller];
+		// add the sprite over the player's head
+		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
+		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	}
+	attacker->client->lastKillTime = level.time;
+}
 
-	// check for an almost capture
-	CheckAlmostCapture( self, attacker );
+static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker )
+{
+	if (g_gametype.integer == GT_TOURNAMENT)
+	{ //in duel, if you kill yourself, the person you are dueling against gets a kill for it
+		int otherClNum = -1;
+		if (level.sortedClients[0] == self->s.number)
+		{
+			otherClNum = level.sortedClients[1];
+		}
+		else if (level.sortedClients[1] == self->s.number)
+		{
+			otherClNum = level.sortedClients[0];
+		}
 
-	self->client->ps.pm_type = PM_DEAD;
+		if (otherClNum >= 0 && otherClNum < MAX_CLIENTS &&
+			g_entities[otherClNum].inuse && g_entities[otherClNum].client &&
+			otherClNum != attacker->s.number)
+		{
+			AddScore( &g_entities[otherClNum], self->r.currentOrigin, 1 );
+		}
+		else
+		{
+			AddScore( attacker, self->r.currentOrigin, -1 );
+		}
+	}
+	else
+	{
+		AddScore( attacker, self->r.currentOrigin, -1 );
+	}
+	if (g_gametype.integer == GT_JEDIMASTER)
+	{
+		if (self->client && self->client->ps.isJediMaster)
+		{ //killed ourself so return the saber to the original position
+			//(to avoid people jumping off ledges and making the saber
+			//unreachable for 60 seconds)
+			ThrowSaberToAttacker(self, NULL);
+			self->client->ps.isJediMaster = qfalse;
+		}
+	}
+}
+
+extern stringID_table_t animTable[MAX_ANIMATIONS+1];
+static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
+{
+	int			killer;
+	char		*killerName, *obit;
 
 	if ( attacker ) {
 		killer = attacker->s.number;
@@ -1875,12 +1916,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n",
-		killer, self->s.number, meansOfDeath, killerName,
-		self->client->pers.netname, obit );
+				killer, self->s.number, meansOfDeath, killerName,
+				self->client->pers.netname, obit );
 
 	if ( g_austrian.integer
-		&& g_gametype.integer == GT_TOURNAMENT
-		&& level.numPlayingClients >= 2 )
+		 && g_gametype.integer == GT_TOURNAMENT
+		 && level.numPlayingClients >= 2 )
 	{
 		int spawnTime = (level.clients[level.sortedClients[0]].respawnTime > level.clients[level.sortedClients[1]].respawnTime) ? level.clients[level.sortedClients[0]].respawnTime : level.clients[level.sortedClients[1]].respawnTime;
 		G_LogPrintf("Duel Kill Details:\n");
@@ -1904,6 +1945,148 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		G_LogWeaponFrag(killer, self->s.number);
 	}
 
+	return killer;
+}
+
+static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t meansOfDeath, qboolean wasJediMaster )
+{
+	static int	i;
+	int			anim;
+
+	// NOTENOTE No gib deaths right now, this is star wars.
+	/*
+	// never gib in a nodrop
+	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
+	{
+		// gib death
+		GibEntity( self, killer );
+	}
+	else
+	*/
+	// normal death
+
+
+	switch ( i ) {
+	case 0:
+		anim = BOTH_DEATH1;
+		break;
+	case 1:
+		anim = BOTH_DEATH2;
+		break;
+	case 2:
+	default:
+		anim = BOTH_DEATH3;
+		break;
+	}
+
+	anim = G_PickDeathAnim(self, self->pos1, damage, meansOfDeath, HL_NONE);
+
+	if (anim < 1)
+	{
+		anim = BOTH_DEATH1;
+	}
+
+	if (meansOfDeath == MOD_SABER)
+	{
+		G_CheckForDismemberment(self, self->pos1, damage, anim);
+	}
+
+	// for the no-blood option, we need to prevent the health
+	// from going to gib level
+	if ( self->health <= GIB_HEALTH ) {
+		self->health = GIB_HEALTH+1;
+	}
+
+	self->client->respawnTime = level.time + 1000;//((self->client->animations[anim].numFrames*40)/(50.0f / self->client->animations[anim].frameLerp))+300;
+
+	self->client->ps.legsAnim =
+		( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
+	self->client->ps.torsoAnim =
+		( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
+//		self->client->ps.pm_flags |= PMF_UPDATE_ANIM;		// Make sure the pmove sets up the GHOUL2 anims.
+
+	//CopyToBodyQue( self );
+
+	//G_AddEvent( self, EV_DEATH1 + i, killer );
+	if (wasJediMaster)
+	{
+		G_AddEvent( self, EV_DEATH1 + i, 1 );
+	}
+	else
+	{
+		G_AddEvent( self, EV_DEATH1 + i, 0 );
+	}
+
+	// the body can still be gibbed
+	self->die = body_die;
+
+	//It won't gib, it will disintegrate (because this is Star Wars).
+	self->takedamage = qtrue;
+
+	// globally cycle through the different death animations
+	i = ( i + 1 ) % 3;
+}
+
+/*
+==================
+player_die
+==================
+*/
+void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
+	gentity_t	*ent;
+	int			contents;
+	int			killer;
+	int			i;
+	qboolean	wasJediMaster = qfalse;
+
+	if ( self->client->ps.pm_type == PM_DEAD ) {
+		return;
+	}
+
+	if ( level.intermissiontime ) {
+		return;
+	}
+
+	if (g_slowmoDuelEnd.integer && g_gametype.integer == GT_TOURNAMENT
+		&& attacker && attacker->inuse && attacker->client && !gDoSlowMoDuel)
+	{
+		gDoSlowMoDuel = qtrue;
+		gSlowMoDuelTime = level.time;
+	}
+
+	if (inflictor && inflictor->activator && !inflictor->client && !attacker->client &&
+		inflictor->activator->client && inflictor->activator->inuse &&
+		inflictor->s.weapon == WP_TURRET)
+	{
+		attacker = inflictor->activator;
+	}
+
+	if (self->client->ps.isJediMaster)
+	{
+		wasJediMaster = qtrue;
+	}
+
+	//if he was charging or anything else, kill the sound
+	G_MuteSound(self->s.number, CHAN_WEAPON);
+
+	BlowDetpacks(self); //blow detpacks if they're planted
+
+	self->client->ps.fd.forceDeactivateAll = 1;
+
+	if ((self == attacker || !attacker->client) &&
+		(meansOfDeath == MOD_CRUSH || meansOfDeath == MOD_FALLING || meansOfDeath == MOD_TRIGGER_HURT || meansOfDeath == MOD_UNKNOWN) &&
+		self->client->ps.otherKillerTime > level.time)
+	{
+		attacker = &g_entities[self->client->ps.otherKiller];
+	}
+
+	// check for an almost capture
+	CheckAlmostCapture( self, attacker );
+
+	self->client->ps.pm_type = PM_DEAD;
+
+	killer = G_LogPlayerDie( self, attacker, meansOfDeath );
+
 	// broadcast the death event to everyone
 	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
 	ent->s.eventParm = meansOfDeath;
@@ -1924,137 +2107,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (attacker && attacker->client) {
 		attacker->client->lastkilled_client = self->s.number;
 
-		if ( attacker == self || OnSameTeam (self, attacker ) ) {
-			if (g_gametype.integer == GT_TOURNAMENT)
-			{ //in duel, if you kill yourself, the person you are dueling against gets a kill for it
-				int otherClNum = -1;
-				if (level.sortedClients[0] == self->s.number)
-				{
-					otherClNum = level.sortedClients[1];
-				}
-				else if (level.sortedClients[1] == self->s.number)
-				{
-					otherClNum = level.sortedClients[0];
-				}
-
-				if (otherClNum >= 0 && otherClNum < MAX_CLIENTS &&
-					g_entities[otherClNum].inuse && g_entities[otherClNum].client &&
-					otherClNum != attacker->s.number)
-				{
-					AddScore( &g_entities[otherClNum], self->r.currentOrigin, 1 );
-				}
-				else
-				{
-					AddScore( attacker, self->r.currentOrigin, -1 );
-				}
-			}
-			else
-			{
-				AddScore( attacker, self->r.currentOrigin, -1 );
-			}
-			if (g_gametype.integer == GT_JEDIMASTER)
-			{
-				if (self->client && self->client->ps.isJediMaster)
-				{ //killed ourself so return the saber to the original position
-				  //(to avoid people jumping off ledges and making the saber
-				  //unreachable for 60 seconds)
-					ThrowSaberToAttacker(self, NULL);
-					self->client->ps.isJediMaster = qfalse;
-				}
-			}
+		if (attacker == self || OnSameTeam(self, attacker)) {
+			G_ScoreTeamKill( self, attacker );
 		} else {
-			if (g_gametype.integer == GT_JEDIMASTER)
-			{
-				if ((attacker->client && attacker->client->ps.isJediMaster) ||
-					(self->client && self->client->ps.isJediMaster))
-				{
-					AddScore( attacker, self->r.currentOrigin, 1 );
-
-					if (self->client && self->client->ps.isJediMaster)
-					{
-						ThrowSaberToAttacker(self, attacker);
-						self->client->ps.isJediMaster = qfalse;
-					}
-				}
-				else
-				{
-					gentity_t *jmEnt = G_GetJediMaster();
-
-					if (jmEnt && jmEnt->client)
-					{
-						AddScore( jmEnt, self->r.currentOrigin, 1 );
-					}
-				}
-			}
-			else
-			{
-				AddScore( attacker, self->r.currentOrigin, 1 );
-			}
-
-			if( meansOfDeath == MOD_STUN_BATON ) {
-
-				// play humiliation on player
-				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
-
-				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
-				attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
-				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
-
-				// also play humiliation on target
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
-			}
-
-			// check for two kills in a short amount of time
-			// if this is close enough to the last kill, give a reward sound
-			if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
-				// play excellent on player
-				attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
-
-				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
-				attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
-				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
-			}
-			attacker->client->lastKillTime = level.time;
-
+			G_ScoreKill( self, attacker, meansOfDeath );
 		}
 	} else {
-		if (self->client && self->client->ps.isJediMaster)
-		{ //killed ourself so return the saber to the original position
-		  //(to avoid people jumping off ledges and making the saber
-		  //unreachable for 60 seconds)
-			ThrowSaberToAttacker(self, NULL);
-			self->client->ps.isJediMaster = qfalse;
-		}
-
-		if (g_gametype.integer == GT_TOURNAMENT)
-		{ //in duel, if you kill yourself, the person you are dueling against gets a kill for it
-			int otherClNum = -1;
-			if (level.sortedClients[0] == self->s.number)
-			{
-				otherClNum = level.sortedClients[1];
-			}
-			else if (level.sortedClients[1] == self->s.number)
-			{
-				otherClNum = level.sortedClients[0];
-			}
-
-			if (otherClNum >= 0 && otherClNum < MAX_CLIENTS &&
-				g_entities[otherClNum].inuse && g_entities[otherClNum].client &&
-				otherClNum != self->s.number)
-			{
-				AddScore( &g_entities[otherClNum], self->r.currentOrigin, 1 );
-			}
-			else
-			{
-				AddScore( self, self->r.currentOrigin, -1 );
-			}
-		}
-		else
-		{
-			AddScore( self, self->r.currentOrigin, -1 );
-		}
+		G_ScoreTeamKill( self, self );
 	}
 
 	// Add team bonuses
@@ -2111,8 +2170,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 	}
 
-	self->takedamage = qtrue;	// can still be gibbed
-
 	self->s.weapon = WP_NONE;
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
@@ -2135,82 +2192,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// remove powerups
 	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
 
-	// NOTENOTE No gib deaths right now, this is star wars.
-	/*
-	// never gib in a nodrop
-	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
-	{
-		// gib death
-		GibEntity( self, killer );
-	}
-	else
-	*/
-	{
-		// normal death
-
-		static int i;
-
-		switch ( i ) {
-		case 0:
-			anim = BOTH_DEATH1;
-			break;
-		case 1:
-			anim = BOTH_DEATH2;
-			break;
-		case 2:
-		default:
-			anim = BOTH_DEATH3;
-			break;
-		}
-
-		anim = G_PickDeathAnim(self, self->pos1, damage, meansOfDeath, HL_NONE);
-
-		if (anim < 1)
-		{
-			anim = BOTH_DEATH1;
-		}
-
-		if (meansOfDeath == MOD_SABER)
-		{
-			G_CheckForDismemberment(self, self->pos1, damage, anim);
-		}
-
-		// for the no-blood option, we need to prevent the health
-		// from going to gib level
-		if ( self->health <= GIB_HEALTH ) {
-			self->health = GIB_HEALTH+1;
-		}
-
-		self->client->respawnTime = level.time + 1000;//((self->client->animations[anim].numFrames*40)/(50.0f / self->client->animations[anim].frameLerp))+300;
-
-		self->client->ps.legsAnim =
-			( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-		self->client->ps.torsoAnim =
-			( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-//		self->client->ps.pm_flags |= PMF_UPDATE_ANIM;		// Make sure the pmove sets up the GHOUL2 anims.
-
-		//rww - do this on respawn, not death
-		//CopyToBodyQue (self);
-
-		//G_AddEvent( self, EV_DEATH1 + i, killer );
-		if (wasJediMaster)
-		{
-			G_AddEvent( self, EV_DEATH1 + i, 1 );
-		}
-		else
-		{
-			G_AddEvent( self, EV_DEATH1 + i, 0 );
-		}
-
-		// the body can still be gibbed
-		self->die = body_die;
-
-		//It won't gib, it will disintegrate (because this is Star Wars).
-		self->takedamage = qtrue;
-
-		// globally cycle through the different death animations
-		i = ( i + 1 ) % 3;
-	}
+	G_PlayerDieHandleBody(self, damage, meansOfDeath, wasJediMaster);
 
 	trap_LinkEntity (self);
 
@@ -3339,7 +3321,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// See if it's the player hurting the emeny flag carrier
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY) {
+	if(GT_Flag(g_gametype.integer)) {
 		Team_CheckHurtCarrier(targ, attacker);
 	}
 

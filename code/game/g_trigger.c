@@ -284,7 +284,13 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 		return;
 	}
 
-	if ( activator->client->ps.pm_type != PM_NORMAL && activator->client->ps.pm_type != PM_FLOAT ) {
+	switch ( activator->client->ps.pm_type ) {
+	case PM_NOCLIP:
+	case PM_SPECTATOR:
+	case PM_DEAD:
+	case PM_FREEZE:
+	case PM_INTERMISSION:
+	case PM_SPINTERMISSION:
 		return;
 	}
 

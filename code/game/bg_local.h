@@ -60,10 +60,10 @@ void	trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void	trap_FS_FCloseFile( fileHandle_t f );
 
 //PM anim utility functions:
-qboolean PM_SaberInParry( int move );
-qboolean PM_SaberInKnockaway( int move );
-qboolean PM_SaberInReflect( int move );
-qboolean PM_SaberInStart( int move );
+qboolean PM_SaberInParry( saberMoveName_t move );
+qboolean PM_SaberInKnockaway( saberMoveName_t move );
+qboolean PM_SaberInReflect( saberMoveName_t move );
+qboolean PM_SaberInStart( saberMoveName_t move );
 qboolean PM_InSaberAnim( int anim );
 qboolean PM_InKnockDown( playerState_t *ps );
 qboolean PM_PainAnim( int anim );
@@ -89,16 +89,16 @@ void		PM_StepSlideMove( qboolean gravity );
 
 void BG_CycleInven(playerState_t *ps, int direction);
 
-void PM_StartTorsoAnim( int anim );
-void PM_ContinueLegsAnim( int anim );
-void PM_ForceLegsAnim( int anim );
+void PM_StartTorsoAnim( animNumber_t anim );
+void PM_ContinueLegsAnim( animNumber_t anim );
+void PM_ForceLegsAnim( animNumber_t anim );
 
 void PM_BeginWeaponChange( int weapon );
 void PM_FinishWeaponChange( void );
 
-void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
+void PM_SetAnim(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime);
 
 void PM_WeaponLightsaber(void);
-void PM_SetSaberMove(short newMove);
+void PM_SetSaberMove( saberMoveName_t newMove);
 
 void PM_SetForceJumpZStart(float value);

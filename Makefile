@@ -20,6 +20,8 @@ version : FORCE
 	@touch code/game/bg_version.h
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
+ALL_CFLAGS += -Wall -Wno-unused-but-set-variable -Wno-unknown-pragmas	\
+-Wno-missing-braces
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) $(DEFS)
 LCC_CFLAGS += -S -Wf-target=bytecode -Wf-g -DQ3_VM
 

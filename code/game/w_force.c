@@ -348,7 +348,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 			if (!(ent->r.svFlags & SVF_BOT) && g_gametype.integer != GT_TOURNAMENT)
 			{
-				if (g_gametype.integer < GT_TEAM || !g_teamAutoJoin.integer)
+				if (!GT_Team(g_gametype.integer) || !g_teamAutoJoin.integer)
 				{
 					//Make them a spectator so they can set their powerups up without being bothered.
 					ent->client->sess.sessionTeam = TEAM_SPECTATOR;
@@ -3629,8 +3629,6 @@ static void WP_UpdateMindtrickEnts(gentity_t *self)
 
 static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd_t *cmd )
 {
-	extern usercmd_t	ucmd;
-
 	switch( (int)forcePower )
 	{
 	case FP_HEAL:
@@ -4003,17 +4001,27 @@ void FindGenericEnemyIndex(gentity_t *self)
 	{
 		ent = &g_entities[i];
 
-		if (ent && ent->client && ent->s.number != self->s.number && ent->health > 0 && !OnSameTeam(self, ent) && ent->client->ps.pm_type != PM_INTERMISSION && ent->client->ps.pm_type != PM_SPECTATOR)
+		if (ent && ent->client && ent->s.number != self->s.number && ent->health > 0)
 		{
-			VectorSubtract(ent->client->ps.origin, self->client->ps.origin, a);
-			tlen = VectorLength(a);
+			switch ( ent->client->ps.pm_type ) {
+			case PM_NORMAL:
+			case PM_FLOAT:
+			case PM_NOCLIP:
+			case PM_DEAD:
+			case PM_FREEZE:
+				if (OnSameTeam(self, ent)) {
+					break;
+				}
+				VectorSubtract(ent->client->ps.origin, self->client->ps.origin, a);
+				tlen = VectorLength(a);
 
-			if (tlen < blen &&
-				InFront(ent->client->ps.origin, self->client->ps.origin, self->client->ps.viewangles, 0.8f ) &&
-				OrgVisible(self->client->ps.origin, ent->client->ps.origin, self->s.number))
-			{
-				blen = tlen;
-				besten = ent;
+				if (tlen < blen &&
+					InFront(ent->client->ps.origin, self->client->ps.origin, self->client->ps.viewangles, 0.8f ) &&
+					OrgVisible(self->client->ps.origin, ent->client->ps.origin, self->s.number))
+				{
+					blen = tlen;
+					besten = ent;
+				}
 			}
 		}
 

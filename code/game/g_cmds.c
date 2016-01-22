@@ -769,7 +769,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-	} else if ( g_gametype.integer >= GT_TEAM ) {
+	} else if ( GT_Team(g_gametype.integer) ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
@@ -1040,7 +1040,7 @@ argCheck:
 
 		trap_Argv( 1, arg, sizeof( arg ) );
 
-		if (arg && arg[0])
+		if (arg[0])
 		{ //if there's an arg, assume it's a combo team command from the UI.
 			Cmd_Team_f(ent);
 		}
@@ -1214,7 +1214,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
-		if (target && g_gametype.integer >= GT_TEAM &&
+		if (target && GT_Team(g_gametype.integer) &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
 			Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
@@ -1344,7 +1344,7 @@ static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *i
 		return;
 	}
 	// no chatting to players in tournements
-	if ( (g_gametype.integer == GT_TOURNAMENT )) {
+	if (g_gametype.integer == GT_TOURNAMENT) {
 		return;
 	}
 
@@ -1368,7 +1368,7 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 	int			j;
 	gentity_t	*other;
 
-	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
+	if ( !GT_Team(g_gametype.integer) && mode == SAY_TEAM ) {
 		mode = SAY_ALL;
 	}
 
@@ -1501,7 +1501,7 @@ static void Cmd_VoiceTaunt_f( gentity_t *ent ) {
 		}
 	}
 
-	if (g_gametype.integer >= GT_TEAM) {
+	if (GT_Team(g_gametype.integer)) {
 		// praise a team mate who just got a reward
 		for(i = 0; i < MAX_CLIENTS; i++) {
 			who = g_entities + i;
@@ -2267,7 +2267,7 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	if (g_gametype.integer >= GT_TEAM)
+	if (GT_Team(g_gametype.integer))
 	{ //no private dueling in team modes
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NODUEL_GAMETYPE")) );
 		return;
@@ -2334,7 +2334,7 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 			return;
 		}
 
-		if (g_gametype.integer >= GT_TEAM && OnSameTeam(ent, challenged))
+		if (GT_Team(g_gametype.integer) && OnSameTeam(ent, challenged))
 		{
 			return;
 		}

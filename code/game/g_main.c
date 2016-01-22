@@ -103,7 +103,6 @@ vmCvar_t	g_debugUp;
 vmCvar_t	g_smoothClients;
 vmCvar_t	pmove_fixed;
 vmCvar_t	pmove_msec;
-vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
 vmCvar_t	g_redteam;
 vmCvar_t	g_blueteam;
@@ -255,8 +254,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
 	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
 	{ &pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
-
-	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse},
 
 	{ &g_dismember, "g_dismember", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_forceDodge, "g_forceDodge", "1", 0, 0, qtrue  },
@@ -590,7 +587,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_FindTeams();
 
 	// make sure we have flags for CTF, etc
-	if( g_gametype.integer >= GT_TEAM ) {
+	if( GT_Team(g_gametype.integer) ) {
 		G_CheckTeamItems();
 	}
 	else if ( g_gametype.integer == GT_JEDIMASTER )
@@ -1005,9 +1002,7 @@ void CalculateRanks( void ) {
 	level.numNonSpectatorClients = 0;
 	level.numPlayingClients = 0;
 	level.numVotingClients = 0;		// don't count bots
-	for ( i = 0; i < TEAM_NUM_TEAMS; i++ ) {
-		level.numteamVotingClients[i] = 0;
-	}
+	level.numteamVotingClients[0] = level.numteamVotingClients[1] = 0;
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
 			level.sortedClients[level.numConnectedClients] = i;
@@ -1060,7 +1055,7 @@ void CalculateRanks( void ) {
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( g_gametype.integer >= GT_TEAM ) {
+	if ( GT_Team(g_gametype.integer) ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -1095,7 +1090,7 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( g_gametype.integer >= GT_TEAM ) {
+	if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -1436,7 +1431,7 @@ void LogExit( const char *string ) {
 		numSorted = 32;
 	}
 
-	if ( g_gametype.integer >= GT_TEAM ) {
+	if ( GT_Team(g_gametype.integer) ) {
 		G_LogPrintf( "red:%i  blue:%i\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
 	}
@@ -1464,7 +1459,7 @@ void LogExit( const char *string ) {
 	}
 
 	if (g_singlePlayer.integer) {
-		if (g_gametype.integer >= GT_CTF) {
+		if (GT_Flag(g_gametype.integer)) {
 			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
 		}
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
@@ -1684,7 +1679,7 @@ qboolean ScoreIsTied( void ) {
 		return qfalse;
 	}
 
-	if ( g_gametype.integer >= GT_TEAM ) {
+	if ( GT_Team(g_gametype.integer) ) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
 
@@ -1781,7 +1776,7 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( g_gametype.integer < GT_CTF && g_fraglimit.integer ) {
+	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
@@ -1825,7 +1820,7 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( g_gametype.integer >= GT_CTF && g_capturelimit.integer ) {
+	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
@@ -1958,7 +1953,7 @@ void CheckTournament( void ) {
 		int		counts[TEAM_NUM_TEAMS];
 		qboolean	notEnough = qfalse;
 
-		if ( g_gametype.integer > GT_TEAM ) {
+		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_TEAM ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
 
@@ -2254,6 +2249,62 @@ int g_TimeSinceLastFrame = 0;
 qboolean gDoSlowMoDuel = qfalse;
 int gSlowMoDuelTime = 0;
 
+void SlowMoDuelTimescale() {
+	if (level.restarted)
+	{
+		char buf[128];
+		float tFVal = 0;
+
+		trap_Cvar_VariableStringBuffer("timescale", buf, sizeof(buf));
+
+		tFVal = atof(buf);
+
+		trap_Cvar_Set("timescale", "1");
+		if (tFVal == 1.0f)
+		{
+			gDoSlowMoDuel = qfalse;
+		}
+	}
+	else
+	{
+		float timeDif = (level.time - gSlowMoDuelTime); //difference in time between when the slow motion was initiated and now
+		float useDif = 0; //the difference to use when actually setting the timescale
+
+		if (timeDif < 150)
+		{
+			trap_Cvar_Set("timescale", "0.1f");
+		}
+		else if (timeDif < 1150)
+		{
+			useDif = (timeDif/1000); //scale from 0.1 up to 1
+			if (useDif < 0.1)
+			{
+				useDif = 0.1;
+			}
+			if (useDif > 1.0)
+			{
+				useDif = 1.0;
+			}
+			trap_Cvar_Set("timescale", va("%f", useDif));
+		}
+		else
+		{
+			char buf[128];
+			float tFVal = 0;
+
+			trap_Cvar_VariableStringBuffer("timescale", buf, sizeof(buf));
+
+			tFVal = atof(buf);
+
+			trap_Cvar_Set("timescale", "1");
+			if (timeDif > 1500 && tFVal == 1.0f)
+			{
+				gDoSlowMoDuel = qfalse;
+			}
+		}
+	}
+}
+
 /*
 ================
 G_RunFrame
@@ -2268,61 +2319,8 @@ void G_RunFrame( int levelTime ) {
 	int			msec;
 	int start, end;
 
-	if (gDoSlowMoDuel)
-	{
-		if (level.restarted)
-		{
-			char buf[128];
-			float tFVal = 0;
-
-			trap_Cvar_VariableStringBuffer("timescale", buf, sizeof(buf));
-
-			tFVal = atof(buf);
-
-			trap_Cvar_Set("timescale", "1");
-			if (tFVal == 1.0f)
-			{
-				gDoSlowMoDuel = qfalse;
-			}
-		}
-		else
-		{
-			float timeDif = (level.time - gSlowMoDuelTime); //difference in time between when the slow motion was initiated and now
-			float useDif = 0; //the difference to use when actually setting the timescale
-
-			if (timeDif < 150)
-			{
-				trap_Cvar_Set("timescale", "0.1f");
-			}
-			else if (timeDif < 1150)
-			{
-				useDif = (timeDif/1000); //scale from 0.1 up to 1
-				if (useDif < 0.1)
-				{
-					useDif = 0.1;
-				}
-				if (useDif > 1.0)
-				{
-					useDif = 1.0;
-				}
-				trap_Cvar_Set("timescale", va("%f", useDif));
-			}
-			else
-			{
-				char buf[128];
-				float tFVal = 0;
-
-				trap_Cvar_VariableStringBuffer("timescale", buf, sizeof(buf));
-
-				tFVal = atof(buf);
-
-				trap_Cvar_Set("timescale", "1");
-				if (timeDif > 1500 && tFVal == 1.0f)
-				{
-					gDoSlowMoDuel = qfalse;
-				}
-			}
-		}
+	if (gDoSlowMoDuel) {
+		SlowMoDuelTimescale();
 	}
 
 	// if we are waiting for the level to restart, do nothing

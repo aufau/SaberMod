@@ -914,49 +914,27 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 	return qfalse;
 }
 
-int G_GetParryForBlock(int block)
+saberMoveName_t G_GetParryForBlock(saberBlockedType_t block)
 {
 	switch (block)
 	{
-		case BLOCKED_UPPER_RIGHT:
-			return LS_PARRY_UR;
-			break;
-		case BLOCKED_UPPER_RIGHT_PROJ:
-			return LS_REFLECT_UR;
-			break;
-		case BLOCKED_UPPER_LEFT:
-			return LS_PARRY_UL;
-			break;
-		case BLOCKED_UPPER_LEFT_PROJ:
-			return LS_REFLECT_UL;
-			break;
-		case BLOCKED_LOWER_RIGHT:
-			return LS_PARRY_LR;
-			break;
-		case BLOCKED_LOWER_RIGHT_PROJ:
-			return LS_REFLECT_LR;
-			break;
-		case BLOCKED_LOWER_LEFT:
-			return LS_PARRY_LL;
-			break;
-		case BLOCKED_LOWER_LEFT_PROJ:
-			return LS_REFLECT_LL;
-			break;
-		case BLOCKED_TOP:
-			return LS_PARRY_UP;
-			break;
-		case BLOCKED_TOP_PROJ:
-			return LS_REFLECT_UP;
-			break;
-		default:
-			break;
+		case BLOCKED_UPPER_RIGHT:      return LS_PARRY_UR;
+		case BLOCKED_UPPER_RIGHT_PROJ: return LS_REFLECT_UR;
+		case BLOCKED_UPPER_LEFT:       return LS_PARRY_UL;
+		case BLOCKED_UPPER_LEFT_PROJ:  return LS_REFLECT_UL;
+		case BLOCKED_LOWER_RIGHT:      return LS_PARRY_LR;
+		case BLOCKED_LOWER_RIGHT_PROJ: return LS_REFLECT_LR;
+		case BLOCKED_LOWER_LEFT:       return LS_PARRY_LL;
+		case BLOCKED_LOWER_LEFT_PROJ:  return LS_REFLECT_LL;
+		case BLOCKED_TOP:              return LS_PARRY_UP;
+		case BLOCKED_TOP_PROJ:         return LS_REFLECT_UP;
+		default:                       return LS_NONE;
 	}
 
-	return LS_NONE;
 }
 
-int PM_SaberBounceForAttack( int move );
-int PM_SaberDeflectionForQuad( int quad );
+saberMoveName_t PM_SaberBounceForAttack( saberMoveName_t move );
+saberMoveName_t PM_SaberDeflectionForQuad( saberQuadrant_t quad );
 extern stringID_table_t animTable[MAX_ANIMATIONS+1];
 qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, float saberHitFraction )
 {
@@ -983,10 +961,10 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 	if ( animBasedDeflection )
 	{
 		//Hmm, let's try just basing it off the anim
-		int attQuadStart = saberMoveData[attacker->client->ps.saberMove].startQuad;
-		int attQuadEnd = saberMoveData[attacker->client->ps.saberMove].endQuad;
-		int defQuad = saberMoveData[defender->client->ps.saberMove].endQuad;
-		int quadDiff = fabs(defQuad-attQuadStart);
+		saberQuadrant_t attQuadStart = saberMoveData[attacker->client->ps.saberMove].startQuad;
+		saberQuadrant_t attQuadEnd = saberMoveData[attacker->client->ps.saberMove].endQuad;
+		saberQuadrant_t defQuad = saberMoveData[defender->client->ps.saberMove].endQuad;
+		saberQuadrant_t quadDiff = abs(defQuad-attQuadStart);
 
 		if ( defender->client->ps.saberMove == LS_READY )
 		{
@@ -1021,6 +999,10 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 		case Q_BL:
 			defQuad = Q_BR;
 			break;
+		case Q_T:
+		case Q_B:
+		default:
+			break;
 		}
 
 		if ( quadDiff > 4 )
@@ -1046,7 +1028,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 		}
 		else
 		{//attack hit at an angle, figure out what angle it should bounce off att
-			int newQuad;
+			saberQuadrant_t newQuad;
 			quadDiff = defQuad - attQuadEnd;
 			//add half the diff of between the defense and attack end to the attack end
 			if ( quadDiff > 4 )
@@ -1083,7 +1065,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 			}
 			if ( newQuad == defQuad )
 			{//bounce straight back
-				int attMove = attacker->client->ps.saberMove;
+				saberMoveName_t attMove = attacker->client->ps.saberMove;
 				attacker->client->ps.saberMove = PM_SaberBounceForAttack( attacker->client->ps.saberMove );
 				if (g_saberDebugPrint.integer)
 				{
@@ -1098,7 +1080,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 			//else, pick a deflection
 			else
 			{
-				int attMove = attacker->client->ps.saberMove;
+				saberMoveName_t attMove = attacker->client->ps.saberMove;
 				attacker->client->ps.saberMove = PM_SaberDeflectionForQuad( newQuad );
 				if (g_saberDebugPrint.integer)
 				{
@@ -1214,28 +1196,19 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 	}
 }
 
-int G_KnockawayForParry( int move )
+saberMoveName_t G_KnockawayForParry( saberMoveName_t move )
 {
 	//FIXME: need actual anims for this
 	//FIXME: need to know which side of the saber was hit!  For now, we presume the saber gets knocked away from the center
 	switch ( move )
 	{
-	case LS_PARRY_UP:
-		return LS_K1_T_;//push up
-		break;
+	case LS_PARRY_UP: return LS_K1_T_;//push up
 	case LS_PARRY_UR:
 	default://case LS_READY:
 		return LS_K1_TR;//push up, slightly to right
-		break;
-	case LS_PARRY_UL:
-		return LS_K1_TL;//push up and to left
-		break;
-	case LS_PARRY_LR:
-		return LS_K1_BR;//push down and to left
-		break;
-	case LS_PARRY_LL:
-		return LS_K1_BL;//push down and to right
-		break;
+	case LS_PARRY_UL: return LS_K1_TL;//push up and to left
+	case LS_PARRY_LR: return LS_K1_BR;//push down and to left
+	case LS_PARRY_LL: return LS_K1_BL;//push down and to right
 	}
 }
 
@@ -1248,7 +1221,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 	int speedDif = 0;
 	int totalDamage = maxDmg;
 	float peakPoint = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * fabs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
 	float currentPoint = 0;
 	float damageFactor = 0;
 	float animSpeedFactor = 1.0f;
@@ -1297,7 +1270,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 float G_GetAnimPoint(gentity_t *self)
 {
 	int speedDif = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * fabs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
 	float currentPoint = 0;
 	float animSpeedFactor = 1.0f;
 	float animPercentage = 0;
@@ -2155,7 +2128,7 @@ blockStuff:
 				}
 				else if (PM_SaberInParry(G_GetParryForBlock(otherOwner->client->ps.saberBlocked)) && !didOffense && tryDeflectAgain)
 				{ //We want to try deflecting again because the other is in the parry and we haven't made any new moves
-					int preMove = otherOwner->client->ps.saberMove;
+					saberMoveName_t preMove = otherOwner->client->ps.saberMove;
 
 					otherOwner->client->ps.saberMove = G_GetParryForBlock(otherOwner->client->ps.saberBlocked);
 					WP_GetSaberDeflectionAngle(self, otherOwner, tr.fraction);
@@ -3411,27 +3384,17 @@ finalUpdate:
 	}
 }
 
-int WP_MissileBlockForBlock( int saberBlock )
+saberBlockedType_t WP_MissileBlockForBlock( saberBlockedType_t saberBlock )
 {
 	switch( saberBlock )
 	{
-	case BLOCKED_UPPER_RIGHT:
-		return BLOCKED_UPPER_RIGHT_PROJ;
-		break;
-	case BLOCKED_UPPER_LEFT:
-		return BLOCKED_UPPER_LEFT_PROJ;
-		break;
-	case BLOCKED_LOWER_RIGHT:
-		return BLOCKED_LOWER_RIGHT_PROJ;
-		break;
-	case BLOCKED_LOWER_LEFT:
-		return BLOCKED_LOWER_LEFT_PROJ;
-		break;
-	case BLOCKED_TOP:
-		return BLOCKED_TOP_PROJ;
-		break;
+	case BLOCKED_UPPER_RIGHT: return BLOCKED_UPPER_RIGHT_PROJ;
+	case BLOCKED_UPPER_LEFT:  return BLOCKED_UPPER_LEFT_PROJ;
+	case BLOCKED_LOWER_RIGHT: return BLOCKED_LOWER_RIGHT_PROJ;
+	case BLOCKED_LOWER_LEFT:  return BLOCKED_LOWER_LEFT_PROJ;
+	case BLOCKED_TOP:         return BLOCKED_TOP_PROJ;
+	default:                  return saberBlock;
 	}
-	return saberBlock;
 }
 
 void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock )

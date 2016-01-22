@@ -167,7 +167,7 @@ void BotReportStatus(bot_state_t *bs)
 	{
 		trap_EA_SayTeam(bs->client, sagaStateDescriptions[bs->sagaState]);
 	}
-	else if (g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY)
+	else if (GT_Flag(g_gametype.integer))
 	{
 		trap_EA_SayTeam(bs->client, ctfStateDescriptions[bs->ctfState]);
 	}
@@ -194,13 +194,12 @@ void BotOrder(gentity_t *ent, int clientnum, int ordernum)
 		return;
 	}
 
-	if (g_gametype.integer != GT_CTF && g_gametype.integer != GT_CTY && g_gametype.integer != GT_SAGA &&
-		g_gametype.integer != GT_TEAM)
+	if (!GT_Team(g_gametype.integer))
 	{
 		return;
 	}
 
-	if (g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY)
+	if (GT_Flag(g_gametype.integer))
 	{
 		stateMin = CTFSTATE_NONE;
 		stateMax = CTFSTATE_MAXCTFSTATES;
@@ -326,7 +325,7 @@ qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower );
 
 int IsTeamplay(void)
 {
-	if ( g_gametype.integer < GT_TEAM )
+	if ( !GT_Team(g_gametype.integer) )
 	{
 		return 0;
 	}
@@ -1341,8 +1340,7 @@ void WPConstantRoutine(bot_state_t *bs)
 
 qboolean BotCTFGuardDuty(bot_state_t *bs)
 {
-	if (g_gametype.integer != GT_CTF &&
-		g_gametype.integer != GT_CTY)
+	if (!GT_Flag(g_gametype.integer))
 	{
 		return qfalse;
 	}
@@ -2684,7 +2682,7 @@ int CTFTakesPriority(bot_state_t *bs)
 	G_Printf("CTFSTATE: %s\n", ctfStateNames[bs->ctfState]);
 #endif
 
-	if (g_gametype.integer != GT_CTF && g_gametype.integer != GT_CTY)
+	if (!GT_Flag(g_gametype.integer))
 	{
 		return 0;
 	}
@@ -4093,7 +4091,7 @@ void CommanderBotTeamplayAI(bot_state_t *bs)
 
 void CommanderBotAI(bot_state_t *bs)
 {
-	if (g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTY)
+	if (GT_Flag(g_gametype.integer))
 	{
 		CommanderBotCTFAI(bs);
 	}
@@ -6865,7 +6863,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			}
 		}
 	}
-	else if (g_gametype.integer >= GT_TEAM)
+	else if (GT_Team(g_gametype.integer))
 	{ //still check for anyone to help..
 		friendInLOF = CheckForFriendInLOF(bs);
 
@@ -6964,7 +6962,6 @@ int BotAIStartFrame(int time) {
 	int i;
 	int elapsed_time, thinktime;
 	static int local_time;
-	static int botlib_residual;
 	static int lastbotthink_time;
 
 	G_CheckBotSpawn();

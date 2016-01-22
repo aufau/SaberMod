@@ -30,7 +30,7 @@ void CG_SetPrintString(int type, const char *p) {
 }
 
 void CG_CheckOrderPending(void) {
-	if (cgs.gametype < GT_CTF) {
+    if (!GT_Flag(cgs.gametype)) {
 		return;
 	}
 	if (cgs.orderPending) {
@@ -213,7 +213,7 @@ float CG_GetValue(int ownerDraw) {
 }
 
 qboolean CG_OtherTeamHasFlag(void) {
-	if (cgs.gametype == GT_CTF || cgs.gametype == GT_CTY) {
+	if (GT_Flag(cgs.gametype)) {
 		int team = cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
 			return qtrue;
@@ -227,7 +227,7 @@ qboolean CG_OtherTeamHasFlag(void) {
 }
 
 qboolean CG_YourTeamHasFlag(void) {
-	if (cgs.gametype == GT_CTF || cgs.gametype == GT_CTY) {
+	if (GT_Flag(cgs.gametype)) {
 		int team = cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
 			return qtrue;
@@ -270,19 +270,19 @@ qboolean CG_OwnerDrawVisible(int flags) {
 	}
 
 	if (flags & CG_SHOW_ANYTEAMGAME) {
-		if( cgs.gametype >= GT_TEAM) {
+		if( GT_Team(cgs.gametype)) {
 			return qtrue;
 		}
 	}
 
 	if (flags & CG_SHOW_ANYNONTEAMGAME) {
-		if( cgs.gametype < GT_TEAM) {
+		if( !GT_Team(cgs.gametype)) {
 			return qtrue;
 		}
 	}
 
 	if (flags & CG_SHOW_CTF) {
-		if( cgs.gametype == GT_CTF || cgs.gametype == GT_CTY ) {
+		if( GT_Flag(cgs.gametype) ) {
 			return qtrue;
 		}
 	}
@@ -334,7 +334,7 @@ const char *CG_GetKillerText(void) {
 
 const char *CG_GetGameStatusText(void) {
 	static const char *s = "";
-	if ( cgs.gametype < GT_TEAM) {
+	if ( !GT_Team(cgs.gametype)) {
 		if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR )
 		{
 			char sPlaceWith[256];

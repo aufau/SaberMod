@@ -988,7 +988,7 @@ static int CG_CalcFov( void ) {
 				}
 				else
 				{	// Still zooming
-					static zoomSoundTime = 0;
+					static int zoomSoundTime = 0;
 
 					if (zoomSoundTime < cg.time || zoomSoundTime > cg.time + 10000)
 					{

@@ -143,6 +143,9 @@ typedef enum {
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
+#define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
+#define GT_Team(x) ((x) >= GT_TEAM)
+
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 extern vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
@@ -827,6 +830,8 @@ typedef enum {
 // which is currently used for determining if a saber trail should be rendered in a given frame
 
 typedef enum {
+	// Totally invalid
+	LS_INVALID	= -1,
 	// Invalid, or saber not armed
 	LS_NONE		= 0,
 
@@ -989,9 +994,9 @@ typedef enum {
 typedef struct
 {
 	char *name;
-	int animToUse;
-	int	startQuad;
-	int	endQuad;
+	animNumber_t animToUse;
+	saberQuadrant_t	startQuad;
+	saberQuadrant_t	endQuad;
 	unsigned animSetFlags;
 	int blendTime;
 	int blocking;
@@ -1008,19 +1013,19 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 qboolean BG_InSpecialJump( int anim );
 qboolean BG_InSaberStandAnim( int anim );
 qboolean BG_DirectFlippingAnim( int anim );
-qboolean BG_SaberInAttack( int move );
-qboolean BG_SaberInSpecial( int move );
-qboolean BG_SaberInIdle( int move );
+qboolean BG_SaberInAttack( saberMoveName_t move );
+qboolean BG_SaberInSpecial( saberMoveName_t move );
+qboolean BG_SaberInIdle( saberMoveName_t move );
 qboolean BG_FlippingAnim( int anim );
 qboolean BG_SpinningSaberAnim( int anim );
 qboolean BG_SaberInSpecialAttack( int anim );
-int BG_BrokenParryForAttack( int move );
-int BG_BrokenParryForParry( int move );
-int BG_KnockawayForParry( int move );
+saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
+saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
+saberMoveName_t BG_KnockawayForParry( saberMoveName_t move );
 qboolean BG_InRoll( playerState_t *ps, int anim );
 qboolean BG_InDeathAnim( int anim );
 
-void BG_SaberStartTransAnim( int saberAnimLevel, int anim, float *animSpeed );
+void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animSpeed );
 
 void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overrideAmt );
 

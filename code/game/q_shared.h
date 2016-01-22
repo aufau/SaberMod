@@ -299,6 +299,12 @@ typedef unsigned long		ulong;
 
 typedef enum {qfalse, qtrue}	qboolean;
 
+typedef union {
+	float f;
+	int i;
+	unsigned int ui;
+} floatint_t;
+
 typedef int		qhandle_t;
 typedef int		fxHandle_t;
 typedef int		sfxHandle_t;
@@ -1526,9 +1532,9 @@ typedef struct playerState_s {
 	qboolean	saberInFlight;
 	qboolean	saberActive;
 
-	int			saberMove;
+	int			saberMove; // saberMoveName_t
 	int			saberBlocking;
-	int			saberBlocked;
+	int			saberBlocked; // saberBlockedType_t
 
 	int			saberLockTime;
 	int			saberLockEnemy;
@@ -2048,7 +2054,7 @@ String ID Tables
 
 ========================================================================
 */
-#define ENUM2STRING(arg)   #arg,arg
+#define ENUM2STRING(arg)   {#arg,arg}
 typedef struct stringID_table_s
 {
 	char	*name;
