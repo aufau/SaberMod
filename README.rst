@@ -1,18 +1,50 @@
-===========
-JK2 SDK GPL
-===========
+========
+SaberMod
+========
 
-This is an alternative *Star Wars Jedi Knight II: Jedi Outcast* 1.04
-SDK released under the GPLv2 license. Search for *JK2 Editing Tools
-2.0* if you'd like to get familiar with original SDK released by Raven
-in 2003, containing also tools and guides for creating maps, models
-and other modifications.
+This is a *Star Wars Jedi Knight II: Jedi Outcast* 1.04 mod targeting
+competitive community. It is developed by *SaberMod team* (see
+Authors_) and draws inspiration from all id Tech 3 based games and
+mods, trying to improve on usability, stability and user experience
+with *no-gimmicks* approach. Our first goal is reimplementing and
+improving on the features of popular *league mod* by XycaleTh.
 
-Creating this repository has been made possible thanks to Raven
-releasing JK2 source code in 2013. This branch contains an altered
-subset of it, necessary for creating code mods, with few indisputable
-bug fixes and cleanups that shouldn't change the gameplay in any
-way. Refer to the commits history for more details.
+This code is based on `JK2 SDK GPL`_ - an updated JK2 1.04 SDK.
+
+Changes
+=======
+
+This is just a list of changes that need explanation. Refer to Git
+commit history for full changelog.
+
+Client-Side
+-----------
+
+Console Commands
+................
+
+players
+  List players connected to server with some additional info.
+
+Server-Side
+-----------
+
+Cvars
+.....
+
+New and modified cvars with default values.
+
+g_allowVote 1
+  0 / 1 - disable / enable all votes
+  Moreover you can decide what votes should be available using
+  bitmask: TODO-RELEASE
+
+g_restrictChat 0
+  Prevent spectators from speaking to players and all clients from
+  speaking to dueling players.
+
+g_spawnShield 25
+  Ammount of shield player gets on spawn.
 
 Build
 =====
@@ -31,7 +63,7 @@ and launch the game with ``+set fs_game mymod`` commandline parameter.
 
 To debug your mod use generated .so files. Put them in ~/.jkii/mymod/
 and launch the game with ``+set vm_game 0 +set vm_cgame 0 +set vm_ui
-0`` commandline parameters. Set the back to 2 when you want to use
+0`` commandline parameters. Set them back to 2 when you want to use
 .qvm version again.
 
 Windows
@@ -42,7 +74,7 @@ Windows. Old ``code/buildvms.bat`` batch file should work for QVMs if
 you can get lcc and q3asm tools (eg from *JK2 Editing Tools 2.0*) and
 put them into bin/ directory.
 
-I'd be glad to include Windows build scripts, project files etc. if
+I'll be glad to include Windows build scripts, project files etc. if
 you can create and test them.
 
 License
@@ -54,28 +86,27 @@ find it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
 comes from ioquake3 and it has been slightly modified by it's
 developers.
 
+Some files in `assets` directory are modified assets from the
+original, non-free JK2 1.04 release.
+
 Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
-software. Read LICENSE.txt and readme-raven.txt to learn
-more. According to it, among other things, you are obliged to
-distribute full source code of your mods alongside them, or at least a
-written offer to ship it (eg a HTTP download link inside a .pk3 file)
+software. Read LICENSE.txt and README-raven.txt to learn
+more. According to the license, among other things, you are obliged to
+distribute full source code of your mod alongsid it, or at least a
+written offer to ship it (eg a HTTP download link inside a .pk3
+file). Moreovery any mod using patches from this repository **has to**
+be released under GPLv2.
 
 Q3ASM is Copyright (c) id Software and ioquake3 developers.
 
-Trivia
-------
+Authors
+-------
 
-Did you know that, compared to *JK2 Editing Tools 2.0* license, GPLv2
-doesn't prohibit you from:
+* id Software (c) 1999-2000
+* Raven Software (c) 2000-2002
+* SaberMod team (c) 2015-2016
 
-* Distributing your mod by means other than internet and even charging
-  for it.
+  + Witold *fau* Piłat <witold.pilat@gmail.com> (c) 2015-2016
+  + Dziablo (c) 2015-2016
 
-* Creating mods which infringe against third party rights, are
-  libelous, defamatory, obscene, false, misleading and otherwise
-  illegal and unlawful.
-
-* Shipping them to countries to which the U.S. has embargoed goods and
-  to people who are prohibited by applicable law from receiving it.
-
-GPL - JOIN THE DARK SIDE
+.. _`JK2 SDK GPL`: https://github.com/aufau/jk2sdk-gpl
