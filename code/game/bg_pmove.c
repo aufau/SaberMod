@@ -1190,6 +1190,7 @@ static qboolean PM_CheckJump( void )
 			&& ( BG_SaberInAttack( pm->ps->saberMove ) ) )
 		{//not in an anim we shouldn't interrupt
 			//see if it's not too late to start a special jump-attack
+			//SDKBUG: PM_AnimLength doesn't remove ANIM_TOGGLEBIT
 			float animLength = PM_AnimLength( 0, (animNumber_t)pm->ps->torsoAnim );
 			if ( animLength - pm->ps->torsoTimer < 500 )
 			{//just started the saberMove

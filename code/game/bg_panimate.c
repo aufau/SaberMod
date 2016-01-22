@@ -14,7 +14,9 @@ BEGIN: Animation utility functions (sequence checking)
 //Called regardless of pm validity:
 qboolean BG_InSpecialJump( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_WALL_RUN_RIGHT:
 	case BOTH_WALL_RUN_RIGHT_FLIP:
@@ -29,13 +31,16 @@ qboolean BG_InSpecialJump( int anim )
 	case BOTH_BUTTERFLY_LEFT:
 	case BOTH_BUTTERFLY_RIGHT:
 		return qtrue;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean BG_InSaberStandAnim( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_SABERFAST_STANCE:
 	case BOTH_STAND2:
@@ -48,20 +53,22 @@ qboolean BG_InSaberStandAnim( int anim )
 
 qboolean BG_DirectFlippingAnim( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_FLIP_F:			//# Flip forward
 	case BOTH_FLIP_B:			//# Flip backwards
 	case BOTH_FLIP_L:			//# Flip left
 	case BOTH_FLIP_R:			//# Flip right
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
 
-	return qfalse;
 }
 
-qboolean BG_SaberInAttack( int move )
+qboolean BG_SaberInAttack( saberMoveName_t move )
 {
 	if ( move >= LS_A_TL2BR && move <= LS_A_T2B )
 	{
@@ -77,12 +84,12 @@ qboolean BG_SaberInAttack( int move )
 	case LS_A_FLIP_STAB:
 	case LS_A_FLIP_SLASH:
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
-qboolean BG_SaberInSpecial( int move )
+qboolean BG_SaberInSpecial( saberMoveName_t move )
 {
 	switch( move )
 	{
@@ -94,11 +101,12 @@ qboolean BG_SaberInSpecial( int move )
 	case LS_A_FLIP_STAB:
 	case LS_A_FLIP_SLASH:
 		return qtrue;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
-qboolean BG_SaberInIdle( int move )
+qboolean BG_SaberInIdle( saberMoveName_t move )
 {
 	switch ( move )
 	{
@@ -107,14 +115,16 @@ qboolean BG_SaberInIdle( int move )
 	case LS_DRAW:
 	case LS_PUTAWAY:
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean BG_FlippingAnim( int anim )
 {
-	switch ( anim&~ANIM_TOGGLEBIT )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_FLIP_F:			//# Flip forward
 	case BOTH_FLIP_B:			//# Flip backwards
@@ -144,14 +154,16 @@ qboolean BG_FlippingAnim( int anim )
 	case BOTH_JUMPFLIPSLASHDOWN1:
 	case BOTH_JUMPFLIPSTABDOWN:
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean BG_SpinningSaberAnim( int anim )
 {
-	switch ( anim&~ANIM_TOGGLEBIT )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	//level 1 - FIXME: level 1 will have *no* spins
 	case BOTH_T1_BR_BL:
@@ -211,14 +223,16 @@ qboolean BG_SpinningSaberAnim( int anim )
 	case BOTH_JUMPFLIPSLASHDOWN1:
 	case BOTH_JUMPFLIPSTABDOWN:
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean BG_SaberInSpecialAttack( int anim )
 {
-	switch ( anim&~ANIM_TOGGLEBIT )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_A2_STABBACK1:
 	case BOTH_ATTACK_BACK:
@@ -232,46 +246,31 @@ qboolean BG_SaberInSpecialAttack( int anim )
 	case BOTH_JUMPFLIPSLASHDOWN1://#
 	case BOTH_JUMPFLIPSTABDOWN://#
 		return qtrue;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
-int BG_BrokenParryForAttack( int move )
+saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move )
 {
 	//Our attack was knocked away by a knockaway parry
 	//FIXME: need actual anims for this
 	//FIXME: need to know which side of the saber was hit!  For now, we presume the saber gets knocked away from the center
 	switch ( saberMoveData[move].startQuad )
 	{
-	case Q_B:
-		return LS_V1_B_;
-		break;
-	case Q_BR:
-		return LS_V1_BR;
-		break;
-	case Q_R:
-		return LS_V1__R;
-		break;
-	case Q_TR:
-		return LS_V1_TR;
-		break;
-	case Q_T:
-		return LS_V1_T_;
-		break;
-	case Q_TL:
-		return LS_V1_TL;
-		break;
-	case Q_L:
-		return LS_V1__L;
-		break;
-	case Q_BL:
-		return LS_V1_BL;
-		break;
+	case Q_B:  return LS_V1_B_;
+	case Q_BR: return LS_V1_BR;
+	case Q_R:  return LS_V1__R;
+	case Q_TR: return LS_V1_TR;
+	case Q_T:  return LS_V1_T_;
+	case Q_TL: return LS_V1_TL;
+	case Q_L:  return LS_V1__L;
+	case Q_BL: return LS_V1_BL;
+	default:   return LS_NONE;
 	}
-	return LS_NONE;
 }
 
-int BG_BrokenParryForParry( int move )
+saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move )
 {
 	//FIXME: need actual anims for this
 	//FIXME: need to know which side of the saber was hit!  For now, we presume the saber gets knocked away from the center
@@ -287,27 +286,16 @@ int BG_BrokenParryForParry( int move )
 		{
 			return LS_H1_T_;
 		}
-		break;
-	case LS_PARRY_UR:
-		return LS_H1_TR;
-		break;
-	case LS_PARRY_UL:
-		return LS_H1_TL;
-		break;
-	case LS_PARRY_LR:
-		return LS_H1_BR;
-		break;
-	case LS_PARRY_LL:
-		return LS_H1_BL;
-		break;
-	case LS_READY:
-		return LS_H1_B_;//???
-		break;
+	case LS_PARRY_UR: return LS_H1_TR;
+	case LS_PARRY_UL: return LS_H1_TL;
+	case LS_PARRY_LR: return LS_H1_BR;
+	case LS_PARRY_LL: return LS_H1_BL;
+	case LS_READY:    return LS_H1_B_;//???
+	default:          return LS_NONE;
 	}
-	return LS_NONE;
 }
 
-int BG_KnockawayForParry( int move )
+saberMoveName_t BG_KnockawayForParry( saberMoveName_t move )
 {
 	//FIXME: need actual anims for this
 	//FIXME: need to know which side of the saber was hit!  For now, we presume the saber gets knocked away from the center
@@ -315,27 +303,24 @@ int BG_KnockawayForParry( int move )
 	{
 	case BLOCKED_TOP://LS_PARRY_UP:
 		return LS_K1_T_;//push up
-		break;
 	case BLOCKED_UPPER_RIGHT://LS_PARRY_UR:
 	default://case LS_READY:
 		return LS_K1_TR;//push up, slightly to right
-		break;
 	case BLOCKED_UPPER_LEFT://LS_PARRY_UL:
 		return LS_K1_TL;//push up and to left
-		break;
 	case BLOCKED_LOWER_RIGHT://LS_PARRY_LR:
 		return LS_K1_BR;//push down and to left
-		break;
 	case BLOCKED_LOWER_LEFT://LS_PARRY_LL:
 		return LS_K1_BL;//push down and to right
-		break;
 	}
 	//return LS_NONE;
 }
 
 qboolean BG_InRoll( playerState_t *ps, int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_ROLL_F:
 	case BOTH_ROLL_B:
@@ -345,14 +330,16 @@ qboolean BG_InRoll( playerState_t *ps, int anim )
 		{
 			return qtrue;
 		}
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean BG_InDeathAnim( int anim )
 {
-	switch((anim&~ANIM_TOGGLEBIT))
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_DIVE1:
 	case BOTH_DEATHBACKWARD1:
@@ -374,77 +361,45 @@ qboolean BG_InDeathAnim( int anim )
 	case BOTH_FALLDEATH1INAIR:
 	case BOTH_FALLDEATH1LAND:
 		return qtrue;
-		break;
 	default:
 		return qfalse;
-		break;
 	}
 }
 
 //Called only where pm is valid (not all require pm, but some do):
-int PM_SaberBounceForAttack( int move )
+saberMoveName_t PM_SaberBounceForAttack( saberMoveName_t move )
 {
 	switch ( saberMoveData[move].startQuad )
 	{
 	case Q_B:
-	case Q_BR:
-		return LS_B1_BR;
-		break;
-	case Q_R:
-		return LS_B1__R;
-		break;
-	case Q_TR:
-		return LS_B1_TR;
-		break;
-	case Q_T:
-		return LS_B1_T_;
-		break;
-	case Q_TL:
-		return LS_B1_TL;
-		break;
-	case Q_L:
-		return LS_B1__L;
-		break;
-	case Q_BL:
-		return LS_B1_BL;
-		break;
+	case Q_BR: return LS_B1_BR;
+	case Q_R:  return LS_B1__R;
+	case Q_TR: return LS_B1_TR;
+	case Q_T:  return LS_B1_T_;
+	case Q_TL: return LS_B1_TL;
+	case Q_L:  return LS_B1__L;
+	case Q_BL: return LS_B1_BL;
+	default:   return LS_NONE;
 	}
-	return LS_NONE;
 }
 
-int PM_SaberDeflectionForQuad( int quad )
+saberMoveName_t PM_SaberDeflectionForQuad( saberQuadrant_t quad )
 {
 	switch ( quad )
 	{
-	case Q_B:
-		return LS_D1_B_;
-		break;
-	case Q_BR:
-		return LS_D1_BR;
-		break;
-	case Q_R:
-		return LS_D1__R;
-		break;
-	case Q_TR:
-		return LS_D1_TR;
-		break;
-	case Q_T:
-		return LS_D1_T_;
-		break;
-	case Q_TL:
-		return LS_D1_TL;
-		break;
-	case Q_L:
-		return LS_D1__L;
-		break;
-	case Q_BL:
-		return LS_D1_BL;
-		break;
+	case Q_B:  return LS_D1_B_;
+	case Q_BR: return LS_D1_BR;
+	case Q_R:  return LS_D1__R;
+	case Q_TR: return LS_D1_TR;
+	case Q_T:  return LS_D1_T_;
+	case Q_TL: return LS_D1_TL;
+	case Q_L:  return LS_D1__L;
+	case Q_BL: return LS_D1_BL;
+	default:   return LS_NONE;
 	}
-	return LS_NONE;
 }
 
-qboolean PM_SaberInDeflect( int move )
+qboolean PM_SaberInDeflect( saberMoveName_t move )
 {
 	if ( move >= LS_D1_BR && move <= LS_D1_B_ )
 	{
@@ -453,7 +408,7 @@ qboolean PM_SaberInDeflect( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInParry( int move )
+qboolean PM_SaberInParry( saberMoveName_t move )
 {
 	if ( move >= LS_PARRY_UP && move <= LS_PARRY_LL )
 	{
@@ -462,7 +417,7 @@ qboolean PM_SaberInParry( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInKnockaway( int move )
+qboolean PM_SaberInKnockaway( saberMoveName_t move )
 {
 	if ( move >= LS_K1_T_ && move <= LS_K1_BL )
 	{
@@ -471,7 +426,7 @@ qboolean PM_SaberInKnockaway( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInReflect( int move )
+qboolean PM_SaberInReflect( saberMoveName_t move )
 {
 	if ( move >= LS_REFLECT_UP && move <= LS_REFLECT_LL )
 	{
@@ -480,7 +435,7 @@ qboolean PM_SaberInReflect( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInStart( int move )
+qboolean PM_SaberInStart( saberMoveName_t move )
 {
 	if ( move >= LS_S_TL2BR && move <= LS_S_T2B )
 	{
@@ -489,7 +444,7 @@ qboolean PM_SaberInStart( int move )
 	return qfalse;
 }
 
-qboolean PM_SaberInReturn( int move )
+qboolean PM_SaberInReturn( saberMoveName_t move )
 {
 	if ( move >= LS_R_TL2BR && move <= LS_R_TL2BR )
 	{
@@ -500,7 +455,9 @@ qboolean PM_SaberInReturn( int move )
 
 qboolean PM_InSaberAnim( int anim )
 {
-	if ( (anim&~ANIM_TOGGLEBIT) >= BOTH_A1_T__B_ && (anim&~ANIM_TOGGLEBIT) <= BOTH_H1_S1_BR )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	if ( animN >= BOTH_A1_T__B_ && animN <= BOTH_H1_S1_BR )
 	{
 		return qtrue;
 	}
@@ -509,7 +466,9 @@ qboolean PM_InSaberAnim( int anim )
 
 qboolean PM_InKnockDown( playerState_t *ps )
 {
-	switch ( (ps->legsAnim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = ps->legsAnim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_KNOCKDOWN1:
 	case BOTH_KNOCKDOWN2:
@@ -517,7 +476,6 @@ qboolean PM_InKnockDown( playerState_t *ps )
 	case BOTH_KNOCKDOWN4:
 	case BOTH_KNOCKDOWN5:
 		return qtrue;
-		break;
 	case BOTH_GETUP1:
 	case BOTH_GETUP2:
 	case BOTH_GETUP3:
@@ -534,92 +492,98 @@ qboolean PM_InKnockDown( playerState_t *ps )
 		{
 			return qtrue;
 		}
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean PM_PainAnim( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
-		case BOTH_PAIN1:				//# First take pain anim
-		case BOTH_PAIN2:				//# Second take pain anim
-		case BOTH_PAIN3:				//# Third take pain anim
-		case BOTH_PAIN4:				//# Fourth take pain anim
-		case BOTH_PAIN5:				//# Fifth take pain anim - from behind
-		case BOTH_PAIN6:				//# Sixth take pain anim - from behind
-		case BOTH_PAIN7:				//# Seventh take pain anim - from behind
-		case BOTH_PAIN8:				//# Eigth take pain anim - from behind
-		case BOTH_PAIN9:				//#
-		case BOTH_PAIN10:			//#
-		case BOTH_PAIN11:			//#
-		case BOTH_PAIN12:			//#
-		case BOTH_PAIN13:			//#
-		case BOTH_PAIN14:			//#
-		case BOTH_PAIN15:			//#
-		case BOTH_PAIN16:			//#
-		case BOTH_PAIN17:			//#
-		case BOTH_PAIN18:			//#
-		case BOTH_PAIN19:			//#
+	case BOTH_PAIN1:				//# First take pain anim
+	case BOTH_PAIN2:				//# Second take pain anim
+	case BOTH_PAIN3:				//# Third take pain anim
+	case BOTH_PAIN4:				//# Fourth take pain anim
+	case BOTH_PAIN5:				//# Fifth take pain anim - from behind
+	case BOTH_PAIN6:				//# Sixth take pain anim - from behind
+	case BOTH_PAIN7:				//# Seventh take pain anim - from behind
+	case BOTH_PAIN8:				//# Eigth take pain anim - from behind
+	case BOTH_PAIN9:				//#
+	case BOTH_PAIN10:			//#
+	case BOTH_PAIN11:			//#
+	case BOTH_PAIN12:			//#
+	case BOTH_PAIN13:			//#
+	case BOTH_PAIN14:			//#
+	case BOTH_PAIN15:			//#
+	case BOTH_PAIN16:			//#
+	case BOTH_PAIN17:			//#
+	case BOTH_PAIN18:			//#
+	case BOTH_PAIN19:			//#
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean PM_JumpingAnim( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
-		case BOTH_JUMP1:				//# Jump - wind-up and leave ground
-		case BOTH_INAIR1:			//# In air loop (from jump)
-		case BOTH_LAND1:				//# Landing (from in air loop)
-		case BOTH_LAND2:				//# Landing Hard (from a great height)
-		case BOTH_JUMPBACK1:			//# Jump backwards - wind-up and leave ground
-		case BOTH_INAIRBACK1:		//# In air loop (from jump back)
-		case BOTH_LANDBACK1:			//# Landing backwards(from in air loop)
-		case BOTH_JUMPLEFT1:			//# Jump left - wind-up and leave ground
-		case BOTH_INAIRLEFT1:		//# In air loop (from jump left)
-		case BOTH_LANDLEFT1:			//# Landing left(from in air loop)
-		case BOTH_JUMPRIGHT1:		//# Jump right - wind-up and leave ground
-		case BOTH_INAIRRIGHT1:		//# In air loop (from jump right)
-		case BOTH_LANDRIGHT1:		//# Landing right(from in air loop)
-		case BOTH_FORCEJUMP1:				//# Jump - wind-up and leave ground
-		case BOTH_FORCEINAIR1:			//# In air loop (from jump)
-		case BOTH_FORCELAND1:				//# Landing (from in air loop)
-		case BOTH_FORCEJUMPBACK1:			//# Jump backwards - wind-up and leave ground
-		case BOTH_FORCEINAIRBACK1:		//# In air loop (from jump back)
-		case BOTH_FORCELANDBACK1:			//# Landing backwards(from in air loop)
-		case BOTH_FORCEJUMPLEFT1:			//# Jump left - wind-up and leave ground
-		case BOTH_FORCEINAIRLEFT1:		//# In air loop (from jump left)
-		case BOTH_FORCELANDLEFT1:			//# Landing left(from in air loop)
-		case BOTH_FORCEJUMPRIGHT1:		//# Jump right - wind-up and leave ground
-		case BOTH_FORCEINAIRRIGHT1:		//# In air loop (from jump right)
-		case BOTH_FORCELANDRIGHT1:		//# Landing right(from in air loop)
+	case BOTH_JUMP1:				//# Jump - wind-up and leave ground
+	case BOTH_INAIR1:			//# In air loop (from jump)
+	case BOTH_LAND1:				//# Landing (from in air loop)
+	case BOTH_LAND2:				//# Landing Hard (from a great height)
+	case BOTH_JUMPBACK1:			//# Jump backwards - wind-up and leave ground
+	case BOTH_INAIRBACK1:		//# In air loop (from jump back)
+	case BOTH_LANDBACK1:			//# Landing backwards(from in air loop)
+	case BOTH_JUMPLEFT1:			//# Jump left - wind-up and leave ground
+	case BOTH_INAIRLEFT1:		//# In air loop (from jump left)
+	case BOTH_LANDLEFT1:			//# Landing left(from in air loop)
+	case BOTH_JUMPRIGHT1:		//# Jump right - wind-up and leave ground
+	case BOTH_INAIRRIGHT1:		//# In air loop (from jump right)
+	case BOTH_LANDRIGHT1:		//# Landing right(from in air loop)
+	case BOTH_FORCEJUMP1:				//# Jump - wind-up and leave ground
+	case BOTH_FORCEINAIR1:			//# In air loop (from jump)
+	case BOTH_FORCELAND1:				//# Landing (from in air loop)
+	case BOTH_FORCEJUMPBACK1:			//# Jump backwards - wind-up and leave ground
+	case BOTH_FORCEINAIRBACK1:		//# In air loop (from jump back)
+	case BOTH_FORCELANDBACK1:			//# Landing backwards(from in air loop)
+	case BOTH_FORCEJUMPLEFT1:			//# Jump left - wind-up and leave ground
+	case BOTH_FORCEINAIRLEFT1:		//# In air loop (from jump left)
+	case BOTH_FORCELANDLEFT1:			//# Landing left(from in air loop)
+	case BOTH_FORCEJUMPRIGHT1:		//# Jump right - wind-up and leave ground
+	case BOTH_FORCEINAIRRIGHT1:		//# In air loop (from jump right)
+	case BOTH_FORCELANDRIGHT1:		//# Landing right(from in air loop)
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean PM_LandingAnim( int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
-		case BOTH_LAND1:				//# Landing (from in air loop)
-		case BOTH_LAND2:				//# Landing Hard (from a great height)
-		case BOTH_LANDBACK1:			//# Landing backwards(from in air loop)
-		case BOTH_LANDLEFT1:			//# Landing left(from in air loop)
-		case BOTH_LANDRIGHT1:		//# Landing right(from in air loop)
-		case BOTH_FORCELAND1:		//# Landing (from in air loop)
-		case BOTH_FORCELANDBACK1:	//# Landing backwards(from in air loop)
-		case BOTH_FORCELANDLEFT1:	//# Landing left(from in air loop)
-		case BOTH_FORCELANDRIGHT1:	//# Landing right(from in air loop)
+	case BOTH_LAND1:				//# Landing (from in air loop)
+	case BOTH_LAND2:				//# Landing Hard (from a great height)
+	case BOTH_LANDBACK1:			//# Landing backwards(from in air loop)
+	case BOTH_LANDLEFT1:			//# Landing left(from in air loop)
+	case BOTH_LANDRIGHT1:		//# Landing right(from in air loop)
+	case BOTH_FORCELAND1:		//# Landing (from in air loop)
+	case BOTH_FORCELANDBACK1:	//# Landing backwards(from in air loop)
+	case BOTH_FORCELANDLEFT1:	//# Landing left(from in air loop)
+	case BOTH_FORCELANDRIGHT1:	//# Landing right(from in air loop)
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 qboolean PM_SpinningAnim( int anim )
@@ -637,7 +601,9 @@ qboolean PM_SpinningAnim( int anim )
 
 qboolean PM_InOnGroundAnim ( int anim )
 {
-	switch( anim&~ANIM_TOGGLEBIT )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_DEAD1:
 	case BOTH_DEAD2:
@@ -667,15 +633,17 @@ qboolean PM_InOnGroundAnim ( int anim )
 	case BOTH_KNOCKDOWN1:		//#
 	case BOTH_KNOCKDOWN2:		//#
 		return qtrue;
-		break;
+	default:
+		return qfalse;
 	}
 
-	return qfalse;
 }
 
 qboolean PM_InRollComplete( playerState_t *ps, int anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+
+	switch ( animN )
 	{
 	case BOTH_ROLL_F:
 	case BOTH_ROLL_B:
@@ -685,9 +653,9 @@ qboolean PM_InRollComplete( playerState_t *ps, int anim )
 		{
 			return qtrue;
 		}
-		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 int PM_AnimLength( int index, animNumber_t anim )
@@ -928,7 +896,7 @@ static void PM_StartLegsAnim( int anim ) {
 	}
 }
 
-void PM_ContinueLegsAnim( int anim ) {
+void PM_ContinueLegsAnim( animNumber_t anim ) {
 	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) {
 		return;
 	}
@@ -939,7 +907,7 @@ void PM_ContinueLegsAnim( int anim ) {
 	PM_StartLegsAnim( anim );
 }
 
-void PM_ForceLegsAnim( int anim) {
+void PM_ForceLegsAnim( animNumber_t anim) {
 	if (BG_InSpecialJump(pm->ps->legsAnim) &&
 		pm->ps->legsTimer > 0 &&
 		!BG_InSpecialJump(anim))
@@ -966,7 +934,7 @@ TORSO Animations
 Override animations for upper body
 ===================
 */
-void PM_StartTorsoAnim( int anim ) {
+void PM_StartTorsoAnim( animNumber_t anim ) {
 	if ( pm->ps->pm_type >= PM_DEAD ) {
 		return;
 	}
@@ -992,7 +960,7 @@ PM_SetLegsAnimTimer
 -------------------------
 */
 
-void PM_SetLegsAnimTimer(int time )
+void PM_SetLegsAnimTimer( int time )
 {
 	pm->ps->legsTimer = time;
 
@@ -1008,7 +976,7 @@ PM_SetTorsoAnimTimer
 -------------------------
 */
 
-void PM_SetTorsoAnimTimer(int time )
+void PM_SetTorsoAnimTimer( int time )
 {
 	pm->ps->torsoTimer = time;
 
@@ -1018,14 +986,13 @@ void PM_SetTorsoAnimTimer(int time )
 	}
 }
 
-void BG_SaberStartTransAnim( int saberAnimLevel, int anim, float *animSpeed )
+void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animSpeed )
 {
-	if ( ( (anim&~ANIM_TOGGLEBIT) >= BOTH_T1_BR__R &&
-		(anim&~ANIM_TOGGLEBIT) <= BOTH_T1_BL_TL ) ||
-		( (anim&~ANIM_TOGGLEBIT) >= BOTH_T2_BR__R &&
-		(anim&~ANIM_TOGGLEBIT) <= BOTH_T2_BL_TL ) ||
-		( (anim&~ANIM_TOGGLEBIT) >= BOTH_T3_BR__R &&
-		(anim&~ANIM_TOGGLEBIT) <= BOTH_T3_BL_TL ) )
+	assert( anim < MAX_TOTALANIMATIONS);
+
+	if ( ( anim >= BOTH_T1_BR__R && anim <= BOTH_T1_BL_TL ) ||
+		( anim >= BOTH_T2_BR__R && anim <= BOTH_T2_BL_TL ) ||
+		( anim >= BOTH_T3_BR__R && anim <= BOTH_T3_BL_TL ) )
 	{
 		if ( saberAnimLevel == FORCE_LEVEL_1 )
 		{
@@ -1043,8 +1010,7 @@ void BG_SaberStartTransAnim( int saberAnimLevel, int anim, float *animSpeed )
 PM_SetAnimFinal
 -------------------------
 */
-void PM_SetAnimFinal(int setAnimParts,int anim,int setAnimFlags,
-					 int blendTime)		// default blendTime=350
+void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime)		// default blendTime=350
 {
 	animation_t *animations = pm->animations;
 
@@ -1166,8 +1132,9 @@ setAnimDone:
 
 
 // Imported from single-player, this function is mainly intended to make porting from SP easier.
-void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime)
+void PM_SetAnim(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime)
 {
+	assert( anim < MAX_TOTALANIMATIONS);
 	assert(	bgGlobalAnimations[anim].firstFrame != 0 ||
 			bgGlobalAnimations[anim].numFrames != 0);
 
@@ -1201,5 +1168,3 @@ void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime)
 
 	PM_SetAnimFinal(setAnimParts, anim, setAnimFlags, blendTime);
 }
-
-

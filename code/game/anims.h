@@ -5,6 +5,7 @@
 
 typedef enum //# animNumber_e
 {
+	ANIM_INVALID = -1,
 	//=================================================
 	//ANIMS IN WHICH UPPER AND LOWER OBJECTS ARE IN MD3
 	//=================================================

@@ -1531,9 +1531,9 @@ typedef struct playerState_s {
 	qboolean	saberInFlight;
 	qboolean	saberActive;
 
-	int			saberMove;
+	int			saberMove; // saberMoveName_t
 	int			saberBlocking;
-	int			saberBlocked;
+	int			saberBlocked; // saberBlockedType_t
 
 	int			saberLockTime;
 	int			saberLockEnemy;
