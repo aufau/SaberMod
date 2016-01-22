@@ -979,6 +979,24 @@ char *Q_CleanStr( char *string ) {
 	return string;
 }
 
+qboolean Q_IsInteger( const char * s ) {
+	int			i;
+	int			len;
+	qboolean	foundDigit;
+
+	len = strlen( s );
+	foundDigit = qfalse;
+
+	for ( i=0 ; i < len ; i++ ) {
+		if ( !isdigit( s[i] ) ) {
+			return qfalse;
+		}
+
+		foundDigit = qtrue;
+	}
+
+	return foundDigit;
+}
 
 void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	int		len;

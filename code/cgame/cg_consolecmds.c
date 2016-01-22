@@ -405,7 +405,6 @@ static void CG_Players_f( void ) {
 	static const char	dashPad[MAX_PRINTNAME]  = "-----------------------------------";
 	const char * const	spaces = spacePad + MAX_PRINTNAME - 1;
 	const char * const	dashes = dashPad + MAX_PRINTNAME - 1;
-	clientInfo_t	*ci;
 	const char		*flagColor[3];
 	char			name[MAX_PRINTNAME];
 	int				flag[3];
