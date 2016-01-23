@@ -55,6 +55,10 @@ handicap <x>
 cg_chatBeep 1
   Turn on/off chat beep.
 
+cg_damagePlums 1
+  When you hit an enemy, draw a small damage plum coming out of his
+  torso. Works only if server has `g_damagePlums` enabled.
+
 cg_darkenDeadBodies 0
   Darken dead bodies outside of duel too.
 
@@ -132,6 +136,9 @@ g_allowVote 1
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - No Kicks        16384 - With Kicks
   =====================  =====================  =====================
+
+g_damagePlums
+  Allow clients with `cg_damagePlums` enabled to see damage plums.
 
 g_instagib 0
   Enable simple instagib mode for all weapons. Splash does no damage.

@@ -2562,6 +2562,22 @@ static void Cmd_FixSkinBug_f( gentity_t *ent )
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 
 #ifdef _DEBUG
+void ScorePlum( int clientNum, vec3_t origin, int score );
+
+void Cmd_DebugPlum_f(gentity_t *self)
+{
+	int argNum = trap_Argc();
+	char arg[MAX_STRING_CHARS];
+	int score = 30;
+
+	if (argNum > 1)
+	{
+		trap_Argv( 1, arg, sizeof( arg ) );
+		score = atoi(arg);
+	}
+	ScorePlum(self->s.number, self->client->ps.origin, score);
+}
+
 extern stringID_table_t animTable[MAX_ANIMATIONS+1];
 
 void Cmd_DebugSetSaberMove_f(gentity_t *self)
@@ -2985,6 +3001,10 @@ void ClientCommand( int clientNum ) {
 		}
 	}
 #ifdef _DEBUG
+	else if (Q_stricmp(cmd, "debugPlum") == 0)
+	{
+		Cmd_DebugPlum_f(ent);
+	}
 	else if (Q_stricmp(cmd, "debugSetSaberMove") == 0)
 	{
 		Cmd_DebugSetSaberMove_f(ent);

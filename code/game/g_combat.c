@@ -518,15 +518,15 @@ void ExplodeDeath( gentity_t *self )
 ScorePlum
 ============
 */
-void ScorePlum( gentity_t *ent, vec3_t origin, int score ) {
+void ScorePlum( int clientNum, vec3_t origin, int score ) {
 	gentity_t *plum;
 
 	plum = G_TempEntity( origin, EV_SCOREPLUM );
 	// only send this temp entity to a single client
 	plum->r.svFlags |= SVF_SINGLECLIENT;
-	plum->r.singleClient = ent->s.number;
+	plum->r.singleClient = clientNum;
 	//
-	plum->s.otherEntityNum = ent->s.number;
+	plum->s.otherEntityNum = clientNum;
 	plum->s.time = score;
 }
 
@@ -3522,6 +3522,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			} else {
 				client->pers.totalDamageTakenFromEnemies += take;
 				attacker->client->pers.totalDamageDealtToEnemies += take;
+			}
+
+			if (g_damagePlums.integer) {
+				ScorePlum(attacker->s.number, client->ps.origin, take);
+				//ScorePlum(attacker, targ->r.currentOrigin, take);
 			}
 		}
 	}
