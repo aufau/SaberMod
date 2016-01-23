@@ -3511,6 +3511,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				client->pers.totalDamageTakenFromEnemies += take;
 				attacker->client->pers.totalDamageDealtToEnemies += take;
 			}
+
+			if (g_damagePlums.integer) {
+				ScorePlum(attacker, client->ps.origin, take);
+				//ScorePlum(attacker, targ->r.currentOrigin, take);
+			}
 		}
 	}
 }

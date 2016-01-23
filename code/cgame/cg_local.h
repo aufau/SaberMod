@@ -1517,7 +1517,7 @@ extern	vmCvar_t		cg_drawFriend;
 extern	vmCvar_t		cg_teamChatsOnly;
 extern	vmCvar_t		cg_noVoiceChats;
 extern	vmCvar_t		cg_noVoiceText;
-extern  vmCvar_t		cg_scorePlum;
+extern  vmCvar_t		cg_damagePlums;
 extern	vmCvar_t		cg_hudFiles;
 extern	vmCvar_t		cg_smoothClients;
 extern	vmCvar_t		pmove_fixed;
@@ -1558,6 +1558,9 @@ extern	vmCvar_t		cg_debugBB;
 /*
 Ghoul2 Insert End
 */
+
+extern	vmCvar_t		cg_param1;
+extern	vmCvar_t		cg_param2;
 
 //
 // cg_main.c
