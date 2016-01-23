@@ -626,54 +626,60 @@ void CG_AddRefEntity( localEntity_t *le ) {
 CG_AddScorePlum
 ===================
 */
-#define NUMBER_SIZE		8
-
 void CG_AddScorePlum( localEntity_t *le ) {
 	refEntity_t	*re;
 	vec3_t		origin, delta, dir, vec, up = {0, 0, 1};
 	float		c, len;
+	float		minSize, scaling;
 	int			i, score, digits[10], numdigits, negative;
+	int			numberSize;
 
 	re = &le->refEntity;
 
 	c = ( le->endTime - cg.time ) * le->lifeRate;
 
 	score = le->radius;
-	if (score < 0) {
-		re->shaderRGBA[0] = 0xff;
-		re->shaderRGBA[1] = 0x11;
-		re->shaderRGBA[2] = 0x11;
-	}
-	else {
+
+	if (score < 5) {
 		re->shaderRGBA[0] = 0xff;
 		re->shaderRGBA[1] = 0xff;
 		re->shaderRGBA[2] = 0xff;
-		if (score >= 50) {
-			re->shaderRGBA[1] = 0;
-		} else if (score >= 20) {
-			re->shaderRGBA[0] = re->shaderRGBA[1] = 0;
-		} else if (score >= 10) {
-			re->shaderRGBA[2] = 0;
-		} else if (score >= 2) {
-			re->shaderRGBA[0] = re->shaderRGBA[2] = 0;
-		}
-
+	} else if (score < 30) {
+		re->shaderRGBA[0] = 0x59;
+		re->shaderRGBA[1] = 0xdd;
+		re->shaderRGBA[2] = 0xff;
+	} else if (score < 50) {
+		re->shaderRGBA[0] = 0xfd;
+		re->shaderRGBA[1] = 0xff;
+		re->shaderRGBA[2] = 0x50;
+	} else {
+		re->shaderRGBA[0] = 0xff;
+		re->shaderRGBA[1] = 0x8a;
+		re->shaderRGBA[2] = 0x8a;
 	}
+
 	if (c < 0.25)
 		re->shaderRGBA[3] = 0xff * 4 * c;
+	else if (c > 0.75)
+		re->shaderRGBA[3] = 0xff - 0xff * 4 * c;
 	else
 		re->shaderRGBA[3] = 0xff;
 
-	re->radius = NUMBER_SIZE / 2;
+	minSize = cg_param1.value > 0 ? cg_param1.value : 4.0f;
+	scaling = cg_param2.value > 0 ? cg_param2.value : 10.0f;
+
+	numberSize = (score - 1 + minSize * scaling) / scaling;
+	//numberSize = (score + 19) / 5.0f;
+	re->radius = numberSize / 2.0f;
 
 	VectorCopy(le->pos.trBase, origin);
-	origin[2] += 110 - c * 100;
+	origin[2] += 90 - c * 70;
 
 	VectorSubtract(cg.refdef.vieworg, origin, dir);
 	CrossProduct(dir, up, vec);
 	VectorNormalize(vec);
 
-	VectorMA(origin, -10 + 20 * sin(c * 2 * M_PI), vec, origin);
+	VectorMA(origin, -1 + 2 * sin(c * 2 * M_PI), vec, origin);
 
 	// if the view would be "inside" the sprite, kill the sprite
 	// so it doesn't add too much overdraw
@@ -701,7 +707,7 @@ void CG_AddScorePlum( localEntity_t *le ) {
 	}
 
 	for (i = 0; i < numdigits; i++) {
-		VectorMA(origin, (float) (((float) numdigits / 2) - i) * NUMBER_SIZE, vec, re->origin);
+		VectorMA(origin, (float) (((float) numdigits / 2) - i) * numberSize, vec, re->origin);
 		re->customShader = cgs.media.numberShaders[digits[numdigits-1-i]];
 		trap_R_AddRefEntityToScene( re );
 	}
