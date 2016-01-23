@@ -1106,11 +1106,6 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *duelAgainst = &g_entities[ent->client->ps.duelIndex];
 
-		//Keep the time updated, so once this duel ends this player can't engage in a duel for another
-		//10 seconds. This will give other people a chance to engage in duels in case this player wants
-		//to engage again right after he's done fighting and someone else is waiting.
-		ent->client->ps.fd.privateDuelTime = level.time + 10000;
-
 		if (ent->client->ps.duelTime < level.time)
 		{
 			//Bring out the sabers
@@ -1166,6 +1161,8 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else if (duelAgainst->health < 1 || duelAgainst->client->ps.stats[STAT_HEALTH] < 1)
 		{
+			char *s;
+
 			ent->client->ps.duelInProgress = 0;
 			duelAgainst->client->ps.duelInProgress = 0;
 
@@ -1187,19 +1184,18 @@ void ClientThink_real( gentity_t *ent ) {
 				}
 			}
 
-			/*
-			trap_SendServerCommand( ent-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
-			trap_SendServerCommand( duelAgainst-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
-			*/
 			//Private duel announcements are now made globally because we only want one duel at a time.
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
-				trap_SendServerCommand( -1, va("cp \"%s %s %s!\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER"), duelAgainst->client->pers.netname) );
+				s = va("print \"%s %s %s!\n\"", ent->client->pers.netname,
+					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
+					duelAgainst->client->pers.netname);
 			}
 			else
 			{ //it was a draw, because we both managed to die in the same frame
-				trap_SendServerCommand( -1, va("cp \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE")) );
+				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
 			}
+			trap_SendServerCommand(-1, s);
 		}
 		else
 		{

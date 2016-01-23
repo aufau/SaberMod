@@ -1413,7 +1413,7 @@ typedef struct forcedata_s {
 
 	int			suicides;
 
-	int			privateDuelTime;
+	int			privateDuelTime; // Not used anymore
 } forcedata_t;
 
 
