@@ -734,150 +734,29 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 				  TeamName ( client->sess.sessionTeam ) );
 }
 
-/*
-=================
-SetTeam
-=================
-*/
-void SetTeam( gentity_t *ent, char *s ) {
-	int					team, oldTeam;
-	gclient_t			*client;
-	int					clientNum;
-	spectatorState_t	specState;
-	int					specClient;
-	int					teamLeader;
+static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
+{
+	gclient_t	*client;
+	int			clientNum;
+	int			oldTeam;
+	int			teamLeader;
 
-	//
-	// see what change is requested
-	//
 	client = ent->client;
-
 	clientNum = client - level.clients;
-	specClient = 0;
-	specState = SPECTATOR_NOT;
-	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_SCOREBOARD;
-	} else if ( !Q_stricmp( s, "follow1" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -1;
-	} else if ( !Q_stricmp( s, "follow2" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -2;
-	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FREE;
-	} else if ( GT_Team(g_gametype.integer) ) {
-		// if running a team game, assign player to one of the teams
-		specState = SPECTATOR_NOT;
-		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
-			team = TEAM_RED;
-		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
-			team = TEAM_BLUE;
-		} else {
-			// pick the team with the least number of players
-			//For now, don't do this. The legalize function will set powers properly now.
-			/*
-			if (g_forceBasedTeams.integer)
-			{
-				if (ent->client->ps.fd.forceSide == FORCE_LIGHTSIDE)
-				{
-					team = TEAM_BLUE;
-				}
-				else
-				{
-					team = TEAM_RED;
-				}
-			}
-			else
-			{
-			*/
-				team = PickTeam( clientNum );
-			//}
-		}
 
-		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
-			int		counts[TEAM_NUM_TEAMS];
-
-			counts[TEAM_BLUE] = TeamCount( ent->client->ps.clientNum, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( ent->client->ps.clientNum, TEAM_RED );
-
-			// We allow a spread of two
-			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 ) {
-				//For now, don't do this. The legalize function will set powers properly now.
-				/*
-				if (g_forceBasedTeams.integer && ent->client->ps.fd.forceSide == FORCE_DARKSIDE)
-				{
-					trap_SendServerCommand( ent->client->ps.clientNum,
-						va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED_SWITCH")) );
-				}
-				else
-				*/
-				{
-					trap_SendServerCommand( ent->client->ps.clientNum,
-						va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
-				}
-				return; // ignore the request
-			}
-			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 ) {
-				//For now, don't do this. The legalize function will set powers properly now.
-				/*
-				if (g_forceBasedTeams.integer && ent->client->ps.fd.forceSide == FORCE_LIGHTSIDE)
-				{
-					trap_SendServerCommand( ent->client->ps.clientNum,
-						va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE_SWITCH")) );
-				}
-				else
-				*/
-				{
-					trap_SendServerCommand( ent->client->ps.clientNum,
-						va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
-				}
-				return; // ignore the request
-			}
-
-			// It's ok, the team we are switching to has less or same number of players
-		}
-
-		//For now, don't do this. The legalize function will set powers properly now.
-		/*
-		if (g_forceBasedTeams.integer)
-		{
-			if (team == TEAM_BLUE && ent->client->ps.fd.forceSide != FORCE_LIGHTSIDE)
-			{
-				trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MUSTBELIGHT")) );
-				return;
-			}
-			if (team == TEAM_RED && ent->client->ps.fd.forceSide != FORCE_DARKSIDE)
-			{
-				trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MUSTBEDARK")) );
-				return;
-			}
-		}
-		*/
-
-	} else {
-		// force them to spectators if there aren't any spots free
-		team = TEAM_FREE;
-	}
-
-	// override decision if limiting the players
 	if ( (g_gametype.integer == GT_TOURNAMENT)
 		&& level.numNonSpectatorClients >= 2 ) {
 		team = TEAM_SPECTATOR;
-	} else if ( g_maxGameClients.integer > 0 &&
-		level.numNonSpectatorClients >= g_maxGameClients.integer ) {
-		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_NOT;
 	}
 
 	//
 	// decide if we will allow the change
 	//
+
 	oldTeam = client->sess.sessionTeam;
 	if ( team == oldTeam && team != TEAM_SPECTATOR ) {
-		return;
+		return -1;
 	}
 
 	//
@@ -928,6 +807,90 @@ void SetTeam( gentity_t *ent, char *s ) {
 	ClientUserinfoChanged( clientNum );
 
 	ClientBegin( clientNum, qfalse );
+
+	return 0;
+}
+
+/*
+=================
+SetTeam
+=================
+*/
+void SetTeam( gentity_t *ent, team_t team )
+{
+	SetTeamSpec( ent, team, SPECTATOR_FREE, 0 );
+}
+
+/*
+=================
+SetTeamFromString
+=================
+*/
+void SetTeamFromString( gentity_t *ent, char *s ) {
+	int					team;
+	gclient_t			*client;
+	int					clientNum;
+	spectatorState_t	specState;
+	int					specClient;
+
+	//
+	// see what change is requested
+	//
+	client = ent->client;
+
+	clientNum = client - level.clients;
+	specClient = 0;
+	specState = SPECTATOR_NOT;
+	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_SCOREBOARD;
+	} else if ( !Q_stricmp( s, "follow1" ) ) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FOLLOW;
+		specClient = -1;
+	} else if ( !Q_stricmp( s, "follow2" ) ) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FOLLOW;
+		specClient = -2;
+	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FREE;
+	} else if ( GT_Team(g_gametype.integer) ) {
+		// if running a team game, assign player to one of the teams
+		specState = SPECTATOR_NOT;
+		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
+			if ( !ValidateTeam(clientNum, TEAM_RED) ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYRED")) );
+				return;
+			}
+			team = TEAM_RED;
+		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
+			if ( !ValidateTeam(clientNum, TEAM_BLUE) ) {
+				trap_SendServerCommand( clientNum,
+					va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TOOMANYBLUE")) );
+				return;
+			}
+			team = TEAM_BLUE;
+		} else {
+			// pick the team with the least number of players
+			team = PickTeam( clientNum );
+			if ( team == TEAM_SPECTATOR ) {
+				trap_SendServerCommand( clientNum, "print \"Teams are full.\n\""); // TRANSLATE
+				return;
+			}
+		}
+	} else {
+		team = TEAM_FREE;
+		if ( !ValidateTeam(clientNum, TEAM_FREE) ) {
+			trap_SendServerCommand( clientNum, "print \"Game is full.\n\""); // TRANSLATE
+			return;
+		}
+	}
+
+	if ( SetTeamSpec( ent, team, specState, specClient ) == 0 ) {
+		ent->client->switchTeamTime = level.time + 5000;
+	};
 }
 
 /*
@@ -956,23 +919,25 @@ Cmd_Team_f
 void Cmd_Team_f( gentity_t *ent ) {
 	int			oldTeam;
 	char		s[MAX_TOKEN_CHARS];
+	const char	*printTeam;
 
 	if ( trap_Argc() != 2 ) {
 		oldTeam = ent->client->sess.sessionTeam;
 		switch ( oldTeam ) {
 		case TEAM_BLUE:
-			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PRINTBLUETEAM")) );
+			printTeam = G_GetStripEdString("SVINGAME", "PRINTBLUETEAM");
 			break;
 		case TEAM_RED:
-			trap_SendServerCommand( ent-g_entities, va("print \"Red team\n\"", G_GetStripEdString("SVINGAME", "PRINTREDTEAM")) );
+			printTeam = G_GetStripEdString("SVINGAME", "PRINTREDTEAM");
 			break;
 		case TEAM_FREE:
-			trap_SendServerCommand( ent-g_entities, va("print \"Free team\n\"", G_GetStripEdString("SVINGAME", "PRINTFREETEAM")) );
+			printTeam = G_GetStripEdString("SVINGAME", "PRINTFREETEAM");
 			break;
 		case TEAM_SPECTATOR:
-			trap_SendServerCommand( ent-g_entities, va("print \"Spectator team\n\"", G_GetStripEdString("SVINGAME", "PRINTSPECTEAM")) );
+			printTeam = G_GetStripEdString("SVINGAME", "PRINTSPECTEAM");
 			break;
 		}
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", printTeam) );
 		return;
 	}
 
@@ -986,21 +951,15 @@ void Cmd_Team_f( gentity_t *ent ) {
 		return;
 	}
 
-	// if they are playing a tournement game, count as a loss
 	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {//in a tournament game
-		//disallow changing teams
+		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Cannot switch teams in Duel\n\"" );
 		return;
-		//FIXME: why should this be a loss???
-		//ent->client->sess.losses++;
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
 
-	SetTeam( ent, s );
-
-	ent->client->switchTeamTime = level.time + 5000;
+	SetTeamFromString( ent, s );
 }
 
 /*
@@ -1088,7 +1047,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 
 	// first set them to spectator
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		SetTeam( ent, "spectator" );
+		SetTeam( ent, TEAM_SPECTATOR );
 	}
 
 	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
@@ -1112,7 +1071,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 	// first set them to spectator
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		SetTeam( ent, "spectator" );
+		SetTeam( ent, TEAM_SPECTATOR );
 	}
 
 	if ( dir != 1 && dir != -1 ) {
@@ -1583,7 +1542,7 @@ Cmd_CallVote_f
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
 	voteCommand_t	voteCmd;
-	int				i;
+	int				i, bound;
 	char			arg1[MAX_STRING_TOKENS];
 	char			arg2[MAX_STRING_TOKENS];
 	char			s[MAX_STRING_CHARS];
@@ -1624,11 +1583,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) voteCmd = CV_DOWARMUP;
 	else if ( !Q_stricmp( arg1, "timelimit" ) )  voteCmd = CV_TIMELIMIT;
 	else if ( !Q_stricmp( arg1, "fraglimit" ) )  voteCmd = CV_FRAGLIMIT;
+	else if ( !Q_stricmp( arg1, "teamsize" ) )   voteCmd = CV_TEAMSIZE;
 	else                                         voteCmd = CV_INVALID;
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, teamsize <size>.\n\"" );
 		return;
 	}
 
@@ -1715,6 +1675,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "vstr nextmap");
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+		break;
+	case CV_TEAMSIZE:
+		i = atoi( arg2 );
+
+		if ( i != 0 && g_teamsizeMin.integer > 0 && i < g_teamsizeMin.integer ) {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"teamsize must be greater than %d.\n\"",	g_teamsizeMin.integer - 1 ) );
+			return;
+		}
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
 		break;
 	default:

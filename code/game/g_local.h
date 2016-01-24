@@ -44,7 +44,8 @@ typedef enum {
 	CV_CLIENTKICK,
 	CV_DOWARMUP,
 	CV_TIMELIMIT,
-	CV_FRAGLIMIT
+	CV_FRAGLIMIT,
+	CV_TEAMSIZE
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc
@@ -545,7 +546,9 @@ char *G_NewString( const char *string );
 void Cmd_Score_f (gentity_t *ent);
 void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
-void SetTeam( gentity_t *ent, char *s );
+qboolean ValidateTeam( int ignoreClientNum, team_t team );
+void SetTeam( gentity_t *ent, team_t team );
+void SetTeamFromString( gentity_t *ent, char *s );
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void Cmd_SaberAttackCycle_f(gentity_t *ent);
 int G_ItemUsable(playerState_t *ps, int forcedUse);
@@ -959,7 +962,8 @@ extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;
 extern	vmCvar_t	g_maxclients;			// allow this many total, including spectators
-extern	vmCvar_t	g_maxGameClients;		// allow this many active
+extern  vmCvar_t	g_teamsize;
+extern  vmCvar_t    g_teamsizeMin;
 extern	vmCvar_t	g_restarted;
 
 extern	vmCvar_t	g_trueJedi;

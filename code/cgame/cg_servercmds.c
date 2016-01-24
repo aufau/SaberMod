@@ -131,7 +131,8 @@ and whenever the server updates any serverinfo flagged cvars
 */
 void CG_ParseServerinfo( void ) {
 	const char	*info;
-	char	*mapname;
+	char		*mapname;
+	int			val;
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
@@ -165,10 +166,25 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set ( "ui_about_capturelimit", va("%i", cgs.capturelimit ) );
 	trap_Cvar_Set ( "ui_about_timelimit", va("%i", cgs.timelimit ) );
 	trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
+	trap_Cvar_Set ( "ui_about_teamsize", Info_ValueForKey( info, "teamsize" ) );
 	trap_Cvar_Set ( "ui_about_dmflags", va("%i", cgs.dmflags ) );
 	trap_Cvar_Set ( "ui_about_hostname", Info_ValueForKey( info, "sv_hostname" ) );
 	trap_Cvar_Set ( "ui_about_needpass", Info_ValueForKey( info, "g_needpass" ) );
 	trap_Cvar_Set ( "ui_about_botminplayers", Info_ValueForKey ( info, "bot_minplayers" ) );
+
+	// Menu displays either maxclients or teamsize if it's non-zero
+	val = atoi( Info_ValueForKey( info, "teamsize" ) );
+	val = max(0, val);
+	if ( cgs.gametype == GT_TOURNAMENT || val == 0 ) {
+		trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
+		trap_Cvar_Set ( "ui_about_teamsize", "0" );
+	} else if ( cgs.gametype < GT_TEAM ) {
+		trap_Cvar_Set ( "ui_about_maxclients", va("%i", val ) );
+		trap_Cvar_Set ( "ui_about_teamsize", "0" );
+	} else {
+		trap_Cvar_Set ( "ui_about_maxclients", "0" );
+		trap_Cvar_Set ( "ui_about_teamsize",  va("%i", val ) );
+	}
 }
 
 /*

@@ -1,0 +1,305 @@
+//----------------------------------------------------------------------------------------------
+// INGAME ABOUT BOX
+//----------------------------------------------------------------------------------------------
+{
+	menuDef
+	{
+		name                    "ingame_about"
+		visible                 0
+		fullscreen              0
+		outOfBoundsClick // this closes the window if it gets a click out of the rectangle
+
+
+		rect                    10 40 320 240
+		focusColor              1 .75 0 1
+		style                   1
+		border                  1
+
+		// Overall window backdrop
+		itemDef
+		{
+			name                    background_pic
+			group                   none
+			style                   WINDOW_STYLE_SHADER
+			rect                    0 0 320 240
+			background              "gfx/menus/menu_box_ingame"
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 5 300 20
+			style                   WINDOW_STYLE_SHADER
+			background              "gfx/menus/menu_blendbox"
+			type                    4
+			text                    @MENUS0_HOST_NAME
+			cvar                    "ui_about_hostname"
+			maxPaintChars           20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              110
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 30 300 20
+			style                   0
+			type                    4
+			text                    @MENUS1_ADDRESS
+			cvar                    "cl_currentServerAddress"
+			maxPaintChars           24
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              110
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 50 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_MAP_NAME
+			cvar                    "ui_about_mapname"
+			maxPaintChars           20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              110
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 70 300 20
+			style                   0
+			//type 4
+			textalign               ITEM_ALIGN_RIGHT
+			text                    @MENUS1_TYPE
+			type                    ITEM_TYPE_MULTI
+			cvar                    "ui_about_gametype"
+			cvarFloatList
+			{
+				@MENUS1_FREE_FOR_ALL    0
+				@MENUS1_HOLOCRON_FFA    1
+				@MENUS1_JEDI_MASTER     2
+				@MENUS1_DUEL            3
+				@MENUS1_FREE_FOR_ALL    4
+				@MENUS1_TEAM_FFA        5
+				@MENUS1_SAGA            6
+				@MENUS1_CAPTURE_THE_FLAG 7
+				@MENUS1_CAPTURE_THE_YSALIMARI 8
+			}
+
+			textalignx              110
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			backcolor               0 0 .75 .25
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 100 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_MAXIMUM_PLAYERS
+			cvar                    "ui_about_maxclients"
+			cvarTest                "ui_about_teamsize"
+			showCvar
+			{
+				"0" ;
+			}
+			maxPaintChars           12
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 100 300 20
+			type                    4
+			style                   0
+			text                    @SABERMENUS_TEAM_SIZE
+			cvar                    "ui_about_teamsize"
+			cvarTest                "ui_about_teamsize"
+			hideCvar
+			{
+				"0" ;
+			}
+			maxPaintChars           12
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 120 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_TIME_LIMIT
+			maxPaintChars           12
+			cvar                    "ui_about_timelimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 140 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_FRAG_LIMIT
+			cvarTest                "ui_about_gametype"
+			hideCvar
+			{
+				"6" ;
+				"7" ;
+				"8"
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_fraglimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 140 300 20
+			type                    4
+			style                   0
+			text                    @MENUS1_CAPTURE_LIMIT
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"6" ;
+				"7" ;
+				"8"
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_capturelimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 160 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_DUEL_LIMIT
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"3"
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_duellimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 180 300 20
+			type                    4
+			maxPaintChars           4
+			style                   0
+			text                    @MENUS1_MINIMUM_PLAYERS
+			cvar                    "ui_about_botminplayers"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 210 300 20
+			type                    4
+			style                   0
+			text                    @MENUS0_VERSION
+			cvar                    version
+			maxPaintChars           40
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              150
+			textaligny              2
+			textalign               1
+			font                    2
+			textscale               .6
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+	}
+}
+

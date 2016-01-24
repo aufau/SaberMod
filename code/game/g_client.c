@@ -835,11 +835,46 @@ int TeamLeader( int team ) {
 	return -1;
 }
 
+/*
+================
+ValidateTeam
+
+Checks if client can join/stay in a given team. PickTeam does
+validation on it's own.
+================
+*/
+qboolean ValidateTeam( int ignoreClientNum, team_t team )
+{
+	int count, otherCount;
+
+	// Works in FFA and counts CON_CONNECTING clients unlike
+	// level.numNonSpectatorClients
+	count = TeamCount( ignoreClientNum, team );
+
+	if ( g_teamsize.integer > 0 ) {
+		if ( count >= g_teamsize.integer ) {
+			return qfalse;
+		}
+	}
+	if ( team == TEAM_RED || team == TEAM_BLUE ) {
+		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
+			otherCount = TeamCount( ignoreClientNum,
+				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
+
+			if ( count - otherCount  > 1 ) {
+				return qfalse;
+			}
+		}
+	}
+	return qtrue;
+}
 
 /*
 ================
 PickTeam
 
+Picks a weaker team. If it's not valid (see ValidateTeam), returns
+TEAM_SPECTATOR.
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
@@ -848,6 +883,10 @@ team_t PickTeam( int ignoreClientNum ) {
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
 
+	if ( g_teamsize.integer > 0
+		&& min(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
+		return TEAM_SPECTATOR;
+	}
 	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
 		return TEAM_RED;
 	}
@@ -1158,21 +1197,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	Q_strncpyz( forcePowers, Info_ValueForKey (userinfo, "forcepowers"), sizeof( forcePowers ) );
 
-	// bots set their team a few frames later
-	if (GT_Team(g_gametype.integer) && g_entities[clientNum].r.svFlags & SVF_BOT) {
-		s = Info_ValueForKey( userinfo, "team" );
-		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
-			team = TEAM_RED;
-		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
-			team = TEAM_BLUE;
-		} else {
-			// pick the team with the least number of players
-			team = PickTeam( clientNum );
-		}
-	}
-	else {
-		team = client->sess.sessionTeam;
-	}
+	team = client->sess.sessionTeam;
 
 /*	NOTE: all client side now
 
@@ -1189,7 +1214,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	// don't ever use a default skin in teamplay, it would just waste memory
 	// however bots will always join a team but they spawn in as spectator
-	if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
+	if ( GT_Team(g_gametype.integer) && team == TEAM_SPECTATOR) {
 		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headModel, "red");
 	}
@@ -1356,9 +1381,10 @@ void G_WriteClientSessionData( gclient_t *client );
 ===========
 ClientBegin
 
-called when a client has finished connecting, and is ready
-to be placed into the level.  This will happen every level load,
-and on transition between teams, but doesn't happen on respawns
+called when a client has finished connecting, and is ready to be
+placed into the level. This will happen every level load (after
+ClientConnect) and on transition between teams, but doesn't happen on
+respawns. allowTeamReset will be set on map_restart.
 ============
 */
 void ClientBegin( int clientNum, qboolean allowTeamReset ) {
@@ -1374,25 +1400,23 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	{
 		if (allowTeamReset)
 		{
-			const char *team = "Red";
+			const char *team;
 			int preSess;
 
 			//SetTeam(ent, "");
 			ent->client->sess.sessionTeam = PickTeam(-1);
 			trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
 
-			if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
-			{
-				ent->client->sess.sessionTeam = TEAM_RED;
-			}
-
 			if (ent->client->sess.sessionTeam == TEAM_RED)
 			{
 				team = "Red";
 			}
-			else
+			else if (ent->client->sess.sessionTeam == TEAM_BLUE)
 			{
 				team = "Blue";
+			}
+			else {
+				team = "Spectator";
 			}
 
 			Info_SetValueForKey( userinfo, "team", team );
@@ -1742,9 +1766,7 @@ void ClientSpawn(gentity_t *ent) {
 				}
 				if ( WP_HasForcePowers( &client->ps ) && client->sess.sessionTeam != forceTeam )
 				{//using force but not on right team, switch him over
-					const char *teamName = TeamName( forceTeam );
-					//client->sess.sessionTeam = forceTeam;
-					SetTeam( ent, (char *)teamName );
+					SetTeam( ent, forceTeam );
 					return;
 				}
 			}

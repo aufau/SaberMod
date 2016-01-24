@@ -723,7 +723,6 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	char			*model;
 //	char			*headmodel;
 	char			userinfo[MAX_INFO_STRING];
-	int				preTeam = 0;
 
 	// get the botinfo from bots.txt
 	botinfo = G_GetBotInfoByName( name );
@@ -819,79 +818,23 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	}
 
 	// initialize the bot settings
-	if( !team || !*team ) {
-		if( GT_Team(g_gametype.integer) ) {
-			if( PickTeam(clientNum) == TEAM_RED) {
-				team = "red";
-			}
-			else {
-				team = "blue";
-			}
-		}
-		else {
-			team = "red";
-		}
+	if( !team || !*team	|| ( Q_stricmp(team, "red") && Q_stricmp(team, "blue") ) ) {
+		team = "";
 	}
+
+
 //	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
 	Info_SetValueForKey( userinfo, "team", team );
 
 	bot = &g_entities[ clientNum ];
-	bot->r.svFlags |= SVF_BOT;
-	bot->inuse = qtrue;
 
 	// register the userinfo
 	trap_SetUserinfo( clientNum, userinfo );
 
-	if (GT_Team(g_gametype.integer))
-	{
-		if (team && Q_stricmp(team, "red") == 0)
-		{
-			bot->client->sess.sessionTeam = TEAM_RED;
-		}
-		else if (team && Q_stricmp(team, "blue") == 0)
-		{
-			bot->client->sess.sessionTeam = TEAM_BLUE;
-		}
-		else
-		{
-			bot->client->sess.sessionTeam = PickTeam( -1 );
-		}
-	}
-
-	preTeam = bot->client->sess.sessionTeam;
-
 	// have it connect to the game as a normal client
 	if ( ClientConnect( clientNum, qtrue, qtrue ) ) {
 		return;
-	}
-
-	if (bot->client->sess.sessionTeam != preTeam)
-	{
-		trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
-
-		if (bot->client->sess.sessionTeam == TEAM_SPECTATOR)
-		{
-			bot->client->sess.sessionTeam = preTeam;
-		}
-
-		if (bot->client->sess.sessionTeam == TEAM_RED)
-		{
-			team = "Red";
-		}
-		else
-		{
-			team = "Blue";
-		}
-
-		Info_SetValueForKey( userinfo, "team", team );
-
-		trap_SetUserinfo( clientNum, userinfo );
-
-		bot->client->ps.persistant[ PERS_TEAM ] = bot->client->sess.sessionTeam;
-
-		G_ReadSessionData( bot->client );
-		ClientUserinfoChanged( clientNum );
 	}
 
 	if( delay == 0 ) {
