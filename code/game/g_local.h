@@ -45,7 +45,8 @@ typedef enum {
 	CV_DOWARMUP,
 	CV_TIMELIMIT,
 	CV_FRAGLIMIT,
-	CV_TEAMSIZE
+	CV_TEAMSIZE,
+	CV_REMOVE
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc

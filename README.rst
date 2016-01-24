@@ -29,12 +29,21 @@ players
 Callvote
 ........
 
+remove <player>
+  Remove `player` to spectator team.
+
 teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
 Server-Side
 -----------
+
+Server Commands
+...............
+
+remove <player> [time]
+  remove `player` to spectator team for at least `time` seconds.
 
 Cvars
 .....
