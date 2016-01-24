@@ -46,7 +46,10 @@ typedef enum {
 	CV_TIMELIMIT,
 	CV_FRAGLIMIT,
 	CV_TEAMSIZE,
-	CV_REMOVE
+	CV_REMOVE,
+	CV_NOKICK,
+	CV_WITHKICK,
+	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc
@@ -1057,6 +1060,7 @@ extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_restrictChat;
 extern  vmCvar_t	g_spawnShield;
+extern  vmCvar_t	g_noKick;
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
