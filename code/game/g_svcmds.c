@@ -330,7 +330,7 @@ gclient_t	*ClientForString( const char *s ) {
 	}
 
 	// numeric values are just slot numbers
-	if ( StringIsInteger( s ) ) {
+	if ( Q_IsInteger( s ) ) {
 		idnum = atoi( s );
 		if ( idnum < 0 || idnum >= level.maxclients ) {
 			Com_Printf( "Bad client slot: %i\n", idnum );

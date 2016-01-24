@@ -147,30 +147,6 @@ char	*ConcatArgs( int start ) {
 }
 
 /*
-==================
-StringIsInteger
-==================
-*/
-qboolean StringIsInteger( const char * s ) {
-	int			i;
-	int			len;
-	qboolean	foundDigit;
-
-	len = strlen( s );
-	foundDigit = qfalse;
-
-	for ( i=0 ; i < len ; i++ ) {
-		if ( !isdigit( s[i] ) ) {
-			return qfalse;
-		}
-
-		foundDigit = qtrue;
-	}
-
-	return foundDigit;
-}
-
-/*
 G_ClientNumberFromPattern
 
 Returns a client number of a matching player as described below
@@ -324,7 +300,7 @@ int ClientNumberFromString( gentity_t *to, const char *s ) {
 	}
 
 	// numeric values could be slot numbers
-	if ( StringIsInteger( s ) ) {
+	if ( Q_IsInteger( s ) ) {
 		idnum = atoi( s );
 		if ( idnum < 0 && idnum >= level.maxclients ) {
 			trap_SendServerCommand( to-g_entities, va("print \"Bad client slot: %i\n\"", idnum));
@@ -936,6 +912,8 @@ void Cmd_Team_f( gentity_t *ent ) {
 		case TEAM_SPECTATOR:
 			printTeam = G_GetStripEdString("SVINGAME", "PRINTSPECTEAM");
 			break;
+		default:
+			return;
 		}
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", printTeam) );
 		return;
@@ -1542,7 +1520,7 @@ Cmd_CallVote_f
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
 	voteCommand_t	voteCmd;
-	int				i, bound;
+	int				i;
 	char			arg1[MAX_STRING_TOKENS];
 	char			arg2[MAX_STRING_TOKENS];
 	char			s[MAX_STRING_CHARS];
