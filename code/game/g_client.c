@@ -922,18 +922,22 @@ static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) 
 
 /*
 ===========
-ClientCleanName
+ClientSetName
 ============
 */
-static void ClientCleanName( const char *in, char *out, int outSize ) {
+static void ClientSetName( gclient_t *client, const char *in ) {
+	char	cleanName[MAX_NETNAME - 4]; // "(99)" suffix
+	char	*name;
+	int		i, num;
     int		characters;
     int		spaces;
     char	ch;
     char	*p;
     char	*end;
+	qboolean	free;
 
-    p = out;
-    end = out + outSize;
+    p = cleanName;
+    end = cleanName + sizeof(cleanName);
     characters = 0;
     spaces = 0;
 
@@ -963,8 +967,29 @@ static void ClientCleanName( const char *in, char *out, int outSize ) {
 
     // don't allow empty names
     if( characters == 0 ) {
-        strncpy( out, "Padawan", outSize );
+        strncpy( cleanName, "Padawan", sizeof(cleanName) );
     }
+
+	name = client->pers.netname;
+	Q_strncpyz(name, cleanName, MAX_NETNAME);
+	num = 1;
+
+	while ((free = qtrue)) {
+		for (i = 0; i < level.numConnectedClients; i++) {
+			if (&level.clients[level.sortedClients[i]] == client) {
+				continue;
+			}
+			if (!Q_strncmp(name, level.clients[level.sortedClients[i]].pers.netname, MAX_NETNAME)) {
+				free = qfalse;
+				break;
+			}
+		}
+		if (free) {
+			break;
+		}
+		Com_sprintf(name, MAX_NETNAME, "%s(%d)", cleanName, num);
+		num++;
+	}
 }
 
 #ifdef _DEBUG
@@ -1163,7 +1188,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	// set name
 	Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey (userinfo, "name");
-	ClientCleanName( s, client->pers.netname, sizeof(client->pers.netname) );
+	ClientSetName( client, s );
 
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
