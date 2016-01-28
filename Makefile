@@ -76,7 +76,8 @@ pk3name		:= SaberMod
 pk3			:= $(pk3name)-$(VERSION).pk3
 pk3doc		:= README.rst LICENSE.txt
 pk3assets := SOURCE.txt ui/jk2mp/ingame_about.menu	\
-strip/SABERMOD_INGAME.sp strip/SABERMOD_MENUS.sp
+ui/jk2mp/ingame_join.menu strip/SABERMOD_INGAME.sp	\
+strip/SABERMOD_MENUS.sp
 
 # Targets
 
