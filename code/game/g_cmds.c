@@ -726,12 +726,14 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 		specState = SPECTATOR_NOT;
 	}
 
-	//
-	// decide if we will allow the change
-	//
-
+	// fast path for switching followed player
 	oldTeam = client->sess.sessionTeam;
-	if ( team == oldTeam && team != TEAM_SPECTATOR ) {
+	if ( team == oldTeam ) {
+		if ( team == TEAM_SPECTATOR ) {
+			client->sess.spectatorState = specState;
+			client->sess.spectatorClient = specClient;
+		}
+
 		return -1;
 	}
 
@@ -1023,13 +1025,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		ent->client->sess.losses++;
 	}
 
-	// first set them to spectator
-	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		SetTeam( ent, TEAM_SPECTATOR );
-	}
-
-	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
-	ent->client->sess.spectatorClient = i;
+	SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i);
 }
 
 /*
@@ -1046,10 +1042,6 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		&& ent->client->sess.sessionTeam == TEAM_FREE ) {\
 		//WTF???
 		ent->client->sess.losses++;
-	}
-	// first set them to spectator
-	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		SetTeam( ent, TEAM_SPECTATOR );
 	}
 
 	if ( dir != 1 && dir != -1 ) {
@@ -1078,8 +1070,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		}
 
 		// this is good, we can use it
-		ent->client->sess.spectatorClient = clientnum;
-		ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
+		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, clientnum );
 		return;
 	} while ( clientnum != original );
 
