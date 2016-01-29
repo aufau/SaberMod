@@ -8,7 +8,7 @@
 		visible                 1
 		fullScreen              0
 		outOfBoundsClick                                // this closes the window if it gets a click out of the rectangle
-		rect                    55 40 128 128
+		rect                    55 40 128 158
 		focusColor              1 1 1 1
 
 		// Overall window backdrop
@@ -17,7 +17,7 @@
 			name                    background_pic
 			group                   none
 			style                   WINDOW_STYLE_SHADER
-			rect                    0 0 128 128
+			rect                    0 0 128 158
 			background              "gfx/menus/menu_box_ingame"
 			forecolor               1 1 1 1
 			visible                 1
@@ -69,6 +69,18 @@
 			group                   buttons
 			style                   WINDOW_STYLE_SHADER
 			rect                    2 94 124 30
+			background              "gfx/menus/menu_buttonback"          // Frame around button
+			forecolor               1 1 1 1
+			decoration
+			visible                 0
+		}
+
+		itemDef
+		{
+			name                    button5
+			group                   buttons
+			style                   WINDOW_STYLE_SHADER
+			rect                    2 124 124 30
 			background              "gfx/menus/menu_buttonback"          // Frame around button
 			forecolor               1 1 1 1
 			decoration
@@ -230,6 +242,44 @@
 			}
 		}
 
+		itemDef
+		{
+			name                    team
+			text                    @SABERMENUS_FOLLOW
+			type                    1
+			style                   2
+			rect                    2 124 124 30
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              62
+			textaligny              0
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"5" ;
+				"6" ;
+				"7" ;
+				"8"
+			}
+			visible                 1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd follow -1" ;
+				uiScript                closeingame
+			}
+			mouseEnter
+			{
+				show                    button5
+			}
+			mouseExit
+			{
+				hide                    button5
+			}
+		}
+
 		//---------------------------------
 		// NON-TEAM JOIN
 		//---------------------------------
@@ -309,6 +359,43 @@
 			}
 		}
 
+		itemDef
+		{
+			name                    team
+			text                    @SABERMENUS_FOLLOW
+			type                    1
+			style                   2
+			rect                    2 94 124 30
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              62
+			textaligny              0
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			cvarTest                "ui_about_gametype"
+			hideCvar
+			{
+				"5" ;
+				"6" ;
+				"7" ;
+				"8"
+			}
+			visible                 1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd follow -1" ;
+				uiScript                closeingame
+			}
+			mouseEnter
+			{
+				show                    button4
+			}
+			mouseExit
+			{
+				hide                    button4
+			}
+		}
 	}
 }
 
