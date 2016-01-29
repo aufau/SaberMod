@@ -35,9 +35,13 @@
 
 #define SB_RATING_WIDTH	    0 // (6 * BIGCHAR_WIDTH)
 #define SB_NAME_X			(SB_SCORELINE_X)
-#define SB_SCORE_X			(SB_SCORELINE_X + .55 * SB_SCORELINE_WIDTH)
-#define SB_PING_X			(SB_SCORELINE_X + .70 * SB_SCORELINE_WIDTH)
-#define SB_TIME_X			(SB_SCORELINE_X + .85 * SB_SCORELINE_WIDTH)
+#define SB_SCORE_X			(SB_SCORELINE_X + .30 * SB_SCORELINE_WIDTH)
+#define SB_DD_X				(SB_SCORELINE_X + .40 * SB_SCORELINE_WIDTH)
+#define SB_DT_X				(SB_SCORELINE_X + .50 * SB_SCORELINE_WIDTH)
+#define SB_TDD_X			(SB_SCORELINE_X + .60 * SB_SCORELINE_WIDTH)
+#define SB_TDT_X			(SB_SCORELINE_X + .70 * SB_SCORELINE_WIDTH)
+#define SB_PING_X			(SB_SCORELINE_X + .80 * SB_SCORELINE_WIDTH)
+#define SB_TIME_X			(SB_SCORELINE_X + .90 * SB_SCORELINE_WIDTH)
 
 // The new and improved score board
 //
@@ -64,7 +68,6 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	clientInfo_t	*ci;
 	int iconx, headx;
 	float		scale;
-
 	if ( largeFormat )
 	{
 		scale = 1.0f;
@@ -163,10 +166,13 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		}
 		else
 		{
-			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i/%i", score->score, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
 	}
-
+	CG_Text_Paint (SB_DD_X, y, 1.0f * scale, colorWhite, va("%i", score->totalDamageDealtToEnemies),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	CG_Text_Paint (SB_DT_X, y, 1.0f * scale, colorWhite, va("%i", score->totalDamageTakenFromEnemies),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	CG_Text_Paint (SB_TDD_X, y, 1.0f * scale, colorWhite, va("%i", score->totalDamageDealtToAllies),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	CG_Text_Paint (SB_TDT_X, y, 1.0f * scale, colorWhite, va("%i", score->totalDamageTakenFromAllies),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 	CG_Text_Paint (SB_PING_X, y, 1.0f * scale, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 	CG_Text_Paint (SB_TIME_X, y, 1.0f * scale, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 
@@ -378,25 +384,29 @@ qboolean CG_DrawOldScoreboard( void ) {
 	}
 	else
 	{
-		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "SCORE")*/"Score", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "SCORE")*/"S/D", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
-	CG_Text_Paint ( SB_PING_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"Ping", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	CG_Text_Paint ( SB_TIME_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "TIME")*/"Time", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_DD_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"DD", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_DT_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"DT", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_TDD_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"TDD", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_TDT_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"TDT", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_PING_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"PING", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( SB_TIME_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "TIME")*/"TIME", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 
 	y = SB_TOP;
 
 	// If there are more than SB_MAXCLIENTS_NORMAL, use the interleaved scores
-	if ( cg.numScores > SB_MAXCLIENTS_NORMAL ) {
+//	if ( cg.numScores > SB_MAXCLIENTS_NORMAL ) {
 		maxClients = SB_MAXCLIENTS_INTER;
 		lineHeight = SB_INTER_HEIGHT;
 		topBorderSize = 8;
 		bottomBorderSize = 16;
-	} else {
+	/*} else {
 		maxClients = SB_MAXCLIENTS_NORMAL;
 		lineHeight = SB_NORMAL_HEIGHT;
 		topBorderSize = 8;
 		bottomBorderSize = 8;
-	}
+	}*/
 
 	localClient = qfalse;
 

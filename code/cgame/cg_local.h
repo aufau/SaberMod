@@ -418,6 +418,11 @@ typedef struct {
 	int				captures;
 	qboolean	perfect;
 	int				team;
+	int				deaths;
+	int 			totalDamageTakenFromEnemies;
+	int 			totalDamageDealtToEnemies;
+	int 			totalDamageTakenFromAllies;
+	int 			totalDamageDealtToAllies;
 } score_t;
 
 // each client has an associated clientInfo_t
