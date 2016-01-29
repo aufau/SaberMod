@@ -1746,36 +1746,33 @@ SpectatorClientEndFrame
 ==================
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
-	gclient_t	*cl;
-
 	// if we are doing a chase cam or a remote view, grab the latest info
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		int		clientNum, flags;
 
 		clientNum = ent->client->sess.spectatorClient;
 
-		// team follow1 and team follow2 go to whatever clients are playing
+		// team follow1 and team follow2 go to the score leader and runner up
 		if ( clientNum == -1 ) {
 			clientNum = level.follow1;
 		} else if ( clientNum == -2 ) {
 			clientNum = level.follow2;
 		}
 		if ( clientNum >= 0 ) {
-			cl = &level.clients[ clientNum ];
+			gclient_t *cl = &level.clients[ clientNum ];
+
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
 				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
 				ent->client->ps = cl->ps;
 				ent->client->ps.pm_flags |= PMF_FOLLOW;
 				ent->client->ps.eFlags = flags;
-				return;
 			} else {
-				// drop them to free spectators unless they are dedicated camera followers
-				if ( ent->client->sess.spectatorClient >= 0 ) {
-					ent->client->sess.spectatorState = SPECTATOR_FREE;
-					ClientBegin( ent->client - level.clients, qtrue );
-				}
+				StopFollowing(ent);
 			}
+		} else {
+			StopFollowing(ent);
 		}
+		return;
 	}
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {

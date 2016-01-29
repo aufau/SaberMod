@@ -820,14 +820,6 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_SCOREBOARD;
-	} else if ( !Q_stricmp( s, "follow1" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -1;
-	} else if ( !Q_stricmp( s, "follow2" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -2;
 	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
@@ -1001,9 +993,15 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	i = ClientNumberFromString( ent, arg );
-	if ( i == -1 ) {
-		return;
+	if (!strcmp(arg, "-1") || !Q_stricmp(arg, "first")) {
+		i = -1;
+	} else if (!strcmp(arg, "-2") || !Q_stricmp(arg, "second"))
+		i = -2;
+	else {
+		i = ClientNumberFromString( ent, arg );
+		if ( i == -1 ) {
+			return;
+		}
 	}
 
 	// can't follow self

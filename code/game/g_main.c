@@ -1016,7 +1016,6 @@ void CalculateRanks( void ) {
 				level.numNonSpectatorClients++;
 				nonSpecIndex = i;
 
-				// decide if this should be auto-followed
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
@@ -1025,11 +1024,6 @@ void CalculateRanks( void ) {
 							level.numteamVotingClients[0]++;
 						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
 							level.numteamVotingClients[1]++;
-					}
-					if ( level.follow1 == -1 ) {
-						level.follow1 = i;
-					} else if ( level.follow2 == -1 ) {
-						level.follow2 = i;
 					}
 				}
 			}
@@ -1057,6 +1051,13 @@ void CalculateRanks( void ) {
 
 	qsort( level.sortedClients, level.numConnectedClients,
 		sizeof(level.sortedClients[0]), SortRanks );
+
+	if (level.numPlayingClients >= 1) {
+		level.follow1 = level.follow2 = level.sortedClients[0];
+	}
+	if (level.numPlayingClients >= 2) {
+		level.follow2 = level.sortedClients[1];
+	}
 
 	// set the rank value for all clients that are connected and not spectators
 	if ( GT_Team(g_gametype.integer) ) {
