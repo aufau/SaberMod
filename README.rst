@@ -42,6 +42,12 @@ teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
+Cvars
+.....
+
+handicap <x>
+  Lower your max health to x and damage to x%.
+
 Server-Side
 -----------
 
