@@ -561,9 +561,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	memset( g_clients, 0, MAX_CLIENTS * sizeof(g_clients[0]) );
 	level.clients = g_clients;
 
-	// set client fields on player ents
 	for ( i=0 ; i<level.maxclients ; i++ ) {
+		// set client fields on player ents
 		g_entities[i].client = level.clients + i;
+		// Initialize sortedClients
+		level.sortedClients[i] = i;
 	}
 
 	// always leave room for the max number of clients,
@@ -919,37 +921,74 @@ void AdjustTournamentScores( void ) {
 	}
 }
 
+typedef int icmp_t(const int *a, const int *b);
+
+/*
+============
+isort
+
+Insertion sort for int arrays. It's a stable sorting algorithm; i.e.,
+it doesn't change the order of records with equal keys. Use for small
+or nearly sorted data.
+============
+*/
+static void isort( int *a, size_t n, icmp_t cmp )
+{
+	int		i, j;
+	int		temp;
+
+	for (i = 1; i < n; i++) {
+		temp = a[i];
+		j = i - 1;
+		while (j >= 0 && cmp(&a[j], &temp) > 0) {
+			a[j + 1] = a[j];
+			j--;
+		}
+		a[j + 1] = temp;
+	}
+}
+
 /*
 =============
 SortRanks
 
 =============
 */
-int QDECL SortRanks( const void *a, const void *b ) {
+int QDECL SortRanks( const int *a, const int *b ) {
 	gclient_t	*ca, *cb;
+	qboolean	ta, tb;
 
-	ca = &level.clients[*(int *)a];
-	cb = &level.clients[*(int *)b];
+	ca = &level.clients[*a];
+	cb = &level.clients[*b];
+
+	ta = ca->pers.connected == CON_DISCONNECTED;
+	tb = cb->pers.connected == CON_DISCONNECTED;
+	if (ta || tb) {
+		return ta - tb;
+	}
+	// equivalent to:
+	// if ( ta && tb ) return 0;
+	// if ( ta )       return 1;
+	// if ( tb )       return -1;
 
 	// sort special clients last
-	if ( ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0 ) {
-		return 1;
-	}
-	if ( cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0  ) {
-		return -1;
+	ta = ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0;
+	tb = cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0;
+	if (ta || tb) {
+		return ta - tb;
 	}
 
 	// then connecting clients
-	if ( ca->pers.connected == CON_CONNECTING ) {
-		return 1;
+	ta = ca->pers.connected == CON_CONNECTING;
+	tb = cb->pers.connected == CON_CONNECTING;
+	if (ta || tb) {
+		return ta - tb;
 	}
-	if ( cb->pers.connected == CON_CONNECTING ) {
-		return -1;
-	}
-
 
 	// then spectators
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR && cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	ta = ca->sess.sessionTeam == TEAM_SPECTATOR;
+	tb = cb->sess.sessionTeam == TEAM_SPECTATOR;
+	if (ta && tb) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
 		}
@@ -958,10 +997,10 @@ int QDECL SortRanks( const void *a, const void *b ) {
 		}
 		return 0;
 	}
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if (ta) {
 		return 1;
 	}
-	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if (tb) {
 		return -1;
 	}
 
@@ -995,7 +1034,7 @@ void CalculateRanks( void ) {
 	int		score;
 	int		newScore;
 	int		preNumSpec = 0;
-	int		nonSpecIndex = -1;
+	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
 
 	preNumSpec = level.numNonSpectatorClients;
@@ -1009,12 +1048,11 @@ void CalculateRanks( void ) {
 	level.numteamVotingClients[0] = level.numteamVotingClients[1] = 0;
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
-			level.sortedClients[level.numConnectedClients] = i;
 			level.numConnectedClients++;
 
 			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
 				level.numNonSpectatorClients++;
-				nonSpecIndex = i;
+				// nonSpecIndex = i;
 
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
@@ -1049,8 +1087,9 @@ void CalculateRanks( void ) {
 	*/
 	//NOTE: for now not doing this either. May use later if appropriate.
 
-	qsort( level.sortedClients, level.numConnectedClients,
-		sizeof(level.sortedClients[0]), SortRanks );
+	// Use a stable sorting algorithm to keep the previous order of
+	// tied clients
+	isort(level.sortedClients, level.maxclients, SortRanks);
 
 	if (level.numPlayingClients >= 1) {
 		level.follow1 = level.follow2 = level.sortedClients[0];
