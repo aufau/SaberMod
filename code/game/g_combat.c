@@ -1817,6 +1817,8 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 		AddScore( attacker, self->r.currentOrigin, 1 );
 	}
 
+	attacker->client->ps.persistant[PERS_KILLS]++;
+
 	if( meansOfDeath == MOD_STUN_BATON ) {
 
 		// play humiliation on player
@@ -3248,7 +3250,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			attacker->client->ps.persistant[PERS_HITS]++;
 		}
-		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
 	}
 
 	if (dflags == DAMAGE_NO_DAMAGE) {
