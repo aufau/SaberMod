@@ -2991,6 +2991,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			knockback;
 	int			max;
 	int			subamt = 0;
+	int			oldHealth = targ->health;
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
@@ -3295,27 +3296,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			targ->health, take, asave );
 	}
 
-	if(targ->client && attacker->client && take) {
-		int damageTaken = 0;
-		if(shieldAbsorbed) {
-			damageTaken += asave;
-		}
-		if((targ->health - take) < 0) {
-			damageTaken += targ->health;
-		}
-		else {
-			damageTaken += take;
-		}
-		if( OnSameTeam( targ, attacker ) ) {
-			targ->client->pers.totalDamageTakenFromAllies += damageTaken;
-			attacker->client->pers.totalDamageDealtToAllies += damageTaken;
-		}
-		else {
-			targ->client->pers.totalDamageTakenFromEnemies += damageTaken;
-			attacker->client->pers.totalDamageDealtToEnemies += damageTaken;
-		}
-	}
-
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame
@@ -3513,14 +3493,28 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 			targ->enemy = attacker;
 			targ->die (targ, inflictor, attacker, take, mod);
-			return;
 		} else if ( targ->pain ) {
 			targ->pain (targ, attacker, take);
 		}
-
-		G_LogWeaponDamage(attacker->s.number, mod, take);
 	}
 
+	// Final health damage
+	take = max(0, oldHealth) - max(0, targ->health) + asave;
+	if (take && client) {
+		G_LogWeaponDamage(attacker->s.number, mod, take);
+
+		if (attacker && attacker->client) {
+			if (client == attacker->client || OnSameTeam(targ, attacker)) {
+				client->pers.totalDamageTakenFromAllies += take;
+				attacker->client->pers.totalDamageDealtToAllies += take;
+			} else {
+				client->pers.totalDamageTakenFromEnemies += take;
+				attacker->client->pers.totalDamageDealtToEnemies += take;
+			}
+		} else {
+			client->pers.totalDamageTakenFromEnemies += take;
+		}
+	}
 }
 
 
