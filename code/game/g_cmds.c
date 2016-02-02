@@ -23,7 +23,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	int			stringlength;
 	int			i, j;
 	gclient_t	*cl;
-	int			numSorted, scoreFlags, accuracy, perfect;
+	int			numSorted, scoreFlags, accuracy, perfect, netDamage;
 
 	// send the latest information on all clients
 	string[0] = 0;
@@ -56,20 +56,28 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		}
 		perfect = ( cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0 ) ? 1 : 0;
 
+		netDamage = cl->pers.totalDamageDealtToEnemies;
+		netDamage -= cl->pers.totalDamageTakenFromEnemies;
+		netDamage -= cl->pers.totalDamageTakenFromAllies;
+		netDamage /= 100; // Don't send exact data
+
 		Com_sprintf (entry, sizeof(entry),
-			" %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
-			cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000,
-			scoreFlags, g_entities[level.sortedClients[i]].s.powerups, accuracy,
+			" %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
+			level.sortedClients[i],
+			cl->ps.persistant[PERS_SCORE],
+			ping,
+			(level.time - cl->pers.enterTime)/60000,
+			scoreFlags,
+			g_entities[level.sortedClients[i]].s.powerups,
+			accuracy,
 			cl->ps.persistant[PERS_KILLED],
-			cl->pers.totalDamageDealtToEnemies,
-			cl->pers.totalDamageTakenFromEnemies,
-			cl->pers.totalDamageDealtToAllies,
-			cl->pers.totalDamageTakenFromAllies,
+			cl->ps.persistant[PERS_KILLS],
+			netDamage,
 //			cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
 //			cl->ps.persistant[PERS_EXCELLENT_COUNT],
 //			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
-//			cl->ps.persistant[PERS_DEFEND_COUNT],
-//			cl->ps.persistant[PERS_ASSIST_COUNT],
+			cl->ps.persistant[PERS_DEFEND_COUNT],
+			cl->ps.persistant[PERS_ASSIST_COUNT],
 			perfect,
 			cl->ps.persistant[PERS_CAPTURES]);
 		j = strlen(entry);
