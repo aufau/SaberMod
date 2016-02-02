@@ -35,11 +35,12 @@
 
 #define SB_RATING_WIDTH	    0 // (6 * BIGCHAR_WIDTH)
 #define SB_NAME_X			(SB_SCORELINE_X)
-#define SB_SCORE_X			(SB_SCORELINE_X + .43 * SB_SCORELINE_WIDTH)
-#define SB_KD_X				(SB_SCORELINE_X + .55 * SB_SCORELINE_WIDTH)
-#define SB_NETDMG_X			(SB_SCORELINE_X + .70 * SB_SCORELINE_WIDTH)
-#define SB_PING_X			(SB_SCORELINE_X + .80 * SB_SCORELINE_WIDTH)
-#define SB_TIME_X			(SB_SCORELINE_X + .90 * SB_SCORELINE_WIDTH)
+#define SB_SCORE_W			(.12 * SB_SCORELINE_WIDTH)
+#define SB_WL_W				(.15 * SB_SCORELINE_WIDTH)
+#define SB_KD_W				(.15 * SB_SCORELINE_WIDTH)
+#define SB_NETDMG_W			(.12 * SB_SCORELINE_WIDTH)
+#define SB_PING_W			(.10 * SB_SCORELINE_WIDTH)
+#define SB_TIME_W			(.10 * SB_SCORELINE_WIDTH)
 
 // The new and improved score board
 //
@@ -64,8 +65,9 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 {
 	//vec3_t	headAngles;
 	clientInfo_t	*ci;
-	int iconx, headx;
-	float		scale;
+	int				iconx, headx;
+	int				x;
+	float			scale;
 
 	if ( largeFormat )
 	{
@@ -155,29 +157,51 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		CG_FillRect( SB_SCORELINE_X - 5, y + 2, 640 - SB_SCORELINE_X * 2 + 10, largeFormat?SB_NORMAL_HEIGHT:SB_INTER_HEIGHT, hcolor );
 	}
 
-	CG_Text_Paint (SB_NAME_X, y, 0.9f * scale, colorWhite, ci->name,0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	x = SB_SCORELINE_X;
+	CG_Text_Paint (x, y, 0.9f * scale, colorWhite, ci->name,0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 
-	if ( ci->team != TEAM_SPECTATOR || cgs.gametype == GT_TOURNAMENT )
+	if (cgs.gametype == GT_TOURNAMENT)
 	{
-		if (cgs.gametype == GT_TOURNAMENT)
-		{
-			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		x = 640 - SB_SCORE_W - SB_WL_W - SB_NETDMG_W - SB_PING_W - SB_TIME_W - SB_SCORELINE_X;
+
+		if (cgs.fraglimit != 1) {
+			CG_Text_Paint (x, y, scale, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			x += SB_SCORE_W;
+		} else {
+			x += SB_SCORE_W;
 		}
-		else
-		{
-			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-			CG_Text_Paint (SB_KD_X, y + 4 * scale, 0.75f * scale, colorWhite, va("%i/%i", score->kills, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-			CG_Text_Paint (SB_NETDMG_X, y + 4 * scale, 0.75f * scale, colorWhite, va("%.1fk", score->netDamage / 10.0f),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+
+		CG_Text_Paint (x, y, 1.0f * scale, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		x += SB_WL_W;
+	}
+	else
+	{
+		x = 640 - SB_SCORE_W - SB_KD_W - SB_NETDMG_W - SB_PING_W - SB_TIME_W - SB_SCORELINE_X;
+
+		if (ci->team != TEAM_SPECTATOR) {
+			CG_Text_Paint (x, y, scale, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			x += SB_SCORE_W;
+			CG_Text_Paint (x, y + 4 * scale, 0.75f * scale, colorWhite, va("%i/%i", score->kills, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			x += SB_KD_W;
+		} else {
+			x += SB_SCORE_W + SB_KD_W;
 		}
 	}
 
-	CG_Text_Paint (SB_PING_X, y, 1.0f * scale, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-	CG_Text_Paint (SB_TIME_X, y, 1.0f * scale, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	if (ci->team != TEAM_SPECTATOR) {
+		CG_Text_Paint (x, y + 4 * scale, 0.75f * scale, colorWhite, va("%.1fk", score->netDamage / 10.0f),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	}
+	x += SB_NETDMG_W;
+
+	CG_Text_Paint (x, y, scale, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	x += SB_PING_W;
+	CG_Text_Paint (x, y, scale, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	x += SB_TIME_W;
 
 	// add the "ready" marker for intermission exiting
 	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) )
 	{
-		CG_Text_Paint (SB_NAME_X - 64, y + 2, 0.7f * scale, colorWhite, CG_GetStripEdString("INGAMETEXT", "READY"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint (SB_SCORELINE_X - 64, y + 2, 0.7f * scale, colorWhite, CG_GetStripEdString("INGAMETEXT", "READY"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 }
 
@@ -367,28 +391,36 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	CG_DrawPic ( SB_SCORELINE_X - 40, y - 5, SB_SCORELINE_WIDTH + 80, 40, trap_R_RegisterShaderNoMip ( "gfx/menus/menu_buttonback.tga" ) );
 
-	// "NAME", "SCORE", "PING", "TIME" weren't localised, GODDAMMIT!!!!!!!!
-	//
-	// Unfortunately, since it's so sodding late now and post release I can't enable the localisation code (REM'd) since some of
-	//	the localised strings don't fit - since no-one's ever seen them to notice this.  Smegging brilliant. Thanks people.
-	//
-	CG_Text_Paint ( SB_NAME_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "NAME")*/"Name",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	x = SB_SCORELINE_X;
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "NAME"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	if (cgs.gametype == GT_TOURNAMENT)
 	{
-		char sWL[8];
-		trap_SP_GetStringTextString("INGAMETEXT_W_L", sWL,	sizeof(sWL));
+		x = 640 - SB_SCORE_W - SB_WL_W - SB_NETDMG_W - SB_PING_W - SB_TIME_W - SB_SCORELINE_X;
 
-		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, sWL, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		if (cgs.fraglimit != 1) {
+			CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "SCORE"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		}
+		x += SB_SCORE_W;
+
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("INGAMETEXT", "W_L"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		x += SB_WL_W;
 	}
 	else
 	{
-		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "SCORE"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-		CG_Text_Paint ( SB_KD_X, y, 1.0f, colorWhite, "K/D", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-		CG_Text_Paint ( SB_NETDMG_X, y, 1.0f, colorWhite, "Dmg", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		x = 640 - SB_SCORE_W - SB_KD_W - SB_NETDMG_W - SB_PING_W - SB_TIME_W - SB_SCORELINE_X;
+
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "SCORE"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		x += SB_SCORE_W;
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, "K/D", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		x += SB_KD_W;
 	}
 
-	CG_Text_Paint ( SB_PING_X, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS0", "PING"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	CG_Text_Paint ( SB_TIME_X, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "TIME"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, "NetD", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	x += SB_NETDMG_W;
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS0", "PING"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	x += SB_PING_W;
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "TIME"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	x += SB_TIME_W;
 
 	y = SB_TOP;
 
