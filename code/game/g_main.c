@@ -1724,18 +1724,6 @@ static void GetStats( int *stats, gclient_t *cl )
 	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
 }
 
-static char const *Spaces(int n)
-{
-	static const char spaces[] = "                                   "; // 35
-
-	assert(n < sizeof(spaces));
-
-	n = max(0, n);
-	return spaces + sizeof(spaces) - 1 - (n);
-}
-
-#define DEFAULT_CONSOLE_WIDTH 78
-
 static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
 {
 	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
@@ -1750,7 +1738,7 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 	e = line + sizeof(line);
 
 	p += Com_sprintf(p, e - p, "%s", cl->pers.netname);
-	p += Com_sprintf(p, e - p, "%s", Spaces(32 - Q_PrintStrlen(cl->pers.netname)));
+	p += Com_sprintf(p, e - p, "%s", Spaces(MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname)));
 
 	for (i = 0; columns[i] != STAT_MAX; i++) {
 		playerStat_t stat = columns[i];
@@ -1798,22 +1786,22 @@ static void ShowDamageStatistics() {
 		playerStat_t columns[] =
 			{ STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_TDMG, STAT_TRCV, STAT_MAX };
 
-		trap_SendServerCommand(-1, va("print \"%-32s %-5s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
+		trap_SendServerCommand(-1,
+			va("print \"%-" STR(MAX_NAME_LEN) "s %-5s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
 				"Name", "K", "D", "Dmg", "Rcv", "Net", "TDmg", "TRcv"));
 
-
-		trap_SendServerCommand(-1, "print \"" S_COLOR_RED
-			"-------------------------------- ----- ----- ----- ----- ----- ----- -----"
-			S_COLOR_WHITE "\n\"");
+		trap_SendServerCommand(-1, va("print \"" S_COLOR_RED
+				"%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
+				Dashes(MAX_NAME_LEN)));
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_RED)
 				PrintClientStats(cl, columns, bestStats);
 		}
 
-		trap_SendServerCommand(-1, "print \"" S_COLOR_BLUE
-			"-------------------------------- ----- ----- ----- ----- ----- ----- -----"
-			S_COLOR_WHITE "\n\"");
+		trap_SendServerCommand(-1, va("print \"" S_COLOR_BLUE
+				"%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
+				Dashes(MAX_NAME_LEN)));
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_BLUE) {
@@ -1824,11 +1812,13 @@ static void ShowDamageStatistics() {
 		playerStat_t columns[] =
 			{ STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_SELF, STAT_MAX };
 
-		trap_SendServerCommand(-1, va("print \"%-32s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
+		trap_SendServerCommand(-1,
+			va("print \"%-" STR(MAX_NAME_LEN) "s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
 				"Name", "K", "D", "Dmg", "Rcv", "Net", "SDmg"));
 
-		trap_SendServerCommand(-1,
-			"print \"-------------------------------- ----- ----- ----- ----- ----- -----\n\"");
+		trap_SendServerCommand(-1, va("print \""
+				"%s ----- ----- ----- ----- ----- ----- -----\n\"",
+				Dashes(MAX_NAME_LEN)));
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_FREE) {

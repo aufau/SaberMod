@@ -21,6 +21,8 @@
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
 #define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
+#define STR_H(x) #x
+#define STR(x) STR_H(x)
 
 /**********************************************************************
   VM Considerations
@@ -347,8 +349,8 @@ typedef int		clipHandle_t;
 #define	MAX_OSPATH			256		// max length of a filesystem pathname
 #endif
 
-#define MAX_NETNAME			36		// max length of a client name
-#define MAX_NAME_LEN		36		// max length of a printed client name
+#define MAX_NETNAME			36		// max length of a client name + 1
+#define MAX_NAME_LEN		35		// max length of a printed client name
 #define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
 #define MAX_TEAMNAME		32      // max length of a team name
 
@@ -2089,6 +2091,17 @@ enum {
 	FONT_LARGE
 };
 
+/*
+=====================================================================
 
+PRINTING TO CONSOLE
+
+=====================================================================
+*/
+
+#define DEFAULT_CONSOLE_WIDTH 78
+
+char const *Spaces(int n);
+char const *Dashes(int n);
 
 #endif	// __Q_SHARED_H
