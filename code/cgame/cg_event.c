@@ -86,8 +86,8 @@ static void CG_Obituary( entityState_t *ent ) {
 	char		*message;
 	const char	*targetInfo;
 	const char	*attackerInfo;
-	char		targetName[32];
-	char		attackerName[32];
+	char		targetName[MAX_NETNAME + 2];
+	char		attackerName[MAX_NETNAME + 2];
 	gender_t	gender;
 	clientInfo_t	*ci;
 
@@ -284,11 +284,13 @@ clientkilled:
 		strcpy( attackerName, "noname" );
 	} else {
 		Q_strncpyz( attackerName, Info_ValueForKey( attackerInfo, "n" ), sizeof(attackerName) - 2);
-		strcat( attackerName, S_COLOR_WHITE );
+
 		// check for kill messages about the current clientNum
 		if ( target == cg.snap->ps.clientNum ) {
 			Q_strncpyz( cg.killerName, attackerName, sizeof( cg.killerName ) );
 		}
+
+		strcat( attackerName, S_COLOR_WHITE );
 	}
 
 	if ( attacker != ENTITYNUM_WORLD ) {

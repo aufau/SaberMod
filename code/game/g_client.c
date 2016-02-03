@@ -961,7 +961,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
             characters++;
             *p++ = ch;
         }
-    } while ( ch != '\0' && p < end );
+    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 4);
 
     *p = '\0';
 
@@ -1157,8 +1157,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	gclient_t	*client;
 	char	c1[MAX_INFO_STRING];
 	char	c2[MAX_INFO_STRING];
-	char	redTeam[MAX_INFO_STRING];
-	char	blueTeam[MAX_INFO_STRING];
+	char	redTeam[MAX_TEAMNAME];
+	char	blueTeam[MAX_TEAMNAME];
 	char	userinfo[MAX_INFO_STRING];
 
 	ent = g_entities + clientNum;
@@ -1274,8 +1274,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
 	strcpy(c2, Info_ValueForKey( userinfo, "color2" ));
 
-	strcpy(redTeam, Info_ValueForKey( userinfo, "g_redteam" ));
-	strcpy(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ));
+	Q_strncpyz(redTeam, Info_ValueForKey( userinfo, "g_redteam" ), sizeof(redTeam));
+	Q_strncpyz(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ), sizeof(blueTeam));
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
