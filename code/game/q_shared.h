@@ -350,7 +350,7 @@ typedef int		clipHandle_t;
 #define MAX_NETNAME			36		// max length of a client name
 #define MAX_NAME_LEN		36		// max length of a printed client name
 #define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
-#define MAX_TEAMNAME		32      // max length of a team name
+#define MAX_TEAMNAME		32      // max length of a team name "spectators" but also g_blueTeam
 
 #define	MAX_SAY_TEXT	150
 
