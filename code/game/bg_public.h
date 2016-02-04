@@ -1018,9 +1018,9 @@ qboolean BG_SaberInIdle( saberMoveName_t move );
 qboolean BG_FlippingAnim( int anim );
 qboolean BG_SpinningSaberAnim( int anim );
 qboolean BG_SaberInSpecialAttack( int anim );
-int BG_BrokenParryForAttack( saberMoveName_t move );
-int BG_BrokenParryForParry( saberMoveName_t move );
-int BG_KnockawayForParry( saberMoveName_t move );
+saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
+saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
+saberMoveName_t BG_KnockawayForParry( saberMoveName_t move );
 qboolean BG_InRoll( playerState_t *ps, int anim );
 qboolean BG_InDeathAnim( int anim );
 
