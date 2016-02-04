@@ -1698,6 +1698,9 @@ qboolean ScoreIsTied( void ) {
 typedef enum {
 	STAT_SCORE,
 	STAT_KILLS,
+	STAT_CAPS,
+	STAT_DEFEND,
+	STAT_ASSIST,
 	STAT_DMG,
 	STAT_NET_DMG,
 	STAT_MAX_ASC = STAT_NET_DMG,
@@ -1719,6 +1722,9 @@ typedef struct {
 const statColumn_t statCol[STAT_MAX] = {
 	{ "S", 3 },
 	{ "K", 3 },
+	{ "Cap", 3 },
+	{ "Def", 3 },
+	{ "Ast", 3 },
 	{ "Dmg", 5 },
 	{ "NetD", 5 },
 	{ "D", 3 },
@@ -1731,6 +1737,9 @@ const statColumn_t statCol[STAT_MAX] = {
 static void GetStats( int *stats, gclient_t *cl )
 {
 	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
+	stats[STAT_CAPS] = cl->ps.persistant[PERS_CAPTURES];
+	stats[STAT_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
+	stats[STAT_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
 	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
 	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
 	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
@@ -1851,7 +1860,27 @@ static void ShowDamageStatistics() {
 		}
 	}
 
-	if (GT_Team(g_gametype.integer)) {
+	if (g_gametype.integer == GT_CTF) {
+		playerStat_t columns[] =
+			{ STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
+
+		PrintStatsHeader(columns);
+
+		PrintStatsSeparator(columns, COLOR_RED);
+		for (i = 0; i < level.numNonSpectatorClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+			if (cl->sess.sessionTeam == TEAM_RED)
+				PrintClientStats(cl, columns, bestStats);
+		}
+
+		PrintStatsSeparator(columns, COLOR_BLUE);
+		for (i = 0; i < level.numNonSpectatorClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+			if (cl->sess.sessionTeam == TEAM_BLUE) {
+				PrintClientStats(cl, columns, bestStats);
+			}
+		}
+	} else if (GT_Team(g_gametype.integer)) {
 		playerStat_t columns[] =
 			{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
 
