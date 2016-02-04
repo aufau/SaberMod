@@ -26,7 +26,7 @@ char *GetFlagStr( int flags )
 
 	if (!flags)
 	{
-		strcpy(flagstr, "none\0");
+		strcpy(flagstr, "none");
 		goto fend;
 	}
 
@@ -196,7 +196,7 @@ char *GetFlagStr( int flags )
 
 	if (i == 0)
 	{
-		strcpy(flagstr, "unknown\0");
+		strcpy(flagstr, "unknown");
 	}
 
 fend:

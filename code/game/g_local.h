@@ -909,7 +909,6 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // ai_main.c
-#define MAX_FILEPATH			144
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
 void	BotOrder		( gentity_t *ent, int clientnum, int ordernum);
@@ -922,9 +921,9 @@ void B_CleanupAlloc(void);
 //bot settings
 typedef struct bot_settings_s
 {
-	char personalityfile[MAX_FILEPATH];
+	char personalityfile[MAX_QPATH];
 	float skill;
-	char team[MAX_FILEPATH];
+	char team[16]; // TODO: replace with enum
 } bot_settings_t;
 
 int BotAISetup( int restart );

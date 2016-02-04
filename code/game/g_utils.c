@@ -21,14 +21,14 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			// found it, just update this one
-			strcpy(remappedShaders[i].newShader,newShader);
+			Q_strncpyz(remappedShaders[i].newShader,newShader, sizeof(remappedShaders[0].newShader));
 			remappedShaders[i].timeOffset = timeOffset;
 			return;
 		}
 	}
 	if (remapCount < MAX_SHADER_REMAPS) {
-		strcpy(remappedShaders[remapCount].newShader,newShader);
-		strcpy(remappedShaders[remapCount].oldShader,oldShader);
+		Q_strncpyz(remappedShaders[remapCount].newShader,newShader, sizeof(remappedShaders[0].newShader));
+		Q_strncpyz(remappedShaders[remapCount].oldShader,oldShader, sizeof(remappedShaders[0].oldShader));
 		remappedShaders[remapCount].timeOffset = timeOffset;
 		remapCount++;
 	}
