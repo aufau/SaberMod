@@ -1696,7 +1696,7 @@ qboolean ScoreIsTied( void ) {
 // GAME STATISTICS
 
 typedef enum {
-//	STAT_SCORE,
+	STAT_SCORE,
 	STAT_KILLS,
 	STAT_DMG,
 	STAT_NET_DMG,
@@ -1710,9 +1710,27 @@ typedef enum {
 	STAT_MAX
 } playerStat_t;
 
+typedef struct {
+	const char	*label;
+	int			width;
+} statColumn_t;
+
+// Keep this in the same order as playerStat_t
+const statColumn_t statCol[STAT_MAX] = {
+	{ "S", 3 },
+	{ "K", 3 },
+	{ "Dmg", 5 },
+	{ "NetD", 5 },
+	{ "D", 3 },
+	{ "Rcv", 5 },
+	{ "TDmg", 5 },
+	{ "TRcv", 5 },
+	{ "SDmg", 5 },
+};
+
 static void GetStats( int *stats, gclient_t *cl )
 {
-//	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
+	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
 	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
 	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
 	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
@@ -1724,29 +1742,80 @@ static void GetStats( int *stats, gclient_t *cl )
 	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
 }
 
-static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
+static void PrintStatsHeader( playerStat_t *columns )
 {
-	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
-	const char	*e;
-	char		*p;
-	int			stats[STAT_MAX];
+	char		line[DEFAULT_CONSOLE_WIDTH];
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			pad;
 	int			i;
 
-	GetStats(stats, cl);
-
-	p = line;
-	e = line + sizeof(line);
-
-	p += Com_sprintf(p, e - p, "%s", cl->pers.netname);
-	p += Com_sprintf(p, e - p, "%s", Spaces(MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname)));
+	pad = MAX_NAME_LEN - STRLEN("Name");
+	p += Com_sprintf(p, e - p, "Name%s", Spaces(pad));
 
 	for (i = 0; columns[i] != STAT_MAX; i++) {
 		playerStat_t stat = columns[i];
 
+		pad = statCol[stat].width - strlen(statCol[stat].label);
+		p += Com_sprintf(p, e - p, " %s%s", statCol[stat].label, Spaces(pad));
+	}
+
+	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
+
+}
+
+static void PrintStatsSeparator( playerStat_t *columns, char color )
+{
+	char		line[DEFAULT_CONSOLE_WIDTH];
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			i;
+
+	p += Com_sprintf(p, e - p, Dashes(MAX_NAME_LEN));
+
+	for (i = 0; columns[i] != STAT_MAX; i++) {
+		playerStat_t stat = columns[i];
+
+		p += Com_sprintf(p, e - p, " %s", Dashes(statCol[stat].width));
+	}
+
+	trap_SendServerCommand(-1,
+		va("print \"%c%c%s"  "\n\"", Q_COLOR_ESCAPE, color, line));
+}
+
+static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
+{
+	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			stats[STAT_MAX];
+	int			pad;
+	int			i;
+
+	GetStats(stats, cl);
+
+	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
+	p += Com_sprintf(p, e - p, "%s%s", cl->pers.netname, Spaces(pad));
+
+	for (i = 0; columns[i] != STAT_MAX; i++) {
+		playerStat_t stat = columns[i];
+		char *value = va("%i", stats[stat]);
+		int len = strlen(value);
+
+		if (stats[stat] >= 1000 && len > statCol[stat].width) {
+			value = va("%ik", stats[stat] / 1000);
+			len = strlen(value);
+		}
+		if (len > statCol[stat].width) {
+			value = "";
+			len = 0;
+		}
+
+		pad = statCol[stat].width - len;
 		if (stats[stat] == bestStats[stat]) {
-			p += Com_sprintf(p, e - p, S_COLOR_GREEN " %-5i" S_COLOR_WHITE, stats[stat]);
+			p += Com_sprintf(p, e - p, S_COLOR_GREEN " %s%s" S_COLOR_WHITE, value, Spaces(pad));
 		} else {
-			p += Com_sprintf(p, e - p, " %-5i", stats[stat]);
+			p += Com_sprintf(p, e - p, " %s%s", value, Spaces(pad));
 		}
 	}
 
@@ -1784,24 +1853,18 @@ static void ShowDamageStatistics() {
 
 	if (GT_Team(g_gametype.integer)) {
 		playerStat_t columns[] =
-			{ STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_TDMG, STAT_TRCV, STAT_MAX };
+			{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
 
-		trap_SendServerCommand(-1,
-			va("print \"%-" STR(MAX_NAME_LEN) "s %-5s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
-				"Name", "K", "D", "Dmg", "Rcv", "Net", "TDmg", "TRcv"));
+		PrintStatsHeader(columns);
 
-		trap_SendServerCommand(-1, va("print \"" S_COLOR_RED
-				"%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
-				Dashes(MAX_NAME_LEN)));
+		PrintStatsSeparator(columns, COLOR_RED);
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_RED)
 				PrintClientStats(cl, columns, bestStats);
 		}
 
-		trap_SendServerCommand(-1, va("print \"" S_COLOR_BLUE
-				"%s ----- ----- ----- ----- ----- ----- -----" S_COLOR_WHITE "\n\"",
-				Dashes(MAX_NAME_LEN)));
+		PrintStatsSeparator(columns, COLOR_BLUE);
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_BLUE) {
@@ -1810,15 +1873,11 @@ static void ShowDamageStatistics() {
 		}
 	} else {
 		playerStat_t columns[] =
-			{ STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_SELF, STAT_MAX };
+			{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_SELF, STAT_NET_DMG, STAT_MAX };
 
-		trap_SendServerCommand(-1,
-			va("print \"%-" STR(MAX_NAME_LEN) "s %-5s %-5s %-5s %-5s %-5s %-5s\n\"",
-				"Name", "K", "D", "Dmg", "Rcv", "Net", "SDmg"));
+		PrintStatsHeader(columns);
 
-		trap_SendServerCommand(-1, va("print \""
-				"%s ----- ----- ----- ----- ----- ----- -----\n\"",
-				Dashes(MAX_NAME_LEN)));
+		PrintStatsSeparator(columns, COLOR_WHITE);
 		for (i = 0; i < level.numNonSpectatorClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_FREE) {

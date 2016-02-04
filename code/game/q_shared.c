@@ -1404,9 +1404,9 @@ char const *Spaces(int n)
 {
 	static const char spaces[] = "                                   "; // 35
 
+	n = max(0, n);
 	assert(n < sizeof(spaces));
 
-	n = max(0, n);
 	return spaces + sizeof(spaces) - 1 - (n);
 }
 
@@ -1414,9 +1414,9 @@ char const *Dashes(int n)
 {
 	static const char dashes[] = "-----------------------------------"; // 35
 
+	n = max(0, n);
 	assert(n < sizeof(dashes));
 
-	n = max(0, n);
 	return dashes + sizeof(dashes) - 1 - (n);
 }
 

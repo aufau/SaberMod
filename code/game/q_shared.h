@@ -23,6 +23,7 @@
 #define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
 #define STR_H(x) #x
 #define STR(x) STR_H(x)
+#define STRLEN(x) (sizeof(x) - 1)
 
 /**********************************************************************
   VM Considerations
