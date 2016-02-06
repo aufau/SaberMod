@@ -56,6 +56,9 @@ static qboolean localClient; // true if local client has been displayed
 
 typedef enum {
 	SBC_SCORE,
+	SBC_CAP,
+	SBC_AST,
+	SBC_DEF,
 	SBC_TIME,
 	SBC_PING,
 	SBC_W_L,
@@ -75,6 +78,7 @@ static sbColumnData_t columnData[SBC_MAX];
 static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
 
 sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, float scale)
 {
@@ -101,6 +105,12 @@ void CG_InitScoreboardColumns()
 
 	label = CG_GetStripEdString("MENUS3", "SCORE");
 	columnData[SBC_SCORE] = CG_InitScoreboardColumn(label, "-999", SB_SCALE_LARGE);
+	label = "C";
+	columnData[SBC_CAP] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
+	label = "A";
+	columnData[SBC_AST] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
+	label = "D";
+	columnData[SBC_DEF] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
 	label = CG_GetStripEdString("MENUS3", "TIME");
 	// Assumption: Time is last, there is enough space for 9999
 	columnData[SBC_TIME] = CG_InitScoreboardColumn(label, "9999", SB_SCALE_LARGE);
@@ -125,6 +135,15 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 	switch (field) {
 	case SBC_SCORE:
 		label = CG_GetStripEdString("MENUS3", "SCORE");
+		break;
+	case SBC_CAP:
+		label = "C";
+		break;
+	case SBC_AST:
+		label = "A";
+		break;
+	case SBC_DEF:
+		label = "D";
 		break;
 	case SBC_TIME:
 		label = CG_GetStripEdString("MENUS3", "TIME");
@@ -160,6 +179,15 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 	switch (field) {
 	case SBC_SCORE:
 		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		break;
+	case SBC_CAP:
+		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->captures),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		break;
+	case SBC_AST:
+		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->assistCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		break;
+	case SBC_DEF:
+		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->defendCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		break;
 	case SBC_TIME:
 		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
@@ -537,6 +565,8 @@ qboolean CG_DrawOldScoreboard( void ) {
 		} else {
 			columns = duelColumns;
 		}
+	} else if (cgs.gametype == GT_CTF) {
+		columns = ctfColumns;
 	} else {
 		columns = ffaColumns;
 	}
