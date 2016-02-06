@@ -1833,6 +1833,7 @@ void CG_DrawInformation( void );
 //
 // cg_scoreboard.c
 //
+void CG_InitScoreboardColumns( void );
 qboolean CG_DrawOldScoreboard( void );
 void CG_DrawOldTourneyScoreboard( void );
 
