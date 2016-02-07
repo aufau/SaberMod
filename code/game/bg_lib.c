@@ -1029,6 +1029,7 @@ double fabs( double x ) {
 #define SHORTINT	0x00000040		/* short integer */
 #define ZEROPAD		0x00000080		/* zero (as opposed to blank) pad */
 #define FPT			0x00000100		/* floating point number */
+#define SIGN		0x00000200		/* always print +/- sign */
 
 #define to_digit(c)		((c) - '0')
 #define is_digit(c)		((unsigned)to_digit(c) <= 9)
@@ -1077,7 +1078,7 @@ void AddInt( char **buf_p, int val, int width, int flags ) {
 	*buf_p = buf;
 }
 
-void AddFloat( char **buf_p, float fval, int width, int prec ) {
+void AddFloat( char **buf_p, float fval, int width, int prec, int flags ) {
 	char	text[32];
 	int		digits;
 	float	signedVal;
@@ -1100,6 +1101,8 @@ void AddFloat( char **buf_p, float fval, int width, int prec ) {
 
 	if ( signedVal < 0 ) {
 		text[digits++] = '-';
+	} else if ( flags & SIGN ) {
+		text[digits++] = '+';
 	}
 
 	buf = *buf_p;
@@ -1218,6 +1221,9 @@ reswitch:
 		case '-':
 			flags |= LADJUST;
 			goto rflag;
+		case '+':
+			flags |= SIGN;
+			goto rflag;
 		case '.':
 			n = 0;
 			while( is_digit( ( ch = *fmt++ ) ) ) {
@@ -1254,7 +1260,7 @@ reswitch:
 			arg++;
 			break;
 		case 'f':
-			AddFloat( &buf_p, *(double *)arg, width, prec );
+			AddFloat( &buf_p, *(double *)arg, width, prec, flags );
 #ifdef __LCC__
 			arg += 1;	// everything is 32 bit in my compiler
 #else
