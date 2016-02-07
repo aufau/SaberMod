@@ -1191,15 +1191,22 @@ void ClientThink_real( gentity_t *ent ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
 			trap_SendServerCommand( duelAgainst-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
 			*/
+
 			//Private duel announcements are now made globally because we only want one duel at a time.
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
+				ent->client->sess.wins++;
 				trap_SendServerCommand( -1, va("cp \"%s %s %s!\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER"), duelAgainst->client->pers.netname) );
 			}
 			else
 			{ //it was a draw, because we both managed to die in the same frame
+				ent->client->sess.losses++;
 				trap_SendServerCommand( -1, va("cp \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE")) );
 			}
+
+			duelAgainst->client->sess.losses++;
+			ClientUserinfoChanged( ent->client->ps.clientNum );
+			ClientUserinfoChanged( duelAgainst->client->ps.clientNum );
 		}
 		else
 		{

@@ -62,6 +62,7 @@ typedef enum {
 	SBC_TIME,
 	SBC_PING,
 	SBC_W_L,
+	SBC_W_L_SM,
 	SBC_K_D,
 	SBC_NET_DMG,
 	SBC_MAX
@@ -76,6 +77,7 @@ typedef struct {
 static sbColumnData_t columnData[SBC_MAX];
 
 static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
@@ -120,6 +122,7 @@ void CG_InitScoreboardColumns()
 	// Assumption: W/L is always next to score column and "Score"
 	// label leaves some extra space to the right. Use it.
 	columnData[SBC_W_L] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE_LARGE);
+	columnData[SBC_W_L_SM] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE);
 	label = "K/D";
 	// Assumption: K/D is always next to score column and "Score"
 	// label leaves some extra space to the right. Use it.
@@ -152,6 +155,7 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 		label = CG_GetStripEdString("MENUS0", "PING");
 		break;
 	case SBC_W_L:
+	case SBC_W_L_SM:
 		label = CG_GetStripEdString("INGAMETEXT", "W_L");
 		break;
 	case SBC_K_D:
@@ -196,6 +200,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		break;
 	case SBC_W_L:
+	case SBC_W_L_SM:
 		ci = &cgs.clientinfo[score->client];
 		x +=  CG_Text_Width(va("9"), SB_SCALE_LARGE, FONT_SMALL) - CG_Text_Width(va("%i", ci->wins), s, FONT_SMALL);
 		CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
@@ -559,15 +564,21 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	// columns
 
-	if (cgs.gametype == GT_TOURNAMENT) {
+	switch (cgs.gametype) {
+	case GT_FFA:
+		columns = cgs.privateDuel ? ffaDuelColumns : ffaColumns;
+		break;
+	case GT_TOURNAMENT:
 		if (cgs.fraglimit == 1) {
 			columns = duelFraglimit1Columns;
 		} else {
 			columns = duelColumns;
 		}
-	} else if (cgs.gametype == GT_CTF) {
+		break;
+	case GT_CTF:
 		columns = ctfColumns;
-	} else {
+		break;
+	default:
 		columns = ffaColumns;
 	}
 

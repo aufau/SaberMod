@@ -1320,6 +1320,7 @@ typedef struct {
 	qboolean		jediVmerc;
 	int				wDisable;
 	int				fDisable;
+	qboolean		privateDuel;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
