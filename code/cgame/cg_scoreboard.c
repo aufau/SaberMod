@@ -175,23 +175,31 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 
 static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, score_t *score)
 {
-	clientInfo_t	*ci;
+	clientInfo_t	*ci = &cgs.clientinfo[score->client];
 	float			s = scale * columnData[field].scale;
+	qboolean		spectator = (ci->team == TEAM_SPECTATOR);
 
 	y += scale * columnData[field].drop;
 
 	switch (field) {
 	case SBC_SCORE:
-		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		if (!spectator) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 		break;
 	case SBC_CAP:
-		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->captures),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-		break;
+		if (!spectator && score->captures != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->captures),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 	case SBC_AST:
-		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->assistCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		if (!spectator && score->assistCount != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->assistCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 		break;
 	case SBC_DEF:
-		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->defendCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		if (!spectator && score->defendCount != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->defendCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 		break;
 	case SBC_TIME:
 		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
@@ -201,16 +209,20 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 		break;
 	case SBC_W_L:
 	case SBC_W_L_SM:
-		ci = &cgs.clientinfo[score->client];
-		x +=  CG_Text_Width(va("9"), SB_SCALE_LARGE, FONT_SMALL) - CG_Text_Width(va("%i", ci->wins), s, FONT_SMALL);
-		CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		if (!spectator || ci->wins != 0 || ci->losses != 0) {
+			x +=  CG_Text_Width(va("9"), SB_SCALE_LARGE, FONT_SMALL) - CG_Text_Width(va("%i", ci->wins), s, FONT_SMALL);
+			CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 		break;
 	case SBC_K_D:
-		x +=  CG_Text_Width(va("99"), SB_SCALE, FONT_SMALL) - CG_Text_Width(va("%i", score->kills), s, FONT_SMALL);
-		CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", score->kills, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		if (!spectator) {
+			x +=  CG_Text_Width(va("99"), SB_SCALE, FONT_SMALL) - CG_Text_Width(va("%i", score->kills), s, FONT_SMALL);
+			CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", score->kills, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 		break;
 	case SBC_NET_DMG:
-		if (score->netDamage != 0) {
+		if (spectator) {
+		} else if (score->netDamage != 0) {
 			CG_Text_Paint (x, y, s, colorWhite, va("%+.1fk", score->netDamage / 10.0f),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		} else {
 			CG_Text_Paint (x, y, s, colorWhite, " 0",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
