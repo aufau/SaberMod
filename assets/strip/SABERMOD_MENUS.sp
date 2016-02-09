@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 2
+COUNT 4
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -15,4 +15,18 @@ INDEX 1
    TEXT_LANGUAGE1 "Follow"
    TEXT_LANGUAGE2 "Follow"
    TEXT_LANGUAGE3 "Follow"
+}
+INDEX 2
+{
+   REFERENCE REMOVE
+   TEXT_LANGUAGE1 "Remove"
+   TEXT_LANGUAGE2 "Remove"
+   TEXT_LANGUAGE3 "Remove"
+}
+INDEX 3
+{
+   REFERENCE BEGIN_VOTE_TO_REMOVE
+   TEXT_LANGUAGE1 "Begin vote to remove this player"
+   TEXT_LANGUAGE2 "Begin vote to remove this player"
+   TEXT_LANGUAGE3 "Begin vote to remove this player"
 }
