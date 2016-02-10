@@ -16,9 +16,6 @@ INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
 DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME
 VERSION		= $(shell git describe --always --tags --dirty)
 
-version : FORCE
-	@touch code/game/bg_version.h
-
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
 ALL_CFLAGS += -Wall -Wno-unused-but-set-variable -Wno-unknown-pragmas	\
 -Wno-missing-braces
@@ -111,6 +108,9 @@ help	:
 	@echo '  toolsclean	- Remove q3asm and q3lcc'
 	@echo '  depclean	- Remove generated dependency files'
 	@echo '  distclean	- Remove all generated files'
+version : FORCE
+	@touch code/game/bg_version.h
+
 FORCE	:
 .PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
 
@@ -144,8 +144,10 @@ base/ui_$(ARCH).so : $(obj_ui) | base/
 
 # Pattern rules
 
+.PRECIOUS : %/
+
 %/ :
-	$(echo_cmd) "MKDIR $<"
+	$(echo_cmd) "MKDIR $@"
 	$(Q)mkdir -p $@
 
 define dep_template =
