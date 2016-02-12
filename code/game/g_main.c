@@ -2022,6 +2022,7 @@ void CheckExitRules( void ) {
 			if ( g_gametype.integer == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
 			{
 				LogExit( "Duel limit hit." );
+				ShowDamageStatistics();
 				gDuelExit = qtrue;
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
 					cl->pers.netname ) );
@@ -2030,6 +2031,7 @@ void CheckExitRules( void ) {
 
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
+				ShowDamageStatistics();
 				gDuelExit = qfalse;
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s.\n\"",
 												cl->pers.netname,
@@ -2046,12 +2048,14 @@ void CheckExitRules( void ) {
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
+			ShowDamageStatistics();
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
+			ShowDamageStatistics();
 			return;
 		}
 	}
