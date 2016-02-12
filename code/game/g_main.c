@@ -1804,7 +1804,7 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 	GetStats(stats, cl);
 
 	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
-	p += Com_sprintf(p, e - p, "%s%s", cl->pers.netname, Spaces(pad));
+	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->pers.netname, Spaces(pad));
 
 	for (i = 0; columns[i] != STAT_MAX; i++) {
 		playerStat_t stat = columns[i];
@@ -1831,11 +1831,20 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
 }
 
+static playerStat_t ffaColumns[] =
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_SELF, STAT_NET_DMG, STAT_MAX };
+static playerStat_t ctfColumns[] =
+{ STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
+static playerStat_t tffaColumns[] =
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
+
+
 static void ShowDamageStatistics() {
-	gclient_t	*cl;
-	int			stats[STAT_MAX];
-	int			bestStats[STAT_MAX];
-	int			i, j;
+	playerStat_t	*columns;
+	gclient_t		*cl;
+	int				stats[STAT_MAX];
+	int				bestStats[STAT_MAX];
+	int				i, j;
 
 	if (level.numNonSpectatorClients == 0) {
 		return;
@@ -1860,29 +1869,12 @@ static void ShowDamageStatistics() {
 		}
 	}
 
-	if (g_gametype.integer == GT_CTF) {
-		playerStat_t columns[] =
-			{ STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
-
-		PrintStatsHeader(columns);
-
-		PrintStatsSeparator(columns, COLOR_RED);
-		for (i = 0; i < level.numNonSpectatorClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_RED)
-				PrintClientStats(cl, columns, bestStats);
+	if (GT_Team(g_gametype.integer)) {
+		if (g_gametype.integer == GT_CTF) {
+			columns = ctfColumns;
+		} else {
+			columns = tffaColumns;
 		}
-
-		PrintStatsSeparator(columns, COLOR_BLUE);
-		for (i = 0; i < level.numNonSpectatorClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_BLUE) {
-				PrintClientStats(cl, columns, bestStats);
-			}
-		}
-	} else if (GT_Team(g_gametype.integer)) {
-		playerStat_t columns[] =
-			{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
 
 		PrintStatsHeader(columns);
 
@@ -1901,8 +1893,7 @@ static void ShowDamageStatistics() {
 			}
 		}
 	} else {
-		playerStat_t columns[] =
-			{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_SELF, STAT_NET_DMG, STAT_MAX };
+		columns = ffaColumns;
 
 		PrintStatsHeader(columns);
 
