@@ -1287,6 +1287,7 @@ void BeginRound( void )
 	level.startTime = level.time;
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 	trap_SetConfigstring(CS_WARMUP, "");
+	trap_SendServerCommand( -1, va("cp \"%s\"", G_GetStripEdString("SVINGAME", "BEGIN_DUEL")) );
 }
 
 void NextRound( void )
@@ -1297,7 +1298,6 @@ void NextRound( void )
 	int			round;
 	gclient_t	*client;
 	gentity_t	*ent;
-	gentity_t	*tent;
 	char		warmup[2];
 
 	for ( i = 0 ; i < level.numConnectedClients ; i++ ) {
@@ -1321,7 +1321,7 @@ void NextRound( void )
 	trap_SetConfigstring(CS_ROUND, va("%i", round));
 	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
 	if ( warmup[0] == '\0' ) {
-		trap_SetConfigstring(CS_WARMUP, va("%i Round %i", level.roundQueued, round));
+		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
 	}
 }
 

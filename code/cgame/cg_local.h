@@ -788,7 +788,6 @@ typedef struct {
 	// warmup countdown
 	int			warmup;
 	int			warmupCount;
-	char		*warmupMessage;
 
 	//==========================
 

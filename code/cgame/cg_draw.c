@@ -3675,9 +3675,7 @@ static void CG_DrawWarmup( void ) {
 			CG_Text_Paint(320 - w / 2, 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 		}
 	} else {
-		if ( cg.warmupMessage ) {
-			s = cg.warmupMessage;
-		} else if ( cgs.gametype == GT_FFA ) {
+		if ( cgs.gametype == GT_FFA ) {
 			s = "Free For All";
 		} else if ( cgs.gametype == GT_HOLOCRON ) {
 			s = "Holocron FFA";
@@ -3691,8 +3689,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_CTY ) {
 			s = "Capture the Ysalamiri";
-		} else if ( cgs.gametype == GT_REDROVER ) {
-			s = "Red Rover";
+		} else if ( GT_Round(cgs.gametype) ) {
+			s = va("Round %i", cgs.round);
 		} else {
 			s = "";
 		}
@@ -3704,8 +3702,6 @@ static void CG_DrawWarmup( void ) {
 	if ( sec < 0 ) {
 		cg.warmup = 0;
 		sec = 0;
-		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
-		CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120, GIANTCHAR_WIDTH*2 );
 		return;
 	}
 	sec /= 1000;
