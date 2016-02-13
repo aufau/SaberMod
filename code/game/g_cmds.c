@@ -2218,7 +2218,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 void Cmd_EngageDuel_f(gentity_t *ent)
 {
 	trace_t tr;
-	vec3_t forward, fwdOrg;
+	vec3_t org, forward, fwdOrg;
 
 	if (!g_privateDuel.integer)
 	{
@@ -2267,11 +2267,11 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 
-	fwdOrg[0] = ent->client->ps.origin[0] + forward[0]*256;
-	fwdOrg[1] = ent->client->ps.origin[1] + forward[1]*256;
-	fwdOrg[2] = (ent->client->ps.origin[2]+ent->client->ps.viewheight) + forward[2]*256;
+	VectorCopy(ent->client->ps.origin, org);
+	org[2] += ent->client->ps.viewheight;
+	VectorMA(org, 256, forward, fwdOrg);
 
-	trap_Trace(&tr, ent->client->ps.origin, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
+	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS)
 	{
