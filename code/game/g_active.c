@@ -1117,18 +1117,17 @@ void ClientThink_real( gentity_t *ent ) {
 
 		if (ent->client->ps.duelTime < level.time)
 		{
-			//Bring out the sabers
-			if (ent->client->ps.duelTime)
+			if (!ent->client->duelStarted)
 			{
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 2);
-				ent->client->ps.duelTime = 0;
+				ent->client->duelStarted = qtrue;
 			}
 
 			if (duelAgainst && duelAgainst->client && duelAgainst->inuse &&
-				duelAgainst->client->ps.duelTime)
+				!duelAgainst->client->duelStarted)
 			{
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 2);
-				duelAgainst->client->ps.duelTime = 0;
+				duelAgainst->client->duelStarted = qtrue;
 			}
 		}
 		else
@@ -1144,6 +1143,7 @@ void ClientThink_real( gentity_t *ent ) {
 			duelAgainst->client->ps.duelIndex != ent->s.number)
 		{
 			ent->client->ps.duelInProgress = 0;
+			ent->client->duelStarted = qfalse;
 			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 		}
 		else if (duelAgainst->health < 1 || duelAgainst->client->ps.stats[STAT_HEALTH] < 1)
@@ -1151,10 +1151,33 @@ void ClientThink_real( gentity_t *ent ) {
 			char *s;
 
 			ent->client->ps.duelInProgress = 0;
+			ent->client->duelStarted = qfalse;
 			duelAgainst->client->ps.duelInProgress = 0;
+			duelAgainst->client->duelStarted = qfalse;
 
 			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 			G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+
+			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
+			{
+				int duelTime = (level.time - ent->client->ps.duelTime) / 1000;
+
+				s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE
+					" in " S_COLOR_CYAN "%02i" S_COLOR_WHITE ":" S_COLOR_CYAN "%02i" S_COLOR_WHITE
+					" with " S_COLOR_RED "%i" S_COLOR_WHITE "/" S_COLOR_GREEN "%i" S_COLOR_WHITE " left!\n\"",
+					ent->client->pers.netname,
+					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
+					duelAgainst->client->pers.netname,
+					duelTime / 60,
+					duelTime % 60,
+					ent->client->ps.stats[STAT_HEALTH],
+					ent->client->ps.stats[STAT_ARMOR]);
+			}
+			else
+			{ //it was a draw, because we both managed to die in the same frame
+				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
+			}
+			trap_SendServerCommand(-1, s);
 
 			//Winner gets full health.. providing he's still alive
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
@@ -1170,19 +1193,6 @@ void ClientThink_real( gentity_t *ent ) {
 					ent->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
 				}
 			}
-
-			//Private duel announcements are now made globally because we only want one duel at a time.
-			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
-			{
-				s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", ent->client->pers.netname,
-					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
-					duelAgainst->client->pers.netname);
-			}
-			else
-			{ //it was a draw, because we both managed to die in the same frame
-				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
-			}
-			trap_SendServerCommand(-1, s);
 		}
 		else
 		{
@@ -1195,7 +1205,9 @@ void ClientThink_real( gentity_t *ent ) {
 			if (subLen >= 1024)
 			{
 				ent->client->ps.duelInProgress = 0;
+				ent->client->duelStarted = qfalse;
 				duelAgainst->client->ps.duelInProgress = 0;
+				duelAgainst->client->duelStarted = qfalse;
 
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
