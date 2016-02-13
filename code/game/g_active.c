@@ -1106,41 +1106,28 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *duelAgainst = &g_entities[ent->client->ps.duelIndex];
 
+		switch(ucmd->generic_cmd)
+		{
+		case GENCMD_USE_SEEKER:
+		case GENCMD_USE_FIELD:
+		case GENCMD_USE_BACTA:
+		case GENCMD_USE_SENTRY:
+			ucmd->generic_cmd = 0;
+		}
+
 		if (ent->client->ps.duelTime < level.time)
 		{
 			//Bring out the sabers
-			if (ent->client->ps.weapon == WP_SABER && ent->client->ps.saberHolstered &&
-				ent->client->ps.duelTime)
+			if (ent->client->ps.duelTime)
 			{
-				if (!saberOffSound || !saberOnSound)
-				{
-					saberOffSound = G_SoundIndex("sound/weapons/saber/saberoffquick.wav");
-					saberOnSound = G_SoundIndex("sound/weapons/saber/saberon.wav");
-				}
-
-				ent->client->ps.saberHolstered = qfalse;
-				G_Sound(ent, CHAN_AUTO, saberOnSound);
-
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 2);
-
 				ent->client->ps.duelTime = 0;
 			}
 
 			if (duelAgainst && duelAgainst->client && duelAgainst->inuse &&
-				duelAgainst->client->ps.weapon == WP_SABER && duelAgainst->client->ps.saberHolstered &&
 				duelAgainst->client->ps.duelTime)
 			{
-				if (!saberOffSound || !saberOnSound)
-				{
-					saberOffSound = G_SoundIndex("sound/weapons/saber/saberoffquick.wav");
-					saberOnSound = G_SoundIndex("sound/weapons/saber/saberon.wav");
-				}
-
-				duelAgainst->client->ps.saberHolstered = qfalse;
-				G_Sound(duelAgainst, CHAN_AUTO, saberOnSound);
-
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 2);
-
 				duelAgainst->client->ps.duelTime = 0;
 			}
 		}
