@@ -1174,7 +1174,7 @@ void ClientThink_real( gentity_t *ent ) {
 			//Private duel announcements are now made globally because we only want one duel at a time.
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
-				s = va("print \"%s %s %s!\n\"", ent->client->pers.netname,
+				s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", ent->client->pers.netname,
 					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
 					duelAgainst->client->pers.netname);
 			}
