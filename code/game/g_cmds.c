@@ -2317,6 +2317,13 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 				challenged->client->ps.weaponTime = 400;
 				challenged->client->ps.saberHolstered = qtrue;
 			}
+
+			ent->client->ps.stats[STAT_ARMOR] =
+				ent->client->ps.stats[STAT_HEALTH] =
+				ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
+			challenged->client->ps.stats[STAT_ARMOR] =
+				challenged->client->ps.stats[STAT_HEALTH] =
+				challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
 		}
 		else
 		{
