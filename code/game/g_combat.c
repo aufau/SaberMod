@@ -3503,7 +3503,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (take && client) {
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
-		if (attacker && attacker->client) {
+		if (attacker->client) {
 			if (client == attacker->client || OnSameTeam(targ, attacker)) {
 				client->pers.totalDamageTakenFromAllies += take;
 				attacker->client->pers.totalDamageDealtToAllies += take;
@@ -3511,8 +3511,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				client->pers.totalDamageTakenFromEnemies += take;
 				attacker->client->pers.totalDamageDealtToEnemies += take;
 			}
-		} else {
-			client->pers.totalDamageTakenFromEnemies += take;
 		}
 	}
 }

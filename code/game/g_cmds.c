@@ -58,7 +58,6 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 		netDamage = cl->pers.totalDamageDealtToEnemies;
 		netDamage -= cl->pers.totalDamageTakenFromEnemies;
-		netDamage -= cl->pers.totalDamageTakenFromAllies;
 		netDamage /= 100; // Don't send exact data
 
 		Com_sprintf (entry, sizeof(entry),

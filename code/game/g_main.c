@@ -1709,7 +1709,6 @@ typedef enum {
 	STAT_RCV,
 	STAT_TDMG,
 	STAT_TRCV,
-	STAT_SELF,
 	STAT_MAX
 } playerStat_t;
 
@@ -1731,7 +1730,6 @@ const statColumn_t statCol[STAT_MAX] = {
 	{ "Rcv", 5 },
 	{ "TDmg", 5 },
 	{ "TRcv", 5 },
-	{ "SDmg", 5 },
 };
 
 static void GetStats( int *stats, gclient_t *cl )
@@ -1743,11 +1741,10 @@ static void GetStats( int *stats, gclient_t *cl )
 	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
 	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
 	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
-		- cl->pers.totalDamageTakenFromEnemies
-		- cl->pers.totalDamageTakenFromAllies;
+		- cl->pers.totalDamageTakenFromEnemies;
 	stats[STAT_DMG] = cl->pers.totalDamageDealtToEnemies;
 	stats[STAT_RCV] = cl->pers.totalDamageTakenFromEnemies;
-	stats[STAT_TDMG] = stats[STAT_SELF] = cl->pers.totalDamageDealtToAllies;
+	stats[STAT_TDMG] = cl->pers.totalDamageDealtToAllies;
 	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
 }
 
@@ -1832,7 +1829,7 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 }
 
 static playerStat_t ffaColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_SELF, STAT_NET_DMG, STAT_MAX };
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_MAX };
 static playerStat_t ctfColumns[] =
 { STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
 static playerStat_t tffaColumns[] =
