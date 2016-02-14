@@ -405,7 +405,7 @@ void	Svcmd_Remove_f( void )
 	}
 
 	trap_Argv( 2, str, sizeof( str ) );
-	delay = 5000;
+	delay = 30 * 1000;
 	if ( str[0] ) {
 		delay = 1000 * atoi( str );
 	}
