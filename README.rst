@@ -26,6 +26,9 @@ Console Commands
 players
   List players connected to server with some additional info.
 
+follow [first|second]
+  Follows accordingly first or second best player on the server.
+
 Callvote
 ........
 
@@ -41,6 +44,16 @@ remove <player>
 teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
+
+Spectating
+..........
+
+As spectator you can cycle backwards through players by pressing
+`+altattack` button. `+use` button makes you switch followed player
+using "smart cycle" mode.
+
+As free floating spectator you can target a player with your crosshair
+and press `+attack` button to start following him.
 
 Server-Side
 -----------
