@@ -330,6 +330,32 @@ int ClientNumberFromString( gentity_t *to, const char *s ) {
 
 /*
 ==================
+G_CrosshairPlayer
+
+Inferior, serverside variant of CG_CrosshairPlayer. ent must be a
+client.
+==================
+*/
+static gentity_t *G_CrosshairPlayer( gentity_t *ent ) {
+	trace_t tr;
+	vec3_t org, forward, fwdOrg;
+
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+
+	VectorCopy(ent->client->ps.origin, org);
+	org[2] += ent->client->ps.viewheight;
+	VectorMA(org, 256, forward, fwdOrg);
+
+	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
+
+	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS) {
+		return &g_entities[tr.entityNum];
+	}
+	return NULL;
+}
+
+/*
+==================
 Cmd_Give_f
 
 Give items to a client
@@ -1047,7 +1073,14 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 	// first set them to spectator
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		SetTeam( ent, TEAM_SPECTATOR );
+		SetTeam(ent, TEAM_SPECTATOR);
+	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ){
+		gentity_t *target = G_CrosshairPlayer(ent);
+
+		if (target) {
+			SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			return;
+		}
 	}
 
 	if ( dir != 1 && dir != -1 ) {
@@ -1086,13 +1119,17 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 void Cmd_SmartFollowCycle_f( gentity_t *ent )
 {
+	gentity_t	*target;
 	gclient_t	*client;
 	gclient_t	*ci;
 	int			clientNum, clientRank;
 	int			i;
 
-	if ( ent->client->sess.spectatorState != SPECTATOR_FOLLOW ) {
+	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		clientNum = ent->client->sess.spectatorClient;
+	} else if ((target = G_CrosshairPlayer(ent))) {
+		SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+		return;
 	} else {
 		clientNum = -1;
 	}
@@ -2308,8 +2345,7 @@ qboolean G_OtherPlayersDueling(void)
 
 void Cmd_EngageDuel_f(gentity_t *ent)
 {
-	trace_t tr;
-	vec3_t forward, fwdOrg;
+	gentity_t *challenged;
 
 	if (!g_privateDuel.integer)
 	{
@@ -2369,74 +2405,63 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	challenged = G_CrosshairPlayer(ent);
 
-	fwdOrg[0] = ent->client->ps.origin[0] + forward[0]*256;
-	fwdOrg[1] = ent->client->ps.origin[1] + forward[1]*256;
-	fwdOrg[2] = (ent->client->ps.origin[2]+ent->client->ps.viewheight) + forward[2]*256;
-
-	trap_Trace(&tr, ent->client->ps.origin, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
-
-	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS)
+	if (!challenged || !challenged->client || !challenged->inuse ||
+		challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
+		challenged->client->ps.weapon != WP_SABER || challenged->client->ps.duelInProgress ||
+		challenged->client->ps.saberInFlight)
 	{
-		gentity_t *challenged = &g_entities[tr.entityNum];
-
-		if (!challenged || !challenged->client || !challenged->inuse ||
-			challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
-			challenged->client->ps.weapon != WP_SABER || challenged->client->ps.duelInProgress ||
-			challenged->client->ps.saberInFlight)
-		{
-			return;
-		}
-
-		if (GT_Team(g_gametype.integer) && OnSameTeam(ent, challenged))
-		{
-			return;
-		}
-
-		if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
-		{
-			trap_SendServerCommand( /*challenged-g_entities*/-1, va("print \"%s %s %s!\n\"", challenged->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname) );
-
-			ent->client->ps.duelInProgress = qtrue;
-			challenged->client->ps.duelInProgress = qtrue;
-
-			ent->client->ps.duelTime = level.time + 2000;
-			challenged->client->ps.duelTime = level.time + 2000;
-
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 1);
-			G_AddEvent(challenged, EV_PRIVATE_DUEL, 1);
-
-			//Holster their sabers now, until the duel starts (then they'll get auto-turned on to look cool)
-
-			if (!ent->client->ps.saberHolstered)
-			{
-				G_Sound(ent, CHAN_AUTO, saberOffSound);
-				ent->client->ps.weaponTime = 400;
-				ent->client->ps.saberHolstered = qtrue;
-			}
-			if (!challenged->client->ps.saberHolstered)
-			{
-				G_Sound(challenged, CHAN_AUTO, saberOffSound);
-				challenged->client->ps.weaponTime = 400;
-				challenged->client->ps.saberHolstered = qtrue;
-			}
-		}
-		else
-		{
-			//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
-			trap_SendServerCommand( challenged-g_entities, va("cp \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
-			trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\n\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
-		}
-
-		challenged->client->ps.fd.privateDuelTime = 0; //reset the timer in case this player just got out of a duel. He should still be able to accept the challenge.
-
-		ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
-		ent->client->ps.forceHandExtendTime = level.time + 1000;
-
-		ent->client->ps.duelIndex = challenged->s.number;
-		ent->client->ps.duelTime = level.time + 5000;
+		return;
 	}
+
+	if (GT_Team(g_gametype.integer) && OnSameTeam(ent, challenged))
+	{
+		return;
+	}
+
+	if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
+	{
+		trap_SendServerCommand( /*challenged-g_entities*/-1, va("print \"%s %s %s!\n\"", challenged->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname) );
+
+		ent->client->ps.duelInProgress = qtrue;
+		challenged->client->ps.duelInProgress = qtrue;
+
+		ent->client->ps.duelTime = level.time + 2000;
+		challenged->client->ps.duelTime = level.time + 2000;
+
+		G_AddEvent(ent, EV_PRIVATE_DUEL, 1);
+		G_AddEvent(challenged, EV_PRIVATE_DUEL, 1);
+
+		//Holster their sabers now, until the duel starts (then they'll get auto-turned on to look cool)
+
+		if (!ent->client->ps.saberHolstered)
+		{
+			G_Sound(ent, CHAN_AUTO, saberOffSound);
+			ent->client->ps.weaponTime = 400;
+			ent->client->ps.saberHolstered = qtrue;
+		}
+		if (!challenged->client->ps.saberHolstered)
+		{
+			G_Sound(challenged, CHAN_AUTO, saberOffSound);
+			challenged->client->ps.weaponTime = 400;
+			challenged->client->ps.saberHolstered = qtrue;
+		}
+	}
+	else
+	{
+		//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
+		trap_SendServerCommand( challenged-g_entities, va("cp \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
+		trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\n\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+	}
+
+	challenged->client->ps.fd.privateDuelTime = 0; //reset the timer in case this player just got out of a duel. He should still be able to accept the challenge.
+
+	ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
+	ent->client->ps.forceHandExtendTime = level.time + 1000;
+
+	ent->client->ps.duelIndex = challenged->s.number;
+	ent->client->ps.duelTime = level.time + 5000;
 }
 
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
