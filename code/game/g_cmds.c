@@ -1084,6 +1084,80 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	// leave it where it was
 }
 
+void Cmd_SmartFollowCycle_f( gentity_t *ent )
+{
+	gclient_t	*client;
+	gclient_t	*ci;
+	int			clientNum, clientRank;
+	int			i;
+
+	if ( ent->client->sess.spectatorState != SPECTATOR_FOLLOW ) {
+		clientNum = ent->client->sess.spectatorClient;
+	} else {
+		clientNum = -1;
+	}
+
+	if (clientNum == -1) {
+		clientNum = level.follow1;
+	} else if (clientNum == -2) {
+		clientNum = level.follow2;
+	}
+	if (clientNum < 0) {
+		StopFollowing(ent);
+		return;
+	}
+
+	client = &level.clients[clientNum];
+
+	// Alternate between dueling players
+	if ( client->ps.duelInProgress ) {
+		ent->client->sess.spectatorClient = client->ps.duelIndex;
+		return;
+	}
+
+	i = 0;
+	while (i < level.numPlayingClients && level.sortedClients[i] != clientNum) {
+		i++;
+	}
+	if (i >= level.numPlayingClients) {
+		return;
+	}
+
+	clientRank = i;
+
+	// Try to find a powerup player first
+	do {
+		if (--i < 0) {
+			i = level.numPlayingClients - 1;
+		}
+		ci = &level.clients[level.sortedClients[i]];
+
+		if (ci->ps.isJediMaster || ci->ps.powerups[PW_REDFLAG] ||
+			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI]) {
+			ent->client->sess.spectatorClient = level.sortedClients[i];
+			return;
+		}
+	} while (i != clientRank);
+
+	if ( GT_Team(g_gametype.integer) ) {
+		// Cycle through sorted team
+		do {
+			if (--i < 0) {
+				i = level.numPlayingClients - 1;
+			}
+			ci = &level.clients[level.sortedClients[i]];
+		} while (ci->sess.sessionTeam != client->sess.sessionTeam);
+
+		ent->client->sess.spectatorClient = level.sortedClients[i];
+	} else {
+		// Cycle through sorted players
+		if (--i < 0) {
+			i = level.numPlayingClients - 1;
+		}
+
+		ent->client->sess.spectatorClient = level.sortedClients[i];
+	}
+}
 
 /*
 ==================
