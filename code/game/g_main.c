@@ -1866,6 +1866,8 @@ static void ShowDamageStatistics() {
 		}
 	}
 
+	trap_SendServerCommand(-1, "print \"\n\"");
+
 	if (GT_Team(g_gametype.integer)) {
 		if (g_gametype.integer == GT_CTF) {
 			columns = ctfColumns;
@@ -1902,6 +1904,9 @@ static void ShowDamageStatistics() {
 			}
 		}
 	}
+
+	trap_SendServerCommand(-1, "print \"\n\"");
+
 }
 
 /*
@@ -1981,9 +1986,9 @@ void CheckExitRules( void ) {
 	if ( g_timelimit.integer && !level.warmupTime ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 //			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
+			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 			LogExit( "Timelimit hit." );
-			ShowDamageStatistics();
 			return;
 		}
 	}
@@ -1994,16 +1999,16 @@ void CheckExitRules( void ) {
 
 	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
+			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
-			ShowDamageStatistics();
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
+			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"Blue %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
-			ShowDamageStatistics();
 			return;
 		}
 
@@ -2019,8 +2024,8 @@ void CheckExitRules( void ) {
 			if ( g_gametype.integer == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
 			{
 				LogExit( "Duel limit hit." );
-				ShowDamageStatistics();
 				gDuelExit = qtrue;
+				ShowDamageStatistics();
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
 					cl->pers.netname ) );
 				return;
@@ -2028,9 +2033,9 @@ void CheckExitRules( void ) {
 
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
-				ShowDamageStatistics();
 				gDuelExit = qfalse;
-				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s.\n\"",
+				ShowDamageStatistics();
+				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"",
 												cl->pers.netname,
 												G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")
 												)
@@ -2043,16 +2048,16 @@ void CheckExitRules( void ) {
 	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
+			ShowDamageStatistics();
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
-			ShowDamageStatistics();
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
+			ShowDamageStatistics();
 			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
-			ShowDamageStatistics();
 			return;
 		}
 	}
