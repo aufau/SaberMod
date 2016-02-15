@@ -2330,13 +2330,13 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 			//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
 			trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
 			trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+			challenged->client->ps.duelTime = level.time + 5000;
 		}
 
 		ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
 		ent->client->ps.forceHandExtendTime = level.time + 1000;
 
 		ent->client->ps.duelIndex = challenged->s.number;
-		ent->client->ps.duelTime = level.time + 5000;
 	}
 }
 
