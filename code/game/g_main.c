@@ -1367,6 +1367,7 @@ qboolean RoundLimitHit(void)
 		int rounds = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE];
 		return 0 < g_roundlimit.integer && g_roundlimit.integer <= rounds;
 	}
+	return qfalse;
 }
 
 /*
@@ -1826,10 +1827,18 @@ void CheckExitRules( void ) {
 		}
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
-			// end the match if there are not enough players
-			if ( GT_Round(g_gametype.integer) && level.numPlayingClients >= 2
-				 && !RoundLimitHit() ) {
-				NextRound();
+			if (GT_Round(g_gametype.integer)) {
+				if ( level.numPlayingClients < 2 ) {
+					trap_SendServerCommand( -1, "print \"Not enough players.\n\"" );
+					LogExit("Not enough players.");
+					BeginIntermission();
+				} else if ( RoundLimitHit() ) {
+					trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
+					LogExit("Roundlimit hit.");
+					BeginIntermission();
+				} else {
+					NextRound();
+				}
 			} else {
 				BeginIntermission();
 			}
