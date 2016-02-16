@@ -1419,6 +1419,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gentity_t	*tent;
 	int			flags, i;
 	char		userinfo[MAX_INFO_VALUE], *modelname;
+	char		*gameversion;
 
 	ent = g_entities + clientNum;
 
@@ -1538,7 +1539,23 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		client->pers.maxHealth = 100;
 	}
 
-	client->pers.registered = !strcmp(Info_ValueForKey(userinfo, GAMEVERSION), GIT_VERSION);
+	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
+	client->pers.registered = !strcmp(gameversion, GIT_VERSION);
+	if (!client->pers.registered) {
+		if (gameversion[0] == '\0') {
+			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " plugin.\"");
+		} else {
+			trap_SendServerCommand( clientNum, "cp \""
+				"Your game and this server run different versions of\n"
+				GAMEVERSION "\n"
+				"Please download " GAME_VERSION " plugin.\"");
+		}
+
+		trap_SendServerCommand( clientNum, "print\"" S_COLOR_CYAN
+			"\nTo download client plugin set /cl_allowdownload 1 /mv_allowdownload 1 and reconnect."
+			" Alternatively you should be able to get it from"
+			" http://jk2world.net/files/sm/" GAME_VERSION ".pk3\n\"");
+	}
 
 	// locate ent at a spawn point
 	ClientSpawn( ent );
