@@ -39,6 +39,7 @@
 #define ZOOM_IN_TIME		1500.0f
 #define ZOOM_OUT_TIME		100.0f
 #define ZOOM_START_PERCENT	0.3f
+#define MAX_FOV				135
 
 #define	ITEM_BLOB_TIME		200
 #define	MUZZLE_FLASH_TIME	20

@@ -928,9 +928,9 @@ static int CG_CalcFov( void ) {
 	{
 		cgFov = 1;
 	}
-	if (cgFov > 97)
+	if (cgFov > MAX_FOV)
 	{
-		cgFov = 97;
+		cgFov = MAX_FOV;
 	}
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
