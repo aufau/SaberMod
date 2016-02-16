@@ -683,6 +683,8 @@ void CG_RegisterCvars( void ) {
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
+	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
+
 	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	//trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );

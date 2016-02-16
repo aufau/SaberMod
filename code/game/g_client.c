@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include "bg_version.h"
 #include "../ghoul2/g2.h"
 
 // g_client.c -- client functions that don't happen every frame
@@ -1373,7 +1374,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// get and distribute relevent paramters
-	G_LogPrintf( "ClientConnect: %i\n", clientNum );
+	G_LogPrintf( "ClientConnect: %i\n", clientNum);
 	ClientUserinfoChanged( clientNum );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
@@ -1537,6 +1538,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		client->pers.maxHealth = 100;
 	}
 
+	client->pers.registered = !strcmp(Info_ValueForKey(userinfo, GAMEVERSION), GIT_VERSION);
+
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
@@ -1549,7 +1552,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
-	G_LogPrintf( "ClientBegin: %i\n", clientNum );
+	G_LogPrintf( "ClientBegin: %i Version: %s\n", clientNum, Info_ValueForKey(userinfo, GAMEVERSION) );
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
