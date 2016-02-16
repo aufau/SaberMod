@@ -1290,29 +1290,40 @@ void BeginRound( void )
 	trap_SendServerCommand( -1, va("cp \"%s\"", G_GetStripEdString("SVINGAME", "BEGIN_DUEL")) );
 }
 
+/*
+==================
+Parity
+
+Calculates parity of 1s in binary representation of i
+==================
+*/
+static qboolean Parity( int i )
+{
+	qboolean parity = qtrue;
+
+	while (i) {
+		parity = !parity;
+		i &= i - 1;
+	}
+
+	return parity;
+}
+
 void NextRound( void )
 {
 	int			i;
-	int			team;
-	int			clientNum;
 	int			round;
-	gclient_t	*client;
-	gentity_t	*ent;
 	char		warmup[2];
 
-	for ( i = 0 ; i < level.numConnectedClients ; i++ ) {
-		clientNum = level.sortedClients[i];
-		ent = &g_entities[clientNum];
-		client = ent->client;
+	// Shuffle players according to score
+	for ( i = 0 ; i < level.numNonSpectatorClients ; i++ ) {
+		int			clientNum = level.sortedClients[i];
+		gentity_t	*ent = g_entities + clientNum;
 
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-			// Shuffle players by score
-			team = (team == TEAM_RED) ? TEAM_BLUE : TEAM_RED;
-			client->sess.sessionTeam = team;
-			ClientUserinfoChanged(clientNum);
+		ent->client->sess.sessionTeam = Parity(i) ? TEAM_RED : TEAM_BLUE;
+		ClientUserinfoChanged(clientNum);
 
-			respawn(ent);
-		}
+		respawn(ent);
 	}
 
 	CalculateRanks();
