@@ -1841,28 +1841,42 @@ static void ShowDamageStatistics() {
 	gclient_t		*cl;
 	int				stats[STAT_MAX];
 	int				bestStats[STAT_MAX];
+	qboolean		reallyBest[STAT_MAX] = { qfalse };
 	int				i, j;
 
-	if (level.numNonSpectatorClients == 0) {
+	if (level.numPlayingClients == 0) {
 		return;
 	}
 
 	cl = &level.clients[level.sortedClients[0]];
 	GetStats(bestStats, cl);
 
-	for (i = 1; i < level.numNonSpectatorClients; i++) {
+	for (i = 1; i < level.numPlayingClients; i++) {
 		cl = &level.clients[level.sortedClients[i]];
 		GetStats(stats, cl);
 
 		for (j = 0; j <= STAT_MAX_ASC; j++) {
+			if (stats[j] != bestStats[j]) {
+				reallyBest[j] = qtrue;
+			}
 			if (stats[j] > bestStats[j]) {
 				bestStats[j] = stats[j];
 			}
 		}
 		for (; j < STAT_MAX; j++) {
+			if (stats[j] != bestStats[j]) {
+				reallyBest[j] = qtrue;
+			}
 			if (stats[j] < bestStats[j]) {
 				bestStats[j] = stats[j];
 			}
+		}
+	}
+
+	// Don't highlight the stat if it's the same for all players
+	for (j = 0; j < STAT_MAX; j++) {
+		if (!reallyBest[j]) {
+			bestStats[j] = INT_MAX;
 		}
 	}
 
@@ -1878,14 +1892,14 @@ static void ShowDamageStatistics() {
 		PrintStatsHeader(columns);
 
 		PrintStatsSeparator(columns, COLOR_RED);
-		for (i = 0; i < level.numNonSpectatorClients; i++) {
+		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_RED)
 				PrintClientStats(cl, columns, bestStats);
 		}
 
 		PrintStatsSeparator(columns, COLOR_BLUE);
-		for (i = 0; i < level.numNonSpectatorClients; i++) {
+		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_BLUE) {
 				PrintClientStats(cl, columns, bestStats);
@@ -1897,7 +1911,7 @@ static void ShowDamageStatistics() {
 		PrintStatsHeader(columns);
 
 		PrintStatsSeparator(columns, COLOR_WHITE);
-		for (i = 0; i < level.numNonSpectatorClients; i++) {
+		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_FREE) {
 				PrintClientStats(cl, columns, bestStats);
