@@ -1130,14 +1130,6 @@ void ClientThink_real( gentity_t *ent ) {
 				duelAgainst->client->duelStarted = qtrue;
 			}
 		}
-		else
-		{
-			client->ps.speed = 0;
-			client->ps.basespeed = 0;
-			ucmd->forwardmove = 0;
-			ucmd->rightmove = 0;
-			ucmd->upmove = 0;
-		}
 
 		if (!duelAgainst || !duelAgainst->client || !duelAgainst->inuse ||
 			duelAgainst->client->ps.duelIndex != ent->s.number)
