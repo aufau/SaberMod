@@ -765,9 +765,7 @@ float Q_rsqrt( float f );		// reciprocal square root
 signed char ClampChar( int i );
 signed short ClampShort( int i );
 
-#ifdef Q3_VM
-float powf ( float x, int y );
-#endif
+float powi ( float x, int y );
 
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir );
