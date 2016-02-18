@@ -188,7 +188,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int final_Side;
 	int final_Powers[NUM_FORCE_POWERS];
 
-	if (powerLen >= 128)
+	if (powerLen >= sizeof(powerBuf))
 	{ //This should not happen. If it does, this is obviously a bogus string.
 		//They can have this string. Because I said so.
 		strcpy(powerBuf, "7-1-032330000000001333");

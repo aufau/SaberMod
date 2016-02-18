@@ -21,12 +21,12 @@ void CG_InitTeamChat(void) {
 }
 
 void CG_SetPrintString(int type, const char *p) {
-  if (type == SYSTEM_PRINT) {
-    strcpy(systemChat, p);
-  } else {
-    strcpy(teamChat2, teamChat1);
-    strcpy(teamChat1, p);
-  }
+	if (type == SYSTEM_PRINT) {
+		Q_strncpyz(systemChat, p, sizeof(systemChat));
+	} else {
+		Q_strncpyz(teamChat2, teamChat1, sizeof(teamChat2));
+		Q_strncpyz(teamChat1, p, sizeof(teamChat1));
+	}
 }
 
 void CG_CheckOrderPending(void) {

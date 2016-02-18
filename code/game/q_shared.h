@@ -6,8 +6,6 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#define MAX_TEAMNAME 32
-
 #include "../qcommon/disablewarnings.h"
 
 #if (defined _MSC_VER)
@@ -22,6 +20,7 @@
 
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
+#define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
 
 /**********************************************************************
   VM Considerations
@@ -348,7 +347,10 @@ typedef int		clipHandle_t;
 #define	MAX_OSPATH			256		// max length of a filesystem pathname
 #endif
 
-#define	MAX_NAME_LENGTH		32		// max length of a client name
+#define MAX_NETNAME			36		// max length of a client name
+#define MAX_NAME_LEN		36		// max length of a printed client name
+#define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
+#define MAX_TEAMNAME		32      // max length of a team name "spectators" but also g_blueTeam
 
 #define	MAX_SAY_TEXT	150
 

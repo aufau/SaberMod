@@ -180,7 +180,7 @@ static const char *GetCRDelineatedString( const char *psStripFileRef, const char
 		psList++;
 	}
 
-	strcpy(sTemp,psList);
+	Q_strncpyz(sTemp,psList,sizeof(sTemp));
 	p = strchr(sTemp,'\n');
 	if (p) {
 		*p = '\0';
@@ -375,12 +375,11 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 		char sTemp[1024];
 		int iCopyCount = limit ? min(strlen(text), limit) : strlen(text);
 			iCopyCount = min(iCopyCount,cursorPos);
-			iCopyCount = min(iCopyCount,sizeof(sTemp));
+			iCopyCount = min(iCopyCount,sizeof(sTemp) - 1);
 
 			// copy text into temp buffer for pixel measure...
 			//
-			strncpy(sTemp,text,iCopyCount);
-					sTemp[iCopyCount] = '\0';
+			Q_strncpyz(sTemp,text,iCopyCount + 1);
 
 			{
 				int iFontIndex = MenuFontToHandle( iMenuFont, &scale );
@@ -473,9 +472,11 @@ char parsedFPMessage[1024];
 extern int FPMessageTime;
 void Text_PaintCenter(float x, float y, float scale, vec4_t color, const char *text, float adjust, int iMenuFont);
 
+#define MAX_STRIPED_UI_STRING 1024
+
 const char *UI_GetStripEdString(const char *refSection, const char *refName)
 {
-	static char text[1024]={0};
+	static char text[MAX_STRIPED_UI_STRING] = { 0 };
 
 	trap_SP_GetStringTextString(va("%s_%s", refSection, refName), text, sizeof(text));
 	return text;
@@ -1037,11 +1038,11 @@ void UI_LoadMenus(const char *menuFile, qboolean reset) {
 
 void UI_Load() {
 	char *menuSet;
-	char lastName[1024];
+	char lastName[MAX_TOKENLENGTH];
 	menuDef_t *menu = Menu_GetFocused();
 
 	if (menu && menu->window.name) {
-		strcpy(lastName, menu->window.name);
+		Q_strncpyz(lastName, menu->window.name, sizeof(lastName));
 	}
 	else
 	{
@@ -2461,13 +2462,13 @@ static void UI_BuildPlayerList() {
 		trap_GetConfigString( CS_PLAYERS + n, info, MAX_INFO_STRING );
 
 		if (info[0]) {
-			Q_strncpyz( uiInfo.playerNames[uiInfo.playerCount], Info_ValueForKey( info, "n" ), MAX_NAME_LENGTH );
+			Q_strncpyz( uiInfo.playerNames[uiInfo.playerCount], Info_ValueForKey( info, "n" ), ARRAY_LEN(uiInfo.playerNames[0]) );
 			Q_CleanStr( uiInfo.playerNames[uiInfo.playerCount] );
 			uiInfo.playerIndexes[uiInfo.playerCount] = n;
 			uiInfo.playerCount++;
 			team2 = atoi(Info_ValueForKey(info, "t"));
 			if (team2 == team && n != uiInfo.playerNumber) {
-				Q_strncpyz( uiInfo.teamNames[uiInfo.myTeamCount], Info_ValueForKey( info, "n" ), MAX_NAME_LENGTH );
+				Q_strncpyz( uiInfo.teamNames[uiInfo.myTeamCount], Info_ValueForKey( info, "n" ), ARRAY_LEN(uiInfo.teamNames[0]) );
 				Q_CleanStr( uiInfo.teamNames[uiInfo.myTeamCount] );
 				uiInfo.teamClientNums[uiInfo.myTeamCount] = n;
 				if (uiInfo.playerNumber == n) {
@@ -4614,7 +4615,7 @@ static void UI_RunMenuScript(char **args)
 			if (String_Parse(args, &orders)) {
 				int selectedPlayer = trap_Cvar_VariableValue("cg_selectedPlayer");
 				if (selectedPlayer < uiInfo.myTeamCount) {
-					strcpy(buff, orders);
+					Q_strncpyz(buff, orders, sizeof(buff));
 					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
 					trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 				} else {
@@ -4623,7 +4624,7 @@ static void UI_RunMenuScript(char **args)
 						if (Q_stricmp(UI_Cvar_VariableString("name"), uiInfo.teamNames[i]) == 0) {
 							continue;
 						}
-						strcpy(buff, orders);
+						Q_strncpyz(buff, orders, sizeof(buff));
 						trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamNames[i]) );
 						trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 					}
@@ -4654,12 +4655,12 @@ static void UI_RunMenuScript(char **args)
 				if (selectedPlayer == uiInfo.myTeamCount)
 				{
 					selectedPlayer = -1;
-					strcpy(buff, orders);
+					Q_strncpyz(buff, orders, sizeof(buff));
 					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, selectedPlayer) );
 				}
 				else
 				{
-					strcpy(buff, orders);
+					Q_strncpyz(buff, orders, sizeof(buff));
 					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
 				}
 				trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
@@ -6973,7 +6974,6 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	const char *s;
 	uiClientState_t	cstate;
 	char			info[MAX_INFO_VALUE];
-	char text[256];
 	float centerPoint, yStart, scale;
 
 	char sStripEdTemp[256];
@@ -7010,8 +7010,10 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 		trap_SP_GetStringTextString("MENUS3_STARTING_UP", sStripEdTemp, sizeof(sStripEdTemp));
 		Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite, sStripEdTemp, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 	} else {
+		const char *text;
+
 		trap_SP_GetStringTextString("MENUS3_CONNECTING_TO", sStripEdTemp, sizeof(sStripEdTemp));
-		strcpy(text, va(/*"Connecting to %s"*/sStripEdTemp, cstate.servername));
+		text = va(/*"Connecting to %s"*/sStripEdTemp, cstate.servername);
 		Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite,text , ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 	}
 

@@ -774,8 +774,8 @@ typedef struct {
 	int playerIndex;
 	int playerNumber;
 	qboolean teamLeader;
-	char playerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-	char teamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
+	char playerNames[MAX_CLIENTS][MAX_NETNAME];
+	char teamNames[MAX_CLIENTS][MAX_NETNAME];
 	int teamClientNums[MAX_CLIENTS];
 
 	int playerIndexes[MAX_CLIENTS]; //so we can vote-kick by index

@@ -69,15 +69,15 @@ tryagain:
 	}
 /*
 	if ( weaponNum == WP_MACHINEGUN || weaponNum == WP_BFG ) {
-		strcpy( path, item->world_model[0] );
+		Q_strncpyz( path, item->world_model[0], sizeof(path) );
 		COM_StripExtension( path, path );
-		strcat( path, "_barrel.md3" );
+		Q_strcat( path, sizeof(path), "_barrel.md3" );
 		pi->barrelModel = trap_R_RegisterModel( path );
 	}
 */
-	strcpy( path, item->world_model[0] );
+	Q_strncpyz( path, item->world_model[0], sizeof(path) );
 	COM_StripExtension( path, path );
-	strcat( path, "_flash.md3" );
+	Q_strcat( path, sizeof(path), "_flash.md3" );
 	pi->flashModel = trap_R_RegisterModel( path );
 
 	switch( weaponNum ) {

@@ -4092,8 +4092,8 @@ void BindingFromName(const char *cvar) {
 
 					trap_SP_GetStringTextString("MENUS3_KEYBIND_OR",sOR, sizeof(sOR));
 
-					strcat( g_nameBind1, va(" %s ",sOR));
-					strcat( g_nameBind1, g_nameBind2 );
+					Q_strcat( g_nameBind1, sizeof(g_nameBind1), va(" %s ",sOR));
+					Q_strcat( g_nameBind1, sizeof(g_nameBind2), g_nameBind2 );
 				}
 			return;
 		}

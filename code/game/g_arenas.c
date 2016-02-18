@@ -21,8 +21,7 @@ void UpdateTournamentInfo( void ) {
 	int			i;
 	gentity_t	*player;
 	int			playerClientNum;
-	int			n, accuracy, perfect,	msglen;
-	int			buflen;
+	int			n, accuracy, perfect;
 	int			score1, score2;
 	qboolean	won;
 	char		buf[32];
@@ -87,15 +86,10 @@ void UpdateTournamentInfo( void ) {
 			perfect, score1, score2, level.time, player->client->ps.persistant[PERS_CAPTURES] );
 	}
 
-	msglen = strlen( msg );
 	for( i = 0; i < level.numNonSpectatorClients; i++ ) {
 		n = level.sortedClients[i];
 		Com_sprintf( buf, sizeof(buf), " %i %i %i", n, level.clients[n].ps.persistant[PERS_RANK], level.clients[n].ps.persistant[PERS_SCORE] );
-		buflen = strlen( buf );
-		if( msglen + buflen + 1 >= sizeof(msg) ) {
-			break;
-		}
-		strcat( msg, buf );
+		Q_strcat( msg, sizeof(msg), buf );
 	}
 	trap_SendConsoleCommand( EXEC_APPEND, msg );
 }

@@ -1110,12 +1110,12 @@ void CG_CheckSVStripEdRef(char *buf, const char *str)
 	{
 		if (str)
 		{
-			strcpy(buf, str);
+			Q_strncpyz(buf, str, MAX_STRIPED_SV_STRING);
 		}
 		return;
 	}
 
-	strcpy(buf, str);
+	Q_strncpyz(buf, str, MAX_STRIPED_SV_STRING);
 
 	strLen = strlen(str);
 
