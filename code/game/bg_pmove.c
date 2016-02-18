@@ -3393,13 +3393,6 @@ static void PM_Weapon( void )
 	{
 		pm->cmd.weapon = WP_SABER;
 		pm->ps->weapon = WP_SABER;
-
-		if (pm->ps->duelTime >= pm->cmd.serverTime)
-		{
-			pm->cmd.upmove = 0;
-			pm->cmd.forwardmove = 0;
-			pm->cmd.rightmove = 0;
-		}
 	}
 
 	if (pm->ps->weapon == WP_SABER && pm->ps->saberMove != LS_READY && pm->ps->saberMove != LS_NONE)
@@ -4491,6 +4484,18 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.rightmove = 0;
 		pm->cmd.upmove = 0;
 	}
+
+	if (pm->ps->duelInProgress && pm->ps->duelTime >= pm->cmd.serverTime)
+	{
+		if (pm->cmd.upmove > 0) {
+			pm->cmd.upmove = 0;
+		}
+		pm->cmd.forwardmove = 0;
+		pm->cmd.rightmove = 0;
+		pm->ps->speed = 0;
+		pm->ps->basespeed = 0;
+	}
+
 
 	if (pm->ps->saberLockTime >= pm->cmd.serverTime)
 	{

@@ -2200,29 +2200,10 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 	}
 }
 
-qboolean G_OtherPlayersDueling(void)
-{
-	int i = 0;
-	gentity_t *ent;
-
-	while (i < MAX_CLIENTS)
-	{
-		ent = &g_entities[i];
-
-		if (ent && ent->inuse && ent->client && ent->client->ps.duelInProgress)
-		{
-			return qtrue;
-		}
-		i++;
-	}
-
-	return qfalse;
-}
-
 void Cmd_EngageDuel_f(gentity_t *ent)
 {
 	trace_t tr;
-	vec3_t forward, fwdOrg;
+	vec3_t org, forward, fwdOrg;
 
 	if (!g_privateDuel.integer)
 	{
@@ -2269,26 +2250,13 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	//New: Don't let a player duel if he just did and hasn't waited 10 seconds yet (note: If someone challenges him, his duel timer will reset so he can accept)
-	if (ent->client->ps.fd.privateDuelTime > level.time)
-	{
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "CANTDUEL_JUSTDID")) );
-		return;
-	}
-
-	if (G_OtherPlayersDueling())
-	{
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "CANTDUEL_BUSY")) );
-		return;
-	}
-
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 
-	fwdOrg[0] = ent->client->ps.origin[0] + forward[0]*256;
-	fwdOrg[1] = ent->client->ps.origin[1] + forward[1]*256;
-	fwdOrg[2] = (ent->client->ps.origin[2]+ent->client->ps.viewheight) + forward[2]*256;
+	VectorCopy(ent->client->ps.origin, org);
+	org[2] += ent->client->ps.viewheight;
+	VectorMA(org, 256, forward, fwdOrg);
 
-	trap_Trace(&tr, ent->client->ps.origin, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
+	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS)
 	{
@@ -2296,20 +2264,20 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 
 		if (!challenged || !challenged->client || !challenged->inuse ||
 			challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
-			challenged->client->ps.weapon != WP_SABER || challenged->client->ps.duelInProgress ||
-			challenged->client->ps.saberInFlight)
+			challenged->client->ps.weapon != WP_SABER || challenged->client->ps.saberInFlight)
 		{
 			return;
 		}
-
-		if (GT_Team(g_gametype.integer) && OnSameTeam(ent, challenged))
-		{
+		if (challenged->client->ps.duelInProgress) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "CANTDUEL_BUSY")) );
 			return;
 		}
 
 		if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
 		{
-			trap_SendServerCommand( /*challenged-g_entities*/-1, va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname) );
+			char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
+				G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
+			trap_SendServerCommand(-1, s);
 
 			ent->client->ps.duelInProgress = qtrue;
 			challenged->client->ps.duelInProgress = qtrue;
@@ -2334,21 +2302,26 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 				challenged->client->ps.weaponTime = 400;
 				challenged->client->ps.saberHolstered = qtrue;
 			}
+
+			ent->client->ps.stats[STAT_ARMOR] =
+				ent->client->ps.stats[STAT_HEALTH] =
+				ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
+			challenged->client->ps.stats[STAT_ARMOR] =
+				challenged->client->ps.stats[STAT_HEALTH] =
+				challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
 		}
 		else
 		{
 			//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
-			trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE " %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
-			trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\n\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+			trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
+			trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+			challenged->client->ps.duelTime = level.time + 5000;
 		}
-
-		challenged->client->ps.fd.privateDuelTime = 0; //reset the timer in case this player just got out of a duel. He should still be able to accept the challenge.
 
 		ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
 		ent->client->ps.forceHandExtendTime = level.time + 1000;
 
 		ent->client->ps.duelIndex = challenged->s.number;
-		ent->client->ps.duelTime = level.time + 5000;
 	}
 }
 
