@@ -9,7 +9,8 @@ mods, trying to improve on usability, stability and user experience
 with *no-gimmicks* approach. Our first goal is reimplementing and
 improving on the features of popular *league mod* by XycaleTh.
 
-This code is based on `JK2 SDK GPL`_ - an updated JK2 1.04 SDK.
+Source code is hosted on GitHub_ and based on `JK2 SDK GPL`_ - an
+updated JK2 1.04 SDK.
 
 Changes
 =======
@@ -27,7 +28,7 @@ players
   List players connected to server with some additional info.
 
 follow [first|second]
-  Follows accordingly first or second best player on the server.
+  Follow first or second best player on the server.
 
 Callvote
 ........
@@ -57,9 +58,10 @@ cg_duelGlow 1
 Spectating
 ..........
 
-As spectator you can cycle backwards through players by pressing
-`+altattack` button. `+use` button makes you switch followed player
-using "smart cycle" mode.
+As spectator `+use` button makes you switch followed player using
+"smart cycle" mode. It will switch between duelling players you're
+currently following, search for next powerup player or cycle through a
+team you're following in scoreboard order.
 
 As free floating spectator you can target a player with your crosshair
 and press `+attack` button to start following him.
@@ -86,8 +88,18 @@ dmflags
 
 g_allowVote 1
   0 / 1 - disable / enable all votes
-  Moreover you can decide what votes should be available using
-  bitmask: TODO-RELEASE
+
+  Moreover you can decide what votes should be available by setting it
+  to sum of values corresponding to desired votes from the following
+  list:
+
+  =====================  =====================  =====================
+  2 - Map Restart        4 - Next Map           8 - Map
+  16 - Gametype          32 - Kick              64 - Client Kick
+  128 - Do Warmup        256 - Timelimit        512 - Fraglimit
+  1024 - Roundlimit      2048 - Teamsize        4096 - Remove
+  8192 - No Kicks        16384 - With Kicks
+  =====================  =====================  =====================
 
 g_maxGameClients 0
   Removed. Use teamsize instead.
@@ -151,9 +163,9 @@ original, non-free JK2 1.04 release.
 Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
 software. Read LICENSE.txt and README-raven.txt to learn
 more. According to the license, among other things, you are obliged to
-distribute full source code of your mod alongsid it, or at least a
+distribute full source code of your mod alongside of it, or at least a
 written offer to ship it (eg a HTTP download link inside a .pk3
-file). Moreovery any mod using patches from this repository **has to**
+file). Moreover, any mod using patches from this repository **has to**
 be released under GPLv2.
 
 Q3ASM is Copyright (c) id Software and ioquake3 developers.
@@ -168,4 +180,15 @@ Authors
   + Witold *fau* Piłat <witold.pilat@gmail.com> (c) 2015-2016
   + Dziablo (c) 2015-2016
 
+Contributors
+------------
+
+* Daggolin (boy) - Technical discussion, sharing patches and his JK2
+  modding expertise.
+* Miso - Sending patches, testing, promoting SaberMod by hosting
+  servers and events.
+* Xycaleth - Creating League mod that was a great inspiration to
+  SaberMod and sharing it's source code.
+
+.. _GitHub : https://github.com/aufau/SaberMod
 .. _`JK2 SDK GPL`: https://github.com/aufau/jk2sdk-gpl
