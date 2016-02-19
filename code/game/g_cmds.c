@@ -330,6 +330,32 @@ int ClientNumberFromString( gentity_t *to, const char *s ) {
 
 /*
 ==================
+G_CrosshairPlayer
+
+Inferior, serverside variant of CG_CrosshairPlayer. ent must be a
+client.
+==================
+*/
+static gentity_t *G_CrosshairPlayer( gentity_t *ent ) {
+	trace_t tr;
+	vec3_t org, forward, fwdOrg;
+
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+
+	VectorCopy(ent->client->ps.origin, org);
+	org[2] += ent->client->ps.viewheight;
+	VectorMA(org, 256, forward, fwdOrg);
+
+	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
+
+	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS) {
+		return &g_entities[tr.entityNum];
+	}
+	return NULL;
+}
+
+/*
+==================
 Cmd_Give_f
 
 Give items to a client
@@ -822,14 +848,6 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_SCOREBOARD;
-	} else if ( !Q_stricmp( s, "follow1" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -1;
-	} else if ( !Q_stricmp( s, "follow2" ) ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_FOLLOW;
-		specClient = -2;
 	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
@@ -997,9 +1015,15 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	i = ClientNumberFromString( ent, arg );
-	if ( i == -1 ) {
-		return;
+	if (!strcmp(arg, "-1") || !Q_stricmp(arg, "first")) {
+		i = -1;
+	} else if (!strcmp(arg, "-2") || !Q_stricmp(arg, "second"))
+		i = -2;
+	else {
+		i = ClientNumberFromString( ent, arg );
+		if ( i == -1 ) {
+			return;
+		}
 	}
 
 	// can't follow self
@@ -1038,6 +1062,18 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		ent->client->sess.losses++;
 	}
 
+	// first set them to spectator
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
+		SetTeam(ent, TEAM_SPECTATOR);
+	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ){
+		gentity_t *target = G_CrosshairPlayer(ent);
+
+		if (target) {
+			SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			return;
+		}
+	}
+
 	if ( dir != 1 && dir != -1 ) {
 		G_Error( "Cmd_FollowCycle_f: bad dir %i", dir );
 	}
@@ -1071,6 +1107,84 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	// leave it where it was
 }
 
+void Cmd_SmartFollowCycle_f( gentity_t *ent )
+{
+	gentity_t	*target;
+	gclient_t	*client;
+	gclient_t	*ci;
+	int			clientNum, clientRank;
+	int			i;
+
+	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+		clientNum = ent->client->sess.spectatorClient;
+	} else if ((target = G_CrosshairPlayer(ent))) {
+		SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+		return;
+	} else {
+		clientNum = -1;
+	}
+
+	if (clientNum == -1) {
+		clientNum = level.follow1;
+	} else if (clientNum == -2) {
+		clientNum = level.follow2;
+	}
+	if (clientNum < 0) {
+		StopFollowing(ent);
+		return;
+	}
+
+	client = &level.clients[clientNum];
+
+	// Alternate between dueling players
+	if ( client->ps.duelInProgress ) {
+		ent->client->sess.spectatorClient = client->ps.duelIndex;
+		return;
+	}
+
+	i = 0;
+	while (i < level.numPlayingClients && level.sortedClients[i] != clientNum) {
+		i++;
+	}
+	if (i >= level.numPlayingClients) {
+		return;
+	}
+
+	clientRank = i;
+
+	// Try to find a powerup player first
+	do {
+		if (--i < 0) {
+			i = level.numPlayingClients - 1;
+		}
+		ci = &level.clients[level.sortedClients[i]];
+
+		if (ci->ps.isJediMaster || ci->ps.powerups[PW_REDFLAG] ||
+			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI]) {
+			ent->client->sess.spectatorClient = level.sortedClients[i];
+			return;
+		}
+	} while (i != clientRank);
+
+	if ( GT_Team(g_gametype.integer) ) {
+		// Cycle through sorted team
+		do {
+			if (--i < 0) {
+				i = level.numPlayingClients - 1;
+			}
+			ci = &level.clients[level.sortedClients[i]];
+		} while (ci->sess.sessionTeam != client->sess.sessionTeam);
+
+		ent->client->sess.spectatorClient = level.sortedClients[i];
+	} else {
+		// Cycle through sorted players
+		if (--i < 0) {
+			i = level.numPlayingClients - 1;
+		}
+
+		ent->client->sess.spectatorClient = level.sortedClients[i];
+	}
+}
 
 /*
 ==================
@@ -2202,8 +2316,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 
 void Cmd_EngageDuel_f(gentity_t *ent)
 {
-	trace_t tr;
-	vec3_t org, forward, fwdOrg;
+	gentity_t *challenged;
 
 	if (!g_privateDuel.integer)
 	{
@@ -2250,79 +2363,68 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	challenged = G_CrosshairPlayer(ent);
 
-	VectorCopy(ent->client->ps.origin, org);
-	org[2] += ent->client->ps.viewheight;
-	VectorMA(org, 256, forward, fwdOrg);
-
-	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
-
-	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS)
+	if (!challenged || !challenged->client || !challenged->inuse ||
+		challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
+		challenged->client->ps.weapon != WP_SABER || challenged->client->ps.saberInFlight)
 	{
-		gentity_t *challenged = &g_entities[tr.entityNum];
-
-		if (!challenged || !challenged->client || !challenged->inuse ||
-			challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
-			challenged->client->ps.weapon != WP_SABER || challenged->client->ps.saberInFlight)
-		{
-			return;
-		}
-		if (challenged->client->ps.duelInProgress) {
-			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "CANTDUEL_BUSY")) );
-			return;
-		}
-
-		if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
-		{
-			char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
-				G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
-			trap_SendServerCommand(-1, s);
-
-			ent->client->ps.duelInProgress = qtrue;
-			challenged->client->ps.duelInProgress = qtrue;
-
-			ent->client->ps.duelTime = level.time + 2000;
-			challenged->client->ps.duelTime = level.time + 2000;
-
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 1);
-			G_AddEvent(challenged, EV_PRIVATE_DUEL, 1);
-
-			//Holster their sabers now, until the duel starts (then they'll get auto-turned on to look cool)
-
-			if (!ent->client->ps.saberHolstered)
-			{
-				G_Sound(ent, CHAN_AUTO, saberOffSound);
-				ent->client->ps.weaponTime = 400;
-				ent->client->ps.saberHolstered = qtrue;
-			}
-			if (!challenged->client->ps.saberHolstered)
-			{
-				G_Sound(challenged, CHAN_AUTO, saberOffSound);
-				challenged->client->ps.weaponTime = 400;
-				challenged->client->ps.saberHolstered = qtrue;
-			}
-
-			ent->client->ps.stats[STAT_ARMOR] =
-				ent->client->ps.stats[STAT_HEALTH] =
-				ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
-			challenged->client->ps.stats[STAT_ARMOR] =
-				challenged->client->ps.stats[STAT_HEALTH] =
-				challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
-		}
-		else
-		{
-			//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
-			trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
-			trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
-			challenged->client->ps.duelTime = level.time + 5000;
-		}
-
-		ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
-		ent->client->ps.forceHandExtendTime = level.time + 1000;
-
-		ent->client->ps.duelIndex = challenged->s.number;
+		return;
 	}
+	if (challenged->client->ps.duelInProgress) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "CANTDUEL_BUSY")) );
+		return;
+	}
+
+	if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
+	{
+		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
+			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
+		trap_SendServerCommand(-1, s);
+
+		ent->client->ps.duelInProgress = qtrue;
+		challenged->client->ps.duelInProgress = qtrue;
+
+		ent->client->ps.duelTime = level.time + 2000;
+		challenged->client->ps.duelTime = level.time + 2000;
+
+		G_AddEvent(ent, EV_PRIVATE_DUEL, 1);
+		G_AddEvent(challenged, EV_PRIVATE_DUEL, 1);
+
+		//Holster their sabers now, until the duel starts (then they'll get auto-turned on to look cool)
+
+		if (!ent->client->ps.saberHolstered)
+		{
+			G_Sound(ent, CHAN_AUTO, saberOffSound);
+			ent->client->ps.weaponTime = 400;
+			ent->client->ps.saberHolstered = qtrue;
+		}
+		if (!challenged->client->ps.saberHolstered)
+		{
+			G_Sound(challenged, CHAN_AUTO, saberOffSound);
+			challenged->client->ps.weaponTime = 400;
+			challenged->client->ps.saberHolstered = qtrue;
+		}
+
+		ent->client->ps.stats[STAT_ARMOR] =
+			ent->client->ps.stats[STAT_HEALTH] =
+			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
+		challenged->client->ps.stats[STAT_ARMOR] =
+			challenged->client->ps.stats[STAT_HEALTH] =
+			challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
+	}
+	else
+	{
+		//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
+		trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
+		trap_SendServerCommand( ent-g_entities, va("cp \"%s %s\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+		challenged->client->ps.duelTime = level.time + 5000;
+	}
+
+	ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
+	ent->client->ps.forceHandExtendTime = level.time + 1000;
+
+	ent->client->ps.duelIndex = challenged->s.number;
 }
 
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
