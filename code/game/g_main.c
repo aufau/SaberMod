@@ -1983,6 +1983,7 @@ void CheckExitRules( void ) {
 		int time = (g_singlePlayer.integer) ? SP_INTERMISSION_DELAY_TIME : INTERMISSION_DELAY_TIME;
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
+			ShowDamageStatistics();
 			BeginIntermission();
 		}
 		return;
@@ -2000,7 +2001,6 @@ void CheckExitRules( void ) {
 	if ( g_timelimit.integer && !level.warmupTime ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 //			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
-			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 			LogExit( "Timelimit hit." );
 			return;
@@ -2013,14 +2013,12 @@ void CheckExitRules( void ) {
 
 	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
-			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
-			ShowDamageStatistics();
 			trap_SendServerCommand( -1, va("print \"Blue %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
@@ -2039,7 +2037,6 @@ void CheckExitRules( void ) {
 			{
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
-				ShowDamageStatistics();
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
 					cl->pers.netname ) );
 				return;
@@ -2048,7 +2045,6 @@ void CheckExitRules( void ) {
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
 				gDuelExit = qfalse;
-				ShowDamageStatistics();
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"",
 												cl->pers.netname,
 												G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")
@@ -2062,14 +2058,12 @@ void CheckExitRules( void ) {
 	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
-			ShowDamageStatistics();
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
-			ShowDamageStatistics();
 			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
 			return;
