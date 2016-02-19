@@ -998,7 +998,7 @@ qboolean Q_IsInteger( const char * s ) {
 	return foundDigit;
 }
 
-void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
+int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	int		len;
 	va_list		argptr;
 	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
@@ -1011,8 +1011,10 @@ void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	}
 	if (len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
+		len = size - 1;
 	}
 	Q_strncpyz (dest, bigbuffer, size );
+	return len;
 }
 
 
@@ -1388,6 +1390,34 @@ int Q_irand(int value1, int value2)
 	r += value1;
 
 	return r;
+}
+
+/*
+=====================================================================
+
+PRINTING TO CONSOLE
+
+=====================================================================
+*/
+
+char const *Spaces(int n)
+{
+	static const char spaces[] = "                                   "; // 35
+
+	n = max(0, n);
+	assert(n < sizeof(spaces));
+
+	return spaces + sizeof(spaces) - 1 - (n);
+}
+
+char const *Dashes(int n)
+{
+	static const char dashes[] = "-----------------------------------"; // 35
+
+	n = max(0, n);
+	assert(n < sizeof(dashes));
+
+	return dashes + sizeof(dashes) - 1 - (n);
 }
 
 //====================================================================

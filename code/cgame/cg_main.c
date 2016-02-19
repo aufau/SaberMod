@@ -2655,6 +2655,8 @@ Ghoul2 Insert End
 
 	CG_ShaderStateChanged();
 
+	CG_InitScoreboardColumns();
+
 	trap_S_ClearLoopingSounds( qtrue );
 }
 

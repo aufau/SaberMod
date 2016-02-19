@@ -1817,6 +1817,8 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 		AddScore( attacker, self->r.currentOrigin, 1 );
 	}
 
+	attacker->client->ps.persistant[PERS_KILLS]++;
+
 	if( meansOfDeath == MOD_STUN_BATON ) {
 
 		// play humiliation on player
@@ -2989,6 +2991,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			knockback;
 	int			max;
 	int			subamt = 0;
+	int			oldHealth = targ->health;
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
@@ -3248,7 +3251,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			attacker->client->ps.persistant[PERS_HITS]++;
 		}
-		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
 	}
 
 	if (dflags == DAMAGE_NO_DAMAGE) {
@@ -3491,14 +3493,26 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 			targ->enemy = attacker;
 			targ->die (targ, inflictor, attacker, take, mod);
-			return;
 		} else if ( targ->pain ) {
 			targ->pain (targ, attacker, take);
 		}
-
-		G_LogWeaponDamage(attacker->s.number, mod, take);
 	}
 
+	// Final health damage
+	take = max(0, oldHealth) - max(0, targ->health) + asave;
+	if (take && client) {
+		G_LogWeaponDamage(attacker->s.number, mod, take);
+
+		if (attacker->client) {
+			if (client == attacker->client || OnSameTeam(targ, attacker)) {
+				client->pers.totalDamageTakenFromAllies += take;
+				attacker->client->pers.totalDamageDealtToAllies += take;
+			} else {
+				client->pers.totalDamageTakenFromEnemies += take;
+				attacker->client->pers.totalDamageDealtToEnemies += take;
+			}
+		}
+	}
 }
 
 

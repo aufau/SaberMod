@@ -962,7 +962,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
             characters++;
             *p++ = ch;
         }
-    } while ( ch != '\0' && p < end );
+    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 4);
 
     *p = '\0';
 
@@ -1573,6 +1573,11 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
+
+	ent->client->pers.totalDamageTakenFromEnemies = 0;
+	ent->client->pers.totalDamageDealtToEnemies = 0;
+	ent->client->pers.totalDamageTakenFromAllies = 0;
+	ent->client->pers.totalDamageDealtToAllies = 0;
 
 	G_ClearClientLog(clientNum);
 }

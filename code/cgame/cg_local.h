@@ -419,6 +419,9 @@ typedef struct {
 	int				captures;
 	qboolean	perfect;
 	int				team;
+	int				kills;
+	int				deaths;
+	int				netDamage;
 } score_t;
 
 // each client has an associated clientInfo_t
@@ -1318,6 +1321,7 @@ typedef struct {
 	qboolean		jediVmerc;
 	int				wDisable;
 	int				fDisable;
+	qboolean		privateDuel;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
@@ -1833,6 +1837,7 @@ void CG_DrawInformation( void );
 //
 // cg_scoreboard.c
 //
+void CG_InitScoreboardColumns( void );
 qboolean CG_DrawOldScoreboard( void );
 void CG_DrawOldTourneyScoreboard( void );
 

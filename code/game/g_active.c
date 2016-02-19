@@ -1189,7 +1189,17 @@ void ClientThink_real( gentity_t *ent ) {
 					ent->client->ps.eFlags |= EF_INVULNERABLE;
 					ent->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
 				}
+
+				ent->client->sess.wins++;
 			}
+			else
+			{
+				ent->client->sess.losses++;
+			}
+
+			duelAgainst->client->sess.losses++;
+			ClientUserinfoChanged( ent->client->ps.clientNum );
+			ClientUserinfoChanged( duelAgainst->client->ps.clientNum );
 		}
 		else
 		{
