@@ -9,7 +9,8 @@ mods, trying to improve on usability, stability and user experience
 with *no-gimmicks* approach. Our first goal is reimplementing and
 improving on the features of popular *league mod* by XycaleTh.
 
-This code is based on `JK2 SDK GPL`_ - an updated JK2 1.04 SDK.
+Source code is hosted on GitHub_ and based on `JK2 SDK GPL`_ - an
+updated JK2 1.04 SDK.
 
 Changes
 =======
@@ -27,7 +28,7 @@ players
   List players connected to server with some additional info.
 
 follow [first|second]
-  Follows accordingly first or second best player on the server.
+  Follow first or second best player on the server.
 
 Callvote
 ........
@@ -83,8 +84,18 @@ dmflags
 
 g_allowVote 1
   0 / 1 - disable / enable all votes
-  Moreover you can decide what votes should be available using
-  bitmask: TODO-RELEASE
+
+  Moreover you can decide what votes should be available by setting it
+  to sum of values corresponding to desired votes from the following
+  list:
+
+  =====================  =====================  =====================
+  2 - Map Restart        4 - Next Map           8 - Map
+  16 - Gametype          32 - Kick              64 - Client Kick
+  128 - Do Warmup        256 - Timelimit        512 - Fraglimit
+  1024 - Roundlimit      2048 - Teamsize        4096 - Remove
+  8192 - No Kicks        16384 - With Kicks
+  =====================  =====================  =====================
 
 g_maxGameClients 0
   Removed. Use teamsize instead.
@@ -165,4 +176,11 @@ Authors
   + Witold *fau* Piłat <witold.pilat@gmail.com> (c) 2015-2016
   + Dziablo (c) 2015-2016
 
+Contributors
+------------
+
+* jj Miso - Sending patches, testing, hosting servers and being
+  enthusiastic about the project.
+
+.. _GitHub : https://github.com/aufau/SaberMod
 .. _`JK2 SDK GPL`: https://github.com/aufau/jk2sdk-gpl
