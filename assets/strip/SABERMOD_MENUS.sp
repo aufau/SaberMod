@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 5
+COUNT 11
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -36,4 +36,46 @@ INDEX 4
    TEXT_LANGUAGE1 "Red Rover"
    TEXT_LANGUAGE2 "Red Rover"
    TEXT_LANGUAGE3 "Red Rover"
+}
+INDEX 5
+{
+   REFERENCE REMOVE
+   TEXT_LANGUAGE1 "Remove"
+   TEXT_LANGUAGE2 "Remove"
+   TEXT_LANGUAGE3 "Remove"
+}
+INDEX 6
+{
+   REFERENCE BEGIN_VOTE_TO_REMOVE
+   TEXT_LANGUAGE1 "Begin vote to remove this player"
+   TEXT_LANGUAGE2 "Begin vote to remove this player"
+   TEXT_LANGUAGE3 "Begin vote to remove this player"
+}
+INDEX 7
+{
+   REFERENCE NO_KICK
+   TEXT_LANGUAGE1 "No Kicks"
+   TEXT_LANGUAGE2 "No Kicks"
+   TEXT_LANGUAGE3 "No Kicks"
+}
+INDEX 8
+{
+   REFERENCE WITH_KICK
+   TEXT_LANGUAGE1 "With Kicks"
+   TEXT_LANGUAGE2 "With Kicks"
+   TEXT_LANGUAGE3 "With Kicks"
+}
+INDEX 9
+{
+   REFERENCE BEGIN_VOTE_TO_NK
+   TEXT_LANGUAGE1 "Begin vote to play with NK rules."
+   TEXT_LANGUAGE2 "Begin vote to play with NK rules."
+   TEXT_LANGUAGE3 "Begin vote to play with NK rules."
+}
+INDEX 10
+{
+   REFERENCE BEGIN_VOTE_TO_WK
+   TEXT_LANGUAGE1 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE1 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE1 "Begin vote to play with WK rules."
 }
