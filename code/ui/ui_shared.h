@@ -18,6 +18,7 @@
 #define MAX_COLOR_RANGES			10
 #define MAX_OPEN_MENUS				16
 #define	MAX_TEXTSCROLL_LINES		256
+#define MAX_FONT_VARIANTS			6
 
 #define WINDOW_MOUSEOVER			0x00000001	// mouse is over it, non exclusive
 #define WINDOW_HASFOCUS				0x00000002	// has cursor focus, exclusive
@@ -287,12 +288,17 @@ typedef struct {
 } menuDef_t;
 
 typedef struct {
+  qhandle_t index;
+  int		size;
+} fontHandle_t;
+
+typedef struct {
   const char *fontStr;
   const char *cursorStr;
   const char *gradientStr;
-  qhandle_t	qhSmallFont;
-  qhandle_t	qhMediumFont;
-  qhandle_t	qhBigFont;
+  fontHandle_t qhSmallFont[MAX_FONT_VARIANTS];
+  fontHandle_t qhMediumFont[MAX_FONT_VARIANTS];
+  fontHandle_t qhBigFont[MAX_FONT_VARIANTS];
   qhandle_t cursor;
   qhandle_t gradientBar;
   qhandle_t scrollBarArrowUp;
@@ -350,7 +356,7 @@ typedef struct {
   void (*addRefEntityToScene) (const refEntity_t *re );
   void (*renderScene) ( const refdef_t *fd );
 
-	qhandle_t (*RegisterFont)( const char *fontName );
+  void (*RegisterFont)( fontHandle_t face[MAX_FONT_VARIANTS], const char *fontName );
 	int		(*Font_StrLenPixels) (const char *text, const int iFontIndex, const float scale);
 	int		(*Font_StrLenChars) (const char *text);
 	int		(*Font_HeightPixels)(const int iFontIndex, const float scale);

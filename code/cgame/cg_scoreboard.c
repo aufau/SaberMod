@@ -34,10 +34,12 @@
 #define SB_SCORELINE_WIDTH	(640 - SB_SCORELINE_X * 2)
 
 #define SB_RATING_WIDTH	    0 // (6 * BIGCHAR_WIDTH)
-#define SB_NAME_X			(SB_SCORELINE_X)
-#define SB_SCORE_X			(SB_SCORELINE_X + .55 * SB_SCORELINE_WIDTH)
-#define SB_PING_X			(SB_SCORELINE_X + .70 * SB_SCORELINE_WIDTH)
-#define SB_TIME_X			(SB_SCORELINE_X + .85 * SB_SCORELINE_WIDTH)
+
+#define SB_SCALE			0.75f
+#define SB_SCALE_LARGE		1.0f
+
+#define SB_MIN_PADDING		6
+#define SB_MAX_PADDING		30
 
 // The new and improved score board
 //
@@ -52,26 +54,207 @@
 
 static qboolean localClient; // true if local client has been displayed
 
+typedef enum {
+	SBC_SCORE,
+	SBC_CAP,
+	SBC_AST,
+	SBC_DEF,
+	SBC_TIME,
+	SBC_PING,
+	SBC_W_L,
+	SBC_W_L_SM,
+	SBC_K_D,
+	SBC_NET_DMG,
+	SBC_MAX
+} sbColumn_t;
 
-							 /*
+typedef struct {
+	float		scale;
+	int			drop;
+	int			width[2];
+} sbColumnData_t;
+
+static sbColumnData_t columnData[SBC_MAX];
+
+static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
+
+sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, float scale)
+{
+	sbColumnData_t	column;
+	int				labelW, fieldW;
+
+	column.scale = scale;
+	column.drop = CG_Text_Height(maxValue, 1.0f, FONT_SMALL)
+		- CG_Text_Height(maxValue, scale, FONT_SMALL);
+
+	labelW = CG_Text_Width(label, 1.0f, FONT_MEDIUM);
+	fieldW = CG_Text_Width(maxValue, scale, FONT_SMALL);
+	column.width[1] = max(labelW, fieldW);
+
+	fieldW = CG_Text_Width(maxValue, SB_SCALE * scale, FONT_SMALL);
+	column.width[0] = max(labelW, fieldW);
+
+	return column;
+}
+
+void CG_InitScoreboardColumns()
+{
+	const char *label;
+
+	label = CG_GetStripEdString("MENUS3", "SCORE");
+	columnData[SBC_SCORE] = CG_InitScoreboardColumn(label, "-999", SB_SCALE_LARGE);
+	label = "C";
+	columnData[SBC_CAP] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
+	label = "A";
+	columnData[SBC_AST] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
+	label = "D";
+	columnData[SBC_DEF] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
+	label = CG_GetStripEdString("MENUS3", "TIME");
+	// Assumption: Time is last, there is enough space for 9999
+	columnData[SBC_TIME] = CG_InitScoreboardColumn(label, "9999", SB_SCALE_LARGE);
+	label = CG_GetStripEdString("MENUS0", "PING");
+	columnData[SBC_PING] = CG_InitScoreboardColumn(label, "999", SB_SCALE_LARGE);
+	label = CG_GetStripEdString("INGAMETEXT", "W_L");
+	// Assumption: W/L is always next to score column and "Score"
+	// label leaves some extra space to the right. Use it.
+	columnData[SBC_W_L] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE_LARGE);
+	columnData[SBC_W_L_SM] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE);
+	label = "K/D";
+	// Assumption: K/D is always next to score column and "Score"
+	// label leaves some extra space to the right. Use it.
+	columnData[SBC_K_D] = CG_InitScoreboardColumn(label, "99/999", SB_SCALE);
+	label = "NetD";
+	columnData[SBC_NET_DMG] = CG_InitScoreboardColumn(label, "-99.9k", SB_SCALE);
+}
+
+static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
+{
+	const char	*label = NULL;
+
+	switch (field) {
+	case SBC_SCORE:
+		label = CG_GetStripEdString("MENUS3", "SCORE");
+		break;
+	case SBC_CAP:
+		label = "C";
+		break;
+	case SBC_AST:
+		label = "A";
+		break;
+	case SBC_DEF:
+		label = "D";
+		break;
+	case SBC_TIME:
+		label = CG_GetStripEdString("MENUS3", "TIME");
+		break;
+	case SBC_PING:
+		label = CG_GetStripEdString("MENUS0", "PING");
+		break;
+	case SBC_W_L:
+	case SBC_W_L_SM:
+		label = CG_GetStripEdString("INGAMETEXT", "W_L");
+		break;
+	case SBC_K_D:
+		label = "K/D";
+		// Hack: doesn't scale and translate
+		x += CG_Text_Width("99", SB_SCALE, FONT_SMALL) - CG_Text_Width("K", 1.0f, FONT_MEDIUM);
+		break;
+	case SBC_NET_DMG:
+		label = "NetD";
+		break;
+	case SBC_MAX:
+		break;
+	}
+
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, label, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+}
+
+static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, score_t *score)
+{
+	clientInfo_t	*ci = &cgs.clientinfo[score->client];
+	float			s = scale * columnData[field].scale;
+	qboolean		spectator = (ci->team == TEAM_SPECTATOR);
+
+	y += scale * columnData[field].drop;
+
+	switch (field) {
+	case SBC_SCORE:
+		if (!spectator) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_CAP:
+		if (!spectator && score->captures != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->captures),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+	case SBC_AST:
+		if (!spectator && score->assistCount != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->assistCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_DEF:
+		if (!spectator && score->defendCount != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->defendCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_TIME:
+		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		break;
+	case SBC_PING:
+		CG_Text_Paint (x, y, s, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		break;
+	case SBC_W_L:
+	case SBC_W_L_SM:
+		if (!spectator || ci->wins != 0 || ci->losses != 0) {
+			x +=  CG_Text_Width(va("9"), SB_SCALE_LARGE, FONT_SMALL) - CG_Text_Width(va("%i", ci->wins), s, FONT_SMALL);
+			CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_K_D:
+		if (!spectator) {
+			x +=  CG_Text_Width(va("99"), SB_SCALE, FONT_SMALL) - CG_Text_Width(va("%i", score->kills), s, FONT_SMALL);
+			CG_Text_Paint (x, y, s, colorWhite, va("%i/%i", score->kills, score->deaths),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_NET_DMG:
+		if (spectator) {
+		} else if (score->netDamage != 0) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%+.1fk", score->netDamage / 10.0f),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		} else {
+			CG_Text_Paint (x, y, s, colorWhite, " 0",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_MAX:
+		break;
+	}
+}
+
+/*
 =================
 CG_DrawScoreboard
 =================
 */
-static void CG_DrawClientScore( int y, score_t *score, float *color, float fade, qboolean largeFormat )
+static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score, float *color, float fade, qboolean largeFormat )
 {
 	//vec3_t	headAngles;
 	clientInfo_t	*ci;
-	int iconx, headx;
-	float		scale;
+	int				iconx, headx;
+	int				x;
+	int				i;
+	int				padding, columnsWidth;
+	float			scale;
 
 	if ( largeFormat )
 	{
-		scale = 1.0f;
+		scale = SB_SCALE_LARGE;
 	}
 	else
 	{
-		scale = 0.75f;
+		scale = SB_SCALE;
 	}
 
 	if ( score->client < 0 || score->client >= cgs.maxclients ) {
@@ -153,27 +336,40 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		CG_FillRect( SB_SCORELINE_X - 5, y + 2, 640 - SB_SCORELINE_X * 2 + 10, largeFormat?SB_NORMAL_HEIGHT:SB_INTER_HEIGHT, hcolor );
 	}
 
-	CG_Text_Paint (SB_NAME_X, y, 0.9f * scale, colorWhite, ci->name,0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	// columns
 
-	if ( ci->team != TEAM_SPECTATOR || cgs.gametype == GT_TOURNAMENT )
-	{
-		if (cgs.gametype == GT_TOURNAMENT)
-		{
-			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i/%i", ci->wins, ci->losses),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-		}
-		else
-		{
-			CG_Text_Paint (SB_SCORE_X, y, 1.0f * scale, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-		}
+	x = SB_SCORELINE_X;
+	CG_Text_Paint (x, y, 0.9f * scale, colorWhite, ci->name,0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+
+	x = 640 - SB_SCORELINE_X;
+
+	columnsWidth = 0;
+	for (i = 0; columns[i] != SBC_MAX; i++) {
+		columnsWidth += columnData[columns[i]].width[largeFormat];
 	}
 
-	CG_Text_Paint (SB_PING_X, y, 1.0f * scale, colorWhite, va("%i", score->ping),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-	CG_Text_Paint (SB_TIME_X, y, 1.0f * scale, colorWhite, va("%i", score->time),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+	// Stretch columns to at least half scoreboard width
+	padding = SB_SCORELINE_WIDTH / 2 - columnsWidth;
+	padding /= (i - 1);
+	if (padding < SB_MIN_PADDING) {
+		padding = SB_MIN_PADDING;
+	} else if (padding > SB_MAX_PADDING) {
+		padding = SB_MAX_PADDING;
+	}
+	x -= columnsWidth;
+	x -= (i - 1) * padding;
+
+	for (i = 0; columns[i] != SBC_MAX; i++) {
+		sbColumn_t column = columns[i];
+
+		CG_DrawScoreboardField(column, x, y, scale, score);
+		x += columnData[column].width[largeFormat] + padding;
+	}
 
 	// add the "ready" marker for intermission exiting
 	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) )
 	{
-		CG_Text_Paint (SB_NAME_X - 64, y + 2, 0.7f * scale, colorWhite, CG_GetStripEdString("INGAMETEXT", "READY"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint (SB_SCORELINE_X - 64, y + 2, 0.7f * scale, colorWhite, CG_GetStripEdString("INGAMETEXT", "READY"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 }
 
@@ -182,7 +378,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 CG_TeamScoreboard
 =================
 */
-static int CG_TeamScoreboard( int y, team_t team, float fade, int maxClients, int lineHeight, qboolean countOnly )
+static int CG_TeamScoreboard( int y, const sbColumn_t *columns, team_t team, float fade, int maxClients, int lineHeight, qboolean countOnly )
 {
 	int		i;
 	score_t	*score;
@@ -204,7 +400,7 @@ static int CG_TeamScoreboard( int y, team_t team, float fade, int maxClients, in
 
 		if ( !countOnly )
 		{
-			CG_DrawClientScore( y + lineHeight * count, score, color, fade, lineHeight == SB_NORMAL_HEIGHT );
+			CG_DrawClientScore( y + lineHeight * count, columns, score, color, fade, lineHeight == SB_NORMAL_HEIGHT );
 		}
 
 		count++;
@@ -243,6 +439,8 @@ Draw the normal in-game scoreboard
 =================
 */
 qboolean CG_DrawOldScoreboard( void ) {
+	const sbColumn_t	*columns;
+	qboolean			largeFormat;
 	int		x, y, w, i, n1, n2;
 	float	fade;
 	float	*fadeColor;
@@ -250,6 +448,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	int maxClients;
 	int lineHeight;
 	int topBorderSize, bottomBorderSize;
+	int columnsWidth, padding;
 
 	// don't draw amuthing if the menu or console is up
 	if ( cg_paused.integer ) {
@@ -283,7 +482,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	if (cgs.gametype == GT_TOURNAMENT && cgs.duelWinner != -1 &&
 		cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 	{
-		s = va("%s %s", cgs.clientinfo[cgs.duelWinner].name, CG_GetStripEdString("INGAMETEXT", "DUEL_WINS") );
+		s = va("%s" S_COLOR_WHITE " %s", cgs.clientinfo[cgs.duelWinner].name, CG_GetStripEdString("INGAMETEXT", "DUEL_WINS") );
 		/*w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 		x = ( SCREEN_WIDTH - w ) / 2;
 		y = 40;
@@ -296,7 +495,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	else if (cgs.gametype == GT_TOURNAMENT && cgs.duelist1 != -1 && cgs.duelist2 != -1 &&
 		cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 	{
-		s = va("%s %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name );
+		s = va("%s" S_COLOR_WHITE " %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name );
 		/*w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 		x = ( SCREEN_WIDTH - w ) / 2;
 		y = 40;
@@ -359,44 +558,78 @@ qboolean CG_DrawOldScoreboard( void ) {
 	}
 
 	// scoreboard
-	y = SB_HEADER;
-
-	CG_DrawPic ( SB_SCORELINE_X - 40, y - 5, SB_SCORELINE_WIDTH + 80, 40, trap_R_RegisterShaderNoMip ( "gfx/menus/menu_buttonback.tga" ) );
-
-	// "NAME", "SCORE", "PING", "TIME" weren't localised, GODDAMMIT!!!!!!!!
-	//
-	// Unfortunately, since it's so sodding late now and post release I can't enable the localisation code (REM'd) since some of
-	//	the localised strings don't fit - since no-one's ever seen them to notice this.  Smegging brilliant. Thanks people.
-	//
-	CG_Text_Paint ( SB_NAME_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "NAME")*/"Name",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	if (cgs.gametype == GT_TOURNAMENT)
-	{
-		char sWL[100];
-		trap_SP_GetStringTextString("INGAMETEXT_W_L", sWL,	sizeof(sWL));
-
-		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, sWL, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	}
-	else
-	{
-		CG_Text_Paint ( SB_SCORE_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "SCORE")*/"Score", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	}
-	CG_Text_Paint ( SB_PING_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS0", "PING")*/"Ping", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-	CG_Text_Paint ( SB_TIME_X, y, 1.0f, colorWhite, /*CG_GetStripEdString("MENUS3", "TIME")*/"Time", 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
-
-	y = SB_TOP;
 
 	// If there are more than SB_MAXCLIENTS_NORMAL, use the interleaved scores
 	if ( cg.numScores > SB_MAXCLIENTS_NORMAL ) {
+		largeFormat = qfalse;
 		maxClients = SB_MAXCLIENTS_INTER;
 		lineHeight = SB_INTER_HEIGHT;
 		topBorderSize = 8;
 		bottomBorderSize = 16;
 	} else {
+		largeFormat = qtrue;
 		maxClients = SB_MAXCLIENTS_NORMAL;
 		lineHeight = SB_NORMAL_HEIGHT;
 		topBorderSize = 8;
 		bottomBorderSize = 8;
 	}
+
+	// columns
+
+	switch (cgs.gametype) {
+	case GT_FFA:
+		columns = cgs.privateDuel ? ffaDuelColumns : ffaColumns;
+		break;
+	case GT_TOURNAMENT:
+		if (cgs.fraglimit == 1) {
+			columns = duelFraglimit1Columns;
+		} else {
+			columns = duelColumns;
+		}
+		break;
+	case GT_CTF:
+		columns = ctfColumns;
+		break;
+	default:
+		columns = ffaColumns;
+	}
+
+	// header
+
+	y = SB_HEADER;
+
+	CG_DrawPic ( SB_SCORELINE_X - 40, y - 5, SB_SCORELINE_WIDTH + 80, 40, trap_R_RegisterShaderNoMip ( "gfx/menus/menu_buttonback.tga" ) );
+
+	x = SB_SCORELINE_X;
+
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "NAME"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+
+	x = 640 - SB_SCORELINE_X;
+
+	columnsWidth = 0;
+	for (i = 0; columns[i] != SBC_MAX; i++) {
+		columnsWidth += columnData[columns[i]].width[largeFormat];
+	}
+
+	// Stretch columns to at least half scoreboard width
+	padding = SB_SCORELINE_WIDTH / 2 - columnsWidth;
+	padding /= (i - 1);
+	if (padding < SB_MIN_PADDING) {
+		padding = SB_MIN_PADDING;
+	} else if (padding > SB_MAX_PADDING) {
+		padding = SB_MAX_PADDING;
+	}
+	x -= columnsWidth;
+	x -= (i - 1) * padding;
+
+	for (i = 0; columns[i] != SBC_MAX; i++) {
+		sbColumn_t column = columns[i];
+
+		CG_DrawScoreboardLabel(column, x, y);
+		x += columnData[column].width[largeFormat] + padding;
+	}
+
+	y = SB_TOP;
 
 	localClient = qfalse;
 
@@ -432,16 +665,16 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 			team2MaxCl = (maxClients-team1MaxCl); //team2 can display however many is left over after team1's display
 
-			n1 = CG_TeamScoreboard( y, TEAM_RED, fade, team1MaxCl, lineHeight, qtrue );
+			n1 = CG_TeamScoreboard( y, columns, TEAM_RED, fade, team1MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
-			CG_TeamScoreboard( y, TEAM_RED, fade, team1MaxCl, lineHeight, qfalse );
+			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 			//maxClients -= n1;
 
-			n2 = CG_TeamScoreboard( y, TEAM_BLUE, fade, team2MaxCl, lineHeight, qtrue );
+			n2 = CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
-			CG_TeamScoreboard( y, TEAM_BLUE, fade, team2MaxCl, lineHeight, qfalse );
+			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 
 			//maxClients -= n2;
@@ -465,32 +698,32 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 			team2MaxCl = (maxClients-team1MaxCl); //team2 can display however many is left over after team1's display
 
-			n1 = CG_TeamScoreboard( y, TEAM_BLUE, fade, team1MaxCl, lineHeight, qtrue );
+			n1 = CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team1MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
-			CG_TeamScoreboard( y, TEAM_BLUE, fade, team1MaxCl, lineHeight, qfalse );
+			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 			//maxClients -= n1;
 
-			n2 = CG_TeamScoreboard( y, TEAM_RED, fade, team2MaxCl, lineHeight, qtrue );
+			n2 = CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
-			CG_TeamScoreboard( y, TEAM_RED, fade, team2MaxCl, lineHeight, qfalse );
+			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 
 			//maxClients -= n2;
 
 			maxClients -= (team1MaxCl+team2MaxCl);
 		}
-		n1 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight, qfalse );
+		n1 = CG_TeamScoreboard( y, columns, TEAM_SPECTATOR, fade, maxClients, lineHeight, qfalse );
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 	} else {
 		//
 		// free for all scoreboard
 		//
-		n1 = CG_TeamScoreboard( y, TEAM_FREE, fade, maxClients, lineHeight, qfalse );
+		n1 = CG_TeamScoreboard( y, columns, TEAM_FREE, fade, maxClients, lineHeight, qfalse );
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
-		n2 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients - n1, lineHeight, qfalse );
+		n2 = CG_TeamScoreboard( y, columns, TEAM_SPECTATOR, fade, maxClients - n1, lineHeight, qfalse );
 		y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 	}
 
@@ -498,7 +731,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 		// draw local client at the bottom
 		for ( i = 0 ; i < cg.numScores ; i++ ) {
 			if ( cg.scores[i].client == cg.snap->ps.clientNum ) {
-				CG_DrawClientScore( y, &cg.scores[i], fadeColor, fade, lineHeight == SB_NORMAL_HEIGHT );
+				CG_DrawClientScore( y, columns, &cg.scores[i], fadeColor, fade, largeFormat );
 				break;
 			}
 		}

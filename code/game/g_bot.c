@@ -287,7 +287,7 @@ G_LoadArenas
 static void G_LoadArenas( void ) {
 	int			numdirs;
 	vmCvar_t	arenasFile;
-	char		filename[128];
+	char		filename[MAX_QPATH];
 	char		dirlist[1024];
 	char*		dirptr;
 	int			i, n;
@@ -309,7 +309,7 @@ static void G_LoadArenas( void ) {
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strcat(filename, sizeof(filename), dirptr);
 		G_LoadArenasFromFile(filename);
 	}
 	trap_Printf( va( "%i arenas parsed\n", g_numArenas ) );
@@ -374,7 +374,7 @@ G_AddRandomBot
 void G_AddRandomBot( int team ) {
 	int		i, n, num;
 	float	skill;
-	char	*value, netname[36], *teamstr;
+	char	*value, netname[MAX_NETNAME], *teamstr;
 	gclient_t	*cl;
 
 	num = 0;
@@ -426,8 +426,7 @@ void G_AddRandomBot( int team ) {
 				if (team == TEAM_RED) teamstr = "red";
 				else if (team == TEAM_BLUE) teamstr = "blue";
 				else teamstr = "";
-				strncpy(netname, value, sizeof(netname)-1);
-				netname[sizeof(netname)-1] = '\0';
+				Q_strncpyz(netname, value, sizeof(netname));
 				Q_CleanStr(netname);
 				trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %f %s %i\n", netname, skill, teamstr, 0) );
 				return;
@@ -443,7 +442,7 @@ G_RemoveRandomBot
 */
 int G_RemoveRandomBot( int team ) {
 	int i;
-	char netname[36];
+	char netname[MAX_NETNAME];
 	gclient_t	*cl;
 
 	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
@@ -457,7 +456,7 @@ int G_RemoveRandomBot( int team ) {
 		if ( team >= 0 && cl->sess.sessionTeam != team ) {
 			continue;
 		}
-		strcpy(netname, cl->pers.netname);
+		Q_strncpyz(netname, cl->pers.netname, sizeof(netname));
 		Q_CleanStr(netname);
 		trap_SendConsoleCommand( EXEC_INSERT, va("kick %s\n", netname) );
 		return qtrue;
@@ -724,7 +723,6 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	char			*model;
 //	char			*headmodel;
 	char			userinfo[MAX_INFO_STRING];
-	int				preTeam = 0;
 
 	// get the botinfo from bots.txt
 	botinfo = G_GetBotInfoByName( name );
@@ -820,79 +818,23 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	}
 
 	// initialize the bot settings
-	if( !team || !*team ) {
-		if( GT_Team(g_gametype.integer) ) {
-			if( PickTeam(clientNum) == TEAM_RED) {
-				team = "red";
-			}
-			else {
-				team = "blue";
-			}
-		}
-		else {
-			team = "red";
-		}
+	if( !team || !*team	|| ( Q_stricmp(team, "red") && Q_stricmp(team, "blue") ) ) {
+		team = "";
 	}
+
+
 //	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
 	Info_SetValueForKey( userinfo, "team", team );
 
 	bot = &g_entities[ clientNum ];
-	bot->r.svFlags |= SVF_BOT;
-	bot->inuse = qtrue;
 
 	// register the userinfo
 	trap_SetUserinfo( clientNum, userinfo );
 
-	if (GT_Team(g_gametype.integer))
-	{
-		if (team && Q_stricmp(team, "red") == 0)
-		{
-			bot->client->sess.sessionTeam = TEAM_RED;
-		}
-		else if (team && Q_stricmp(team, "blue") == 0)
-		{
-			bot->client->sess.sessionTeam = TEAM_BLUE;
-		}
-		else
-		{
-			bot->client->sess.sessionTeam = PickTeam( -1 );
-		}
-	}
-
-	preTeam = bot->client->sess.sessionTeam;
-
 	// have it connect to the game as a normal client
 	if ( ClientConnect( clientNum, qtrue, qtrue ) ) {
 		return;
-	}
-
-	if (bot->client->sess.sessionTeam != preTeam)
-	{
-		trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
-
-		if (bot->client->sess.sessionTeam == TEAM_SPECTATOR)
-		{
-			bot->client->sess.sessionTeam = preTeam;
-		}
-
-		if (bot->client->sess.sessionTeam == TEAM_RED)
-		{
-			team = "Red";
-		}
-		else
-		{
-			team = "Blue";
-		}
-
-		Info_SetValueForKey( userinfo, "team", team );
-
-		trap_SetUserinfo( clientNum, userinfo );
-
-		bot->client->ps.persistant[ PERS_TEAM ] = bot->client->sess.sessionTeam;
-
-		G_ReadSessionData( bot->client );
-		ClientUserinfoChanged( clientNum );
 	}
 
 	if( delay == 0 ) {
@@ -970,26 +912,26 @@ Svcmd_BotList_f
 */
 void Svcmd_BotList_f( void ) {
 	int i;
-	char name[MAX_TOKEN_CHARS];
-	char funname[MAX_TOKEN_CHARS];
-	char model[MAX_TOKEN_CHARS];
-	char personality[MAX_TOKEN_CHARS];
+	char name[MAX_NETNAME];
+	char funname[MAX_NETNAME];
+	char model[MAX_QPATH];
+	char personality[MAX_QPATH];
 
 	trap_Printf("^1name             model            personality              funname\n");
 	for (i = 0; i < g_numBots; i++) {
-		strcpy(name, Info_ValueForKey( g_botInfos[i], "name" ));
+		Q_strncpyz(name, Info_ValueForKey( g_botInfos[i], "name" ), sizeof(name));
 		if ( !*name ) {
 			strcpy(name, "Padawan");
 		}
-		strcpy(funname, Info_ValueForKey( g_botInfos[i], "funname" ));
+		Q_strncpyz(funname, Info_ValueForKey( g_botInfos[i], "funname" ), sizeof(funname));
 		if ( !*funname ) {
 			strcpy(funname, "");
 		}
-		strcpy(model, Info_ValueForKey( g_botInfos[i], "model" ));
+		Q_strncpyz(model, Info_ValueForKey( g_botInfos[i], "model" ), sizeof(model));
 		if ( !*model ) {
 			strcpy(model, "visor/default");
 		}
-		strcpy(personality, Info_ValueForKey( g_botInfos[i], "personality"));
+		Q_strncpyz(personality, Info_ValueForKey( g_botInfos[i], "personality"), sizeof(personality));
 		if (!*personality ) {
 			strcpy(personality, "botfiles/default.jkb");
 		}
@@ -1093,7 +1035,7 @@ G_LoadBots
 static void G_LoadBots( void ) {
 	vmCvar_t	botsFile;
 	int			numdirs;
-	char		filename[128];
+	char		filename[MAX_QPATH];
 	char		dirlist[1024];
 	char*		dirptr;
 	int			i;
@@ -1119,8 +1061,8 @@ static void G_LoadBots( void ) {
 	dirptr  = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strncpyz(filename, "scripts/", sizeof(filename));
+		Q_strcat(filename, sizeof(filename), dirptr);
 		G_LoadBotsFromFile(filename);
 	}
 	trap_Printf( va( "%i bots parsed\n", g_numBots ) );

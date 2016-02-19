@@ -16,9 +16,6 @@ INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
 DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME
 VERSION		= $(shell git describe --always --tags --dirty)
 
-version : FORCE
-	@touch code/game/bg_version.h
-
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
 ALL_CFLAGS += -Wall -Wno-unused-but-set-variable -Wno-unknown-pragmas	\
 -Wno-missing-braces
@@ -29,6 +26,15 @@ ifeq ($(findstring -m32, $(ALL_CFLAGS)), -m32)
 	ARCH := i386
 else
 	ARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/x86_64/amd64/ )
+endif
+
+# Set V=1 to print full compiler commands.
+ifeq ($(V),1)
+	echo_cmd=@:
+	Q=
+else
+	echo_cmd=@echo
+	Q=@
 endif
 
 # Sources
@@ -63,9 +69,15 @@ obj_game	:= $(srcs_game:%=out/mod/%.o)
 obj_cgame	:= $(srcs_cgame:%=out/mod/%.o)
 obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 
-# Targets
+pk3name		:= SaberMod
+pk3			:= $(pk3name)-$(VERSION).pk3
+pk3doc		:= README.rst LICENSE.txt
+pk3assets := SOURCE.txt ui/jk2mp/ingame_about.menu		\
+ui/jk2mp/ingame_join.menu ui/jk2mp/createserver.menu	\
+ui/jk2mp/ingame_player.menu ui/jk2mp/gameinfo.txt		\
+strip/SABERMOD_INGAME.sp strip/SABERMOD_MENUS.sp
 
-.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
+# Targets
 
 all	: vm shared
 vm	: game cgame ui
@@ -77,11 +89,10 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
-pk3		= SaberMod-$(VERSION).pk3
 package : cgame ui | base/
 	set -e; pushd base; $(RM) $(pk3); zip -r $(pk3) vm/cgame.qvm	\
-	vm/ui.qvm; popd; zip base/$(pk3) README.rst LICENSE.txt; pushd	\
-	assets; zip ../base/$(pk3) SOURCE.txt; popd
+	vm/ui.qvm; popd; zip base/$(pk3) $(pk3doc); pushd assets; zip	\
+	../base/$(pk3) $(pk3assets); popd
 help	:
 	@echo 'Targets:'
 	@echo '  all (default)	- Build all targets'
@@ -99,34 +110,47 @@ help	:
 	@echo '  toolsclean	- Remove q3asm and q3lcc'
 	@echo '  depclean	- Remove generated dependency files'
 	@echo '  distclean	- Remove all generated files'
-FORCE :
+version : FORCE
+	@touch code/game/bg_version.h
+
+FORCE	:
+.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
 
 # QVM Targets
 
 run_as = $(AS) $(ASFLAGS) -vq3 -o $@
 
 base/vm/jk2mpgame.qvm : $(asm_game) $(AS) | base/vm/
-	$(run_as) $(asm_game)
+	$(echo_cmd) "Q3ASM $@"
+	$(Q)$(run_as) $(asm_game)
 base/vm/cgame.qvm : $(asm_cgame) $(AS) | base/vm/
-	$(run_as) $(asm_cgame)
+	$(echo_cmd) "Q3ASM $@"
+	$(Q)$(run_as) $(asm_cgame)
 base/vm/ui.qvm : $(asm_ui) $(AS) | base/vm/
-	$(run_as) $(asm_ui)
+	$(echo_cmd) "Q3ASM $@"
+	$(Q)$(run_as) $(asm_ui)
 
 # Shared Object Targets
 
-run_cc = $(CC) -shared $(ALL_CFLAGS) $^ -o $@
+run_ld = $(CC) -shared $(ALL_CFLAGS) $^ -o $@
 
 base/jk2mpgame_$(ARCH).so : $(obj_game) | base/
-	$(run_cc)
+	$(echo_cmd) "LD $@"
+	$(Q)$(run_ld)
 base/cgame_$(ARCH).so : $(obj_cgame) | base/
-	$(run_cc)
+	$(echo_cmd) "LD $@"
+	$(Q)$(run_ld)
 base/ui_$(ARCH).so : $(obj_ui) | base/
-	$(run_cc)
+	$(echo_cmd) "LD $@"
+	$(Q)$(run_ld)
 
 # Pattern rules
 
+.PRECIOUS : %/
+
 %/ :
-	mkdir -p $@
+	$(echo_cmd) "MKDIR $@"
+	$(Q)mkdir -p $@
 
 define dep_template =
 out/mod/%.d : code/$(1)/%.c | out/mod/
@@ -138,15 +162,16 @@ $(eval $(call dep_template,cgame))
 $(eval $(call dep_template,ui))
 
 out/mod/g_syscalls.asm : code/game/g_syscalls.asm
-	cp -f $< $@
+	$(Q)cp -f $< $@
 out/mod/cg_syscalls.asm : code/cgame/cg_syscalls.asm
-	cp -f $< $@
+	$(Q)cp -f $< $@
 out/mod/ui_syscalls.asm : code/ui/ui_syscalls.asm
-	cp -f $< $@
+	$(Q)cp -f $< $@
 
 define asm_template =
 out/mod/%.asm : code/$(1)/%.c $(LCC) | out/mod/
-	$(LCC) -c $(LCC_CFLAGS) $$< -o $$@
+	$(echo_cmd) "LCC $$<"
+	$(Q)$(LCC) -c $(LCC_CFLAGS) $$< -o $$@
 endef
 
 $(eval $(call asm_template,game))
@@ -155,7 +180,8 @@ $(eval $(call asm_template,ui))
 
 define obj_template =
 out/mod/%.o : code/$(1)/%.c | out/mod/
-	$(CC) -c $(ALL_CFLAGS) $$< -o $$@
+	$(echo_cmd) "CC $$<"
+	$(Q)$(CC) -c $(ALL_CFLAGS) $$< -o $$@
 endef
 
 $(eval $(call obj_template,game))
@@ -173,7 +199,7 @@ $(eval $(call obj_template,ui))
 TOOLSDIR = code/tools
 
 TOOLS_DEFS := -DARCH_STRING=\"$(ARCH)\"
-TOOLS_CFLAGS = -O2
+TOOLS_CFLAGS = -O2 -Wno-unused-result
 TOOLS_CFLAGS += $(TOOLS_DEFS)
 
 srcs_asm = q3asm cmdlib
@@ -199,13 +225,17 @@ dep_lburg	:= $(srcs_lburg:%=out/lburg/%.d)
 
 dep_tools	= $(dep_asm) $(dep_lcc) $(dep_rcc) $(dep_cpp) $(dep_lburg)
 
-run_tools_link = $(CC) -o $@ $^
+define run_tools_link
+	$(echo_cmd) "LD $@"
+	$(Q)$(CC) -o $@ $^
+endef
 
 $(AS) : $(obj_asm) | bin/
 	$(run_tools_link)
 
 $(LCC) : $(obj_lcc) $(RCC) $(CPP) | bin/
-	$(CC) -o $@ $(obj_lcc)
+	$(echo_cmd) "LD $@"
+	$(Q)$(CC) -o $@ $(obj_lcc)
 
 $(RCC) : $(obj_rcc) | bin/
 	$(run_tools_link)
@@ -223,7 +253,8 @@ q3cppsrcdir = $(TOOLSDIR)/lcc/cpp
 q3lburgsrcdir = $(TOOLSDIR)/lcc/lburg
 
 $(q3lccsrcdir)/dagcheck.c : $(q3lccsrcdir)/dagcheck.md $(LBURG)
-	$(LBURG) $< $@
+	$(echo_cmd) "LBURG $<"
+	$(Q)$(LBURG) $< $@
 
 define dep_tools_template =
 out/$(1)/%.d : $(2)/%.c | out/$(1)/
@@ -238,7 +269,8 @@ $(eval $(call dep_tools_template,lburg,$(q3lburgsrcdir)))
 
 define obj_tools_template =
 out/$(1)/%.o : $(2)/%.c | out/$(1)/
-	$(CC) -c $(TOOLS_CFLAGS) $$< -o $$@
+	$(echo_cmd) "CC $$<"
+	$(Q)$(CC) -c $(TOOLS_CFLAGS) $$< -o $$@
 endef
 
 $(eval $(call obj_tools_template,asm,$(q3asmsrcdir)))
@@ -256,26 +288,34 @@ $(eval $(call obj_tools_template,lburg,$(q3lburgsrcdir)))
 clean : vmclean sharedclean packageclean
 
 vmclean : asmclean
-	$(RM) base/vm/*.qvm base/vm/*.map
+	$(Q)$(RM) base/vm/*.qvm base/vm/*.map
+	$(echo_cmd) "Removed .qvm and .map files"
 sharedclean : objclean
-	$(RM) base/*.so
+	$(Q)$(RM) base/*.so
+	$(echo_cmd) "Removed .so files"
 asmclean :
-	$(RM) $(asm_game)
-	$(RM) $(asm_cgame)
-	$(RM) $(asm_ui)
+	$(Q)$(RM) $(asm_game)
+	$(Q)$(RM) $(asm_cgame)
+	$(Q)$(RM) $(asm_ui)
+	$(echo_cmd) "Removed .asm files"
 objclean :
-	$(RM) $(obj_game)
-	$(RM) $(obj_cgame)
-	$(RM) $(obj_ui)
+	$(Q)$(RM) $(obj_game)
+	$(Q)$(RM) $(obj_cgame)
+	$(Q)$(RM) $(obj_ui)
+	$(echo_cmd) "Removed .o files"
 packageclean :
-	$(RM) base/SaberMod-*.pk3
+	$(Q)$(RM) base/$(pk3name)-*.pk3
+	$(echo_cmd) "Removed .pk3 files"
 toolsclean :
-	$(RM) $(tools)
-	$(RM) $(obj_asm) $(obj_lcc) $(obj_rcc) $(obj_cpp) $(obj_lburg)
+	$(Q)$(RM) $(tools)
+	$(Q)$(RM) $(obj_asm) $(obj_lcc) $(obj_rcc) $(obj_cpp) $(obj_lburg)
+	$(echo_cmd) "Removed tools"
 depclean :
-	$(RM) $(dep_game)
-	$(RM) $(dep_cgame)
-	$(RM) $(dep_ui)
-	$(RM) $(dep_tools)
+	$(Q)$(RM) $(dep_game)
+	$(Q)$(RM) $(dep_cgame)
+	$(Q)$(RM) $(dep_ui)
+	$(Q)$(RM) $(dep_tools)
+	$(echo_cmd) "Removed .d files"
 distclean :
-	$(RM) -r base bin out
+	$(Q)$(RM) -r base bin out
+	$(echo_cmd) "Removed directories: bin base out"

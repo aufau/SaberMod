@@ -52,28 +52,57 @@ char *showPowersName[] =
 };
 
 
-int MenuFontToHandle(int iMenuFont)
+int MenuFontToHandle(int iMenuFont, float *scale)
 {
+	fontHandle_t	*face;
+	int				maxSize;
+	int				i;
+
 	switch (iMenuFont)
 	{
-		case FONT_SMALL:	return cgDC.Assets.qhSmallFont;
-		case FONT_MEDIUM:	return cgDC.Assets.qhMediumFont;
-		case FONT_LARGE:	return cgDC.Assets.qhBigFont;
+	case FONT_SMALL:
+		face = cgDC.Assets.qhSmallFont;
+		break;
+	case FONT_LARGE:
+        face = cgDC.Assets.qhBigFont;
+		break;
+	default:
+		face = cgDC.Assets.qhMediumFont;
+		break;
 	}
 
-	return cgDC.Assets.qhMediumFont;
+	// Shrinking font vertically may produce ugly artifacts.
+	maxSize = face[0].size * ui_fontSharpness.value * *scale * cgs.screenYScale + 0.001f;
+
+	for (i = 1; i < MAX_FONT_VARIANTS; i++) {
+		if (face[i].index == 0) {
+			break;
+		}
+
+		// for adjusting font with jk2mv patches:
+		// face[i].size = trap_R_Font_HeightPixels(face[i].index, 1.0f);
+
+		if (face[i].size > maxSize) {
+			break;
+		}
+	}
+
+	i--;
+	*scale *= (float) face[0].size / face[i].size;
+
+	return face[i].index;
 }
 
 int CG_Text_Width(const char *text, float scale, int iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
 	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
 int CG_Text_Height(const char *text, float scale, int iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
 	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
@@ -82,7 +111,7 @@ int CG_Text_Height(const char *text, float scale, int iMenuFont)
 void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
 {
 	int iStyleOR = 0;
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = MenuFontToHandle(iMenuFont, &scale);
 
 	switch (style)
 	{
@@ -3333,19 +3362,19 @@ static void CG_DrawSpectator(void)
 	}
 	else
 	{
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 420, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, 420, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
 	}
 
 	if ( cgs.gametype == GT_TOURNAMENT )
 	{
 		s = CG_GetStripEdString("INGAMETEXT", "WAITING_TO_PLAY");	// "waiting to play";
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
 	}
 	else //if ( GT_Team(cgs.gametype) )
 	{
 		//s = "press ESC and use the JOIN menu to play";
 		s = CG_GetStripEdString("INGAMETEXT", "SPEC_CHOOSEJOIN");
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
 	}
 }
 
@@ -3440,7 +3469,7 @@ static void CG_DrawTeamVote(void) {
 
 			voteIndex = atoi(voteIndexStr);
 
-			s = va("TEAMVOTE(%i):(Make %s the new team leader) yes:%i no:%i", sec, cgs.clientinfo[voteIndex].name,
+			s = va("TEAMVOTE(%i):(Make %s" S_COLOR_WHITE " the new team leader) yes:%i no:%i", sec, cgs.clientinfo[voteIndex].name,
 									cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
 		}
 		else
@@ -3670,7 +3699,7 @@ static void CG_DrawWarmup( void ) {
 		}
 
 		if ( ci1 && ci2 ) {
-			s = va( "%s vs %s", ci1->name, ci2->name );
+			s = va( "%s" S_COLOR_WHITE " vs %s", ci1->name, ci2->name );
 			w = CG_Text_Width(s, 0.6f, FONT_MEDIUM);
 			CG_Text_Paint(320 - w / 2, 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 		}

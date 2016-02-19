@@ -377,7 +377,7 @@ static void CG_UpdateThirdPersonTargetDamp(void)
 
 		// Note that since there are a finite number of "practical" delta millisecond values possible,
 		// the ratio should be initialized into a chart ultimately.
-		ratio = powf(dampfactor, dtime);
+		ratio = powi(dampfactor, dtime);
 
 		// This value is how much distance is "left" from the ideal.
 		VectorMA(cameraIdealTarget, -ratio, targetdiff, cameraCurTarget);
@@ -448,7 +448,7 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 
 		// Note that since there are a finite number of "practical" delta millisecond values possible,
 		// the ratio should be initialized into a chart ultimately.
-		ratio = powf(dampfactor, dtime);
+		ratio = powi(dampfactor, dtime);
 
 		// This value is how much distance is "left" from the ideal.
 		VectorMA(cameraIdealLoc, -ratio, locdiff, cameraCurLoc);
@@ -928,9 +928,9 @@ static int CG_CalcFov( void ) {
 	{
 		cgFov = 1;
 	}
-	if (cgFov > 97)
+	if (cgFov > MAX_FOV)
 	{
-		cgFov = 97;
+		cgFov = MAX_FOV;
 	}
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {

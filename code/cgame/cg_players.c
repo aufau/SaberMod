@@ -325,7 +325,7 @@ retryModel:
 		slash = Q_strrchr( afilename, '/' );
 		if ( slash )
 		{
-			strcpy(slash, "/animation.cfg");
+			Q_strncpyz(slash, "/animation.cfg", sizeof(afilename) - (slash - afilename));
 		}	// Now afilename holds just the path to the animation.cfg
 		else
 		{	// Didn't find any slashes, this is a raw filename right in base (whish isn't a good thing)
@@ -565,7 +565,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 	int			i, modelloaded;
 	const char	*s;
 	int			clientNum;
-	char		teamname[MAX_QPATH];
+	char		teamname[MAX_TEAMNAME];
 	int			fLen = 0;
 	char		soundpath[MAX_QPATH];
 	char		soundName[1024];
@@ -612,7 +612,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 		}
 	}
 	if( teamname[0] ) {
-		strcat( teamname, "/" );
+		Q_strcat( teamname, sizeof(teamname), "/" );
 	}
 	modelloaded = qtrue;
 	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, teamname, clientNum ) ) {

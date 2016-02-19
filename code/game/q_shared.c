@@ -979,8 +979,26 @@ char *Q_CleanStr( char *string ) {
 	return string;
 }
 
+qboolean Q_IsInteger( const char * s ) {
+	int			i;
+	int			len;
+	qboolean	foundDigit;
 
-void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
+	len = strlen( s );
+	foundDigit = qfalse;
+
+	for ( i=0 ; i < len ; i++ ) {
+		if ( !isdigit( s[i] ) ) {
+			return qfalse;
+		}
+
+		foundDigit = qtrue;
+	}
+
+	return foundDigit;
+}
+
+int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	int		len;
 	va_list		argptr;
 	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
@@ -993,8 +1011,10 @@ void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	}
 	if (len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
+		len = size - 1;
 	}
 	Q_strncpyz (dest, bigbuffer, size );
+	return len;
 }
 
 
@@ -1370,6 +1390,46 @@ int Q_irand(int value1, int value2)
 	r += value1;
 
 	return r;
+}
+
+/*
+=====================================================================
+
+PRINTING TO CONSOLE
+
+=====================================================================
+*/
+
+const char *Spaces(int n)
+{
+	static const char spaces[] = "                                   "; // 35
+
+	if (n >= sizeof(spaces)) {
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		n = sizeof(spaces);
+	}
+	if (n < 0) {
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		n = 0;
+	}
+
+	return spaces + sizeof(spaces) - 1 - (n);
+}
+
+const char *Dashes(int n)
+{
+	static const char dashes[] = "-----------------------------------"; // 35
+
+	if (n >= sizeof(dashes)) {
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		n = sizeof(dashes);
+	}
+	if (n < 0) {
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		n = 0;
+	}
+
+	return dashes + sizeof(dashes) - 1 - (n);
 }
 
 //====================================================================

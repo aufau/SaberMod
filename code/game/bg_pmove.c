@@ -994,8 +994,8 @@ static qboolean PM_CheckJump( void )
 
 				if ( !doTrace ||
 					 (trace.fraction < 1.0f
-					  && !(trace.entityNum < MAX_CLIENTS && pm->ps->pm_type == PM_HARMLESS)
-					  && (trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7)) )
+						 && !(trace.entityNum < MAX_CLIENTS && (pm->ps->pm_type == PM_HARMLESS ||  pm->noKick))
+						 && (trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7)) )
 				{//there is a wall there.. or hit a client
 					int parts;
 					//move me to side
@@ -1150,7 +1150,7 @@ static qboolean PM_CheckJump( void )
 				VectorNormalize( idealNormal );
 
 				if ( trace.fraction < 1.0f
-					 && !(trace.entityNum < MAX_CLIENTS && pm->ps->pm_type == PM_HARMLESS) )
+					&& !(trace.entityNum < MAX_CLIENTS && (pm->ps->pm_type == PM_HARMLESS || pm->noKick)) )
 				{//there is a wall there
 					int parts = SETANIM_LEGS;
 
@@ -3405,13 +3405,6 @@ static void PM_Weapon( void )
 	{
 		pm->cmd.weapon = WP_SABER;
 		pm->ps->weapon = WP_SABER;
-
-		if (pm->ps->duelTime >= pm->cmd.serverTime)
-		{
-			pm->cmd.upmove = 0;
-			pm->cmd.forwardmove = 0;
-			pm->cmd.rightmove = 0;
-		}
 	}
 
 	if (pm->ps->weapon == WP_SABER && pm->ps->saberMove != LS_READY && pm->ps->saberMove != LS_NONE)
@@ -4514,6 +4507,18 @@ void PmoveSingle (pmove_t *pmove) {
 			pm->cmd.generic_cmd = 0;
 		}
 	}
+
+	if (pm->ps->duelInProgress && pm->ps->duelTime >= pm->cmd.serverTime)
+	{
+		if (pm->cmd.upmove > 0) {
+			pm->cmd.upmove = 0;
+		}
+		pm->cmd.forwardmove = 0;
+		pm->cmd.rightmove = 0;
+		pm->ps->speed = 0;
+		pm->ps->basespeed = 0;
+	}
+
 
 	if (pm->ps->saberLockTime >= pm->cmd.serverTime)
 	{

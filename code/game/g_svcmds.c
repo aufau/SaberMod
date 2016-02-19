@@ -330,7 +330,7 @@ gclient_t	*ClientForString( const char *s ) {
 	}
 
 	// numeric values are just slot numbers
-	if ( StringIsInteger( s ) ) {
+	if ( Q_IsInteger( s ) ) {
 		idnum = atoi( s );
 		if ( idnum < 0 || idnum >= level.maxclients ) {
 			Com_Printf( "Bad client slot: %i\n", idnum );
@@ -376,7 +376,42 @@ void	Svcmd_ForceTeam_f( void ) {
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
-	SetTeam( &g_entities[cl - level.clients], str );
+	SetTeamFromString( &g_entities[cl - level.clients], str );
+}
+
+/*
+===================
+Svcmd_Remove_f
+
+remove <player> [seconds]
+===================
+*/
+void	Svcmd_Remove_f( void )
+{
+	gclient_t	*cl;
+	char		str[MAX_TOKEN_CHARS];
+	int			delay;
+
+	trap_Argv( 1, str, sizeof( str ) );
+
+	if ( !str[0] ) {
+		trap_Printf( "Usage: remove <player> [seconds]\n" );
+		return;
+	}
+
+	cl = ClientForString( str );
+	if ( !cl ) {
+		return;
+	}
+
+	trap_Argv( 2, str, sizeof( str ) );
+	delay = 30 * 1000;
+	if ( str[0] ) {
+		delay = 1000 * atoi( str );
+	}
+
+	SetTeam( &g_entities[cl - level.clients], TEAM_SPECTATOR );
+	cl->switchTeamTime = level.time + delay;
 }
 
 char	*ConcatArgs( int start );
@@ -434,6 +469,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "listip") == 0) {
 		trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "remove") == 0) {
+		Svcmd_Remove_f();
 		return qtrue;
 	}
 

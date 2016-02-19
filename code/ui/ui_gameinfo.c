@@ -110,7 +110,7 @@ UI_LoadArenas
 void UI_LoadArenas( void ) {
 	int			numdirs;
 	vmCvar_t	arenasFile;
-	char		filename[128];
+	char		filename[MAX_QPATH];
 	char		dirlist[1024];
 	char*		dirptr;
 	int			i, n;
@@ -134,7 +134,7 @@ void UI_LoadArenas( void ) {
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strcat(filename, sizeof(filename), dirptr);
 		UI_LoadArenasFromFile(filename);
 	}
 	trap_Print( va( "%i arenas parsed\n", ui_numArenas ) );
@@ -249,7 +249,7 @@ UI_LoadBots
 void UI_LoadBots( void ) {
 	vmCvar_t	botsFile;
 	int			numdirs;
-	char		filename[128];
+	char		filename[MAX_QPATH];
 	char		dirlist[1024];
 	char*		dirptr;
 	int			i;
@@ -271,7 +271,7 @@ void UI_LoadBots( void ) {
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strcat(filename, sizeof(filename), dirptr);
 		UI_LoadBotsFromFile(filename);
 	}
 	trap_Print( va( "%i bots parsed\n", ui_numBots ) );

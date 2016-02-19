@@ -112,11 +112,6 @@ NULL
 };
 
 
-extern int MenuFontToHandle(int iMenuFont);
-
-
-
-
 /*
 ===============
 UI_Alloc
@@ -4097,8 +4092,8 @@ void BindingFromName(const char *cvar) {
 
 					trap_SP_GetStringTextString("MENUS3_KEYBIND_OR",sOR, sizeof(sOR));
 
-					strcat( g_nameBind1, va(" %s ",sOR));
-					strcat( g_nameBind1, g_nameBind2 );
+					Q_strcat( g_nameBind1, sizeof(g_nameBind1), va(" %s ",sOR));
+					Q_strcat( g_nameBind1, sizeof(g_nameBind2), g_nameBind2 );
 				}
 			return;
 		}
@@ -6667,7 +6662,7 @@ qboolean MenuParse_font( itemDef_t *item, int handle ) {
 	}
 	if (!DC->Assets.fontRegistered) {
 		//DC->registerFont(menu->font, 48, &DC->Assets.textFont);
-		DC->Assets.qhMediumFont = DC->RegisterFont(menu->font);
+		DC->RegisterFont(DC->Assets.qhMediumFont, menu->font);
 		DC->Assets.fontRegistered = qtrue;
 	}
 	return qtrue;

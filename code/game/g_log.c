@@ -239,8 +239,8 @@ void G_LogWeaponOutput(void)
 	int totalkills[WP_NUM_WEAPONS];
 	int totalshots[WP_NUM_WEAPONS];
 	int percharacter[WP_NUM_WEAPONS];
-	char info[1024];
-	char mapname[128];
+	char info[MAX_INFO_STRING];
+	char mapname[MAX_QPATH];
 	char *nameptr, *unknownname="<Unknown>";
 
 	if (!g_statLog.integer)
@@ -331,8 +331,7 @@ void G_LogWeaponOutput(void)
 
 	// Write out the level name
 	trap_GetServerinfo(info, sizeof(info));
-	strncpy(mapname, Info_ValueForKey( info, "mapname" ), sizeof(mapname)-1);
-	mapname[sizeof(mapname)-1] = '\0';
+	Q_strncpyz(mapname, Info_ValueForKey( info, "mapname" ), sizeof(mapname));
 
 	Com_sprintf(string, sizeof(string), "\n\n\nLevel:\t%s\n\n\n", mapname);
 	trap_FS_Write( string, strlen( string ), weaponfile);
@@ -1578,7 +1577,7 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, 0);
 	}
-	strcpy(buf2, msg);
+	Q_strncpyz(buf2, msg, sizeof(buf2));
 	Com_sprintf( msg, AWARDS_MSG_LENGTH, "%s %d%s", buf2, awardFlags, buf1);
 #endif // LOGGING_WEAPONS
 }

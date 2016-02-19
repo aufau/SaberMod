@@ -6,8 +6,6 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#define MAX_TEAMNAME 32
-
 #include "../qcommon/disablewarnings.h"
 
 #if (defined _MSC_VER)
@@ -22,6 +20,10 @@
 
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
+#define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
+#define STR_H(x) #x
+#define STR(x) STR_H(x)
+#define STRLEN(x) (sizeof(x) - 1)
 
 /**********************************************************************
   VM Considerations
@@ -348,7 +350,10 @@ typedef int		clipHandle_t;
 #define	MAX_OSPATH			256		// max length of a filesystem pathname
 #endif
 
-#define	MAX_NAME_LENGTH		32		// max length of a client name
+#define MAX_NETNAME			36		// max length of a client name + 1
+#define MAX_NAME_LEN		23		// max length of a printed client name
+#define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
+#define MAX_TEAMNAME		32      // max length of a team name "spectators" but also g_blueTeam
 
 #define	MAX_SAY_TEXT	150
 
@@ -765,9 +770,7 @@ float Q_rsqrt( float f );		// reciprocal square root
 signed char ClampChar( int i );
 signed short ClampShort( int i );
 
-#ifdef Q3_VM
-float powf ( float x, int y );
-#endif
+float powi ( float x, int y );
 
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir );
@@ -1002,7 +1005,7 @@ void Parse1DMatrix (const char **buf_p, int x, float *m);
 void Parse2DMatrix (const char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (const char **buf_p, int z, int y, int x, float *m);
 
-void	QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...);
+int		QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...);
 
 
 // mode parm for FS_FOpenFile
@@ -1042,6 +1045,9 @@ void	Q_strcat( char *dest, size_t size, const char *src );
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
 char *Q_CleanStr( char *string );
+// returns true if string is a decimal integer
+qboolean Q_IsInteger( const char * s );
+
 
 //=============================================
 
@@ -1410,7 +1416,7 @@ typedef struct forcedata_s {
 
 	int			suicides;
 
-	int			privateDuelTime;
+	int			privateDuelTime; // Not used anymore
 } forcedata_t;
 
 
@@ -2078,12 +2084,23 @@ typedef enum
 
 
 enum {
-	FONT_NONE,
-	FONT_SMALL=1,
+	FONT_NONE = 0,
+	FONT_SMALL,
 	FONT_MEDIUM,
-	FONT_LARGE
+	FONT_LARGE,
 };
 
+/*
+=====================================================================
 
+PRINTING TO CONSOLE
+
+=====================================================================
+*/
+
+#define DEFAULT_CONSOLE_WIDTH 78
+
+char const *Spaces(int n);
+char const *Dashes(int n);
 
 #endif	// __Q_SHARED_H

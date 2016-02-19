@@ -76,11 +76,15 @@ static void CG_ParseScores( void ) {
 		cg.scores[i].scoreFlags = atoi( CG_Argv( i * 14 + 8 ) );
 		powerups = atoi( CG_Argv( i * 14 + 9 ) );
 		cg.scores[i].accuracy = atoi(CG_Argv(i * 14 + 10));
-		cg.scores[i].impressiveCount = atoi(CG_Argv(i * 14 + 11));
-		cg.scores[i].excellentCount = atoi(CG_Argv(i * 14 + 12));
-		cg.scores[i].guantletCount = atoi(CG_Argv(i * 14 + 13));
+		cg.scores[i].deaths = atoi(CG_Argv(i * 14 + 11));
+		cg.scores[i].kills = atoi(CG_Argv(i * 14 + 12));
+		cg.scores[i].netDamage = atoi(CG_Argv(i * 14 + 13));
+//		cg.scores[i].impressiveCount = atoi(CG_Argv(i * 14 + 11));
+//		cg.scores[i].excellentCount = atoi(CG_Argv(i * 14 + 12));
+//		cg.scores[i].guantletCount = atoi(CG_Argv(i * 14 + 13));
 		cg.scores[i].defendCount = atoi(CG_Argv(i * 14 + 14));
 		cg.scores[i].assistCount = atoi(CG_Argv(i * 14 + 15));
+
 		cg.scores[i].perfect = atoi(CG_Argv(i * 14 + 16));
 		cg.scores[i].captures = atoi(CG_Argv(i * 14 + 17));
 
@@ -131,7 +135,8 @@ and whenever the server updates any serverinfo flagged cvars
 */
 void CG_ParseServerinfo( void ) {
 	const char	*info;
-	char	*mapname;
+	char		*mapname;
+	int			val;
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
@@ -148,6 +153,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	cgs.privateDuel = atoi( Info_ValueForKey( info, "g_privateDuel") );
 	mapname = Info_ValueForKey( info, "mapname" );
 
 
@@ -167,10 +173,25 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set ( "ui_about_timelimit", va("%i", cgs.timelimit ) );
 	trap_Cvar_Set ( "ui_about_roundlimit", va("%i", cgs.roundlimit ) );
 	trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
+	trap_Cvar_Set ( "ui_about_teamsize", Info_ValueForKey( info, "teamsize" ) );
 	trap_Cvar_Set ( "ui_about_dmflags", va("%i", cgs.dmflags ) );
 	trap_Cvar_Set ( "ui_about_hostname", Info_ValueForKey( info, "sv_hostname" ) );
 	trap_Cvar_Set ( "ui_about_needpass", Info_ValueForKey( info, "g_needpass" ) );
 	trap_Cvar_Set ( "ui_about_botminplayers", Info_ValueForKey ( info, "bot_minplayers" ) );
+
+	// Menu displays either maxclients or teamsize if it's non-zero
+	val = atoi( Info_ValueForKey( info, "teamsize" ) );
+	val = max(0, val);
+	if ( cgs.gametype == GT_TOURNAMENT || val == 0 ) {
+		trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
+		trap_Cvar_Set ( "ui_about_teamsize", "0" );
+	} else if ( cgs.gametype < GT_TEAM ) {
+		trap_Cvar_Set ( "ui_about_maxclients", va("%i", val ) );
+		trap_Cvar_Set ( "ui_about_teamsize", "0" );
+	} else {
+		trap_Cvar_Set ( "ui_about_maxclients", "0" );
+		trap_Cvar_Set ( "ui_about_teamsize",  va("%i", val ) );
+	}
 }
 
 /*
@@ -1099,12 +1120,12 @@ void CG_CheckSVStripEdRef(char *buf, const char *str)
 	{
 		if (str)
 		{
-			strcpy(buf, str);
+			Q_strncpyz(buf, str, MAX_STRIPED_SV_STRING);
 		}
 		return;
 	}
 
-	strcpy(buf, str);
+	Q_strncpyz(buf, str, MAX_STRIPED_SV_STRING);
 
 	strLen = strlen(str);
 

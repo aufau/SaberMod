@@ -39,6 +39,7 @@
 #define ZOOM_IN_TIME		1500.0f
 #define ZOOM_OUT_TIME		100.0f
 #define ZOOM_START_PERCENT	0.3f
+#define MAX_FOV				135
 
 #define	ITEM_BLOB_TIME		200
 #define	MUZZLE_FLASH_TIME	20
@@ -418,6 +419,9 @@ typedef struct {
 	int				captures;
 	qboolean	perfect;
 	int				team;
+	int				kills;
+	int				deaths;
+	int				netDamage;
 } score_t;
 
 // each client has an associated clientInfo_t
@@ -729,7 +733,7 @@ typedef struct {
 	qboolean	showScores;
 	qboolean	scoreBoardShowing;
 	int			scoreFadeTime;
-	char		killerName[MAX_NAME_LENGTH];
+	char		killerName[MAX_NETNAME];
 	char			spectatorList[MAX_STRING_CHARS];		// list of names
 	int				spectatorLen;												// length of list
 	float			spectatorWidth;											// width in device units
@@ -1318,6 +1322,7 @@ typedef struct {
 	qboolean		jediVmerc;
 	int				wDisable;
 	int				fDisable;
+	qboolean		privateDuel;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
@@ -1544,6 +1549,8 @@ extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		ui_myteam;
+extern	vmCvar_t		ui_fontSharpness;
+
 /*
 Ghoul2 Insert Start
 */
@@ -1832,6 +1839,7 @@ void CG_DrawInformation( void );
 //
 // cg_scoreboard.c
 //
+void CG_InitScoreboardColumns( void );
 qboolean CG_DrawOldScoreboard( void );
 void CG_DrawOldTourneyScoreboard( void );
 

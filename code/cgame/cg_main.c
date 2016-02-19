@@ -500,6 +500,7 @@ vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	ui_myteam;
+vmCvar_t	ui_fontSharpness;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -647,6 +648,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
+	{ &ui_fontSharpness, "ui_fontSharpness", "1", CVAR_ARCHIVE},
 
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 /*
@@ -681,6 +683,8 @@ void CG_RegisterCvars( void ) {
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
+	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
+
 	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	//trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
@@ -695,6 +699,7 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "ui_about_timelimit",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_roundlimit",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_maxclients",		"0", CVAR_ROM|CVAR_INTERNAL );
+	trap_Cvar_Register(NULL, "ui_about_teamsize",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_dmflags",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_mapname",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_hostname",		"0", CVAR_ROM|CVAR_INTERNAL );
@@ -1144,7 +1149,7 @@ static void CG_RegisterSounds( void ) {
 	}
 
 	// only register the items that the server says we need
-	strcpy( items, CG_ConfigString( CS_ITEMS ) );
+	Q_strncpyz( items, CG_ConfigString( CS_ITEMS ), sizeof(items) );
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
 //		if ( items[ i ] == '1' || cg_buildScript.integer ) {
@@ -1484,7 +1489,7 @@ Ghoul2 Insert End
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	// only register the items that the server says we need
-	strcpy( items, CG_ConfigString( CS_ITEMS) );
+	Q_strncpyz( items, CG_ConfigString( CS_ITEMS), sizeof(items) );
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
 		if ( items[ i ] == '1' || cg_buildScript.integer ) {
@@ -1600,6 +1605,65 @@ Ghoul2 Insert End
 */
 }
 
+/*
+=======================
+CG_RegisterFont
+
+=======================
+*/
+void CG_RegisterFont(fontHandle_t face[MAX_FONT_VARIANTS], const char *fontName)
+{
+	fileHandle_t	f;
+	char			fileName[MAX_QPATH];
+	int				index;
+	int				i, j;
+	qboolean		sorted;
+
+	Com_sprintf(fileName, sizeof(fileName), "fonts/%s.fontdat", fontName);
+
+	// RE_RegisterFont is bugged so we need to check ourselves
+	if (trap_FS_FOpenFile(va("fonts/%s.fontdat", fontName), &f, FS_READ) < 0) {
+		return;
+	}
+	trap_FS_FCloseFile(f);
+
+	memset(face, 0, MAX_FONT_VARIANTS * sizeof(fontHandle_t));
+
+	index = trap_R_RegisterFont(fontName);
+
+	face[0].index = index;
+	face[0].size = trap_R_Font_HeightPixels(index, 1.0f);
+
+	for (i = 1, j = 1; i < MAX_FONT_VARIANTS; i++) {
+		Com_sprintf(fileName, sizeof(fileName), "%s%d", fontName, i);
+
+		if (trap_FS_FOpenFile(va("fonts/%s.fontdat", fileName), &f, FS_READ) < 0) {
+			continue;
+		}
+		trap_FS_FCloseFile(f);
+
+		index = trap_R_RegisterFont(fileName);
+
+		face[j].index = index;
+
+		face[j].size = trap_R_Font_HeightPixels(index, 1.0f);
+		j++;
+	}
+
+	do {
+		j--;
+		sorted = qtrue;
+
+		for (i = 1; i < j; i++) {
+			if (face[i].size > face[i + 1].size) {
+				fontHandle_t temp = face[i];
+				face[i] = face[i + 1];
+				face[i + 1] = temp;
+				sorted = qfalse;
+			}
+		}
+	} while (!sorted);
+}
 
 const char *CG_GetStripEdString(char *refSection, char *refName)
 {
@@ -1750,7 +1814,7 @@ qboolean CG_Asset_Parse(int handle) {
 			}
 
 //			cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.textFont);
-			cgDC.Assets.qhMediumFont = cgDC.RegisterFont(tempStr);
+			CG_RegisterFont(cgDC.Assets.qhMediumFont, tempStr);
 			continue;
 		}
 
@@ -1761,7 +1825,7 @@ qboolean CG_Asset_Parse(int handle) {
 				return qfalse;
 			}
 //			cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.smallFont);
-			cgDC.Assets.qhSmallFont = cgDC.RegisterFont(tempStr);
+			CG_RegisterFont(cgDC.Assets.qhSmallFont, tempStr);
 			continue;
 		}
 
@@ -1772,7 +1836,7 @@ qboolean CG_Asset_Parse(int handle) {
 				return qfalse;
 			}
 //			cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.bigFont);
-			cgDC.Assets.qhBigFont = cgDC.RegisterFont(tempStr);
+			CG_RegisterFont(cgDC.Assets.qhBigFont, tempStr);
 			continue;
 		}
 
@@ -2213,7 +2277,7 @@ void CG_LoadHudMenu()
 	cgDC.clearScene = &trap_R_ClearScene;
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
-	cgDC.RegisterFont = &trap_R_RegisterFont;
+	cgDC.RegisterFont = &CG_RegisterFont;
 	cgDC.Font_StrLenPixels = &trap_R_Font_StrLenPixels;
 	cgDC.Font_StrLenChars = &trap_R_Font_StrLenChars;
 	cgDC.Font_HeightPixels = &trap_R_Font_HeightPixels;
@@ -2387,9 +2451,9 @@ Ghoul2 Insert End
 	//	if desired during parse.  Dunno how legal it is to store in these cgDC things, but it causes no harm
 	//	and even if/when they get overwritten they'll be legalised by the menu asset parser :-)
 //	CG_LoadFonts();
-	cgDC.Assets.qhSmallFont  = trap_R_RegisterFont("ocr_a");
-	cgDC.Assets.qhMediumFont = trap_R_RegisterFont("ergoec");
-	cgDC.Assets.qhBigFont = cgDC.Assets.qhMediumFont;
+	CG_RegisterFont(cgDC.Assets.qhSmallFont, "ocr_a");
+	CG_RegisterFont(cgDC.Assets.qhMediumFont, "ergoec");
+	memcpy(cgDC.Assets.qhBigFont, cgDC.Assets.qhMediumFont, sizeof(cgDC.Assets.qhBigFont));
 
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
@@ -2536,14 +2600,10 @@ Ghoul2 Insert End
 	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
 
-	// check version
-	s = CG_ConfigString( CS_GAME_VERSION );
-	if ( strcmp( s, GAME_VERSION ) ) {
-		CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
-	}
-
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
+
+	trap_SP_Register( "sabermod_ingame" );
 
 	CG_ParseServerinfo();
 
@@ -2595,6 +2655,8 @@ Ghoul2 Insert End
 	CG_InitTeamChat();
 
 	CG_ShaderStateChanged();
+
+	CG_InitScoreboardColumns();
 
 	trap_S_ClearLoopingSounds( qtrue );
 }

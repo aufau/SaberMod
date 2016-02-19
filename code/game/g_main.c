@@ -2,6 +2,7 @@
 //
 
 #include "g_local.h"
+#include "bg_version.h"
 
 level_locals_t	level;
 
@@ -65,7 +66,8 @@ vmCvar_t	g_friendlySaber;
 vmCvar_t	g_password;
 vmCvar_t	g_needpass;
 vmCvar_t	g_maxclients;
-vmCvar_t	g_maxGameClients;
+vmCvar_t	g_teamsize;
+vmCvar_t    g_teamsizeMin;
 vmCvar_t	g_dedicated;
 vmCvar_t	g_speed;
 vmCvar_t	g_gravity;
@@ -125,6 +127,7 @@ vmCvar_t	g_restrictChat;
 vmCvar_t	g_spawnShield;
 vmCvar_t	g_roundlimit;
 vmCvar_t	g_roundWarmup;
+vmCvar_t	g_noKick;
 
 int gDuelist1 = -1;
 int gDuelist2 = -1;
@@ -135,7 +138,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
 	// noset vars
-	{ NULL, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
+	{ NULL, "gamename", GAME_VERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 	{ NULL, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
@@ -145,7 +148,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
 	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_teamsize, "teamsize", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue  },
+	{ &g_teamsizeMin, "g_teamsizeMin", "2", CVAR_ARCHIVE , 0, qfalse  },
 
 	// change anytime vars
 	{ &g_ff_objectives, "g_ff_objectives", "0", /*CVAR_SERVERINFO |*/  CVAR_NORESTART, 0, qtrue },
@@ -274,6 +278,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
 
 // bk001129 - made static to avoid aliasing
@@ -561,9 +566,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	memset( g_clients, 0, MAX_CLIENTS * sizeof(g_clients[0]) );
 	level.clients = g_clients;
 
-	// set client fields on player ents
 	for ( i=0 ; i<level.maxclients ; i++ ) {
+		// set client fields on player ents
 		g_entities[i].client = level.clients + i;
+		// Initialize sortedClients
+		level.sortedClients[i] = i;
 	}
 
 	// always leave room for the max number of clients,
@@ -747,7 +754,7 @@ void AddTournamentPlayer( void ) {
 	level.warmupTime = -1;
 
 	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
+	SetTeam( &g_entities[ nextInLine - level.clients ], TEAM_FREE );
 }
 
 /*
@@ -771,7 +778,7 @@ void RemoveTournamentLoser( void ) {
 	}
 
 	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
+	SetTeam( &g_entities[ clientNum ], TEAM_SPECTATOR );
 }
 
 void RemoveDuelDrawLoser(void)
@@ -807,11 +814,11 @@ void RemoveDuelDrawLoser(void)
 
 	if (clFailure != 2)
 	{
-		SetTeam( &g_entities[ level.sortedClients[clFailure] ], "s" );
+		SetTeam( &g_entities[ level.sortedClients[clFailure] ], TEAM_SPECTATOR );
 	}
 	else
 	{ //we could be more elegant about this, but oh well.
-		SetTeam( &g_entities[ level.sortedClients[1] ], "s" );
+		SetTeam( &g_entities[ level.sortedClients[1] ], TEAM_SPECTATOR );
 	}
 }
 
@@ -834,7 +841,7 @@ void RemoveTournamentWinner( void ) {
 	}
 
 	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
+	SetTeam( &g_entities[ clientNum ], TEAM_SPECTATOR );
 }
 
 /*
@@ -919,37 +926,74 @@ void AdjustTournamentScores( void ) {
 	}
 }
 
+typedef int icmp_t(const int *a, const int *b);
+
+/*
+============
+isort
+
+Insertion sort for int arrays. It's a stable sorting algorithm; i.e.,
+it doesn't change the order of records with equal keys. Use for small
+or nearly sorted data.
+============
+*/
+static void isort( int *a, size_t n, icmp_t cmp )
+{
+	int		i, j;
+	int		temp;
+
+	for (i = 1; i < n; i++) {
+		temp = a[i];
+		j = i - 1;
+		while (j >= 0 && cmp(&a[j], &temp) > 0) {
+			a[j + 1] = a[j];
+			j--;
+		}
+		a[j + 1] = temp;
+	}
+}
+
 /*
 =============
 SortRanks
 
 =============
 */
-int QDECL SortRanks( const void *a, const void *b ) {
+int QDECL SortRanks( const int *a, const int *b ) {
 	gclient_t	*ca, *cb;
+	qboolean	ta, tb;
 
-	ca = &level.clients[*(int *)a];
-	cb = &level.clients[*(int *)b];
+	ca = &level.clients[*a];
+	cb = &level.clients[*b];
+
+	ta = ca->pers.connected == CON_DISCONNECTED;
+	tb = cb->pers.connected == CON_DISCONNECTED;
+	if (ta || tb) {
+		return ta - tb;
+	}
+	// equivalent to:
+	// if ( ta && tb ) return 0;
+	// if ( ta )       return 1;
+	// if ( tb )       return -1;
 
 	// sort special clients last
-	if ( ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0 ) {
-		return 1;
-	}
-	if ( cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0  ) {
-		return -1;
+	ta = ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0;
+	tb = cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0;
+	if (ta || tb) {
+		return ta - tb;
 	}
 
 	// then connecting clients
-	if ( ca->pers.connected == CON_CONNECTING ) {
-		return 1;
+	ta = ca->pers.connected == CON_CONNECTING;
+	tb = cb->pers.connected == CON_CONNECTING;
+	if (ta || tb) {
+		return ta - tb;
 	}
-	if ( cb->pers.connected == CON_CONNECTING ) {
-		return -1;
-	}
-
 
 	// then spectators
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR && cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	ta = ca->sess.sessionTeam == TEAM_SPECTATOR;
+	tb = cb->sess.sessionTeam == TEAM_SPECTATOR;
+	if (ta && tb) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
 		}
@@ -958,10 +1002,10 @@ int QDECL SortRanks( const void *a, const void *b ) {
 		}
 		return 0;
 	}
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if (ta) {
 		return 1;
 	}
-	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if (tb) {
 		return -1;
 	}
 
@@ -995,7 +1039,7 @@ void CalculateRanks( void ) {
 	int		score;
 	int		newScore;
 	int		preNumSpec = 0;
-	int		nonSpecIndex = -1;
+	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
 
 	preNumSpec = level.numNonSpectatorClients;
@@ -1009,14 +1053,12 @@ void CalculateRanks( void ) {
 	level.numteamVotingClients[0] = level.numteamVotingClients[1] = 0;
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
-			level.sortedClients[level.numConnectedClients] = i;
 			level.numConnectedClients++;
 
 			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
 				level.numNonSpectatorClients++;
-				nonSpecIndex = i;
+				// nonSpecIndex = i;
 
-				// decide if this should be auto-followed
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
@@ -1025,11 +1067,6 @@ void CalculateRanks( void ) {
 							level.numteamVotingClients[0]++;
 						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
 							level.numteamVotingClients[1]++;
-					}
-					if ( level.follow1 == -1 ) {
-						level.follow1 = i;
-					} else if ( level.follow2 == -1 ) {
-						level.follow2 = i;
 					}
 				}
 			}
@@ -1055,8 +1092,16 @@ void CalculateRanks( void ) {
 	*/
 	//NOTE: for now not doing this either. May use later if appropriate.
 
-	qsort( level.sortedClients, level.numConnectedClients,
-		sizeof(level.sortedClients[0]), SortRanks );
+	// Use a stable sorting algorithm to keep the previous order of
+	// tied clients
+	isort(level.sortedClients, level.maxclients, SortRanks);
+
+	if (level.numPlayingClients >= 1) {
+		level.follow1 = level.follow2 = level.sortedClients[0];
+	}
+	if (level.numPlayingClients >= 2) {
+		level.follow2 = level.sortedClients[1];
+	}
 
 	// set the rank value for all clients that are connected and not spectators
 	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
@@ -1356,22 +1401,6 @@ qboolean DuelLimitHit(void)
 	return qfalse;
 }
 
-void DuelResetWinsLosses(void)
-{
-	int i;
-	gclient_t *cl;
-
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-
-		cl->sess.wins = 0;
-		cl->sess.losses = 0;
-	}
-}
-
 qboolean RoundLimitHit(void)
 {
 	if ( g_gametype.integer == GT_REDROVER ) {
@@ -1407,8 +1436,6 @@ void ExitLevel (void) {
 			}
 			return;
 		}
-
-		DuelResetWinsLosses();
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
@@ -1424,6 +1451,10 @@ void ExitLevel (void) {
 			continue;
 		}
 		cl->ps.persistant[PERS_SCORE] = 0;
+
+		// Reset duel wins/losses
+		cl->sess.wins = 0;
+		cl->sess.losses = 0;
 	}
 
 	// we need to do this here before chaning to CON_CONNECTING
@@ -1764,6 +1795,234 @@ qboolean ScoreIsTied( void ) {
 	return a == b;
 }
 
+// GAME STATISTICS
+
+typedef enum {
+	STAT_SCORE,
+	STAT_KILLS,
+	STAT_CAPS,
+	STAT_DEFEND,
+	STAT_ASSIST,
+	STAT_DMG,
+	STAT_NET_DMG,
+	STAT_MAX_ASC = STAT_NET_DMG,
+	// following stats are 'better' when lower
+	STAT_KILLED,
+	STAT_RCV,
+	STAT_TDMG,
+	STAT_TRCV,
+	STAT_MAX
+} playerStat_t;
+
+typedef struct {
+	const char	*label;
+	int			width;
+} statColumn_t;
+
+// Keep this in the same order as playerStat_t
+const statColumn_t statCol[STAT_MAX] = {
+	{ "S", 3 },
+	{ "K", 3 },
+	{ "Cap", 3 },
+	{ "Def", 3 },
+	{ "Ast", 3 },
+	{ "Dmg", 5 },
+	{ "NetD", 5 },
+	{ "D", 3 },
+	{ "Rcv", 5 },
+	{ "TDmg", 5 },
+	{ "TRcv", 5 },
+};
+
+static void GetStats( int *stats, gclient_t *cl )
+{
+	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
+	stats[STAT_CAPS] = cl->ps.persistant[PERS_CAPTURES];
+	stats[STAT_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
+	stats[STAT_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
+	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
+	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
+	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
+		- cl->pers.totalDamageTakenFromEnemies;
+	stats[STAT_DMG] = cl->pers.totalDamageDealtToEnemies;
+	stats[STAT_RCV] = cl->pers.totalDamageTakenFromEnemies;
+	stats[STAT_TDMG] = cl->pers.totalDamageDealtToAllies;
+	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
+}
+
+static void PrintStatsHeader( playerStat_t *columns )
+{
+	char		line[DEFAULT_CONSOLE_WIDTH];
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			pad;
+	int			i;
+
+	pad = MAX_NAME_LEN - STRLEN("Name");
+	p += Com_sprintf(p, e - p, "Name%s", Spaces(pad));
+
+	for (i = 0; columns[i] != STAT_MAX; i++) {
+		playerStat_t stat = columns[i];
+
+		pad = statCol[stat].width - strlen(statCol[stat].label);
+		p += Com_sprintf(p, e - p, " %s%s", statCol[stat].label, Spaces(pad));
+	}
+
+	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
+
+}
+
+static void PrintStatsSeparator( playerStat_t *columns, char color )
+{
+	char		line[DEFAULT_CONSOLE_WIDTH];
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			i;
+
+	p += Com_sprintf(p, e - p, Dashes(MAX_NAME_LEN));
+
+	for (i = 0; columns[i] != STAT_MAX; i++) {
+		playerStat_t stat = columns[i];
+
+		p += Com_sprintf(p, e - p, " %s", Dashes(statCol[stat].width));
+	}
+
+	trap_SendServerCommand(-1,
+		va("print \"%c%c%s"  "\n\"", Q_COLOR_ESCAPE, color, line));
+}
+
+static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
+{
+	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
+	char		*p = line;
+	const char	*e = line + sizeof(line);
+	int			stats[STAT_MAX];
+	int			pad;
+	int			i;
+
+	GetStats(stats, cl);
+
+	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
+	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->pers.netname, Spaces(pad));
+
+	for (i = 0; columns[i] != STAT_MAX; i++) {
+		playerStat_t stat = columns[i];
+		char *value = va("%i", stats[stat]);
+		int len = strlen(value);
+
+		if (stats[stat] >= 1000 && len > statCol[stat].width) {
+			value = va("%ik", stats[stat] / 1000);
+			len = strlen(value);
+		}
+		if (len > statCol[stat].width) {
+			value = "";
+			len = 0;
+		}
+
+		pad = statCol[stat].width - len;
+		if (stats[stat] == bestStats[stat]) {
+			p += Com_sprintf(p, e - p, S_COLOR_GREEN " %s%s" S_COLOR_WHITE, value, Spaces(pad));
+		} else {
+			p += Com_sprintf(p, e - p, " %s%s", value, Spaces(pad));
+		}
+	}
+
+	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
+}
+
+static playerStat_t ffaColumns[] =
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_MAX };
+static playerStat_t ctfColumns[] =
+{ STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
+static playerStat_t tffaColumns[] =
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
+
+
+static void ShowDamageStatistics() {
+	playerStat_t	*columns;
+	gclient_t		*cl;
+	int				stats[STAT_MAX];
+	int				bestStats[STAT_MAX];
+	qboolean		reallyBest[STAT_MAX] = { qfalse };
+	int				i, j;
+
+	if (level.numPlayingClients == 0) {
+		return;
+	}
+
+	cl = &level.clients[level.sortedClients[0]];
+	GetStats(bestStats, cl);
+
+	for (i = 1; i < level.numPlayingClients; i++) {
+		cl = &level.clients[level.sortedClients[i]];
+		GetStats(stats, cl);
+
+		for (j = 0; j <= STAT_MAX_ASC; j++) {
+			if (stats[j] != bestStats[j]) {
+				reallyBest[j] = qtrue;
+			}
+			if (stats[j] > bestStats[j]) {
+				bestStats[j] = stats[j];
+			}
+		}
+		for (; j < STAT_MAX; j++) {
+			if (stats[j] != bestStats[j]) {
+				reallyBest[j] = qtrue;
+			}
+			if (stats[j] < bestStats[j]) {
+				bestStats[j] = stats[j];
+			}
+		}
+	}
+
+	// Don't highlight the stat if it's the same for all players
+	for (j = 0; j < STAT_MAX; j++) {
+		if (!reallyBest[j]) {
+			bestStats[j] = INT_MAX;
+		}
+	}
+
+	trap_SendServerCommand(-1, "print \"\n\"");
+
+	if (GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER) {
+		if (g_gametype.integer == GT_CTF) {
+			columns = ctfColumns;
+		} else {
+			columns = tffaColumns;
+		}
+
+		PrintStatsHeader(columns);
+
+		PrintStatsSeparator(columns, COLOR_RED);
+		for (i = 0; i < level.numPlayingClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+			if (cl->sess.sessionTeam == TEAM_RED)
+				PrintClientStats(cl, columns, bestStats);
+		}
+
+		PrintStatsSeparator(columns, COLOR_BLUE);
+		for (i = 0; i < level.numPlayingClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+			if (cl->sess.sessionTeam == TEAM_BLUE) {
+				PrintClientStats(cl, columns, bestStats);
+			}
+		}
+	} else {
+		columns = ffaColumns;
+
+		PrintStatsHeader(columns);
+
+		PrintStatsSeparator(columns, COLOR_WHITE);
+		for (i = 0; i < level.numPlayingClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+			PrintClientStats(cl, columns, bestStats);
+		}
+	}
+
+	trap_SendServerCommand(-1, "print \"\n\"");
+
+}
+
 /*
 =================
 CheckExitRules
@@ -1840,10 +2099,12 @@ void CheckExitRules( void ) {
 			level.intermissionQueued = 0;
 			if (GT_Round(g_gametype.integer)) {
 				if ( level.numPlayingClients < 2 ) {
+					ShowDamageStatistics();
 					trap_SendServerCommand( -1, "print \"Not enough players.\n\"" );
 					LogExit("Not enough players.");
 					BeginIntermission();
 				} else if ( RoundLimitHit() ) {
+					ShowDamageStatistics();
 					trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
 					LogExit("Roundlimit hit.");
 					BeginIntermission();
@@ -1851,6 +2112,7 @@ void CheckExitRules( void ) {
 					NextRound();
 				}
 			} else {
+				ShowDamageStatistics();
 				BeginIntermission();
 			}
 		}
@@ -1956,7 +2218,7 @@ void CheckExitRules( void ) {
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
 				gDuelExit = qfalse;
-				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s.\n\"",
+				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"",
 												cl->pers.netname,
 												G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")
 												)
@@ -2248,11 +2510,11 @@ void SetLeader(int team, int client) {
 	int i;
 
 	if ( level.clients[client].pers.connected == CON_DISCONNECTED ) {
-		PrintTeam(team, va("print \"%s is not connected\n\"", level.clients[client].pers.netname) );
+		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not connected\n\"", level.clients[client].pers.netname) );
 		return;
 	}
 	if (level.clients[client].sess.sessionTeam != team) {
-		PrintTeam(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname) );
+		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not on the team anymore\n\"", level.clients[client].pers.netname) );
 		return;
 	}
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
@@ -2265,7 +2527,7 @@ void SetLeader(int team, int client) {
 	}
 	level.clients[client].sess.teamLeader = qtrue;
 	ClientUserinfoChanged( client );
-	PrintTeam(team, va("print \"%s %s\n\"", level.clients[client].pers.netname, G_GetStripEdString("SVINGAME", "NEWTEAMLEADER")) );
+	PrintTeam(team, va("print \"%s" S_COLOR_WHITE " %s\n\"", level.clients[client].pers.netname, G_GetStripEdString("SVINGAME", "NEWTEAMLEADER")) );
 }
 
 /*

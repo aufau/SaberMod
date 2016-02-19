@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include "bg_version.h"
 #include "../ghoul2/g2.h"
 
 // g_client.c -- client functions that don't happen every frame
@@ -240,7 +241,7 @@ void JMSaberTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		other->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
 	}
 
-	trap_SendServerCommand( -1, va("cp \"%s %s\n\"", other->client->pers.netname, G_GetStripEdString("SVINGAME", "BECOMEJM")) );
+	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"", other->client->pers.netname, G_GetStripEdString("SVINGAME", "BECOMEJM")) );
 
 	other->client->ps.isJediMaster = qtrue;
 	other->client->ps.saberIndex = self->s.number;
@@ -837,11 +838,46 @@ int TeamLeader( int team ) {
 	return -1;
 }
 
+/*
+================
+ValidateTeam
+
+Checks if client can join/stay in a given team. PickTeam does
+validation on it's own.
+================
+*/
+qboolean ValidateTeam( int ignoreClientNum, team_t team )
+{
+	int count, otherCount;
+
+	// Works in FFA and counts CON_CONNECTING clients unlike
+	// level.numNonSpectatorClients
+	count = TeamCount( ignoreClientNum, team );
+
+	if ( g_teamsize.integer > 0 ) {
+		if ( count >= g_teamsize.integer ) {
+			return qfalse;
+		}
+	}
+	if ( team == TEAM_RED || team == TEAM_BLUE ) {
+		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
+			otherCount = TeamCount( ignoreClientNum,
+				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
+
+			if ( count - otherCount  > 1 ) {
+				return qfalse;
+			}
+		}
+	}
+	return qtrue;
+}
 
 /*
 ================
 PickTeam
 
+Picks a weaker team. If it's not valid (see ValidateTeam), returns
+TEAM_SPECTATOR.
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
@@ -850,6 +886,10 @@ team_t PickTeam( int ignoreClientNum ) {
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
 
+	if ( g_teamsize.integer > 0
+		&& min(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
+		return TEAM_SPECTATOR;
+	}
 	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
 		return TEAM_RED;
 	}
@@ -885,18 +925,22 @@ static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) 
 
 /*
 ===========
-ClientCleanName
+ClientSetName
 ============
 */
-static void ClientCleanName( const char *in, char *out, int outSize ) {
+static void ClientSetName( gclient_t *client, const char *in ) {
+	char	cleanName[MAX_NETNAME - 4]; // "(99)" suffix
+	char	*name;
+	int		i, num;
     int		characters;
     int		spaces;
     char	ch;
     char	*p;
     char	*end;
+	qboolean	free;
 
-    p = out;
-    end = out + outSize;
+    p = cleanName;
+    end = cleanName + sizeof(cleanName);
     characters = 0;
     spaces = 0;
 
@@ -920,14 +964,35 @@ static void ClientCleanName( const char *in, char *out, int outSize ) {
             characters++;
             *p++ = ch;
         }
-    } while ( ch != '\0' && p < end );
+    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 4);
 
     *p = '\0';
 
     // don't allow empty names
     if( characters == 0 ) {
-        strncpy( out, "Padawan", outSize );
+        strncpy( cleanName, "Padawan", sizeof(cleanName) );
     }
+
+	name = client->pers.netname;
+	Q_strncpyz(name, cleanName, MAX_NETNAME);
+	num = 1;
+
+	while ((free = qtrue)) {
+		for (i = 0; i < level.numConnectedClients; i++) {
+			if (&level.clients[level.sortedClients[i]] == client) {
+				continue;
+			}
+			if (!Q_strncmp(name, level.clients[level.sortedClients[i]].pers.netname, MAX_NETNAME)) {
+				free = qfalse;
+				break;
+			}
+		}
+		if (free) {
+			break;
+		}
+		Com_sprintf(name, MAX_NETNAME, "%s(%d)", cleanName, num);
+		num++;
+	}
 }
 
 #ifdef _DEBUG
@@ -1025,7 +1090,7 @@ void SetupGameGhoul2Model(gclient_t *client, char *modelname)
 		slash = Q_strrchr( afilename, '/' );
 		if ( slash )
 		{
-			strcpy(slash, "/animation.cfg");
+			Q_strncpyz(slash, "/animation.cfg", sizeof(afilename) - (slash - afilename));
 		}	// Now afilename holds just the path to the animation.cfg
 		else
 		{	// Didn't find any slashes, this is a raw filename right in base (whish isn't a good thing)
@@ -1091,12 +1156,12 @@ void ClientUserinfoChanged( int clientNum ) {
 	char	model[MAX_QPATH];
 	//char	headModel[MAX_QPATH];
 	char	forcePowers[MAX_QPATH];
-	char	oldname[MAX_STRING_CHARS];
+	char	oldname[MAX_NETNAME];
 	gclient_t	*client;
-	char	c1[MAX_INFO_STRING];
-	char	c2[MAX_INFO_STRING];
-	char	redTeam[MAX_INFO_STRING];
-	char	blueTeam[MAX_INFO_STRING];
+	char	c1[11]; // Enough for hex color, just in case
+	char	c2[11]; // 0xffffffff
+	char	redTeam[MAX_TEAMNAME];
+	char	blueTeam[MAX_TEAMNAME];
 	char	userinfo[MAX_INFO_STRING];
 
 	ent = g_entities + clientNum;
@@ -1126,7 +1191,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	// set name
 	Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey (userinfo, "name");
-	ClientCleanName( s, client->pers.netname, sizeof(client->pers.netname) );
+	ClientSetName( client, s );
 
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
@@ -1177,7 +1242,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	// don't ever use a default skin in teamplay, it would just waste memory
 	// however bots will always join a team but they spawn in as spectator
-	if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
+	if ( GT_Team(g_gametype.integer) && team == TEAM_SPECTATOR) {
 		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headModel, "red");
 	}
@@ -1209,11 +1274,11 @@ void ClientUserinfoChanged( int clientNum ) {
 	teamLeader = client->sess.teamLeader;
 
 	// colors
-	strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
-	strcpy(c2, Info_ValueForKey( userinfo, "color2" ));
+	Q_strncpyz(c1, Info_ValueForKey( userinfo, "color1" ), sizeof(c1));
+	Q_strncpyz(c2, Info_ValueForKey( userinfo, "color2" ), sizeof(c2));
 
-	strcpy(redTeam, Info_ValueForKey( userinfo, "g_redteam" ));
-	strcpy(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ));
+	Q_strncpyz(redTeam, Info_ValueForKey( userinfo, "g_redteam" ), sizeof(redTeam));
+	Q_strncpyz(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ), sizeof(blueTeam));
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
@@ -1311,7 +1376,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// get and distribute relevent paramters
-	G_LogPrintf( "ClientConnect: %i\n", clientNum );
+	G_LogPrintf( "ClientConnect: %i\n", clientNum);
 	ClientUserinfoChanged( clientNum );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
@@ -1344,9 +1409,10 @@ void G_WriteClientSessionData( gclient_t *client );
 ===========
 ClientBegin
 
-called when a client has finished connecting, and is ready
-to be placed into the level.  This will happen every level load,
-and on transition between teams, but doesn't happen on respawns
+called when a client has finished connecting, and is ready to be
+placed into the level. This will happen every level load (after
+ClientConnect) and on transition between teams, but doesn't happen on
+respawns. allowTeamReset will be set on map_restart.
 ============
 */
 void ClientBegin( int clientNum, qboolean allowTeamReset ) {
@@ -1355,6 +1421,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gentity_t	*tent;
 	int			flags, i;
 	char		userinfo[MAX_INFO_VALUE], *modelname;
+	char		*gameversion;
 
 	ent = g_entities + clientNum;
 
@@ -1362,25 +1429,23 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	{
 		if (allowTeamReset)
 		{
-			const char *team = "Red";
+			const char *team;
 			int preSess;
 
 			//SetTeam(ent, "");
 			ent->client->sess.sessionTeam = PickTeam(-1);
 			trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
 
-			if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
-			{
-				ent->client->sess.sessionTeam = TEAM_RED;
-			}
-
 			if (ent->client->sess.sessionTeam == TEAM_RED)
 			{
 				team = "Red";
 			}
-			else
+			else if (ent->client->sess.sessionTeam == TEAM_BLUE)
 			{
 				team = "Blue";
+			}
+			else {
+				team = "Spectator";
 			}
 
 			Info_SetValueForKey( userinfo, "team", team );
@@ -1476,6 +1541,24 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		client->pers.maxHealth = 100;
 	}
 
+	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
+	client->pers.registered = !strcmp(gameversion, GIT_VERSION);
+	if (!client->pers.registered) {
+		if (gameversion[0] == '\0') {
+			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " plugin.\"");
+		} else {
+			trap_SendServerCommand( clientNum, "cp \""
+				"Your game and this server run different versions of\n"
+				GAMEVERSION "\n"
+				"Please download " GAME_VERSION " plugin.\"");
+		}
+
+		trap_SendServerCommand( clientNum, "print\"" S_COLOR_CYAN
+			"\nTo download client plugin set /cl_allowdownload 1 /mv_allowdownload 1 and reconnect."
+			" Alternatively you should be able to get it from"
+			" http://jk2world.net/files/sm/" GAME_VERSION ".pk3\n\"");
+	}
+
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
@@ -1488,10 +1571,15 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
-	G_LogPrintf( "ClientBegin: %i\n", clientNum );
+	G_LogPrintf( "ClientBegin: %i Version: %s\n", clientNum, Info_ValueForKey(userinfo, GAMEVERSION) );
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
+
+	ent->client->pers.totalDamageTakenFromEnemies = 0;
+	ent->client->pers.totalDamageDealtToEnemies = 0;
+	ent->client->pers.totalDamageTakenFromAllies = 0;
+	ent->client->pers.totalDamageDealtToAllies = 0;
 
 	G_ClearClientLog(clientNum);
 }
@@ -1730,9 +1818,7 @@ void ClientSpawn(gentity_t *ent) {
 				}
 				if ( WP_HasForcePowers( &client->ps ) && client->sess.sessionTeam != forceTeam )
 				{//using force but not on right team, switch him over
-					const char *teamName = TeamName( forceTeam );
-					//client->sess.sessionTeam = forceTeam;
-					SetTeam( ent, (char *)teamName );
+					SetTeam( ent, forceTeam );
 					return;
 				}
 			}

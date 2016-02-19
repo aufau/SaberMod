@@ -127,6 +127,35 @@
 			style                   0
 			text                    @MENUS0_MAXIMUM_PLAYERS
 			cvar                    "ui_about_maxclients"
+			cvarTest                "ui_about_teamsize"
+			showCvar
+			{
+				"0" ;
+			}
+			maxPaintChars           12
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 100 300 20
+			type                    4
+			style                   0
+			text                    @SABERMENUS_TEAM_SIZE
+			cvar                    "ui_about_teamsize"
+			cvarTest                "ui_about_teamsize"
+			hideCvar
+			{
+				"0" ;
+			}
 			maxPaintChars           12
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              160

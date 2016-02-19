@@ -717,7 +717,7 @@ void SpewDebugStuffToFile()
 
 	while (i < MAX_ANIMATIONS)
 	{
-		strcat(BGPAFtext, va("%i %i\n", i, bgGlobalAnimations[i].frameLerp));
+		Q_strcat(BGPAFtext, sizeof(BGPAFtext), va("%i %i\n", i, bgGlobalAnimations[i].frameLerp));
 		i++;
 	}
 

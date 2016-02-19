@@ -96,14 +96,15 @@ Called on a first-time connect
 void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 	clientSession_t	*sess;
 	const char		*value;
+	int				clientNum;
 
 	sess = &client->sess;
+	clientNum = client - level.clients;
 
 	// initial team determination
 	if ( GT_Team(g_gametype.integer) ) {
 		if ( g_teamAutoJoin.integer ) {
 			sess->sessionTeam = PickTeam( -1 );
-			BroadcastTeamChange( client, -1 );
 		} else {
 			// always spawn as spectator in team games
 			if (!isBot)
@@ -115,17 +116,18 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 				value = Info_ValueForKey( userinfo, "team" );
 				if (value[0] == 'r' || value[0] == 'R')
 				{
-					sess->sessionTeam = TEAM_RED;
+					sess->sessionTeam = ValidateTeam( -1, TEAM_RED ) ?
+						TEAM_RED : TEAM_SPECTATOR;
 				}
 				else if (value[0] == 'b' || value[0] == 'B')
 				{
-					sess->sessionTeam = TEAM_BLUE;
+					sess->sessionTeam = ValidateTeam( -1, TEAM_BLUE ) ?
+						TEAM_BLUE : TEAM_SPECTATOR;
 				}
 				else
 				{
 					sess->sessionTeam = PickTeam( -1 );
 				}
-				BroadcastTeamChange( client, -1 );
 			}
 		}
 	} else {
@@ -140,12 +142,8 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 			case GT_HOLOCRON:
 			case GT_JEDIMASTER:
 			case GT_SINGLE_PLAYER:
-				if ( g_maxGameClients.integer > 0 &&
-					level.numNonSpectatorClients >= g_maxGameClients.integer ) {
-					sess->sessionTeam = TEAM_SPECTATOR;
-				} else {
-					sess->sessionTeam = TEAM_FREE;
-				}
+				sess->sessionTeam = ValidateTeam( clientNum, TEAM_FREE ) ?
+					TEAM_FREE : TEAM_SPECTATOR;
 				break;
 			case GT_TOURNAMENT:
 				// if the game is full, go into a waiting mode

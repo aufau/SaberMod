@@ -60,6 +60,7 @@ void P_DamageFeedback( gentity_t *player ) {
 
 	// play an apropriate pain sound
 	if ( (level.time > player->pain_debounce_time) && !(player->flags & FL_GODMODE) ) {
+		int fakeHealth = (player->health / 25) * 25 + Q_irand(0, 24);
 
 		// don't do more than two pain sounds a second
 		if ( level.time - client->ps.painTime < 500 ) {
@@ -67,7 +68,7 @@ void P_DamageFeedback( gentity_t *player ) {
 		}
 		P_SetTwitchInfo(client);
 		player->pain_debounce_time = level.time + 700;
-		G_AddEvent( player, EV_PAIN, player->health );
+		G_AddEvent( player, EV_PAIN, fakeHealth);
 		client->ps.damageEvent++;
 
 		if (client->damage_armor && !client->damage_blood)
@@ -624,6 +625,10 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	// attack button cycles through spectators
 	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
 		Cmd_FollowCycle_f( ent, 1 );
+	} else if ( ( client->buttons & BUTTON_ALT_ATTACK ) && ! ( client->oldbuttons & BUTTON_ALT_ATTACK ) ) {
+		Cmd_FollowCycle_f( ent, -1 );
+	} else if ( ( client->buttons & BUTTON_USE ) && ! ( client->oldbuttons & BUTTON_USE ) ) {
+		Cmd_SmartFollowCycle_f( ent );
 	}
 
 	if (client->sess.spectatorState == SPECTATOR_FOLLOW && (ucmd->upmove > 0))
@@ -1148,71 +1153,70 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *duelAgainst = &g_entities[ent->client->ps.duelIndex];
 
-		//Keep the time updated, so once this duel ends this player can't engage in a duel for another
-		//10 seconds. This will give other people a chance to engage in duels in case this player wants
-		//to engage again right after he's done fighting and someone else is waiting.
-		ent->client->ps.fd.privateDuelTime = level.time + 10000;
+		switch(ucmd->generic_cmd)
+		{
+		case GENCMD_USE_SEEKER:
+		case GENCMD_USE_FIELD:
+		case GENCMD_USE_BACTA:
+		case GENCMD_USE_SENTRY:
+			ucmd->generic_cmd = 0;
+		}
 
 		if (ent->client->ps.duelTime < level.time)
 		{
-			//Bring out the sabers
-			if (ent->client->ps.weapon == WP_SABER && ent->client->ps.saberHolstered &&
-				ent->client->ps.duelTime)
+			if (!ent->client->duelStarted)
 			{
-				if (!saberOffSound || !saberOnSound)
-				{
-					saberOffSound = G_SoundIndex("sound/weapons/saber/saberoffquick.wav");
-					saberOnSound = G_SoundIndex("sound/weapons/saber/saberon.wav");
-				}
-
-				ent->client->ps.saberHolstered = qfalse;
-				G_Sound(ent, CHAN_AUTO, saberOnSound);
-
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 2);
-
-				ent->client->ps.duelTime = 0;
+				ent->client->duelStarted = qtrue;
 			}
 
 			if (duelAgainst && duelAgainst->client && duelAgainst->inuse &&
-				duelAgainst->client->ps.weapon == WP_SABER && duelAgainst->client->ps.saberHolstered &&
-				duelAgainst->client->ps.duelTime)
+				!duelAgainst->client->duelStarted)
 			{
-				if (!saberOffSound || !saberOnSound)
-				{
-					saberOffSound = G_SoundIndex("sound/weapons/saber/saberoffquick.wav");
-					saberOnSound = G_SoundIndex("sound/weapons/saber/saberon.wav");
-				}
-
-				duelAgainst->client->ps.saberHolstered = qfalse;
-				G_Sound(duelAgainst, CHAN_AUTO, saberOnSound);
-
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 2);
-
-				duelAgainst->client->ps.duelTime = 0;
+				duelAgainst->client->duelStarted = qtrue;
 			}
-		}
-		else
-		{
-			client->ps.speed = 0;
-			client->ps.basespeed = 0;
-			ucmd->forwardmove = 0;
-			ucmd->rightmove = 0;
-			ucmd->upmove = 0;
 		}
 
 		if (!duelAgainst || !duelAgainst->client || !duelAgainst->inuse ||
 			duelAgainst->client->ps.duelIndex != ent->s.number)
 		{
 			ent->client->ps.duelInProgress = 0;
+			ent->client->duelStarted = qfalse;
 			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 		}
 		else if (duelAgainst->health < 1 || duelAgainst->client->ps.stats[STAT_HEALTH] < 1)
 		{
+			char *s;
+
 			ent->client->ps.duelInProgress = 0;
+			ent->client->duelStarted = qfalse;
 			duelAgainst->client->ps.duelInProgress = 0;
+			duelAgainst->client->duelStarted = qfalse;
 
 			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 			G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+
+			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
+			{
+				int duelTime = (level.time - ent->client->ps.duelTime) / 1000;
+
+				s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE
+					" in " S_COLOR_CYAN "%02i" S_COLOR_WHITE ":" S_COLOR_CYAN "%02i" S_COLOR_WHITE
+					" with " S_COLOR_RED "%i" S_COLOR_WHITE "/" S_COLOR_GREEN "%i" S_COLOR_WHITE " left!\n\"",
+					ent->client->pers.netname,
+					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
+					duelAgainst->client->pers.netname,
+					duelTime / 60,
+					duelTime % 60,
+					ent->client->ps.stats[STAT_HEALTH],
+					ent->client->ps.stats[STAT_ARMOR]);
+			}
+			else
+			{ //it was a draw, because we both managed to die in the same frame
+				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
+			}
+			trap_SendServerCommand(-1, s);
 
 			//Winner gets full health.. providing he's still alive
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
@@ -1227,21 +1231,17 @@ void ClientThink_real( gentity_t *ent ) {
 					ent->client->ps.eFlags |= EF_INVULNERABLE;
 					ent->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
 				}
-			}
 
-			/*
-			trap_SendServerCommand( ent-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
-			trap_SendServerCommand( duelAgainst-g_entities, va("print \"%s %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER")) );
-			*/
-			//Private duel announcements are now made globally because we only want one duel at a time.
-			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
-			{
-				trap_SendServerCommand( -1, va("cp \"%s %s %s!\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELWINNER"), duelAgainst->client->pers.netname) );
+				ent->client->sess.wins++;
 			}
 			else
-			{ //it was a draw, because we both managed to die in the same frame
-				trap_SendServerCommand( -1, va("cp \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE")) );
+			{
+				ent->client->sess.losses++;
 			}
+
+			duelAgainst->client->sess.losses++;
+			ClientUserinfoChanged( ent->client->ps.clientNum );
+			ClientUserinfoChanged( duelAgainst->client->ps.clientNum );
 		}
 		else
 		{
@@ -1254,7 +1254,9 @@ void ClientThink_real( gentity_t *ent ) {
 			if (subLen >= 1024)
 			{
 				ent->client->ps.duelInProgress = 0;
+				ent->client->duelStarted = qfalse;
 				duelAgainst->client->ps.duelInProgress = 0;
+				duelAgainst->client->duelStarted = qfalse;
 
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
@@ -1349,6 +1351,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
+	pm.noKick = ( g_dmflags.integer & DF_NO_KICK ) > 0;
 
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;
@@ -1638,20 +1641,28 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *faceKicked = &g_entities[client->ps.forceKickFlip-1];
 
-		if (faceKicked && faceKicked->client && (!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
+		if (faceKicked && faceKicked->client && g_noKick.integer <= 1 &&
+			(!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
 			(!faceKicked->client->ps.duelInProgress || faceKicked->client->ps.duelIndex == ent->s.number) &&
 			(!ent->client->ps.duelInProgress || ent->client->ps.duelIndex == faceKicked->s.number))
 		{
 			if ( faceKicked && faceKicked->client && faceKicked->health && faceKicked->takedamage )
 			{//push them away and do pain
 				vec3_t oppDir;
-				int strength = (int)VectorNormalize2( client->ps.velocity, oppDir );
+				int strength;
+				int dflag = DAMAGE_NO_ARMOR;
 
-				strength *= 0.05;
+				// pmove sets velocity to 150 on XY. Z could go as
+				// low as 200, resulting in strength 12
+				strength = 0.05 * (int)VectorNormalize2( client->ps.velocity, oppDir );
+
+				if (g_noKick.integer) {
+					dflag |= DAMAGE_NO_DAMAGE;
+				}
 
 				VectorScale( oppDir, -1, oppDir );
 
-				G_Damage( faceKicked, ent, ent, oppDir, client->ps.origin, strength, DAMAGE_NO_ARMOR, MOD_MELEE );
+				G_Damage( faceKicked, ent, ent, oppDir, client->ps.origin, strength, dflag, MOD_MELEE );
 
 				if ( faceKicked->client->ps.weapon != WP_SABER ||
 					 faceKicked->client->ps.fd.saberAnimLevel < FORCE_LEVEL_3 ||
@@ -1745,7 +1756,7 @@ void G_CheckClientTimeouts ( gentity_t *ent )
 	// longer than the timeout to spectator then force this client into spectator mode
 	if ( level.time - ent->client->pers.cmd.serverTime > g_timeouttospec.integer * 1000 )
 	{
-		SetTeam ( ent, "spectator" );
+		SetTeam ( ent, TEAM_SPECTATOR );
 	}
 }
 
@@ -1788,36 +1799,33 @@ SpectatorClientEndFrame
 ==================
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
-	gclient_t	*cl;
-
 	// if we are doing a chase cam or a remote view, grab the latest info
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		int		clientNum, flags;
 
 		clientNum = ent->client->sess.spectatorClient;
 
-		// team follow1 and team follow2 go to whatever clients are playing
+		// team follow1 and team follow2 go to the score leader and runner up
 		if ( clientNum == -1 ) {
 			clientNum = level.follow1;
 		} else if ( clientNum == -2 ) {
 			clientNum = level.follow2;
 		}
 		if ( clientNum >= 0 ) {
-			cl = &level.clients[ clientNum ];
+			gclient_t *cl = &level.clients[ clientNum ];
+
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
 				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
 				ent->client->ps = cl->ps;
 				ent->client->ps.pm_flags |= PMF_FOLLOW;
 				ent->client->ps.eFlags = flags;
-				return;
 			} else {
-				// drop them to free spectators unless they are dedicated camera followers
-				if ( ent->client->sess.spectatorClient >= 0 ) {
-					ent->client->sess.spectatorState = SPECTATOR_FREE;
-					ClientBegin( ent->client - level.clients, qtrue );
-				}
+				StopFollowing(ent);
 			}
+		} else {
+			StopFollowing(ent);
 		}
+		return;
 	}
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
