@@ -1400,22 +1400,34 @@ PRINTING TO CONSOLE
 =====================================================================
 */
 
-char const *Spaces(int n)
+const char *Spaces(int n)
 {
 	static const char spaces[] = "                                   "; // 35
 
-	n = max(0, n);
-	assert(n < sizeof(spaces));
+	if (n >= sizeof(spaces)) {
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		n = sizeof(spaces);
+	}
+	if (n < 0) {
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		n = 0;
+	}
 
 	return spaces + sizeof(spaces) - 1 - (n);
 }
 
-char const *Dashes(int n)
+const char *Dashes(int n)
 {
 	static const char dashes[] = "-----------------------------------"; // 35
 
-	n = max(0, n);
-	assert(n < sizeof(dashes));
+	if (n >= sizeof(dashes)) {
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		n = sizeof(dashes);
+	}
+	if (n < 0) {
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		n = 0;
+	}
 
 	return dashes + sizeof(dashes) - 1 - (n);
 }
