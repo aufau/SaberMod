@@ -1340,22 +1340,6 @@ qboolean DuelLimitHit(void)
 	return qfalse;
 }
 
-void DuelResetWinsLosses(void)
-{
-	int i;
-	gclient_t *cl;
-
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-
-		cl->sess.wins = 0;
-		cl->sess.losses = 0;
-	}
-}
-
 /*
 =============
 ExitLevel
@@ -1382,10 +1366,7 @@ void ExitLevel (void) {
 			}
 			return;
 		}
-
-		DuelResetWinsLosses();
 	}
-
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
 	level.changemap = NULL;
@@ -1400,6 +1381,10 @@ void ExitLevel (void) {
 			continue;
 		}
 		cl->ps.persistant[PERS_SCORE] = 0;
+
+		// Reset duel wins/losses
+		cl->sess.wins = 0;
+		cl->sess.losses = 0;
 	}
 
 	// we need to do this here before chaning to CON_CONNECTING
