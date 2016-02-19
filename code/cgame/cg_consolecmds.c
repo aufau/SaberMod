@@ -397,17 +397,12 @@ static void CG_Camera_f( void ) {
 }
 */
 
-// Same as MAX_NETNAME for now. Reduce if you need more space.
-#define MAX_PRINTNAME 36
-
+/*
+==================
+CG_Players_f
+==================
+*/
 static void CG_Players_f( void ) {
-	static const char	spacePad[MAX_PRINTNAME] = "                                   ";
-	static const char	dashPad[MAX_PRINTNAME]  = "-----------------------------------";
-	const char * const	spaces = spacePad + MAX_PRINTNAME - 1;
-	const char * const	dashes = dashPad + MAX_PRINTNAME - 1;
-	const char		*flagColor[3];
-	char			name[MAX_PRINTNAME];
-	int				flag[3];
 	int				len;
 	int				maxNameLen;
 	int				i;
@@ -421,7 +416,7 @@ static void CG_Players_f( void ) {
 		return;
 	}
 
-	maxNameLen = 4; // "Name" column label
+	maxNameLen = STRLEN("Name");
 	for (i = 0 ; i < cgs.maxclients ; i++) {
 		if (cgs.clientinfo[i].infoValid ) {
 			len = Q_PrintStrlen(cgs.clientinfo[i].name);
@@ -430,17 +425,19 @@ static void CG_Players_f( void ) {
 			}
 		}
 	}
-	if (maxNameLen > MAX_PRINTNAME - 1) {
-		maxNameLen = MAX_PRINTNAME - 1;
+	if (maxNameLen > MAX_NAME_LEN) {
+		maxNameLen = MAX_NAME_LEN;
 	}
 
-	CG_Printf("Num Flg Name%s\n", spaces - maxNameLen + 4);
-	CG_Printf("--- --- ----%s\n", dashes - maxNameLen + 4);
+	CG_Printf("Num Flg Name%s\n", Spaces(maxNameLen - STRLEN("Name")));
+	CG_Printf("--- --- %s\n", Dashes(maxNameLen));
 
 	for (i = 0 ; i < cgs.maxclients ; i++) {
 		if (cgs.clientinfo[i].infoValid ) {
-			flag[0] = flag[1] = flag[2] = ' ';
-			flagColor[0] = flagColor[1] = flagColor[2] = S_COLOR_WHITE;
+			char		name[MAX_NETNAME];
+			const char	*flagColor[3] = { S_COLOR_WHITE, S_COLOR_WHITE, S_COLOR_WHITE };
+			int			flag[3] = { ' ', ' ', ' '};
+
 			if (cgs.clientinfo[i].botSkill) {
 				flagColor[0] = flagColor[1] = flagColor[2] = S_COLOR_CYAN;
 				flag[0] = 'B';
@@ -456,9 +453,9 @@ static void CG_Players_f( void ) {
 			Q_strncpyz(name, cgs.clientinfo[i].name, sizeof(name));
 			Q_CleanStr(name);
 
-			CG_Printf("%3d %s%c%s%c%s%c" S_COLOR_WHITE " %s%s\n", i,
+			CG_Printf("%3d %s%c%s%c%s%c" S_COLOR_WHITE " %s\n", i,
 				flagColor[0], flag[0], flagColor[1], flag[1], flagColor[2], flag[2],
-				name, spaces - strlen(name));
+				name);
 		}
 	}
 
