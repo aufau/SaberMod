@@ -464,7 +464,7 @@ vmCvar_t	cg_teamChatsOnly;
 vmCvar_t	cg_noVoiceChats;
 vmCvar_t	cg_noVoiceText;
 vmCvar_t	cg_hudFiles;
-vmCvar_t 	cg_scorePlum;
+vmCvar_t 	cg_damagePlums;
 vmCvar_t 	cg_smoothClients;
 vmCvar_t	pmove_fixed;
 //vmCvar_t	cg_pmove_fixed;
@@ -501,6 +501,9 @@ vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	ui_myteam;
 vmCvar_t	ui_fontSharpness;
+
+vmCvar_t	cg_param1;
+vmCvar_t	cg_param2;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -634,7 +637,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
 	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
 	{ &cg_timescale, "timescale", "1", 0},
-	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_USERINFO | CVAR_ARCHIVE},
+	{ &cg_damagePlums, "cg_damagePlums", "1", CVAR_ARCHIVE},
 	{ &cg_hudFiles, "cg_hudFiles", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
@@ -658,6 +661,9 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
+
+	{ &cg_param1, "cg_param1", "0", CVAR_TEMP},
+	{ &cg_param2, "cg_param2", "0", CVAR_TEMP},
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
