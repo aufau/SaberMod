@@ -191,6 +191,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 		if (!spectator && score->captures != 0) {
 			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->captures),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
+		break;
 	case SBC_AST:
 		if (!spectator && score->assistCount != 0) {
 			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->assistCount),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
