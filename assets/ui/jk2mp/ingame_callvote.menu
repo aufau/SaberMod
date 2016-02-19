@@ -344,7 +344,7 @@
 		itemDef
 		{
 			name                    misc
-			group                   grpCallVotey
+			group                   grpCallVote
 			text                    @SABERMENUS_WITH_KICK
 			descText                @SABERMENUS_BEGIN_VOTE_TO_WK
 			rect                    240 135 110 30
