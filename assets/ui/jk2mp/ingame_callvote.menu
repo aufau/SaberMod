@@ -255,7 +255,7 @@
 			text                    @MENUS0_RESTART_MAP
 			descText                @MENUS2_BEGIN_VOTE_TO_RESTART
 			group                   grpCallVote
-			rect                    120 60 230 30
+			rect                    120 45 230 30
 			type                    1
 			textalign               ITEM_ALIGN_CENTER
 			textalignx              115
@@ -278,7 +278,7 @@
 			group                   grpCallVote
 			text                    @MENUS0_NEXT_MAP
 			descText                @MENUS2_BEGIN_VOTE_TO_CYCLE_TO
-			rect                    120 90 230 30
+			rect                    120 75 230 30
 			type                    1
 			textalign               ITEM_ALIGN_CENTER
 			textalignx              115
@@ -301,7 +301,7 @@
 			group                   grpCallVote
 			text                    @MENUS2_WARMUP
 			descText                @MENUS2_BEGIN_VOTE_TO_DO_A_WARMUP
-			rect                    120 120 230 30
+			rect                    120 105 230 30
 			type                    1
 			textalign               ITEM_ALIGN_CENTER
 			textalignx              115
@@ -314,6 +314,51 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				exec                    "cmd callvote g_doWarmup 1" ;
+				uiScript                closeingame
+			}
+		}
+
+		itemDef
+		{
+			name                    misc
+			group                   grpCallVote
+			text                    @SABERMENUS_NO_KICK
+			descText                @SABERMENUS_BEGIN_VOTE_TO_NK
+			rect                    120 135 110 30
+			type                    1
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              110
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd callvote nk" ;
+				uiScript                closeingame
+			}
+		}
+
+		itemDef
+		{
+			name                    misc
+			group                   grpCallVotey
+			text                    @SABERMENUS_WITH_KICK
+			descText                @SABERMENUS_BEGIN_VOTE_TO_WK
+			rect                    240 135 110 30
+			type                    1
+			textalign               ITEM_ALIGN_LEFT
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd callvote wk" ;
 				uiScript                closeingame
 			}
 		}
