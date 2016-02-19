@@ -1680,7 +1680,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, teamsize <size>, remove <player>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, teamsize <size>, remove <player>, wk, nk.\n\"" );
 		return;
 	}
 
@@ -1795,7 +1795,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		i = atoi ( arg2 );
 
 		if ( i < 1 ) {
-			i = 1;
+			i = 3;
 		}
 		if ( i > 2 ) {
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
