@@ -70,7 +70,7 @@ obj_cgame	:= $(srcs_cgame:%=out/mod/%.o)
 obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 
 pk3name		:= SaberMod
-pk3			:= $(pk3name)-$(VERSION).pk3
+pk3			:= o104_$(pk3name)_$(VERSION).pk3
 pk3doc		:= README.rst LICENSE.txt
 pk3assets := SOURCE.txt ui/jk2mp/ingame_about.menu		\
 ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu	\
