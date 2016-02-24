@@ -2522,14 +2522,15 @@ Called for important messages that should stay in the center of the screen
 for a few moments
 ==============
 */
-void CG_CenterPrint( const char *str, int y, int charWidth ) {
-	char	*s, *lastLine, *lastSpace;
+void CG_CenterPrint( const char *str, int y ) {
+	char	*s;
+	char	*lastLine;
+	char	*lastSpace;
 
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
 	cg.centerPrintTime = cg.time;
 	cg.centerPrintY = y;
-	cg.centerPrintCharWidth = charWidth;
 
 	// count the number of lines for centering
 	cg.centerPrintLines = 1;

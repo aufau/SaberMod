@@ -273,7 +273,7 @@ clientkilled:
 			s = va("%s %s", sKilledStr, targetName );
 		}
 		if (!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer)) {
-			CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+			CG_CenterPrint( s, SCREEN_HEIGHT * 0.30 );
 		}
 		// print the text message as well
 	}
@@ -1138,7 +1138,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{ //starting the duel
 			if (es->eventParm == 2)
 			{
-				CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120, GIANTCHAR_WIDTH*2 );
+				CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120 );
 				trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
 			}
 			else
@@ -1237,7 +1237,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					const char *strText = CG_GetStripEdString("INGAMETEXT", "PICKUPLINE");
 
 					//Com_Printf("%s %s\n", strText, showPowersName[index]);
-					CG_CenterPrint( va("%s %s\n", strText, CG_GetStripEdString("INGAME",showPowersName[index])), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+					CG_CenterPrint( va("%s %s\n", strText, CG_GetStripEdString("INGAME",showPowersName[index])), SCREEN_HEIGHT * 0.30 );
 				}
 
 				//Show the player their force selection bar in case picking the holocron up changed the current selection
