@@ -49,6 +49,9 @@ typedef struct ipFilter_s
 static ipFilter_t	ipFilters[MAX_IPFILTERS];
 static int			numIPFilters;
 
+
+char	*ConcatArgs( int start );
+
 /*
 =================
 StringToFilter
@@ -453,7 +456,24 @@ void	Svcmd_Remove_f( void )
 	ent->client->switchTeamTime = level.time + delay;
 }
 
-char	*ConcatArgs( int start );
+/*
+===================
+Svcmd_Announce_f
+
+announce "<message>"
+===================
+*/
+void	Svcmd_Announce_f( void )
+{
+	char	*str = ConcatArgs(1);
+
+	if ( !str[0] ) {
+		trap_Printf( "Usage: announce <message>\n" );
+		return;
+	}
+
+	trap_SendServerCommand(-1, va("cp \"%s\n\"", Q_SanitizeStr(str)));
+}
 
 /*
 =================
@@ -508,6 +528,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "listip") == 0) {
 		trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "announce") == 0) {
+		Svcmd_Announce_f();
 		return qtrue;
 	}
 

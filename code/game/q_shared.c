@@ -979,6 +979,47 @@ char *Q_CleanStr( char *string ) {
 	return string;
 }
 
+char *Q_SanitizeStr( char *string )
+{
+	const char	*s = string;
+	char		*o = string;
+	qboolean	escaped = qfalse;
+
+	while (*s) {
+		char c = *s++;
+
+		if (escaped)
+		{
+			switch (c) {
+			case 'n':
+				c = '\n';
+				break;
+			case '\\':
+				c = '\\';
+				break;
+			default:
+				escaped = qfalse;
+				continue;
+			}
+
+			*o++ = c;
+			escaped = qfalse;
+		}
+		else if (c == '\\')
+		{
+			escaped = qtrue;
+		}
+		else if (isprint(c) || c == '\n')
+		{
+			*o++ = c;
+		}
+	}
+
+	*o = '\0';
+
+	return string;
+}
+
 qboolean Q_IsInteger( const char * s ) {
 	int			i;
 	int			len;
