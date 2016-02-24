@@ -2512,6 +2512,7 @@ CENTER PRINTING
 ===============================================================================
 */
 
+#define MAX_CP_WIDTH 480
 
 /*
 ==============
@@ -2522,7 +2523,7 @@ for a few moments
 ==============
 */
 void CG_CenterPrint( const char *str, int y, int charWidth ) {
-	char	*s;
+	char	*s, *lastLine, *lastSpace;
 
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
@@ -2533,9 +2534,39 @@ void CG_CenterPrint( const char *str, int y, int charWidth ) {
 	// count the number of lines for centering
 	cg.centerPrintLines = 1;
 	s = cg.centerPrint;
+
+	// Wrap long lines on word boundary
+	lastLine = s;
+	lastSpace = NULL;
 	while( *s ) {
-		if (*s == '\n')
+		char c = *s;
+
+		if (c == ' ' || c == '\t') {
+			*s = '\0';
+
+			if (CG_Text_Width(lastLine, 1.0f, FONT_MEDIUM) > MAX_CP_WIDTH) {
+				if (lastSpace) {
+					*s = c;
+					*lastSpace = '\0';
+					lastLine = lastSpace + 1;
+					lastSpace = NULL;
+				} else {	// word too wide, not my problem
+					lastLine = s + 1;
+				}
+
+				cg.centerPrintLines++;
+			} else {
+				*s = c;
+				lastSpace = s;
+			}
+		}
+		else if (c == '\n')
+		{
+			*s = '\0';
+			lastSpace = NULL;
+			lastLine = s + 1;
 			cg.centerPrintLines++;
+		}
 		s++;
 	}
 }
@@ -2548,9 +2579,7 @@ CG_DrawCenterString
 */
 static void CG_DrawCenterString( void ) {
 	char	*start;
-	int		l;
-	int		x, y, w;
-	int h;
+	int		x, y, h, i;
 	float	*color;
 	const float scale = 1.0; //0.5
 
@@ -2565,34 +2594,17 @@ static void CG_DrawCenterString( void ) {
 
 	trap_R_SetColor( color );
 
+	h = CG_Text_Height(NULL, scale, FONT_MEDIUM);
+	y = cg.centerPrintY - cg.centerPrintLines * BIGCHAR_HEIGHT / 2 + h;
+	h += 6;
+
 	start = cg.centerPrint;
 
-	y = cg.centerPrintY - cg.centerPrintLines * BIGCHAR_HEIGHT / 2;
-
-	while ( 1 ) {
-		char linebuffer[1024];
-
-		for ( l = 0; l < 50; l++ ) {
-			if ( !start[l] || start[l] == '\n' ) {
-				break;
-			}
-			linebuffer[l] = start[l];
-		}
-		linebuffer[l] = 0;
-
-		w = CG_Text_Width(linebuffer, scale, FONT_MEDIUM);
-		h = CG_Text_Height(linebuffer, scale, FONT_MEDIUM);
-		x = (SCREEN_WIDTH - w) / 2;
-		CG_Text_Paint(x, y + h, scale, color, linebuffer, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
-		y += h + 6;
-
-		while ( *start && ( *start != '\n' ) ) {
-			start++;
-		}
-		if ( !*start ) {
-			break;
-		}
-		start++;
+	for (i = cg.centerPrintLines; i > 0; i--) {
+		x = 320 - CG_Text_Width(start, scale, FONT_MEDIUM) / 2;
+		CG_Text_Paint(x, y, scale, color, start, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
+		y += h;
+		start += strlen(start) + 1;
 	}
 
 	trap_R_SetColor( NULL );
