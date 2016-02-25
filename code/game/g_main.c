@@ -282,11 +282,11 @@ static int gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[0
 
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
+int  MVAPI_Init					( int apilevel );
 void G_RunFrame					( int levelTime );
 void G_ShutdownGame				( int restart );
 void CheckExitRules				( void );
 void G_ROFF_NotetrackCallback	( gentity_t *cent, const char *notetrack);
-
 
 /*
 ================
@@ -300,7 +300,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	switch ( command ) {
 	case GAME_INIT:
 		G_InitGame( arg0, arg1, arg2 );
-		return 0;
+		return MVAPI_Init(arg11);
 	case GAME_SHUTDOWN:
 		G_ShutdownGame( arg0 );
 		return 0;
@@ -631,7 +631,30 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 }
 
+/*
+=================
+MVAPI_Init
+=================
+*/
+int MVAPI_Init( int apilevel )
+{
+	if (!trap_Cvar_VariableIntegerValue("mv_apienabled")) {
+		G_Printf("MVAPI is not supported at all or has been disabled.\n");
+		G_Printf("You need at least JK2MV " MV_MIN_VERSION ".\n");
+		return 0;
+	}
 
+	if (apilevel < MV_APILEVEL) {
+		G_Printf("MVAPI level %i not supported.\n", MV_APILEVEL);
+		G_Printf("You need at least JK2MV " MV_MIN_VERSION ".\n");
+		return 0;
+	}
+
+	level.mvapi = qtrue;
+
+	G_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
+	return MV_APILEVEL;
+}
 
 /*
 =================

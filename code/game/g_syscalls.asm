@@ -211,7 +211,10 @@ equ trap_G2API_HasGhoul2ModelOnIndex		-599	; G_G2_HASGHOUL2MODELONINDEX
 equ trap_G2API_RemoveGhoul2Model			-600	; G_G2_REMOVEGHOUL2MODEL
 equ trap_G2API_CleanGhoul2Models			-601	; G_G2_CLEANMODELS
 equ trap_G2API_CollisionDetect				-602	; G_G2_COLLISIONDETECT
-
+equ trap_MVAPI_SendConnectionlessPacket		-701	; MVAPI_SEND_CONNECTIONLESSPACKET
+equ trap_MVAPI_GetConnectionlessPacket		-702	; MVAPI_GET_CONNECTIONLESSPACKET
+equ trap_MVAPI_LocateGameData				-703	; MVAPI_LOCATE_GAME_DATA
+equ trap_MVAPI_ControlFixes					-704	; MVAPI_CONTROL_FIXES
 
 ; hardcoded functions
 equ memset									-101	; G_MEMSET
