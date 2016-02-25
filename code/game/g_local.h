@@ -5,6 +5,7 @@
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
+#include "mvapi.h"
 
 //==================================================================
 
@@ -535,6 +536,7 @@ typedef struct {
 	int			bodyQueIndex;			// dead bodies
 	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
 	int			portalSequence;
+	qboolean	mvapi;
 } level_locals_t;
 
 
@@ -1287,4 +1289,7 @@ int			trap_ROFF_Cache( char *file );
 qboolean	trap_ROFF_Play( int entID, int roffID, qboolean doTranslation );
 qboolean	trap_ROFF_Purge_Ent( int entID );
 
-
+qboolean	trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message);
+qboolean	trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t);
+qboolean	trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize);
+qboolean	trap_MVAPI_ControlFixes(mvfix_t fixes);

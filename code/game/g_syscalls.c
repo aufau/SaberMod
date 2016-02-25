@@ -932,3 +932,19 @@ void trap_G2API_CollisionDetect (
 /*
 Ghoul2 Insert End
 */
+
+qboolean trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message)
+{
+	return syscall(MVAPI_SEND_CONNECTIONLESSPACKET, addr, message);
+}
+qboolean trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize)
+{
+	return syscall(MVAPI_GET_CONNECTIONLESSPACKET, addr, buf, bufsize);
+}
+qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t)
+{
+	return syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
+}
+qboolean trap_MVAPI_ControlFixes(mvfix_t fixes) {
+	return syscall(MVAPI_CONTROL_FIXES, fixes);
+}
