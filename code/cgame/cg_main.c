@@ -499,6 +499,8 @@ vmCvar_t	cg_singlePlayerActive;
 vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
+vmCvar_t	cg_duelGlow;
+
 vmCvar_t	ui_myteam;
 vmCvar_t	ui_fontSharpness;
 
@@ -646,6 +648,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_smallFont, "ui_smallFont", "0.25", CVAR_ARCHIVE},
 	{ &cg_bigFont, "ui_bigFont", "0.4", CVAR_ARCHIVE},
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
+
+	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 	{ &ui_fontSharpness, "ui_fontSharpness", "1", CVAR_ARCHIVE},
