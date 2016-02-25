@@ -51,6 +51,9 @@ Cvars
 handicap <x>
   Lower your max health to x and damage to x%.
 
+cg_duelGlow 1
+  Turn on/off duel glow.
+
 Spectating
 ..........
 

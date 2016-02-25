@@ -7083,7 +7083,7 @@ stillDoSaber:
 			legs.shaderRGBA[2] = 50;
 			legs.renderfx |= RF_RGB_TINT;
 		}
-		else
+		else if (cg_duelGlow.integer)
 		{ //adjust the glow by how far away you are from your dueling partner
 			centity_t *duelEnt;
 
