@@ -116,7 +116,70 @@ void trap_SetBrushModel( gentity_t *ent, const char *name ) {
 }
 
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask ) {
-	syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask, 0, 10 );
+	if (passEntityNum >= 0 && passEntityNum < MAX_CLIENTS) {
+		gclient_t	*client;
+		int			entitylist[128];
+		int			contents[128];
+		vec3_t		boxmins;
+		vec3_t		boxmaxs;
+		int			num;
+		int			i;
+
+		if ( !mins ) {
+			mins = vec3_origin;
+		}
+		if ( !maxs ) {
+			maxs = vec3_origin;
+		}
+
+		// box containing whole trace
+		for (i = 0; i < 3; i++) {
+			if (end[i] > start[i]) {
+				boxmins[i] = start[i] + mins[i] - 1.0f;
+				boxmaxs[i] = end[i] + maxs[i] + 1.0f;
+			} else {
+				boxmins[i] = end[i] + mins[i] - 1.0f;
+				boxmaxs[i] = start[i] + maxs[i] + 1.0f;
+			}
+		}
+
+		// ALL entities
+		num = trap_EntitiesInBox(boxmins, boxmaxs, entitylist, ARRAY_LEN(entitylist));
+
+		client = level.clients + passEntityNum;
+
+		if (client->ps.duelInProgress) {
+			int duelAgainst = client->ps.duelIndex;
+
+			for (i = 0; i < num; i++) {
+				gentity_t *ent = g_entities + entitylist[i];
+
+				contents[i] = ent->r.contents;
+				if (entitylist[i] != duelAgainst && ent->r.ownerNum != duelAgainst) {
+					ent->r.contents = 0;
+				}
+			}
+		} else {
+			for (i = 0; i < num; i++) {
+				gentity_t *ent = g_entities + entitylist[i];
+
+				contents[i] = ent->r.contents;
+				if (ent->client && ent->client->ps.duelInProgress) {
+					ent->r.contents = 0;
+				}
+			}
+		}
+
+		syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask, 0, 10 );
+
+		for (i = 0; i < num; i++) {
+			gentity_t *ent = g_entities + entitylist[i];
+
+			ent->r.contents = contents[i];
+		}
+	} else {
+		syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask, 0, 10 );
+	}
 }
 
 int trap_PointContents( const vec3_t point, int passEntityNum ) {
