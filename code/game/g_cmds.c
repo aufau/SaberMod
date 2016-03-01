@@ -348,7 +348,7 @@ Inferior, serverside variant of CG_CrosshairPlayer. ent must be a
 client.
 ==================
 */
-static gentity_t *G_CrosshairPlayer( gentity_t *ent ) {
+static gentity_t *G_CrosshairPlayer( gentity_t *ent, int maxDist ) {
 	trace_t tr;
 	vec3_t org, forward, fwdOrg;
 
@@ -356,7 +356,7 @@ static gentity_t *G_CrosshairPlayer( gentity_t *ent ) {
 
 	VectorCopy(ent->client->ps.origin, org);
 	org[2] += ent->client->ps.viewheight;
-	VectorMA(org, 256, forward, fwdOrg);
+	VectorMA(org, maxDist, forward, fwdOrg);
 
 	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
 
@@ -1078,7 +1078,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		SetTeam(ent, TEAM_SPECTATOR);
 	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ){
-		gentity_t *target = G_CrosshairPlayer(ent);
+		gentity_t *target = G_CrosshairPlayer(ent, 8192);
 
 		if (target) {
 			SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
@@ -1129,7 +1129,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		clientNum = ent->client->sess.spectatorClient;
-	} else if ((target = G_CrosshairPlayer(ent))) {
+	} else if ((target = G_CrosshairPlayer(ent, 8192))) {
 		SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
 		return;
 	} else {
@@ -2375,7 +2375,7 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	challenged = G_CrosshairPlayer(ent);
+	challenged = G_CrosshairPlayer(ent, 256);
 
 	if (!challenged || !challenged->client || !challenged->inuse ||
 		challenged->health < 1 || challenged->client->ps.stats[STAT_HEALTH] < 1 ||
