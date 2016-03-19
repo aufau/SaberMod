@@ -3101,7 +3101,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		if (mod == MOD_SABER)
 		{
-			VectorScale (dir, (g_knockback.value * (float)knockback / mass)*g_saberDmgVelocityScale.integer, kvel);
+			VectorScale (dir, (g_knockback.value * (float)knockback / mass)*g_saberDmgVelocityScale.value, kvel);
 		}
 		else
 		{
