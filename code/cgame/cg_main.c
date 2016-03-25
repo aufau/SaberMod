@@ -279,7 +279,7 @@ int CG_MVAPI_Init( int apilevel )
 void CG_MVAPI_AfterInit( void )
 {
 	// disable jk2mv fixes
-	trap_MVAPI_ControlFixes( 0 );
+	trap_MVAPI_ControlFixes( MVFIX_WPGLOWING );
 }
 
 static int C_PointContents(void)
