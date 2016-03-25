@@ -8,15 +8,27 @@
 
 #include "../qcommon/disablewarnings.h"
 
-#if (defined _MSC_VER)
+//================= COMPILER-SPECIFIC DEFINES ===========================
+
+#if defined _MSC_VER							// Microsoft Visual C++
 #define Q_EXPORT __declspec(dllexport)
-#elif (defined __SUNPRO_C)
-#define Q_EXPORT __global
-#elif ((__GNUC__ >= 3) && (!__EMX__) && (!sun))
+#define Q_NORETURN __declscpec(noreturn)
+#define q_unreachable() abort()
+#elif (defined __GNUC__ || defined __clang__)	// GCC & Clang
 #define Q_EXPORT __attribute__((visibility("default")))
-#else
+#define Q_NORETURN __attribute__((noreturn))
+#define q_unreachable() __builtin_unreachable()
+#elif (defined __SUNPRO_C)						// Sun Pro C Compiler
+#define Q_EXPORT __global
+#define Q_NORETURN
+#define q_unreachable() abort()
+#else											// Any ANSI C compiler
 #define Q_EXPORT
+#define Q_NORETURN
+#define q_unreachable() abort()
 #endif
+
+//=========================== MACROS ====================================
 
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
@@ -1094,7 +1106,7 @@ qboolean Info_Validate( const char *s );
 void Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void	QDECL Com_Error( int level, const char *error, ... );
+Q_NORETURN void	QDECL Com_Error( int level, const char *error, ... );
 void	QDECL Com_Printf( const char *msg, ... );
 
 
