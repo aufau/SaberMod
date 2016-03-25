@@ -186,7 +186,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int countDown = 0;
 
 	int final_Side;
-	int final_Powers[NUM_FORCE_POWERS];
+	int final_Powers[NUM_FORCE_POWERS] = { 0 };
 
 	if (powerLen >= sizeof(powerBuf))
 	{ //This should not happen. If it does, this is obviously a bogus string.

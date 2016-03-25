@@ -1598,12 +1598,12 @@ void CalculateJumpRoutes(void)
 
 				gWPArray[i]->forceJumpTo = 0;
 
-				if (gWPArray[i-1] && gWPArray[i-1]->inuse && (gWPArray[i-1]->origin[2]+16) < gWPArray[i]->origin[2])
+				if (i > 0 && gWPArray[i-1] && gWPArray[i-1]->inuse && (gWPArray[i-1]->origin[2]+16) < gWPArray[i]->origin[2])
 				{
 					nheightdif = (gWPArray[i]->origin[2] - gWPArray[i-1]->origin[2]);
 				}
 
-				if (gWPArray[i+1] && gWPArray[i+1]->inuse && (gWPArray[i+1]->origin[2]+16) < gWPArray[i]->origin[2])
+				if (i < MAX_WPARRAY_SIZE && gWPArray[i+1] && gWPArray[i+1]->inuse && (gWPArray[i+1]->origin[2]+16) < gWPArray[i]->origin[2])
 				{
 					pheightdif = (gWPArray[i]->origin[2] - gWPArray[i+1]->origin[2]);
 				}

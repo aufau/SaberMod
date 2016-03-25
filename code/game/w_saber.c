@@ -3230,7 +3230,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 						gotHit = qtrue;
 					}
 
-					if (g_saberTraceSaberFirst.integer)
+					if (!skipSaberTrace)
 					{
 						sN = 0;
 						while (sN < MAX_CLIENTS)

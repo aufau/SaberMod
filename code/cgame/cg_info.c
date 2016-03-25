@@ -300,11 +300,17 @@ void CG_DrawInformation( void ) {
 	value = atoi( Info_ValueForKey( info, "g_maxForceRank" ) );
 	if ( value && !valueNOFP ) {
 		char fmStr[1024];
+		char *text;
 
 		trap_SP_GetStringTextString("INGAMETEXT_MAXFORCERANK",fmStr, sizeof(fmStr));
 
-		UI_DrawProportionalString( 320, y, va( "%s %s", fmStr, CG_GetStripEdString("INGAMETEXT", forceMasteryLevels[value]) ),
-			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		if ( value >= 0 && value < ARRAY_LEN(forceMasteryLevels) ) {
+			text = va( "%s %s", fmStr, CG_GetStripEdString("INGAMETEXT", forceMasteryLevels[value]) );
+		} else {
+			text = va( "%s %i", fmStr, value );
+		}
+
+		UI_DrawProportionalString( 320, y, text, UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
 	}
 	else if (!valueNOFP)
@@ -312,7 +318,8 @@ void CG_DrawInformation( void ) {
 		char fmStr[1024];
 		trap_SP_GetStringTextString("INGAMETEXT_MAXFORCERANK",fmStr, sizeof(fmStr));
 
-		UI_DrawProportionalString( 320, y, va( "%s %s", fmStr, (char *)CG_GetStripEdString("INGAMETEXT", forceMasteryLevels[7]) ),
+		UI_DrawProportionalString( 320, y,
+			va( "%s %s", fmStr, CG_GetStripEdString("INGAMETEXT", forceMasteryLevels[FORCE_MASTERY_JEDI_MASTER]) ),
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
 	}

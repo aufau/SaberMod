@@ -1325,7 +1325,7 @@ void CG_DrawForceSelect( void )
 	i = BG_ProperForceIndex(cg.forceSelect) - 1;
 	if (i < 0)
 	{
-		i = MAX_SHOWPOWERS;
+		i = MAX_SHOWPOWERS - 1;
 	}
 
 	trap_R_SetColor(NULL);
@@ -1335,7 +1335,7 @@ void CG_DrawForceSelect( void )
 	{
 		if (i < 0)
 		{
-			i = MAX_SHOWPOWERS;
+			i = MAX_SHOWPOWERS - 1;
 		}
 
 		if (!ForcePower_Valid(forcePowerSorted[i]))	// Does he have this power?
@@ -1362,7 +1362,7 @@ void CG_DrawForceSelect( void )
 	}
 
 	i = BG_ProperForceIndex(cg.forceSelect) + 1;
-	if (i>MAX_SHOWPOWERS)
+	if (i >= MAX_SHOWPOWERS)
 	{
 		i = 0;
 	}
@@ -1371,7 +1371,7 @@ void CG_DrawForceSelect( void )
 	holdX = x + (bigIconSize/2) + pad;
 	for (iconCnt=1;iconCnt<(sideRightIconCnt+1);i++)
 	{
-		if (i>MAX_SHOWPOWERS)
+		if (i >= MAX_SHOWPOWERS)
 		{
 			i = 0;
 		}
@@ -2093,7 +2093,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			} else {
 				xx = x + w - TINYCHAR_WIDTH;
 			}
-			for (j = 0; j <= PW_NUM_POWERUPS; j++) {
+			for (j = 0; j < PW_NUM_POWERUPS; j++) {
 				if (ci->powerups & (1 << j)) {
 
 					item = BG_FindItemForPowerup( j );

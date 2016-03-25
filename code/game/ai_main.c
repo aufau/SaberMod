@@ -801,7 +801,10 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 
 	bs = botstates[client];
 
-	if (bs && bs->inuse) {
+	if (!bs) {
+		BotAI_Print(PRT_FATAL, "BotAISetupClient: client %d has no bot_state\n", client);
+		return qfalse;
+	} else if (bs->inuse) {
 		BotAI_Print(PRT_FATAL, "BotAISetupClient: client %d already setup\n", client);
 		return qfalse;
 	}
