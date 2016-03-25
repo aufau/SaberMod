@@ -3499,7 +3499,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// Final health damage
-	take = max(0, oldHealth) - max(0, targ->health) + asave;
+	take = MAX(0, oldHealth) - MAX(0, targ->health) + asave;
 	if (take && client) {
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 

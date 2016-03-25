@@ -885,7 +885,7 @@ team_t PickTeam( int ignoreClientNum ) {
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
 
 	if ( g_teamsize.integer > 0
-		&& min(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
+		&& MIN(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
 		return TEAM_SPECTATOR;
 	}
 	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {

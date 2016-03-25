@@ -30,8 +30,8 @@
 
 //=========================== MACROS ====================================
 
-#define min(x,y) ((x)<(y)?(x):(y))
-#define max(x,y) ((x)>(y)?(x):(y))
+#define MIN(x,y) ((x)<(y)?(x):(y))
+#define MAX(x,y) ((x)>(y)?(x):(y))
 #define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
 #define STR_H(x) #x
 #define STR(x) STR_H(x)
@@ -58,8 +58,6 @@
 #include "bg_lib.h"
 
 #define assert(exp)     ((void)0)
-
-typedef int intptr_t;
 
 #else
 

@@ -93,10 +93,10 @@ sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, 
 
 	labelW = CG_Text_Width(label, 1.0f, FONT_MEDIUM);
 	fieldW = CG_Text_Width(maxValue, scale, FONT_SMALL);
-	column.width[1] = max(labelW, fieldW);
+	column.width[1] = MAX(labelW, fieldW);
 
 	fieldW = CG_Text_Width(maxValue, SB_SCALE * scale, FONT_SMALL);
-	column.width[0] = max(labelW, fieldW);
+	column.width[0] = MAX(labelW, fieldW);
 
 	return column;
 }

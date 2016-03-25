@@ -179,7 +179,7 @@ void CG_ParseServerinfo( void ) {
 
 	// Menu displays either maxclients or teamsize if it's non-zero
 	val = atoi( Info_ValueForKey( info, "teamsize" ) );
-	val = max(0, val);
+	val = MAX(0, val);
 	if ( cgs.gametype == GT_TOURNAMENT || val == 0 ) {
 		trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
 		trap_Cvar_Set ( "ui_about_teamsize", "0" );
