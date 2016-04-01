@@ -1082,7 +1082,14 @@ saberMoveName_t PM_SaberFlipOverAttackMove(trace_t *tr)
 	pm->ps->fd.forceJumpSound = 1;
 	pm->cmd.upmove = 0;
 
-	return LS_A_FLIP_SLASH;
+	if ( PM_irand_timesync( 0, 1 ) )
+	{
+		return LS_A_FLIP_STAB;
+	}
+	else
+	{
+		return LS_A_FLIP_SLASH;
+	}
 }
 
 #define FLIPHACK_DISTANCE 200
