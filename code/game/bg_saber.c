@@ -4,19 +4,7 @@
 
 static int PM_irand_timesync(int val1, int val2)
 {
-	int i;
-
-	i = (val1-1) + (Q_random( &pm->cmd.serverTime )*(val2 - val1)) + 1;
-	if (i < val1)
-	{
-		i = val1;
-	}
-	if (i > val2)
-	{
-		i = val2;
-	}
-
-	return i;
+	return val1 + Q_random(&pml.seed) * (val2 - val1);
 }
 
 void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overrideAmt )
