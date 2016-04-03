@@ -4,7 +4,7 @@
 #include "tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
-
+#include "../game/mvapi.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is NO persistant data between levels on the client side.
@@ -1879,6 +1879,10 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 
 
 //===============================================
+
+// MVAPI
+
+qboolean	trap_MVAPI_ControlFixes(mvfix_t fixes);
 
 //
 // system traps

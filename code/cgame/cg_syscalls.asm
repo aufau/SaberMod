@@ -156,6 +156,7 @@ equ trap_G2API_SetRootSurface				-300	; CG_G2_SETROOTSURFACE
 equ trap_G2API_SetSurfaceOnOff				-301	; CG_G2_SETSURFACEONOFF
 equ trap_G2API_SetNewOrigin					-302	; CG_G2_SETNEWORIGIN
 equ trap_CG_RegisterSharedMemory			-303	; CG_SET_SHARED_BUFFER
+equ trap_MVAPI_ControlFixes					-704	; MVAPI_CONTROL_FIXES
 
 
 ; hardcoded functions

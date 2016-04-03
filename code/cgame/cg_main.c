@@ -127,6 +127,8 @@ char *HolocronIcons[] = {
 int forceModelModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
+int  CG_MVAPI_Init( int apilevel );
+void CG_MVAPI_AfterInit( void );
 void CG_Shutdown( void );
 
 void CG_CalcEntityLerpPositions( centity_t *cent );
@@ -153,6 +155,9 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	switch ( command ) {
 	case CG_INIT:
 		CG_Init( arg0, arg1, arg2 );
+		return CG_MVAPI_Init(arg11);
+	case MVAPI_AFTER_INIT:
+		CG_MVAPI_AfterInit();
 		return 0;
 	case CG_SHUTDOWN:
 		CG_Shutdown();
@@ -247,6 +252,34 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		break;
 	}
 	return -1;
+}
+
+int CG_MVAPI_Init( int apilevel )
+{
+	char		mv_apiEnabledBuffer[80];
+	trap_Cvar_VariableStringBuffer( "mv_apienabled", mv_apiEnabledBuffer, sizeof(mv_apiEnabledBuffer) );
+
+	if (!atoi(mv_apiEnabledBuffer)) {
+		CG_Printf("MVAPI is not supported at all or has been disabled.\n");
+		CG_Printf("You need at least JK2MV " MV_MIN_VERSION ".\n");
+		return 0;
+	}
+
+	if (apilevel < MV_APILEVEL) {
+		CG_Printf("MVAPI level %i not supported.\n", MV_APILEVEL);
+		CG_Printf("You need at least JK2MV " MV_MIN_VERSION ".\n");
+		return 0;
+	}
+
+	CG_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
+	return MV_APILEVEL;
+
+}
+
+void CG_MVAPI_AfterInit( void )
+{
+	// disable jk2mv fixes
+	trap_MVAPI_ControlFixes( 0 );
 }
 
 static int C_PointContents(void)
