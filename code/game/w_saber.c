@@ -66,6 +66,8 @@ void	G_DebugBoxLines(vec3_t mins, vec3_t maxs, int duration)
 
 void SaberUpdateSelf(gentity_t *ent)
 {
+	gentity_t *owner;
+
 	if (ent->r.ownerNum == ENTITYNUM_NONE)
 	{
 		ent->think = G_FreeEntity;
@@ -73,17 +75,19 @@ void SaberUpdateSelf(gentity_t *ent)
 		return;
 	}
 
-	if (!g_entities[ent->r.ownerNum].inuse ||
-		!g_entities[ent->r.ownerNum].client ||
-		g_entities[ent->r.ownerNum].client->sess.sessionTeam == TEAM_SPECTATOR)
+	owner = &g_entities[ent->r.ownerNum];
+
+	if (!owner->inuse ||
+		!owner->client ||
+		owner->client->sess.sessionTeam == TEAM_SPECTATOR)
 	{
-		g_entities[ent->r.ownerNum].client->ps.saberEntityNum = ENTITYNUM_NONE;
+		owner->client->ps.saberEntityNum = ENTITYNUM_NONE;
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;
 		return;
 	}
 
-	if (g_entities[ent->r.ownerNum].client->ps.saberInFlight && g_entities[ent->r.ownerNum].health > 0)
+	if (owner->client->ps.saberInFlight && owner->health > 0)
 	{ //let The Master take care of us now (we'll get treated like a missile until we return)
 		ent->nextthink = level.time;
 		ent->bolt_Head = PROPER_THROWN_VALUE;
@@ -92,16 +96,16 @@ void SaberUpdateSelf(gentity_t *ent)
 
 	ent->bolt_Head = 0;
 
-	if (g_entities[ent->r.ownerNum].client->ps.usingATST)
+	if (owner->client->ps.usingATST)
 	{ //using atst
 		ent->r.contents = 0;
 		ent->clipmask = 0;
 	}
-	else if (g_entities[ent->r.ownerNum].client->ps.weapon != WP_SABER ||
-		(g_entities[ent->r.ownerNum].client->ps.pm_flags & PMF_FOLLOW) ||
-		g_entities[ent->r.ownerNum].health < 1 ||
-		g_entities[ent->r.ownerNum].client->ps.saberHolstered ||
-		!g_entities[ent->r.ownerNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK])
+	else if (owner->client->ps.weapon != WP_SABER ||
+		(owner->client->ps.pm_flags & PMF_FOLLOW) ||
+		owner->health < 1 ||
+		owner->client->ps.saberHolstered ||
+		!owner->client->ps.fd.forcePowerLevel[FP_SABERATTACK])
 	{ //owner is not using saber, spectating, dead, saber holstered, or has no attack level
 		ent->r.contents = 0;
 		ent->clipmask = 0;
