@@ -2775,6 +2775,14 @@ void PM_BeginWeaponChange( int weapon ) {
 		pm->ps->zoomTime = pm->ps->commandTime;
 	}
 
+	// If the player still got the rocket launcher locked on a target remove the lock.
+	if ( pm->ps->rocketLockIndex != MAX_CLIENTS )
+	{
+		pm->ps->rocketLockIndex = MAX_CLIENTS;
+		pm->ps->rocketLockTime = 0;
+		pm->ps->rocketTargetTime = 0;
+	}
+
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
 	pm->ps->weaponTime += 200;
@@ -3634,14 +3642,6 @@ static void PM_Weapon( void )
 		(pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1))
 	{
 		PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
-	}
-
-
-	if (pm->ps->weapon != WP_ROCKET_LAUNCHER)
-	{
-		pm->ps->rocketLockIndex = MAX_CLIENTS;
-		pm->ps->rocketLockTime = 0;
-		pm->ps->rocketTargetTime = 0;
 	}
 
 	if ( PM_DoChargedWeapons())
