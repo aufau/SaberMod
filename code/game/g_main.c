@@ -372,7 +372,7 @@ MVAPI_AfterInit
 void MVAPI_AfterInit( void )
 {
 	// disable jk2mv fixes
-	trap_MVAPI_ControlFixes( 0 );
+	trap_MVAPI_ControlFixes( MVFIX_SPEEDHACK );
 }
 
 void QDECL G_Printf( const char *fmt, ... ) {

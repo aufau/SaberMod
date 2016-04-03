@@ -4462,7 +4462,15 @@ void PmoveSingle (pmove_t *pmove) {
 	// update the viewangles
 	PM_UpdateViewAngles( pm->ps, &pm->cmd );
 
-	AngleVectors (pm->ps->viewangles, pml.forward, pml.right, pml.up);
+	// ignore ROLL. you'll need to fix bugs in PM_AirMove and others,
+	// where projected vectors are not orthogonal anymore if you wan't
+	// to allow non-zero roll here.
+	{
+		float oldRoll = pm->ps->viewangles[ROLL];
+		pm->ps->viewangles[ROLL] = 0;
+		AngleVectors(pm->ps->viewangles, pml.forward, pml.right, pml.up);
+		pm->ps->viewangles[ROLL] = oldRoll;
+	}
 
 	if ( pm->cmd.upmove < 10 ) {
 		// not holding jump
