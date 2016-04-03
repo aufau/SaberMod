@@ -77,6 +77,7 @@ void SaberUpdateSelf(gentity_t *ent)
 		!g_entities[ent->r.ownerNum].client ||
 		g_entities[ent->r.ownerNum].client->sess.sessionTeam == TEAM_SPECTATOR)
 	{
+		g_entities[ent->r.ownerNum].client->ps.saberEntityNum = ENTITYNUM_NONE;
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;
 		return;
