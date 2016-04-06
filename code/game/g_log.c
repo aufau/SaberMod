@@ -1582,6 +1582,7 @@ void CalculateAwards(gentity_t *ent, char *msg)
 #endif // LOGGING_WEAPONS
 }
 
+#ifdef LOGGING_WEAPONS
 int GetMaxDeathsForClient(int nClient)
 {
 	int i = 0, nMostDeaths = 0;
@@ -1696,10 +1697,12 @@ int GetFavoriteWeaponForClient(int nClient)
 	}
 	return fav;
 }
+#endif // LOGGIN_WEAPONS
 
 // kef -- if a client leaves the game, clear out all counters he may have set
 void QDECL G_ClearClientLog(int client)
 {
+#ifdef LOGGING_WEAPONS
 	int i = 0;
 
 	for (i = 0; i < WP_NUM_WEAPONS; i++)
@@ -1744,5 +1747,5 @@ void QDECL G_ClearClientLog(int client)
 	{
 		G_WeaponLogItems[client][i] = 0;
 	}
+#endif
 }
-
