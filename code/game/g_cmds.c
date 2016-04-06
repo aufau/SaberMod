@@ -748,7 +748,7 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 				  TeamName ( client->sess.sessionTeam ) );
 }
 
-static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
+static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
 {
 	gclient_t	*client;
 	int			clientNum;
@@ -758,12 +758,6 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 	client = ent->client;
 	clientNum = client - level.clients;
 
-	if ( (g_gametype.integer == GT_TOURNAMENT)
-		&& level.numNonSpectatorClients >= 2 ) {
-		team = TEAM_SPECTATOR;
-		specState = SPECTATOR_NOT;
-	}
-
 	// fast path for switching followed player
 	oldTeam = client->sess.sessionTeam;
 	if ( team == oldTeam ) {
@@ -772,7 +766,7 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 			client->sess.spectatorClient = specClient;
 		}
 
-		return -1;
+		return qfalse;
 	}
 
 	//
@@ -789,14 +783,17 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 	if ( oldTeam != TEAM_SPECTATOR ) {
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
-		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
+		client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die (ent, ent, ent, 100000, MOD_SUICIDE);
 
 	}
-	// they go to the end of the line for tournements
+
 	if ( team == TEAM_SPECTATOR ) {
-		if ( (g_gametype.integer != GT_TOURNAMENT) || (oldTeam != TEAM_SPECTATOR) )	{//so you don't get dropped to the bottom of the queue for changing skins, etc.
-			client->sess.spectatorTime = level.time;
+		// they go to the end of the line for tournaments
+		client->sess.spectatorTime = level.time;
+
+		if ( client->ps.duelInProgress ) {
+			client->sess.losses++;
 		}
 	}
 
@@ -824,7 +821,7 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 
 	ClientBegin( clientNum, qfalse );
 
-	return 0;
+	return qtrue;
 }
 
 /*
@@ -832,9 +829,9 @@ static int SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState,
 SetTeam
 =================
 */
-void SetTeam( gentity_t *ent, team_t team )
+qboolean SetTeam( gentity_t *ent, team_t team )
 {
-	SetTeamSpec( ent, team, SPECTATOR_FREE, 0 );
+	return SetTeamSpec( ent, team, SPECTATOR_FREE, 0 );
 }
 
 /*
@@ -865,7 +862,6 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 		specState = SPECTATOR_FREE;
 	} else if ( GT_Team(g_gametype.integer) ) {
 		// if running a team game, assign player to one of the teams
-		specState = SPECTATOR_NOT;
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
 			if ( !ValidateTeam(clientNum, TEAM_RED) ) {
 				trap_SendServerCommand( clientNum,
@@ -896,7 +892,7 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 		}
 	}
 
-	if ( SetTeamSpec( ent, team, specState, specClient ) == 0 ) {
+	if ( SetTeamSpec( ent, team, specState, specClient ) ) {
 		ent->client->switchTeamTime = level.time + 5000;
 	};
 }
@@ -958,12 +954,6 @@ void Cmd_Team_f( gentity_t *ent ) {
 
 	if (gEscaping)
 	{
-		return;
-	}
-
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Cannot switch teams in Duel\n\"" );
 		return;
 	}
 
@@ -1038,24 +1028,9 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		}
 	}
 
-	// can't follow self
-	if ( &level.clients[ i ] == ent->client ) {
-		return;
-	}
-
-	// can't follow another spectator
-	if ( level.clients[ i ].sess.sessionTeam == TEAM_SPECTATOR ) {
-		return;
-	}
-
-	// if they are playing a tournement game, count as a loss
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
-		//WTF???
-		ent->client->sess.losses++;
-	}
-
-	SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i);
+	if ( SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i) ) {
+		ent->client->switchTeamTime = level.time + 5000;
+	};
 }
 
 /*
@@ -1067,17 +1042,12 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	int		clientnum;
 	int		original;
 
-	// if they are playing a tournement game, count as a loss
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {\
-		//WTF???
-		ent->client->sess.losses++;
-	}
-
-	// first set them to spectator
-	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		SetTeam(ent, TEAM_SPECTATOR);
-	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ){
+	// first set them to spectator, even if there is noone to follow
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( SetTeam(ent, TEAM_SPECTATOR) ) {
+			ent->client->switchTeamTime = level.time + 5000;
+		}
+	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ) {
 		gentity_t *target = G_CrosshairPlayer(ent, 8192);
 
 		if (target) {
@@ -1091,7 +1061,18 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 
 	clientnum = ent->client->sess.spectatorClient;
+
+	if (clientnum == -1) {
+		clientnum = level.follow1;
+	} else if (clientnum == -2) {
+		clientnum = level.follow2;
+	}
+	if ( clientnum < 0 || clientnum >= MAX_CLIENTS ) {
+		clientnum = 0;
+	}
+
 	original = clientnum;
+
 	do {
 		clientnum += dir;
 		if ( clientnum >= level.maxclients ) {
@@ -1127,15 +1108,23 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 	int			clientNum, clientRank;
 	int			i;
 
-	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+	clientNum = -1;
+
+	// first set them to spectator, even if there is noone to follow
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( SetTeam(ent, TEAM_SPECTATOR) ) {
+			ent->client->switchTeamTime = level.time + 5000;
+		}
+	} else if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		clientNum = ent->client->sess.spectatorClient;
 	} else if ((target = G_CrosshairPlayer(ent, 8192))) {
 		SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
 		return;
-	} else {
-		clientNum = -1;
 	}
 
+	if (clientNum < -2 || clientNum >= MAX_CLIENTS) {
+		clientNum = 0;
+	}
 	if (clientNum == -1) {
 		clientNum = level.follow1;
 	} else if (clientNum == -2) {

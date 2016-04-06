@@ -852,10 +852,11 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 	// level.numNonSpectatorClients
 	count = TeamCount( ignoreClientNum, team );
 
-	if ( g_teamsize.integer > 0 ) {
-		if ( count >= g_teamsize.integer ) {
-			return qfalse;
-		}
+	if ( g_gametype.integer == GT_TOURNAMENT && count >= 2 ) {
+		return qfalse;
+	}
+	if ( g_teamsize.integer > 0 && count >= g_teamsize.integer ) {
+		return qfalse;
 	}
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
 		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
