@@ -607,6 +607,8 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("noclip");
 	trap_AddCommand ("team");
 	trap_AddCommand ("follow");
+	trap_AddCommand ("follownext");
+	trap_AddCommand ("followprev");
 	trap_AddCommand ("levelshot");
 	trap_AddCommand ("addbot");
 	trap_AddCommand ("setviewpos");
