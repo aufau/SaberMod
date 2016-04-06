@@ -910,8 +910,9 @@ static qboolean PM_CheckJump( void )
 		if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 		{//on the ground
 			//check for left-wall and right-wall special jumps
-			int anim = -1;
-			float	vertPush = 0;
+			int			anim = -1;
+			float		vertPush = 0;
+			qboolean	didKick = qfalse;
 			if ( pm->cmd.rightmove > 0 && pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
 			{//strafing right
 				if ( pm->cmd.forwardmove > 0 )
@@ -923,6 +924,7 @@ static qboolean PM_CheckJump( void )
 				{//wall-flip
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.25f;
 					anim = BOTH_WALL_FLIP_RIGHT;
+					didKick = qtrue;
 				}
 			}
 			else if ( pm->cmd.rightmove < 0 && pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
@@ -936,6 +938,7 @@ static qboolean PM_CheckJump( void )
 				{//wall-flip
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.25f;
 					anim = BOTH_WALL_FLIP_LEFT;
+					didKick = qtrue;
 				}
 			}
 			else if ( pm->cmd.forwardmove < 0 && !(pm->cmd.buttons&BUTTON_ATTACK) )
@@ -993,7 +996,7 @@ static qboolean PM_CheckJump( void )
 				}
 
 				if ( !doTrace ||
-					( trace.fraction < 1.0f && !(pm->noKick && trace.entityNum < MAX_CLIENTS) &&
+					( trace.fraction < 1.0f && !(didKick && pm->noKick && trace.entityNum < MAX_CLIENTS) &&
 						( trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7) ) )
 				{//there is a wall there.. or hit a client
 					int parts;
