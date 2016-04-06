@@ -1622,7 +1622,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	voteCommand_t	voteCmd;
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
-	char			arg2[MAX_STRING_TOKENS];
+	const char		*arg2;
 	char			s[MAX_STRING_CHARS];
 
 	if ( !g_allowVote.integer ) {
@@ -1645,12 +1645,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
-	trap_Argv( 2, arg2, sizeof( arg2 ) );
-
-	if( strchr( arg1, ';' ) || strchr( arg2, ';' ) ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		return;
-	}
+	arg2 = ConcatArgs( 2 );
 
 	if ( !Q_stricmp( arg1, "map_restart" ) )     voteCmd = CV_MAP_RESTART;
 	else if ( !Q_stricmp( arg1, "nextmap" ) )    voteCmd = CV_NEXTMAP;
@@ -1678,6 +1673,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			trap_SendServerCommand( ent-g_entities, "print \"This vote has been disabled by the server administrator.\n\"");
 			return;
 		}
+	}
+
+	if( strchr( arg2, ';' ) || strchr( arg2, '\n' ) || strchr( arg2, '\r' ) ) {
+		trap_SendServerCommand( ent-g_entities, "print \"Vote string contains forbidden characters.\n\"" );
+		return;
 	}
 
 	// if there is still a vote to be executed
@@ -1868,9 +1868,9 @@ Cmd_CallTeamVote_f
 ==================
 */
 void Cmd_CallTeamVote_f( gentity_t *ent ) {
-	int		i, team, cs_offset;
-	char	arg1[MAX_STRING_TOKENS];
-	char	arg2[MAX_STRING_TOKENS];
+	int			i, team, cs_offset;
+	char		arg1[MAX_STRING_TOKENS];
+	const char	*arg2;
 
 	team = ent->client->sess.sessionTeam;
 	if ( team == TEAM_RED )
@@ -1900,15 +1900,10 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
-	arg2[0] = '\0';
-	for ( i = 2; i < trap_Argc(); i++ ) {
-		if (i > 2)
-			Q_strcat(arg2, sizeof(arg2), " ");
-		trap_Argv( i, &arg2[strlen(arg2)], sizeof( arg2 ) - strlen(arg2) );
-	}
+	arg2 = ConcatArgs( 2 );
 
-	if( strchr( arg1, ';' ) || strchr( arg2, ';' ) ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+	if( strchr( arg2, ';' ) || strchr( arg2, '\n' ) || strchr( arg2, '\r' ) ) {
+		trap_SendServerCommand( ent-g_entities, "print \"Vote string contains forbidden characters.\n\"" );
 		return;
 	}
 
@@ -1956,14 +1951,13 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 				}
 			}
 		}
-		Com_sprintf(arg2, sizeof(arg2), "%d", i);
+
+		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ), "%s %d", arg1, i );
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Team vote commands are: leader <player>.\n\"" );
 		return;
 	}
-
-	Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[cs_offset] ), "%s %s", arg1, arg2 );
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED )
