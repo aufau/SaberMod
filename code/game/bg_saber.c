@@ -848,13 +848,17 @@ static void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
 extern qboolean ValidAnimFileIndex ( int index );
 static void PM_SaberLocked( void )
 {
-	int	remaining = 0;
+	playerState_t	*genemy;
+	int				remaining = 0;
+	int				enemy = pm->ps->saberLockEnemy;
 
-	playerState_t *genemy = pm->bgClients[pm->ps->saberLockEnemy];
-	if ( !genemy )
+	if ( enemy < 0 || enemy >= MAX_CLIENTS )
 	{
 		return;
 	}
+
+	genemy = pm->bgClients[pm->ps->saberLockEnemy];
+
 	if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
 			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
 			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
@@ -1306,7 +1310,7 @@ void PM_WeaponLightsaber(void)
 				pm->ps->saberLockFrame )
 			)
 		{
-			if (pm->ps->saberLockEnemy < ENTITYNUM_NONE &&
+			if (pm->ps->saberLockEnemy < MAX_CLIENTS &&
 				pm->ps->saberLockEnemy >= 0)
 			{
 				playerState_t *en;

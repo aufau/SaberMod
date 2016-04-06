@@ -1338,9 +1338,9 @@ void ClientThink_real( gentity_t *ent ) {
 
 	if (ent->client->ps.saberLockTime > level.time)
 	{
-		gentity_t *blockOpp = &g_entities[ent->client->ps.saberLockEnemy];
+		gentity_t *blockOpp = &g_entities[client->ps.saberLockEnemy];
 
-		if (blockOpp && blockOpp->inuse && blockOpp->client)
+		if (blockOpp->inuse && blockOpp->client)
 		{
 			vec3_t lockDir, lockAng;
 
@@ -1349,6 +1349,12 @@ void ClientThink_real( gentity_t *ent ) {
 			//lockAng[YAW] = vectoyaw( defDir );
 			vectoangles(lockDir, lockAng);
 			SetClientViewAngle( ent, lockAng );
+		} else {
+			client->ps.weaponTime = 0;
+			client->ps.saberLockFrame = 0;
+			client->ps.saberLockTime = 0;
+			client->ps.saberLockEnemy = 0; // ENTITYNUM_NONE (could break unpatched cgame modules?)
+			client->ps.forceHandExtend = HANDEXTEND_WEAPONREADY;
 		}
 
 		if ( ( ent->client->buttons & BUTTON_ATTACK ) && ! ( ent->client->oldbuttons & BUTTON_ATTACK ) )
