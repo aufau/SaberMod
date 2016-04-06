@@ -1971,6 +1971,7 @@ int ForceShootDrain( gentity_t *self )
 
 void ForceJumpCharge( gentity_t *self, usercmd_t *ucmd )
 { //I guess this is unused now. Was used for the "charge" jump type.
+#if 0 // JK1 "charged jump"
 	float forceJumpChargeInterval = forceJumpStrength[0] / (FORCE_JUMP_CHARGE_TIME/FRAMETIME);
 
 	if ( self->health <= 0 )
@@ -2027,6 +2028,7 @@ void ForceJumpCharge( gentity_t *self, usercmd_t *ucmd )
 	}
 
 	//G_Printf("%f\n", self->client->ps.fd.forceJumpCharge);
+#endif // 0
 }
 
 int WP_GetVelocityForForceJump( gentity_t *self, vec3_t jumpVel, usercmd_t *ucmd )
@@ -2116,6 +2118,7 @@ int WP_GetVelocityForForceJump( gentity_t *self, vec3_t jumpVel, usercmd_t *ucmd
 
 void ForceJump( gentity_t *self, usercmd_t *ucmd )
 {
+#if 0 // JK1 "charged jump"
 	float forceJumpChargeInterval;
 	vec3_t	jumpVel;
 
@@ -2152,6 +2155,7 @@ void ForceJump( gentity_t *self, usercmd_t *ucmd )
 	//self->client->ps.fd.forcePowerDuration[FP_LEVITATION] = level.time + self->client->ps.weaponTime;
 	self->client->ps.fd.forceJumpCharge = 0;
 	self->client->ps.forceJumpFlip = qtrue;
+#endif // 0
 }
 
 void WP_AddAsMindtricked(forcedata_t *fd, int entNum)
