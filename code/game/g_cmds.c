@@ -757,9 +757,13 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 
 	client = ent->client;
 	clientNum = client - level.clients;
+	oldTeam = client->sess.sessionTeam;
+
+	if ( client->sess.spectatorState == SPECTATOR_FOLLOW && specState != SPECTATOR_FOLLOW) {
+		StopFollowing( ent );
+	}
 
 	// fast path for switching followed player
-	oldTeam = client->sess.sessionTeam;
 	if ( team == oldTeam ) {
 		if ( team == TEAM_SPECTATOR ) {
 			client->sess.spectatorState = specState;
@@ -841,18 +845,13 @@ SetTeamFromString
 */
 void SetTeamFromString( gentity_t *ent, char *s ) {
 	int					team;
-	gclient_t			*client;
 	int					clientNum;
 	spectatorState_t	specState;
-	int					specClient;
 
 	//
 	// see what change is requested
 	//
-	client = ent->client;
-
-	clientNum = client - level.clients;
-	specClient = 0;
+	clientNum = ent - g_entities;
 	specState = SPECTATOR_NOT;
 	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
@@ -892,7 +891,7 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 		}
 	}
 
-	if ( SetTeamSpec( ent, team, specState, specClient ) ) {
+	if ( SetTeamSpec( ent, team, specState, 0 ) ) {
 		ent->client->switchTeamTime = level.time + 5000;
 	};
 }
