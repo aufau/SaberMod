@@ -938,6 +938,8 @@ void InitSagaMode(void);
 
 // g_dimensions.c
 qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
+void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged);
+void G_StopPrivateDuel(gentity_t *ent);
 
 // ai_main.c
 
@@ -969,6 +971,7 @@ int BotAIStartFrame( int time );
 
 extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
+extern	mvsharedEntity_t mv_entities[MAX_GENTITIES];
 
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 

@@ -2427,6 +2427,8 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		challenged->client->ps.stats[STAT_ARMOR] =
 			challenged->client->ps.stats[STAT_HEALTH] =
 			challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
+
+		G_StartPrivateDuel(ent, challenged);
 	}
 	else
 	{
@@ -2440,6 +2442,7 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	ent->client->ps.forceHandExtendTime = level.time + 1000;
 
 	ent->client->ps.duelIndex = challenged->s.number;
+
 }
 
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);

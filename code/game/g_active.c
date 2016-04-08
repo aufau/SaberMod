@@ -986,6 +986,14 @@ void G_UpdateClientBroadcasts ( gentity_t *self )
 	G_UpdateForceSightBroadcasts ( self );
 }
 
+static void G_FinishDuel ( gentity_t *ent )
+{
+	ent->client->ps.duelInProgress = qfalse;
+	ent->client->duelStarted = qfalse;
+	G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
+	G_StopPrivateDuel(ent);
+}
+
 /*
 ==============
 ClientThink
@@ -1137,21 +1145,14 @@ void ClientThink_real( gentity_t *ent ) {
 		if (!duelAgainst || !duelAgainst->client || !duelAgainst->inuse ||
 			duelAgainst->client->ps.duelIndex != ent->s.number)
 		{
-			ent->client->ps.duelInProgress = 0;
-			ent->client->duelStarted = qfalse;
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
+			G_FinishDuel(ent);
 		}
 		else if (duelAgainst->health < 1 || duelAgainst->client->ps.stats[STAT_HEALTH] < 1)
 		{
 			char *s;
 
-			ent->client->ps.duelInProgress = 0;
-			ent->client->duelStarted = qfalse;
-			duelAgainst->client->ps.duelInProgress = 0;
-			duelAgainst->client->duelStarted = qfalse;
-
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
-			G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+			G_FinishDuel(ent);
+			G_FinishDuel(duelAgainst);
 
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
@@ -1209,13 +1210,8 @@ void ClientThink_real( gentity_t *ent ) {
 
 			if (subLen >= 1024)
 			{
-				ent->client->ps.duelInProgress = 0;
-				ent->client->duelStarted = qfalse;
-				duelAgainst->client->ps.duelInProgress = 0;
-				duelAgainst->client->duelStarted = qfalse;
-
-				G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
-				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+				G_FinishDuel(ent);
+				G_FinishDuel(duelAgainst);
 
 				trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELSTOP")) );
 			}

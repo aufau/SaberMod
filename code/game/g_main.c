@@ -18,6 +18,7 @@ typedef struct {
 
 gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
+mvsharedEntity_t mv_entities[MAX_GENTITIES];
 
 qboolean gDuelExit = qfalse;
 
@@ -373,6 +374,9 @@ void MVAPI_AfterInit( void )
 {
 	// disable jk2mv fixes
 	trap_MVAPI_ControlFixes( MVFIX_SPEEDHACK );
+
+	memset(mv_entities, 0, sizeof(mv_entities));
+	trap_MVAPI_LocateGameData(mv_entities, level.num_entities, sizeof(mvsharedEntity_t));
 }
 
 void QDECL G_Printf( const char *fmt, ... ) {
