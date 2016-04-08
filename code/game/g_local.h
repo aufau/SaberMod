@@ -936,6 +936,9 @@ void QDECL G_ClearClientLog(int client);
 // g_saga.c
 void InitSagaMode(void);
 
+// g_dimensions.c
+qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);

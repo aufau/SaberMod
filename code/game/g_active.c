@@ -1222,6 +1222,20 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
+	for (i = 0; i < level.maxclients; i++) {
+		gentity_t *other = g_entities + i;
+
+		if (!other->inuse) {
+			continue;
+		}
+		if (other->s.number == ent->s.number) {
+			continue;
+		}
+		if (!G_EntitiesCollide(ent, other)) {
+			other->r.contents &= ~CONTENTS_BODY;
+		}
+	}
+
 	/*
 	if ( client->ps.powerups[PW_HASTE] ) {
 		client->ps.speed *= 1.3;
@@ -1663,7 +1677,7 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
 				respawn( ent );
-				return;
+				goto reset_contents;
 			}
 
 			// pressing attack or use is the normal respawn method
@@ -1675,13 +1689,33 @@ void ClientThink_real( gentity_t *ent ) {
 		{
 			client->respawnTime = level.time + 1000;
 		}
-		return;
+		goto reset_contents;
 	}
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );
 
 	G_UpdateClientBroadcasts ( ent );
+reset_contents:
+	// Reset CONTENTS_BODY flag. Unfortunately it's tied to pm_type now.
+	for (i = 0; i < level.maxclients; i++) {
+		gentity_t *other = g_entities + i;
+
+		if (!other->inuse) {
+			continue;
+		}
+
+		switch (other->client->ps.pm_type) {
+		case PM_NORMAL:
+		case PM_FLOAT:
+		case PM_NOCLIP:
+		case PM_FREEZE:
+			other->r.contents |= CONTENTS_BODY;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 /*
