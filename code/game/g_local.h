@@ -536,7 +536,7 @@ typedef struct {
 	int			bodyQueIndex;			// dead bodies
 	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
 	int			portalSequence;
-	qboolean	mvapi;
+
 	qboolean	teamLock[TEAM_NUM_TEAMS];
 } level_locals_t;
 
@@ -970,6 +970,7 @@ int BotAIStartFrame( int time );
 
 
 extern	level_locals_t	level;
+extern	qboolean		mvapi;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 extern	mvsharedEntity_t mv_entities[MAX_GENTITIES];
 

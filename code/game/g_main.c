@@ -5,6 +5,7 @@
 #include "bg_version.h"
 
 level_locals_t	level;
+qboolean		mvapi;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -284,7 +285,7 @@ static int gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[0
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
 int  MVAPI_Init					( int apilevel );
-void MVAPI_AfterInit			( void );
+void MVAPI_AfterInit			( int levelTime, int randomSeed, int restart );
 void G_RunFrame					( int levelTime );
 void G_ShutdownGame				( int restart );
 void CheckExitRules				( void );
@@ -299,12 +300,23 @@ This must be the very first function compiled into the .q3vm file
 ================
 */
 Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11  ) {
+	static int	initArgs[3];
+	int			requestedMVAPI;
+
+
 	switch ( command ) {
 	case GAME_INIT:
-		G_InitGame( arg0, arg1, arg2 );
-		return MVAPI_Init(arg11);
+		requestedMVAPI = MVAPI_Init(arg11);
+		if (requestedMVAPI) {
+			initArgs[0] = arg0;
+			initArgs[1] = arg1;
+			initArgs[2] = arg2;
+		} else {
+			G_InitGame( arg0, arg1, arg2 );
+		}
+		return requestedMVAPI;
 	case MVAPI_AFTER_INIT:
-		MVAPI_AfterInit();
+		MVAPI_AfterInit(initArgs[0], initArgs[1], initArgs[2]);
 		return 0;
 	case GAME_SHUTDOWN:
 		G_ShutdownGame( arg0 );
@@ -359,7 +371,7 @@ int MVAPI_Init( int apilevel )
 		return 0;
 	}
 
-	level.mvapi = qtrue;
+	mvapi = qtrue;
 
 	G_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
 	return MV_APILEVEL;
@@ -370,12 +382,15 @@ int MVAPI_Init( int apilevel )
 MVAPI_AfterInit
 =================
 */
-void MVAPI_AfterInit( void )
+void MVAPI_AfterInit( int levelTime, int randomSeed, int restart )
 {
 	// disable jk2mv fixes
 	trap_MVAPI_ControlFixes( MVFIX_SPEEDHACK );
 
 	memset(mv_entities, 0, sizeof(mv_entities));
+
+	G_InitGame(levelTime, randomSeed, restart);
+
 	trap_MVAPI_LocateGameData(mv_entities, level.num_entities, sizeof(mvsharedEntity_t));
 }
 

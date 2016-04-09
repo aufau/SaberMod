@@ -19,7 +19,7 @@ qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 
 void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged)
 {
-	if (level.mvapi) {
+	if (mvapi) {
 		int	clientNum = ent->s.clientNum;
 		int challengedNum = challenged->s.clientNum;
 		int	i;
@@ -38,7 +38,7 @@ void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged)
 
 void G_StopPrivateDuel(gentity_t *ent)
 {
-	if (level.mvapi) {
+	if (mvapi) {
 		int clientNum = ent->s.clientNum;
 		int i;
 
