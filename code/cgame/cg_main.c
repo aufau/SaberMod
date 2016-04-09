@@ -534,6 +534,7 @@ vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	cg_chatBeep;
 vmCvar_t	cg_duelGlow;
+vmCvar_t	cg_privateDuel;
 
 vmCvar_t	ui_myteam;
 vmCvar_t	ui_fontSharpness;
@@ -685,6 +686,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE},
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
+	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 	{ &ui_fontSharpness, "ui_fontSharpness", "1", CVAR_ARCHIVE},

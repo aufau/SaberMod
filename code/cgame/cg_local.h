@@ -1547,6 +1547,7 @@ extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
 extern	vmCvar_t		cg_duelGlow;
+extern	vmCvar_t		cg_privateDuel;
 
 extern	vmCvar_t		ui_myteam;
 extern	vmCvar_t		ui_fontSharpness;

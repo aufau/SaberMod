@@ -61,6 +61,9 @@ cg_drawTimer 1
 cg_duelGlow 1
   Turn on/off duel glow.
 
+cg_privateDuel 0
+  Hide all other players and entities when duelling.
+
 Spectating
 ..........
 

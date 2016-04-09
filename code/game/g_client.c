@@ -608,7 +608,7 @@ void InitBodyQue (void) {
 
 	level.bodyQueIndex = 0;
 	for (i=0; i<BODY_QUEUE_SIZE ; i++) {
-		ent = G_Spawn( ENTITYNUM_NONE ); // blame body owner in CopyToBodyQue
+		ent = G_Spawn( ENTITYNUM_NONE );
 		ent->classname = "bodyque";
 		ent->neverFree = qtrue;
 		level.bodyQue[i] = ent;
@@ -734,6 +734,8 @@ void CopyToBodyQue( gentity_t *ent ) {
 	}
 
 	VectorCopy ( body->s.pos.trBase, body->r.currentOrigin );
+
+	G_BlameForEntity( ent->s.number, body );
 	trap_LinkEntity (body);
 }
 
@@ -1149,14 +1151,15 @@ if desired.
 ============
 */
 void ClientUserinfoChanged( int clientNum ) {
-	gentity_t *ent;
+	gentity_t	*ent;
+	gclient_t	*client;
+	qboolean	privateDuel;
 	int		teamTask, teamLeader, team, health;
 	char	*s;
 	char	model[MAX_QPATH];
 	//char	headModel[MAX_QPATH];
 	char	forcePowers[MAX_QPATH];
 	char	oldname[MAX_NETNAME];
-	gclient_t	*client;
 	char	c1[11]; // Enough for hex color, just in case
 	char	c2[11]; // 0xffffffff
 	char	redTeam[MAX_TEAMNAME];
@@ -1266,6 +1269,17 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.pmoveFixed = qtrue;
 	}
 	*/
+	s = Info_ValueForKey( userinfo, "cg_privateDuel" );
+	privateDuel = ( *s && atoi( s ) ) ? qtrue : qfalse;
+	if (privateDuel != client->pers.privateDuel) {
+		client->pers.privateDuel = privateDuel;
+
+		if (privateDuel) {
+			G_StartPrivateDuel( ent );
+		} else {
+			G_StopPrivateDuel( ent );
+		}
+	}
 
 	// team task (0 = none, 1 = offence, 2 = defence)
 	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
@@ -1468,7 +1482,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	if ( ent->r.linked ) {
 		trap_UnlinkEntity( ent );
 	}
-	G_InitGentity( ent );
+	G_InitGentity( ent, clientNum );
 	ent->touch = 0;
 	ent->pain = 0;
 	ent->client = client;

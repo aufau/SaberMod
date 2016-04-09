@@ -265,6 +265,12 @@ struct gentity_s {
 	int			damageRedirectTo; //this entity number
 
 	gitem_t		*item;			// for bonus items
+
+	// 1. Number of a client who should be blamed for this entity
+	// 2. ENTITYNUM_WORLD for entities that should be always broadcasted
+	// 3. ENTITYNUM_NONE for entities that don't belong to anyone but
+	// can be ommited by dueling players
+	int			blameEntityNum;
 };
 
 #define DAMAGEREDIRECT_HEAD		1
@@ -353,6 +359,7 @@ typedef struct {
 	int			totalDamageTakenFromAllies;
 	int			totalDamageDealtToAllies;
 	qboolean	registered;
+	qboolean	privateDuel;
 } clientPersistant_t;
 
 
@@ -614,7 +621,7 @@ void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
-void	G_InitGentity( gentity_t *e );
+void	G_InitGentity( gentity_t *e, int blameEntityNum );
 gentity_t	*G_Spawn ( int blameEntityNum );
 gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum );
 gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
@@ -937,8 +944,9 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // g_dimensions.c
+void G_BlameForEntity( int blame, gentity_t *ent );
 qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
-void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged);
+void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
 
 // ai_main.c

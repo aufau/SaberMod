@@ -2391,6 +2391,8 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
+	ent->client->ps.duelIndex = challenged->s.number;
+
 	if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
 	{
 		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
@@ -2428,7 +2430,8 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 			challenged->client->ps.stats[STAT_HEALTH] =
 			challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
 
-		G_StartPrivateDuel(ent, challenged);
+		G_StartPrivateDuel(ent);
+		G_StartPrivateDuel(challenged);
 	}
 	else
 	{
@@ -2440,9 +2443,6 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 
 	ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
 	ent->client->ps.forceHandExtendTime = level.time + 1000;
-
-	ent->client->ps.duelIndex = challenged->s.number;
-
 }
 
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);

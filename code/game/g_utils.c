@@ -405,12 +405,14 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	VectorClear( angles );
 }
 
-void G_InitGentity( gentity_t *e ) {
+void G_InitGentity( gentity_t *e, int blameEntityNum ) {
 	e->inuse = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;
 	e->s.modelGhoul2 = 0; //assume not
+
+	G_BlameForEntity( blameEntityNum, e);
 }
 
 /*
@@ -450,7 +452,7 @@ gentity_t *G_Spawn( int blameEntityNum ) {
 			}
 
 			// reuse this slot
-			G_InitGentity( e );
+			G_InitGentity( e, blameEntityNum );
 			return e;
 		}
 		if ( i != MAX_GENTITIES ) {
@@ -471,7 +473,7 @@ gentity_t *G_Spawn( int blameEntityNum ) {
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
 
-	G_InitGentity( e );
+	G_InitGentity( e, blameEntityNum );
 	return e;
 }
 
