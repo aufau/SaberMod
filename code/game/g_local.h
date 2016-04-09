@@ -937,6 +937,7 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // g_dimensions.c
+void G_EntitySnapshotControl( gentity_t *ent, int blame );
 qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged);
 void G_StopPrivateDuel(gentity_t *ent);

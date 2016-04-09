@@ -640,6 +640,8 @@ gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum ) {
 	// find cluster for PVS
 	trap_LinkEntity( e );
 
+	G_EntitySnapshotControl( e, blameEntityNum );
+
 	return e;
 }
 
@@ -689,6 +691,8 @@ gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel, int blameEn
 
 	// find cluster for PVS
 	trap_LinkEntity( e );
+
+	G_EntitySnapshotControl( e, blameEntityNum );
 
 	return e;
 }

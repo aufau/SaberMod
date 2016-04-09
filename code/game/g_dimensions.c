@@ -1,5 +1,49 @@
 #include "g_local.h"
 
+void G_EntitySnapshotControl( gentity_t *ent, int blame )
+{
+	if (level.mvapi) {
+		mvsharedEntity_t	*mvEnt;
+		int					i;
+
+		assert(blame >= 0 && blame < MAX_GENTITIES);
+
+		mvEnt = mv_entities + ent->s.number;
+
+		for (i = 0; i < MAX_CLIENTS; i++) {
+			mvEnt->snapshotIgnore[i] = 0;
+		}
+
+		// never ignore ENTITYNUM_WORLD, at least for EV_CLIENTJOIN
+		if (blame >= MAX_CLIENTS) {
+			blame = g_entities[blame].r.ownerNum;
+
+			if (blame >= MAX_CLIENTS) {
+				blame = g_entities[blame].r.ownerNum;
+
+				if (blame >= MAX_CLIENTS) {
+					assert(0); // just for testing
+					return;
+				}
+			}
+		}
+
+		for (i = 0; i < MAX_CLIENTS; i++) {
+			playerState_t *ps;
+
+			if (!g_entities[i].inuse) {
+				continue;
+			}
+
+			ps = &level.clients[i].ps;
+
+			if (ps->duelInProgress && blame != i && blame != ps->duelIndex) {
+				mvEnt->snapshotIgnore[i] = 1;
+			}
+		}
+	}
+}
+
 qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 {
 	assert(ent1->s.number != ent2->s.number);
