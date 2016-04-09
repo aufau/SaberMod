@@ -278,7 +278,7 @@ gentity_t *CreateMissile( vec3_t org, vec3_t dir, float vel, int life,
 {
 	gentity_t	*missile;
 
-	missile = G_Spawn();
+	missile = G_Spawn( owner->s.number );
 
 	missile->nextthink = level.time + life;
 	missile->think = G_FreeEntity;

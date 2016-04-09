@@ -2603,7 +2603,7 @@ void G_Dismember( gentity_t *ent, vec3_t point, int limbType, float limbRollBase
 	gentity_t *limb;
 
 	VectorCopy( point, newPoint );
-	limb = G_Spawn();
+	limb = G_Spawn( ent->s.number );
 	limb->classname = "playerlimb";
 	G_SetOrigin( limb, newPoint );
 	VectorCopy( newPoint, limb->s.pos.trBase );

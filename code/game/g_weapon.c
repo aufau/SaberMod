@@ -1221,7 +1221,7 @@ static void WP_DEMP2_AltFire( gentity_t *ent )
 	// we treat the trace fraction like it's a time value, meaning that the shot can travel a whopping 4096 units in 1 second
 
 	//missile = CreateMissile( start, forward, DEMP2_ALT_RANGE, tr.fraction * 1000/*time*/, ent, qtrue );
-	missile = G_Spawn();
+	missile = G_Spawn( ent->s.number );
 	G_SetOrigin(missile, tr.endpos);
 	//rww - I guess it's rather pointless making it a missile anyway, at least for MP.
 
@@ -1767,7 +1767,7 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
-	bolt = G_Spawn();
+	bolt = G_Spawn( ent->s.number );
 
 	bolt->physicsObject = qtrue;
 
@@ -2117,7 +2117,7 @@ void WP_PlaceLaserTrap( gentity_t *ent, qboolean alt_fire )
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
-	laserTrap = G_Spawn();
+	laserTrap = G_Spawn( ent->s.number );
 
 	//limit to 10 placed at any one time
 	//see how many there are now
@@ -2339,7 +2339,7 @@ void drop_charge (gentity_t *self, vec3_t start, vec3_t dir)
 
 	VectorNormalize (dir);
 
-	bolt = G_Spawn();
+	bolt = G_Spawn( self->s.number );
 	bolt->classname = "detpack";
 	bolt->nextthink = level.time + FRAMETIME;
 	bolt->think = G_RunObject;

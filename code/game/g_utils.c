@@ -428,7 +428,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_Spawn( void ) {
+gentity_t *G_Spawn( int blameEntityNum ) {
 	int			i, force;
 	gentity_t	*e;
 
@@ -626,7 +626,7 @@ gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
-	e = G_Spawn();
+	e = G_Spawn( blameEntityNum );
 	e->s.eType = ET_EVENTS + event;
 
 	e->classname = "tempEntity";
@@ -639,8 +639,6 @@ gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum ) {
 
 	// find cluster for PVS
 	trap_LinkEntity( e );
-
-	G_EntitySnapshotControl( e, blameEntityNum );
 
 	return e;
 }
@@ -676,7 +674,7 @@ gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel, int blameEn
 	gentity_t		*e;
 	vec3_t		snapped;
 
-	e = G_Spawn();
+	e = G_Spawn( blameEntityNum );
 
 	e->s.eType = ET_EVENTS + event;
 	e->inuse = qtrue;
@@ -691,8 +689,6 @@ gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel, int blameEn
 
 	// find cluster for PVS
 	trap_LinkEntity( e );
-
-	G_EntitySnapshotControl( e, blameEntityNum );
 
 	return e;
 }

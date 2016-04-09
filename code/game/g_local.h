@@ -615,7 +615,7 @@ void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
 void	G_InitGentity( gentity_t *e );
-gentity_t	*G_Spawn (void);
+gentity_t	*G_Spawn ( int blameEntityNum );
 gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum );
 gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
 gentity_t *G_ScreenShake(vec3_t org, gentity_t *target, float intensity, int duration, qboolean global);
@@ -937,7 +937,6 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // g_dimensions.c
-void G_EntitySnapshotControl( gentity_t *ent, int blame );
 qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent, gentity_t *challenged);
 void G_StopPrivateDuel(gentity_t *ent);

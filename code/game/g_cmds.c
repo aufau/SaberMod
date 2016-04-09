@@ -489,7 +489,7 @@ void Cmd_Give_f (gentity_t *ent)
 			return;
 		}
 
-		it_ent = G_Spawn();
+		it_ent = G_Spawn( ENTITYNUM_WORLD );
 		VectorCopy( ent->r.currentOrigin, it_ent->s.origin );
 		it_ent->classname = it->classname;
 		G_SpawnItem (it_ent, it);

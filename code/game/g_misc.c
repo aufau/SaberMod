@@ -1230,7 +1230,7 @@ gentity_t *CreateNewDamageBox( gentity_t *ent )
 
 	//We do not want the client to have any real knowledge of the entity whatsoever. It will only
 	//ever be used on the server.
-	dmgBox = G_Spawn();
+	dmgBox = G_Spawn( ENTITYNUM_WORLD );
 	dmgBox->classname = "dmg_box";
 
 	dmgBox->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -2812,7 +2812,7 @@ void G_SpawnExampleAnimEnt(vec3_t pos, int aeType, animentCustomInfo_t *aeInfo)
 		}
 	}
 
-	animEnt = G_Spawn();
+	animEnt = G_Spawn( ENTITYNUM_NONE );
 
 	animEnt->watertype = aeType; //set the animent type
 
