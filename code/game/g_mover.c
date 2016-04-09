@@ -751,7 +751,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 		}
 		else
 		{
-			G_TempEntity( other->s.origin, EV_ITEM_POP );
+			G_TempEntity( other->s.origin, EV_ITEM_POP, ENTITYNUM_WORLD );
 			G_FreeEntity( other );
 		}
 		return;
@@ -1683,7 +1683,7 @@ void BreakableBrushDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 
 	if (self->boltpoint2)
 	{
-		te = G_TempEntity( dif, EV_DEBRIS );
+		te = G_TempEntity( dif, EV_DEBRIS, ENTITYNUM_WORLD );
 		te->s.eventParm = self->s.number;
 		te->s.weapon = self->boltpoint1;
 		te->s.trickedentindex = self->boltpoint2; //debris model index
@@ -1704,7 +1704,7 @@ void BreakableBrushDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 		u[YAW] = 0;
 		u[PITCH] = 1;
 		u[ROLL] = 0;
-		G_PlayEffect(EFFECT_EXPLOSION, dif, u);
+		G_PlayEffect(EFFECT_EXPLOSION, dif, u, self->s.number);
 		G_Sound(self, CHAN_BODY, gExplSound);
 	}
 
@@ -1894,7 +1894,7 @@ void GlassDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int da
 
 	self->splashRadius = 40; // ?? some random number, maybe it's ok?
 
-	te = G_TempEntity( dif, EV_GLASS_SHATTER );
+	te = G_TempEntity( dif, EV_GLASS_SHATTER, ENTITYNUM_WORLD );
 	te->s.genericenemyindex = self->s.number;
 	VectorCopy(self->pos1, te->s.origin);
 	VectorCopy(self->pos2, te->s.angles);
@@ -1915,7 +1915,7 @@ void GlassDie_Old(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	G_UseTargets(self, attacker);
 
-	te = G_TempEntity( dif, EV_GLASS_SHATTER );
+	te = G_TempEntity( dif, EV_GLASS_SHATTER, ENTITYNUM_WORLD );
 	te->s.genericenemyindex = self->s.number;
 	VectorCopy(self->r.maxs, te->s.origin);
 	VectorCopy(self->r.mins, te->s.angles);

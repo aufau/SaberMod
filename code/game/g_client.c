@@ -783,7 +783,7 @@ void respawn( gentity_t *ent ) {
 	ClientSpawn(ent);
 
 	// add a teleportation effect
-	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
+	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, ent->s.clientNum );
 	tent->s.clientNum = ent->s.clientNum;
 }
 
@@ -1390,7 +1390,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
-	te = G_TempEntity( vec3_origin, EV_CLIENTJOIN );
+	te = G_TempEntity( vec3_origin, EV_CLIENTJOIN, ENTITYNUM_WORLD ); // ENTITYNUM_WORLD for a good reason
 	te->r.svFlags |= SVF_BROADCAST;
 	te->s.eventParm = clientNum;
 
@@ -1563,7 +1563,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// send event
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
+		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
 		tent->s.clientNum = ent->s.clientNum;
 
 		if ( g_gametype.integer != GT_TOURNAMENT  ) {
@@ -2095,7 +2095,7 @@ void ClientDisconnect( int clientNum ) {
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
+		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT, clientNum );
 		tent->s.clientNum = ent->s.clientNum;
 
 		// They don't get to take powerups with them!

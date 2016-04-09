@@ -846,7 +846,7 @@ void SendPendingPredictableEvents( playerState_t *ps ) {
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_TempEntity( ps->origin, event );
+		t = G_TempEntity( ps->origin, event, ps->clientNum );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;

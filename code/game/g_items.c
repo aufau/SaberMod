@@ -930,7 +930,7 @@ void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	// hack the effect angle so that explode death can orient the effect properly
 	VectorSet( self->s.angles, 0, 0, 1 );
 
-	G_PlayEffect(EFFECT_EXPLOSION_PAS, self->s.pos.trBase, self->s.angles);
+	G_PlayEffect(EFFECT_EXPLOSION_PAS, self->s.pos.trBase, self->s.angles, self->s.number);
 	G_RadiusDamage(self->s.pos.trBase, &g_entities[self->boltpoint3], 30, 256, self, MOD_UNKNOWN);
 
 	g_entities[self->boltpoint3].client->ps.fd.sentryDeployed = qfalse;
@@ -1356,10 +1356,10 @@ void RespawnItem( gentity_t *ent ) {
 
 		// if the powerup respawn sound should Not be global
 		if (ent->speed) {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
+			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND, ENTITYNUM_WORLD );
 		}
 		else {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND, ENTITYNUM_WORLD );
 		}
 		te->s.eventParm = G_SoundIndex( "sound/items/respawn1" );
 		te->r.svFlags |= SVF_BROADCAST;
@@ -1515,13 +1515,13 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		if (!ent->speed) {
 			gentity_t	*te;
 
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP, ENTITYNUM_WORLD );
 			te->s.eventParm = ent->s.modelindex;
 			te->r.svFlags |= SVF_BROADCAST;
 		} else {
 			gentity_t	*te;
 
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP, ENTITYNUM_WORLD );
 			te->s.eventParm = ent->s.modelindex;
 			// only send this temp entity to a single client
 			te->r.svFlags |= SVF_SINGLECLIENT;

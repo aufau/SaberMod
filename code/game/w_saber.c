@@ -1699,7 +1699,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 		if (g_entities[tr.entityNum].client && !unblockable && WP_SaberCanBlock(&g_entities[tr.entityNum], tr.endpos, 0, MOD_SABER, qfalse, attackStr))
 		{
-			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, tr.entityNum );
 			if (dmg <= SABER_NONATTACK_DAMAGE)
 			{
 				self->client->ps.saberIdleWound = level.time + g_saberDmgDelay_Idle.integer;
@@ -1773,7 +1773,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 			G_Damage(&g_entities[tr.entityNum], self, self, dir, tr.endpos, dmg, 0, MOD_SABER);
 
-			te = G_TempEntity( tr.endpos, EV_SABER_HIT );
+			te = G_TempEntity( tr.endpos, EV_SABER_HIT, tr.entityNum );
 
 			VectorCopy(tr.endpos, te->s.origin);
 			VectorCopy(tr.plane.normal, te->s.angles);
@@ -1828,7 +1828,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 		didHit = qtrue;
 		self->client->ps.saberIdleWound = level.time + g_saberDmgDelay_Idle.integer;
 
-		te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+		te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, tr.entityNum );
 		if (dmg <= SABER_NONATTACK_DAMAGE)
 		{
 			self->client->ps.saberIdleWound = level.time + g_saberDmgDelay_Idle.integer;
@@ -2203,7 +2203,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 				{ //they blocked it
 					WP_SaberBlockNonRandom(ent, tr.endpos, qfalse);
 
-					te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+					te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, tr.entityNum );
 					VectorCopy(tr.endpos, te->s.origin);
 					VectorCopy(tr.plane.normal, te->s.angles);
 					if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
@@ -2241,7 +2241,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 						G_Damage(ent, saberOwner, saberOwner, dir, tr.endpos, saberent->damage, 0, MOD_SABER);
 					}
 
-					te = G_TempEntity( tr.endpos, EV_SABER_HIT );
+					te = G_TempEntity( tr.endpos, EV_SABER_HIT, tr.entityNum );
 					VectorCopy(tr.endpos, te->s.origin);
 					VectorCopy(tr.plane.normal, te->s.angles);
 					if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
@@ -2289,7 +2289,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 					G_Damage(ent, saberOwner, saberOwner, dir, tr.endpos, 5, 0, MOD_SABER);
 				}
 
-				te = G_TempEntity( tr.endpos, EV_SABER_HIT );
+				te = G_TempEntity( tr.endpos, EV_SABER_HIT, tr.entityNum );
 				VectorCopy(tr.endpos, te->s.origin);
 				VectorCopy(tr.plane.normal, te->s.angles);
 				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
@@ -3081,7 +3081,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 			{
 				gentity_t *te;
 				vec3_t dir;
-				te = G_TempEntity( g_entities[self->client->ps.saberEntityNum].r.currentOrigin, EV_SABER_BLOCK );
+				te = G_TempEntity( g_entities[self->client->ps.saberEntityNum].r.currentOrigin, EV_SABER_BLOCK, self->s.clientNum );
 				VectorSet( dir, 0, 1, 0 );
 				VectorCopy(g_entities[self->client->ps.saberEntityNum].r.currentOrigin, te->s.origin);
 				VectorCopy(dir, te->s.angles);

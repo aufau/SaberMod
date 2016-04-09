@@ -616,12 +616,12 @@ void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
 void	G_InitGentity( gentity_t *e );
 gentity_t	*G_Spawn (void);
-gentity_t *G_TempEntity( vec3_t origin, int event );
-gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang);
+gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum );
+gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
 gentity_t *G_ScreenShake(vec3_t org, gentity_t *target, float intensity, int duration, qboolean global);
 void	G_MuteSound( int entnum, int channel );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
-void	G_SoundAtLoc( vec3_t loc, int channel, int soundIndex );
+void	G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum );
 void	G_EntitySound( gentity_t *ent, int channel, int soundIndex );
 void	TryUse( gentity_t *ent );
 void	G_SendG2KillQueue(void);
@@ -895,7 +895,7 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
 // w_force.c / w_saber.c
-gentity_t *G_PreDefSound(vec3_t org, int pdSound);
+gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum);
 qboolean HasSetSaberOnly(void);
 void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower );
 void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd );

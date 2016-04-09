@@ -518,15 +518,15 @@ void ExplodeDeath( gentity_t *self )
 ScorePlum
 ============
 */
-void ScorePlum( gentity_t *ent, vec3_t origin, int score ) {
+void ScorePlum( int clientNum, vec3_t origin, int score ) {
 	gentity_t *plum;
 
-	plum = G_TempEntity( origin, EV_SCOREPLUM );
+	plum = G_TempEntity( origin, EV_SCOREPLUM, clientNum );
 	// only send this temp entity to a single client
 	plum->r.svFlags |= SVF_SINGLECLIENT;
-	plum->r.singleClient = ent->s.number;
+	plum->r.singleClient = clientNum;
 	//
-	plum->s.otherEntityNum = ent->s.number;
+	plum->s.otherEntityNum = clientNum;
 	plum->s.time = score;
 }
 
@@ -669,7 +669,7 @@ void TossClientItems( gentity_t *self ) {
 		item = BG_FindItemForWeapon( weapon );
 
 		// tell all clients to remove the weapon model on this guy until he respawns
-		te = G_TempEntity( vec3_origin, EV_DESTROY_WEAPON_MODEL );
+		te = G_TempEntity( vec3_origin, EV_DESTROY_WEAPON_MODEL, ENTITYNUM_WORLD );
 		te->r.svFlags |= SVF_BROADCAST;
 		te->s.eventParm = self->s.number;
 
@@ -2090,7 +2090,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	killer = G_LogPlayerDie( self, attacker, meansOfDeath );
 
 	// broadcast the death event to everyone
-	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
+	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY, self->s.clientNum );
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
@@ -2583,7 +2583,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 		boltAngles[1] = -boltMatrix.matrix[1][1];
 		boltAngles[2] = -boltMatrix.matrix[2][1];
 
-		te = G_TempEntity( boltPoint, EV_SABER_HIT );
+		te = G_TempEntity( boltPoint, EV_SABER_HIT, self->s.clientNum );
 
 		VectorCopy(boltPoint, te->s.origin);
 		VectorCopy(boltAngles, te->s.angles);
@@ -3346,7 +3346,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			//G_Sound(targ, CHAN_AUTO, protectHitSound);
 			if (targ->client->forcePowerSoundDebounce < level.time)
 			{
-				G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT);
+				G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT, targ->s.clientNum);
 				targ->client->forcePowerSoundDebounce = level.time + 400;
 			}
 
@@ -3412,7 +3412,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		gentity_t	*evEnt;
 
 		// Send off an event to show a shield shell on the player, pointing in the right direction.
-		evEnt = G_TempEntity(vec3_origin, EV_SHIELD_HIT);
+		evEnt = G_TempEntity(vec3_origin, EV_SHIELD_HIT, targ->s.number);
 		evEnt->s.otherEntityNum = targ->s.number;
 		evEnt->s.eventParm = DirToByte(dir);
 		evEnt->s.time2 = (shieldAbsorbed / 25) * 25 + Q_irand(0, 25);

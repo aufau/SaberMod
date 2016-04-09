@@ -384,7 +384,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		gentity_t *te;
 		int otherDefLevel = other->client->ps.fd.forcePowerLevel[FP_SABERDEFEND];
 
-		te = G_TempEntity( ent->r.currentOrigin, EV_SABER_BLOCK );
+		te = G_TempEntity( ent->r.currentOrigin, EV_SABER_BLOCK, ent->r.ownerNum );
 		VectorCopy(ent->r.currentOrigin, te->s.origin);
 		VectorCopy(trace->plane.normal, te->s.angles);
 		te->s.eventParm = 0;
@@ -450,7 +450,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			//in this case, deflect it even if we can't actually block it because it hit our saber
 			WP_SaberCanBlock(otherOwner, ent->r.currentOrigin, 0, 0, qtrue, 0);
 
-			te = G_TempEntity( ent->r.currentOrigin, EV_SABER_BLOCK );
+			te = G_TempEntity( ent->r.currentOrigin, EV_SABER_BLOCK, ent->r.ownerNum );
 			VectorCopy(ent->r.currentOrigin, te->s.origin);
 			VectorCopy(trace->plane.normal, te->s.angles);
 			te->s.eventParm = 0;
