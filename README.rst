@@ -52,6 +52,9 @@ Cvars
 handicap <x>
   Lower your max health to x and damage to x%.
 
+cg_chatBeep 1
+  Turn on/off chat beep.
+
 cg_duelGlow 1
   Turn on/off duel glow.
 
