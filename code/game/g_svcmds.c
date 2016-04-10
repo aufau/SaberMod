@@ -376,7 +376,59 @@ void	Svcmd_ForceTeam_f( void ) {
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
-	SetTeamFromString( &g_entities[cl - level.clients], str );
+	SetTeamFromString( &g_entities[cl - level.clients], str, qtrue );
+}
+
+/*
+===================
+Svcmd_LockTeam_f
+
+lockteam <teams>
+===================
+*/
+void	Svcmd_LockTeam_f( qboolean lock )
+{
+	const char	*prefix = lock ? "" : "un";
+	char		str[MAX_TOKEN_CHARS];
+	team_t		team;
+	int			argc = trap_Argc();
+	int			i;
+
+	if ( argc < 2 ) {
+		G_Printf( "Usage: %slockteam <teams>\n", prefix );
+		return;
+	}
+
+	for (i = 1; i < argc; i++) {
+		trap_Argv( i, str, sizeof( str ) );
+
+		switch (str[0]) {
+		case 's':
+		case 'S':
+			team = TEAM_SPECTATOR;
+			break;
+		case 'f':
+		case 'F':
+			team = TEAM_FREE;
+			break;
+		case 'r':
+		case 'R':
+			team = TEAM_RED;
+			break;
+		case 'b':
+		case 'B':
+			team = TEAM_BLUE;
+			break;
+		default:
+			G_Printf( "Valid teams are: spectator free red blue\n" );
+			return;
+		}
+
+		if (level.teamLock[team] != lock) {
+			level.teamLock[team] = lock;
+			trap_SendServerCommand( -1, va("print \"%s team was %slocked.\n\"", TeamName(team), prefix) );
+		}
+	}
 }
 
 /*
@@ -474,6 +526,16 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "remove") == 0) {
 		Svcmd_Remove_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "lockteam") == 0) {
+		Svcmd_LockTeam_f( qtrue );
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "unlockteam") == 0) {
+		Svcmd_LockTeam_f( qfalse );
 		return qtrue;
 	}
 

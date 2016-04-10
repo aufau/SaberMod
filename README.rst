@@ -75,6 +75,9 @@ Server-Side
 Server Commands
 ...............
 
+(un)lockteam <teams>
+  Prevent players from joining `teams`.
+
 remove <player> [time]
   remove `player` to spectator team for at least `time` seconds.
 

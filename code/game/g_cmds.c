@@ -843,7 +843,7 @@ qboolean SetTeam( gentity_t *ent, team_t team )
 SetTeamFromString
 =================
 */
-void SetTeamFromString( gentity_t *ent, char *s ) {
+void SetTeamFromString( gentity_t *ent, char *s, qboolean force ) {
 	int					team;
 	int					clientNum;
 	spectatorState_t	specState;
@@ -889,6 +889,11 @@ void SetTeamFromString( gentity_t *ent, char *s ) {
 			trap_SendServerCommand( clientNum, "print \"Game is full.\n\""); // TRANSLATE
 			return;
 		}
+	}
+
+	if ( !force && level.teamLock[team] ) {
+		trap_SendServerCommand( clientNum, va("print \"%s team is locked.\n\"", TeamName(team)) );
+		return;
 	}
 
 	if ( SetTeamSpec( ent, team, specState, 0 ) ) {
@@ -958,7 +963,7 @@ void Cmd_Team_f( gentity_t *ent ) {
 
 	trap_Argv( 1, s, sizeof( s ) );
 
-	SetTeamFromString( ent, s );
+	SetTeamFromString( ent, s, qfalse );
 }
 
 /*

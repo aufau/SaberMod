@@ -537,6 +537,7 @@ typedef struct {
 	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
 	int			portalSequence;
 	qboolean	mvapi;
+	qboolean	teamLock[TEAM_NUM_TEAMS];
 } level_locals_t;
 
 
@@ -559,7 +560,7 @@ void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
 qboolean ValidateTeam( int ignoreClientNum, team_t team );
 qboolean SetTeam( gentity_t *ent, team_t team );
-void SetTeamFromString( gentity_t *ent, char *s );
+void SetTeamFromString( gentity_t *ent, char *s, qboolean force );
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void Cmd_SmartFollowCycle_f( gentity_t *ent );
 void Cmd_SaberAttackCycle_f(gentity_t *ent);
