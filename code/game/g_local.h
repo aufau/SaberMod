@@ -569,7 +569,7 @@ void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
 
 gentity_t *G_GetDuelWinner(gclient_t *client);
-int G_ClientNumberFromPattern (const char *pattern);
+int G_ClientNumberFromString (const char *s, char **errorMsg);
 
 //
 // g_items.c

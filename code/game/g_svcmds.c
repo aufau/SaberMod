@@ -321,41 +321,6 @@ void	Svcmd_EntityList_f (void) {
 	}
 }
 
-gclient_t	*ClientForString( const char *s ) {
-	gclient_t	*cl;
-	int			idnum;
-
-	if ( !s || !s[0] ) {
-		return NULL;
-	}
-
-	// numeric values are just slot numbers
-	if ( Q_IsInteger( s ) ) {
-		idnum = atoi( s );
-		if ( idnum < 0 || idnum >= level.maxclients ) {
-			Com_Printf( "Bad client slot: %i\n", idnum );
-			return NULL;
-		}
-		cl = &level.clients[idnum];
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			G_Printf( "Client %i is not on the server\n", idnum );
-			return NULL;
-		}
-		return cl;
-	}
-
-	// check for a name match
-	idnum = G_ClientNumberFromPattern(s);
-	if ( idnum >= 0 ) {
-		return &level.clients[idnum];
-	} else if ( idnum == -1 ) {
-		G_Printf( "There is no user matching '%s" S_COLOR_WHITE "' on the server\n", s );
-	} else {
-		G_Printf( "There are multiple users with '%s" S_COLOR_WHITE "' in their names. Please be more specific.\n", s );
-	}
-	return NULL;
-}
-
 /*
 ===================
 Svcmd_ForceTeam_f
@@ -364,19 +329,21 @@ forceteam <player> <team>
 ===================
 */
 void	Svcmd_ForceTeam_f( void ) {
-	gclient_t	*cl;
 	char		str[MAX_TOKEN_CHARS];
+	char		*errorMsg;
+	int			clientNum;
 
 	// find the player
 	trap_Argv( 1, str, sizeof( str ) );
-	cl = ClientForString( str );
-	if ( !cl ) {
+	clientNum = G_ClientNumberFromString( str, &errorMsg );
+	if ( clientNum == -1 ) {
+		G_Printf( errorMsg );
 		return;
 	}
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
-	SetTeamFromString( &g_entities[cl - level.clients], str, qtrue );
+	SetTeamFromString( &g_entities[clientNum], str, qtrue );
 }
 
 /*
@@ -440,19 +407,25 @@ remove <player> [seconds]
 */
 void	Svcmd_Remove_f( void )
 {
-	gclient_t	*cl;
+	gentity_t	*ent;
 	char		str[MAX_TOKEN_CHARS];
+	char		*errorMsg;
+	int			clientNum;
 	int			delay;
+	int			argc;
 
-	trap_Argv( 1, str, sizeof( str ) );
+	argc = trap_Argc();
 
-	if ( !str[0] ) {
+	if ( argc < 2 ) {
 		trap_Printf( "Usage: remove <player> [seconds]\n" );
 		return;
 	}
 
-	cl = ClientForString( str );
-	if ( !cl ) {
+	trap_Argv( 1, str, sizeof( str ) );
+
+	clientNum = G_ClientNumberFromString( str, &errorMsg );
+	if ( clientNum == -1 ) {
+		G_Printf( errorMsg );
 		return;
 	}
 
@@ -462,8 +435,9 @@ void	Svcmd_Remove_f( void )
 		delay = 1000 * atoi( str );
 	}
 
-	SetTeam( &g_entities[cl - level.clients], TEAM_SPECTATOR );
-	cl->switchTeamTime = level.time + delay;
+	ent = g_entities + clientNum;
+	SetTeam( ent, TEAM_SPECTATOR );
+	ent->client->switchTeamTime = level.time + delay;
 }
 
 char	*ConcatArgs( int start );

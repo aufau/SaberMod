@@ -189,7 +189,7 @@ has been used for optimization.
 #define MatchedTwice(n) (matchedTwice & 1 << (n))
 #define StoreMatch(n) matchedTwice |= matched & 1 << (n); matched |= 1 << (n); matches[n] = idnum
 
-int G_ClientNumberFromPattern ( const char *pattern ) {
+static int G_ClientNumberFromPattern ( const char *pattern ) {
 	gclient_t	*cl;
 	char		ciName[MAX_NETNAME];
 	char		cciName[MAX_NETNAME];
@@ -297,17 +297,18 @@ int G_ClientNumberFromPattern ( const char *pattern ) {
 
 /*
 ==================
-ClientNumberFromString
+G_ClientNumberFromString
 
 Returns a player number for either a number or name string
-Returns -1 if invalid
+When invalid returns -1 and sets *errorMsg to error string.
 ==================
 */
-int ClientNumberFromString( gentity_t *to, const char *s ) {
+int G_ClientNumberFromString( const char *s, char **errorMsg ) {
 	gclient_t	*cl;
 	int			idnum;
 
 	if ( !s || !s[0] ) {
+		*errorMsg = "No player name provided\n";
 		return -1;
 	}
 
@@ -315,12 +316,12 @@ int ClientNumberFromString( gentity_t *to, const char *s ) {
 	if ( Q_IsInteger( s ) ) {
 		idnum = atoi( s );
 		if ( idnum < 0 && idnum >= level.maxclients ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Bad client slot: %i\n\"", idnum));
+			*errorMsg = va("Bad client slot: %i\n", idnum);
 			return -1;
 		}
 		cl = &level.clients[idnum];
 		if ( cl->pers.connected != CON_CONNECTED ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Client %i is not on the server\n\"", idnum));
+			*errorMsg = va("Client %i is not on the server\n", idnum);
 			return -1;
 		}
 		return idnum;
@@ -331,11 +332,9 @@ int ClientNumberFromString( gentity_t *to, const char *s ) {
 	if ( idnum >= 0 ) {
 		return idnum;
 	} else if ( idnum == -1 ) {
-		trap_SendServerCommand( to-g_entities,
-		va("print \"There is no user matching '%s" S_COLOR_WHITE "' on the server\n\"", s));
+		*errorMsg = va("There is no user matching '%s" S_COLOR_WHITE "' on the server\n", s);
 	} else if ( idnum == -2 ) {
-		trap_SendServerCommand( to-g_entities,
-		va("print \"There are multiple users with '%s" S_COLOR_WHITE "' in their names. Please be more specific.\n\"", s));
+		*errorMsg = va("There are multiple users with '%s" S_COLOR_WHITE "' in their names. Please be more specific.\n", s);
 	}
 	return -1;
 }
@@ -1010,8 +1009,9 @@ Cmd_Follow_f
 =================
 */
 void Cmd_Follow_f( gentity_t *ent ) {
-	int		i;
+	char	*errorMsg;
 	char	arg[MAX_TOKEN_CHARS];
+	int		i;
 
 	if ( trap_Argc() != 2 ) {
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
@@ -1026,8 +1026,9 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	} else if (!strcmp(arg, "-2") || !Q_stricmp(arg, "second"))
 		i = -2;
 	else {
-		i = ClientNumberFromString( ent, arg );
+		i = G_ClientNumberFromString( arg, &errorMsg );
 		if ( i == -1 ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 			return;
 		}
 	}
@@ -1323,6 +1324,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	int			targetNum;
 	gentity_t	*target;
 	char		*p;
+	char		*errorMsg;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc () < 2 ) {
@@ -1330,8 +1332,9 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	targetNum = ClientNumberFromString( ent, arg );
+	targetNum = G_ClientNumberFromString( arg, &errorMsg );
 	if ( targetNum == -1 ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 		return;
 	}
 
@@ -1463,6 +1466,7 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 	int			targetNum;
 	gentity_t	*target;
 	char		*id;
+	char		*errorMsg;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc () < 2 ) {
@@ -1470,8 +1474,9 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	targetNum = ClientNumberFromString( ent, arg );
+	targetNum = G_ClientNumberFromString( arg, &errorMsg );
 	if ( targetNum == -1 ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 		return;
 	}
 
@@ -1627,6 +1632,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
 	const char		*arg2;
+	char			*errorMsg;
 	char			s[MAX_STRING_CHARS];
 
 	if ( !g_allowVote.integer ) {
@@ -1743,10 +1749,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "kick %s", g_entities[i].client->pers.netname );
 		break;
 	case CV_KICK:
-		i = ClientNumberFromString( ent, arg2 );
+		i = G_ClientNumberFromString( arg2, &errorMsg );
 
 		if ( i == -1 )
 		{
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 			return;
 		}
 
@@ -1774,9 +1781,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
 		break;
 	case CV_REMOVE:
-		i = ClientNumberFromString( ent, arg2 );
+		i = G_ClientNumberFromString( arg2, &errorMsg );
 
 		if ( i == -1 ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 			return;
 		}
 
