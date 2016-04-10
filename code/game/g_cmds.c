@@ -1021,6 +1021,12 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		return;
 	}
 
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR && level.teamLock[TEAM_SPECTATOR] ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
+				teamColorString[TEAM_SPECTATOR], teamName[TEAM_SPECTATOR]) );
+		return;
+	}
+
 	trap_Argv( 1, arg, sizeof( arg ) );
 	if (!strcmp(arg, "-1") || !Q_stricmp(arg, "first")) {
 		i = -1;
@@ -1045,14 +1051,11 @@ Cmd_FollowCycle_f
 =================
 */
 void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
-	int		clientnum;
-	int		original;
+	int			clientnum;
+	int			original;
 
-	// first set them to spectator, even if there is noone to follow
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		if ( SetTeam(ent, TEAM_SPECTATOR) ) {
-			ent->client->switchTeamTime = level.time + 5000;
-		}
+		return;
 	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ) {
 		gentity_t *target = G_CrosshairPlayer(ent, 8192);
 
@@ -1073,7 +1076,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	} else if (clientnum == -2) {
 		clientnum = level.follow2;
 	}
-	if ( clientnum < 0 || clientnum >= MAX_CLIENTS ) {
+	if ( clientnum < 0 || clientnum >= level.maxclients ) {
 		clientnum = 0;
 	}
 
@@ -1116,11 +1119,8 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 
 	clientNum = -1;
 
-	// first set them to spectator, even if there is noone to follow
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		if ( SetTeam(ent, TEAM_SPECTATOR) ) {
-			ent->client->switchTeamTime = level.time + 5000;
-		}
+		return;
 	} else if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 		clientNum = ent->client->sess.spectatorClient;
 	} else if ((target = G_CrosshairPlayer(ent, 8192))) {
@@ -1128,24 +1128,29 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		return;
 	}
 
-	if (clientNum < -2 || clientNum >= MAX_CLIENTS) {
-		clientNum = 0;
-	}
 	if (clientNum == -1) {
 		clientNum = level.follow1;
 	} else if (clientNum == -2) {
 		clientNum = level.follow2;
 	}
-	if (clientNum < 0) {
+
+	if (clientNum < 0 || clientNum >= MAX_CLIENTS) {
+		clientNum = level.sortedClients[0];
+	}
+
+	client = level.clients + clientNum;
+
+	// Sanity check
+	if (client->pers.connected != CON_CONNECTED  ||
+		client->sess.sessionTeam == TEAM_SPECTATOR)
+	{
 		StopFollowing(ent);
 		return;
 	}
 
-	client = &level.clients[clientNum];
-
 	// Alternate between dueling players
 	if ( client->ps.duelInProgress ) {
-		ent->client->sess.spectatorClient = client->ps.duelIndex;
+		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, client->ps.duelIndex );
 		return;
 	}
 
@@ -1156,6 +1161,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 	if (i >= level.numPlayingClients) {
 		return;
 	}
+	// numPlayingClients > 0 and sortedClients[i] == clientNum now.
 
 	clientRank = i;
 
@@ -1167,8 +1173,9 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		ci = &level.clients[level.sortedClients[i]];
 
 		if (ci->ps.isJediMaster || ci->ps.powerups[PW_REDFLAG] ||
-			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI]) {
-			ent->client->sess.spectatorClient = level.sortedClients[i];
+			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI])
+		{
+			SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
 			return;
 		}
 	} while (i != clientRank);
@@ -1182,14 +1189,14 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 			ci = &level.clients[level.sortedClients[i]];
 		} while (ci->sess.sessionTeam != client->sess.sessionTeam);
 
-		ent->client->sess.spectatorClient = level.sortedClients[i];
+		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
 	} else {
 		// Cycle through sorted players
 		if (--i < 0) {
 			i = level.numPlayingClients - 1;
 		}
 
-		ent->client->sess.spectatorClient = level.sortedClients[i];
+		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
 	}
 }
 

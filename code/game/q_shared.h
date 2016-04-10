@@ -36,6 +36,7 @@
 #define STR_H(x) #x
 #define STR(x) STR_H(x)
 #define STRLEN(x) (sizeof(x) - 1)
+#define CLAMP(min, max, x) (x) > (max) ? (max) : (x) < (min) ? (min) : (x)
 
 /**********************************************************************
   VM Considerations
