@@ -17,6 +17,34 @@ typedef struct teamgame_s {
 
 teamgame_t teamgame;
 
+const char * teamName[TEAM_NUM_TEAMS] = {
+	"Free",
+	"Red",
+	"Blue",
+	"Spectator"
+};
+
+const char * teamNameUpperCase[TEAM_NUM_TEAMS] = {
+	"FREE",
+	"RED",
+	"BLUE",
+	"SPECTATOR"
+};
+
+const char * teamColorString[TEAM_NUM_TEAMS] = {
+	S_COLOR_WHITE,
+	S_COLOR_RED,
+	S_COLOR_BLUE,
+	S_COLOR_YELLOW
+};
+
+const team_t otherTeam[TEAM_NUM_TEAMS] = {
+	TEAM_FREE,
+	TEAM_BLUE,
+	TEAM_RED,
+	TEAM_SPECTATOR
+};
+
 void Team_SetFlagStatus( int team, flagStatus_t status );
 
 void Team_InitGame( void ) {
@@ -27,44 +55,6 @@ void Team_InitGame( void ) {
 		teamgame.blueStatus = FLAG_ATBASE;
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
 	}
-}
-
-int OtherTeam(int team) {
-	if (team==TEAM_RED)
-		return TEAM_BLUE;
-	else if (team==TEAM_BLUE)
-		return TEAM_RED;
-	return team;
-}
-
-const char *TeamName(int team)  {
-	if (team==TEAM_RED)
-		return "RED";
-	else if (team==TEAM_BLUE)
-		return "BLUE";
-	else if (team==TEAM_SPECTATOR)
-		return "SPECTATOR";
-	return "FREE";
-}
-
-const char *OtherTeamName(int team) {
-	if (team==TEAM_RED)
-		return "BLUE";
-	else if (team==TEAM_BLUE)
-		return "RED";
-	else if (team==TEAM_SPECTATOR)
-		return "SPECTATOR";
-	return "FREE";
-}
-
-const char *TeamColorString(int team) {
-	if (team==TEAM_RED)
-		return S_COLOR_RED;
-	else if (team==TEAM_BLUE)
-		return S_COLOR_BLUE;
-	else if (team==TEAM_SPECTATOR)
-		return S_COLOR_YELLOW;
-	return S_COLOR_WHITE;
 }
 
 // NULL for everyone
@@ -317,7 +307,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		return;
 
 	team = targ->client->sess.sessionTeam;
-	otherteam = OtherTeam(targ->client->sess.sessionTeam);
+	otherteam = otherTeam[targ->client->sess.sessionTeam];
 	if (otherteam < 0)
 		return; // whoever died isn't on a team
 

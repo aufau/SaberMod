@@ -28,10 +28,11 @@
 
 // Prototypes
 
-int OtherTeam(int team);
-const char *TeamName(int team);
-const char *OtherTeamName(int team);
-const char *TeamColorString(int team);
+extern const char * teamName[TEAM_NUM_TEAMS];
+extern const char * teamNameUpperCase[TEAM_NUM_TEAMS];
+extern const char * teamColorString[TEAM_NUM_TEAMS];
+extern const team_t otherTeam[TEAM_NUM_TEAMS];
+
 void AddTeamScore(vec3_t origin, int team, int score);
 
 void Team_DroppedFlagThink(gentity_t *ent);

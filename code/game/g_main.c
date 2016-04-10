@@ -1833,7 +1833,7 @@ static void PrintStatsHeader( playerStat_t *columns )
 
 }
 
-static void PrintStatsSeparator( playerStat_t *columns, char color )
+static void PrintStatsSeparator( playerStat_t *columns, const char *colorString )
 {
 	char		line[DEFAULT_CONSOLE_WIDTH];
 	char		*p = line;
@@ -1849,7 +1849,7 @@ static void PrintStatsSeparator( playerStat_t *columns, char color )
 	}
 
 	trap_SendServerCommand(-1,
-		va("print \"%c%c%s"  "\n\"", Q_COLOR_ESCAPE, color, line));
+		va("print \"%s%s\n\"", colorString, line));
 }
 
 static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
@@ -1954,14 +1954,14 @@ static void ShowDamageStatistics() {
 
 		PrintStatsHeader(columns);
 
-		PrintStatsSeparator(columns, COLOR_RED);
+		PrintStatsSeparator(columns, teamColorString[TEAM_RED]);
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_RED)
 				PrintClientStats(cl, columns, bestStats);
 		}
 
-		PrintStatsSeparator(columns, COLOR_BLUE);
+		PrintStatsSeparator(columns, teamColorString[TEAM_BLUE]);
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_BLUE) {
@@ -1973,7 +1973,7 @@ static void ShowDamageStatistics() {
 
 		PrintStatsHeader(columns);
 
-		PrintStatsSeparator(columns, COLOR_WHITE);
+		PrintStatsSeparator(columns, teamColorString[TEAM_FREE]);
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_FREE) {
@@ -2076,13 +2076,17 @@ void CheckExitRules( void ) {
 
 	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"Red %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
+			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " %s\n\"",
+					teamColorString[TEAM_RED], teamName[TEAM_RED],
+					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"Blue %s\n\"", G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
+			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " %s\n\"",
+					teamColorString[TEAM_BLUE], teamName[TEAM_BLUE],
+					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
@@ -2121,13 +2125,15 @@ void CheckExitRules( void ) {
 	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
+			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE "hit the capturelimit.\n\"",
+					teamColorString[TEAM_RED], teamName[TEAM_RED]) );
 			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
+			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE "hit the capturelimit.\n\"",
+					teamColorString[TEAM_BLUE], teamName[TEAM_BLUE]) );
 			LogExit( "Capturelimit hit." );
 			return;
 		}

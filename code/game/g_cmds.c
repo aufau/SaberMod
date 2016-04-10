@@ -743,8 +743,8 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 
 	G_LogPrintf ( "setteam:  %i %s %s\n",
 				  client - &level.clients[0],
-				  TeamName ( oldTeam ),
-				  TeamName ( client->sess.sessionTeam ) );
+				  teamNameUpperCase[oldTeam],
+				  teamNameUpperCase[client->sess.sessionTeam] );
 }
 
 static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
@@ -891,7 +891,8 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 	}
 
 	if ( level.teamLock[team] ) {
-		trap_SendServerCommand( clientNum, va("print \"%s team is locked.\n\"", TeamName(team)) );
+		trap_SendServerCommand( clientNum, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
+				teamColorString[team], teamName[team]) );
 		return;
 	}
 
