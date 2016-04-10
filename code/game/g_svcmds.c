@@ -555,8 +555,8 @@ qboolean	ConsoleCommand( void ) {
 			trap_SendServerCommand( -1, va("print \"server: %s\n\"", ConcatArgs(1) ) );
 			return qtrue;
 		}
-		// everything else will also be printed as a say command
-		trap_SendServerCommand( -1, va("print \"server: %s\n\"", ConcatArgs(0) ) );
+
+		G_Printf( "Unknown command. Use `say <message>' to communicate with players.\n"
 		return qtrue;
 	}
 
