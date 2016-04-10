@@ -6,7 +6,6 @@
 #else
 	typedef unsigned char uint8_t;
 	typedef unsigned short uint16_t;
-	typedef int int32_t;
 #endif
 
 // -------------------------------------- API Version -------------------------------------- //
@@ -14,8 +13,8 @@
 // MV_MIN_VERSION is the minimum required JK2MV version which implements this API-Level.
 // All future JK2MV versions are guaranteed to implement this API-Level.
 // ----------------------------------------------------------------------------------------- //
-#define MV_APILEVEL 2
-#define MV_MIN_VERSION "1.2"
+#define MV_APILEVEL 1
+#define MV_MIN_VERSION "1.1"
 // ----------------------------------------------------------------------------------------- //
 
 // ----------------------------------------- SHARED ---------------------------------------- //
@@ -75,8 +74,8 @@ typedef struct {
 } mvaddr_t;
 
 typedef struct {
-	int32_t snapshotIgnore;
-	int32_t snapshotEnforce;
+	uint8_t snapshotIgnore[32];
+	uint8_t snapshotEnforce[32];
 } mvsharedEntity_t;
 
 // ******** SYSCALLS ******** //
@@ -89,15 +88,6 @@ typedef struct {
 
 // qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t);
 #define MVAPI_LOCATE_GAME_DATA 702               /* asm: -703 */
-
-// qboolean trap_MVAPI_DisableStructConversion(qboolean disable);
-#define MVAPI_DISABLE_STRUCT_CONVERSION 705		/* asm: -706 */
-
-// void trap_MVAPI_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int dimensions );
-#define MVAPI_TRACE 706							/* asm: -707 */
-
-#define MVAPI_POINT_CONTENTS 707
-#define MVAPI_ENTITIES_IN_BOX 708
 
 // ******** VMCALLS ******** //
 
