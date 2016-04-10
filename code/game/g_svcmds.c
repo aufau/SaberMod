@@ -321,6 +321,27 @@ void	Svcmd_EntityList_f (void) {
 	}
 }
 
+static team_t G_TeamFromLetter( const char letter )
+{
+	switch (letter) {
+	case 's':
+	case 'S':
+		return TEAM_SPECTATOR;
+	case 'f':
+	case 'F':
+		return TEAM_FREE;
+	case 'r':
+	case 'R':
+		return TEAM_RED;
+	case 'b':
+	case 'B':
+		return TEAM_BLUE;
+	default:
+		G_Printf( "Valid teams are: spectator free red blue\n" );
+		return TEAM_NUM_TEAMS;
+	}
+}
+
 /*
 ===================
 Svcmd_ForceTeam_f
@@ -332,7 +353,13 @@ void	Svcmd_ForceTeam_f( void ) {
 	char		str[MAX_TOKEN_CHARS];
 	char		*errorMsg;
 	int			clientNum;
+	gentity_t	*ent;
+	team_t		team;
 
+	if ( trap_Argc() < 3 ) {
+		G_Printf( "Usage: forceteam <player> <team>\n" );
+		return;
+	}
 	// find the player
 	trap_Argv( 1, str, sizeof( str ) );
 	clientNum = G_ClientNumberFromString( str, &errorMsg );
@@ -343,7 +370,12 @@ void	Svcmd_ForceTeam_f( void ) {
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
-	SetTeamFromString( &g_entities[clientNum], str, qtrue );
+	team = G_TeamFromLetter( str[0] );
+	if ( team != TEAM_NUM_TEAMS ) {
+		ent = g_entities + clientNum;
+		SetTeam( ent, team );
+		ent->client->switchTeamTime = level.time + 5000;
+	}
 }
 
 /*
@@ -369,25 +401,8 @@ void	Svcmd_LockTeam_f( qboolean lock )
 	for (i = 1; i < argc; i++) {
 		trap_Argv( i, str, sizeof( str ) );
 
-		switch (str[0]) {
-		case 's':
-		case 'S':
-			team = TEAM_SPECTATOR;
-			break;
-		case 'f':
-		case 'F':
-			team = TEAM_FREE;
-			break;
-		case 'r':
-		case 'R':
-			team = TEAM_RED;
-			break;
-		case 'b':
-		case 'B':
-			team = TEAM_BLUE;
-			break;
-		default:
-			G_Printf( "Valid teams are: spectator free red blue\n" );
+		team = G_TeamFromLetter( str[0] );
+		if ( team == TEAM_NUM_TEAMS ) {
 			return;
 		}
 
@@ -412,11 +427,8 @@ void	Svcmd_Remove_f( void )
 	char		*errorMsg;
 	int			clientNum;
 	int			delay;
-	int			argc;
 
-	argc = trap_Argc();
-
-	if ( argc < 2 ) {
+	if ( trap_Argc() < 2 ) {
 		trap_Printf( "Usage: remove <player> [seconds]\n" );
 		return;
 	}
@@ -430,9 +442,9 @@ void	Svcmd_Remove_f( void )
 	}
 
 	trap_Argv( 2, str, sizeof( str ) );
-	delay = 30 * 1000;
-	if ( str[0] ) {
-		delay = 1000 * atoi( str );
+	delay = 1000 * atoi( str );
+	if ( delay == 0 ) {
+		delay = 30 * 1000;
 	}
 
 	ent = g_entities + clientNum;
