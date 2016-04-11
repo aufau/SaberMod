@@ -1334,6 +1334,17 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
+
+	// short circuit for speaking with dedicated server
+	if ( !strcmp(arg, "server") ) {
+		char *name;
+		p = ConcatArgs( 2 );
+		G_LogPrintf( "tell: %s to server: %s\n", ent->client->pers.netname, p );
+		name = va(EC"[%s" S_COLOR_WHITE EC "]"EC": ", ent->client->pers.netname);
+		trap_SendServerCommand( ent-g_entities, va("chat \"%s" S_COLOR_MAGENTA "%s\"", name, p) );
+		return;
+	}
+
 	targetNum = G_ClientNumberFromString( arg, &errorMsg );
 	if ( targetNum == -1 ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );

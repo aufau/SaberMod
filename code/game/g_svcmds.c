@@ -475,6 +475,37 @@ void	Svcmd_Announce_f( void )
 }
 
 /*
+===================
+Svcmd_Tell_f
+
+tell <player> [message]
+===================
+*/
+void	Svcmd_Tell_f( void )
+{
+	char		str[MAX_TOKEN_CHARS];
+	char		*message;
+	char		*errorMsg;
+	int			clientNum;
+
+	if ( trap_Argc() < 2 ) {
+		trap_Printf( "Usage: tell <player> [message]\n" );
+		return;
+	}
+
+	trap_Argv( 1, str, sizeof( str ) );
+	clientNum = G_ClientNumberFromString( str, &errorMsg );
+	if ( clientNum == -1 ) {
+		G_Printf( errorMsg );
+		return;
+	}
+
+	message = ConcatArgs( 2 );
+	G_LogPrintf( "tell: server to %s: %s\n", level.clients[clientNum].pers.netname, message );
+	trap_SendServerCommand( clientNum, va("chat \"[server]: %s\"", message) );
+}
+
+/*
 =================
 ConsoleCommand
 
@@ -552,11 +583,20 @@ qboolean	ConsoleCommand( void ) {
 
 	if (g_dedicated.integer) {
 		if (Q_stricmp (cmd, "say") == 0) {
-			trap_SendServerCommand( -1, va("print \"server: %s\n\"", ConcatArgs(1) ) );
+			char *message = ConcatArgs(1);
+
+			G_LogPrintf( "say: server: %s\n", message );
+			// we're missing control character \x19
+			trap_SendServerCommand( -1, va("chat \"server: %s\"", message ) );
 			return qtrue;
 		}
 
-		G_Printf( "Unknown command. Use `say <message>' to communicate with players.\n"
+		if (Q_stricmp (cmd, "tell") == 0) {
+			Svcmd_Tell_f();
+			return qtrue;
+		}
+
+		G_Printf( "Unknown command. Use \\say or \\tell to communicate with players.\n" );
 		return qtrue;
 	}
 
