@@ -1928,7 +1928,15 @@ static float CG_DrawTimer( float y ) {
 	int			mins, seconds, tens;
 	int			msec;
 
-	msec = cg.time - cgs.levelStartTime;
+	if (cg_drawTimer.integer == 1) {
+		if (cgs.timelimit) {
+			msec = cgs.levelStartTime + cgs.timelimit * 60 * 1000 + 1000 - cg.time;
+		} else {
+			return y;
+		}
+	} else {
+		msec = cg.time - cgs.levelStartTime;
+	}
 
 	seconds = msec / 1000;
 	mins = seconds / 60;

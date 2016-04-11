@@ -55,6 +55,9 @@ handicap <x>
 cg_chatBeep 1
   Turn on/off chat beep.
 
+cg_drawTimer 1
+  Count down by default. 2 reverts to original behaviour.
+
 cg_duelGlow 1
   Turn on/off duel glow.
 
