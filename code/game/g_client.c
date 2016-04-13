@@ -1296,7 +1296,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	if (g_logClientInfo.integer)
 	{
-		G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
+		G_LogPrintf( "ClientUserInfoChanged: %i %s\n", clientNum, s );
 	}
 }
 
@@ -1375,7 +1375,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// get and distribute relevent paramters
-	G_LogPrintf( "ClientConnect: %i\n", clientNum);
+	G_LogPrintf( "ClientConnect: %i: %s connected\n", clientNum, client->pers.netname);
 	ClientUserinfoChanged( clientNum );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
@@ -1570,7 +1570,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
-	G_LogPrintf( "ClientBegin: %i Version: %s\n", clientNum, Info_ValueForKey(userinfo, GAMEVERSION) );
+	G_LogPrintf( "ClientBegin: %i %s: %s entered the game\n", clientNum, Info_ValueForKey(userinfo, GAMEVERSION), client->pers.netname );
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
@@ -2103,7 +2103,7 @@ void ClientDisconnect( int clientNum ) {
 		TossClientItems( ent );
 	}
 
-	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
+	G_LogPrintf( "ClientDisconnect: %i: %s disconnected\n", clientNum, ent->client->pers.netname );
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round
 	if ( (g_gametype.integer == GT_TOURNAMENT )

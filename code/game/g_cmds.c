@@ -741,10 +741,11 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 		}
 	}
 
-	G_LogPrintf ( "setteam:  %i %s %s\n",
-				  client - &level.clients[0],
-				  teamNameUpperCase[oldTeam],
-				  teamNameUpperCase[client->sess.sessionTeam] );
+	G_LogPrintf ( "SetTeam: %i %s %s: %s joined the %s team\n",
+		client - &level.clients[0],
+		teamNameUpperCase[oldTeam],
+		teamNameUpperCase[client->sess.sessionTeam],
+		client->pers.netname, teamNameLowerCase[client->sess.sessionTeam]);
 }
 
 static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
@@ -1243,12 +1244,13 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	switch ( mode ) {
 	default:
 	case SAY_ALL:
-		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
+		G_LogPrintf( "Say: %i: %s: %s\n", ent->s.number, ent->client->pers.netname, chatText );
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;
 	case SAY_TEAM:
-		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
+		G_LogPrintf( "SayTeam: %i %s: %s: %s\n", ent->s.number,
+			teamNameUpperCase[ent->client->sess.sessionTeam], ent->client->pers.netname, chatText );
 		if (Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ",
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
@@ -1273,11 +1275,6 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	if ( target ) {
 		G_SayTo( ent, target, mode, color, name, text );
 		return;
-	}
-
-	// echo the text to the console
-	if ( g_dedicated.integer ) {
-		G_Printf( "%s%s\n", name, text);
 	}
 
 	// send it to all the apropriate clients
@@ -1339,7 +1336,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	if ( !strcmp(arg, "server") ) {
 		char *name;
 		p = ConcatArgs( 2 );
-		G_LogPrintf( "tell: %s to server: %s\n", ent->client->pers.netname, p );
+		G_LogPrintf( "Tell: %i %i: %s to server: %s\n", ent->s.number, ent->s.number, ent->client->pers.netname, p );
 		name = va(EC"[%s" S_COLOR_WHITE EC "]"EC": ", ent->client->pers.netname);
 		trap_SendServerCommand( ent-g_entities, va("chat \"%s" S_COLOR_MAGENTA "%s\"", name, p) );
 		return;
@@ -1374,7 +1371,8 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 		}
 	}
 
-	G_LogPrintf( "tell: %s to %s: %s\n", ent->client->pers.netname, target->client->pers.netname, p );
+	G_LogPrintf( "Tell: %i %i: %s to %s: %s\n", ent->s.number, target->s.number,
+		ent->client->pers.netname, target->client->pers.netname, p );
 	G_Say( ent, target, SAY_TELL, p );
 	// don't tell to the player self if it was already directed to this player
 	// also don't send the chat back to a bot
@@ -1500,7 +1498,7 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 
 	id = ConcatArgs( 2 );
 
-	G_LogPrintf( "vtell: %s to %s: %s\n", ent->client->pers.netname, target->client->pers.netname, id );
+	G_LogPrintf( "VTell: %i %i: %s to %s: %s\n", ent->s.number, target->s.number, ent->client->pers.netname, target->client->pers.netname, id );
 	G_Voice( ent, target, SAY_TELL, id, voiceonly );
 	// don't tell to the player self if it was already directed to this player
 	// also don't send the chat back to a bot

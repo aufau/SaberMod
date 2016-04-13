@@ -501,7 +501,8 @@ void	Svcmd_Tell_f( void )
 	}
 
 	message = ConcatArgs( 2 );
-	G_LogPrintf( "tell: server to %s: %s\n", level.clients[clientNum].pers.netname, message );
+	G_LogPrintf( "Tell: %i %i: server to %s: %s\n", clientNum, clientNum,
+		level.clients[clientNum].pers.netname, message );
 	trap_SendServerCommand( clientNum, va("chat \"[server]: %s\"", message) );
 }
 
@@ -585,7 +586,7 @@ qboolean	ConsoleCommand( void ) {
 		if (Q_stricmp (cmd, "say") == 0) {
 			char *message = ConcatArgs(1);
 
-			G_LogPrintf( "say: server: %s\n", message );
+			G_LogPrintf( "Say: server: %s\n", message );
 			// we're missing control character \x19
 			trap_SendServerCommand( -1, va("chat \"server: %s\"", message ) );
 			return qtrue;

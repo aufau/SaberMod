@@ -31,6 +31,13 @@ const char * teamNameUpperCase[TEAM_NUM_TEAMS] = {
 	"SPECTATOR"
 };
 
+const char * teamNameLowerCase[TEAM_NUM_TEAMS] = {
+	"free",
+	"red",
+	"blue",
+	"spectator"
+};
+
 const char * teamColorString[TEAM_NUM_TEAMS] = {
 	S_COLOR_WHITE,
 	S_COLOR_RED,
