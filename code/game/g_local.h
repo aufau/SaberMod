@@ -1277,6 +1277,7 @@ void	trap_BotResetWeaponState(int weaponstate);
 
 int		trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child);
 
+int		trap_RealTime( qtime_t *qtime );
 void	trap_SnapVector( float *v );
 
 qboolean trap_SP_RegisterServer( const char *package );

@@ -1444,26 +1444,23 @@ G_LogPrintf
 Print to the logfile with a time stamp if it is open
 =================
 */
+#define TIMESTAMP_LEN STRLEN("2016-04-13 13:37:00 ")
 void QDECL G_LogPrintf( const char *fmt, ... ) {
 	va_list		argptr;
 	char		string[1024];
-	int			min, tens, sec;
+	qtime_t		t;
 
-	sec = level.time / 1000;
+	trap_RealTime( &t );
 
-	min = sec / 60;
-	sec -= min * 60;
-	tens = sec / 10;
-	sec -= tens * 10;
-
-	Com_sprintf( string, sizeof(string), "%3i:%i%i ", min, tens, sec );
+	Com_sprintf( string, sizeof(string), "%04i-%02i-%02i %02i:%02i:%02i ",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
 
 	va_start( argptr, fmt );
-	vsprintf( string +7 , fmt,argptr );
+	vsprintf( string + TIMESTAMP_LEN , fmt,argptr );
 	va_end( argptr );
 
 	if ( g_dedicated.integer ) {
-		G_Printf( "%s", string + 7 );
+		G_Printf( "%s", string + TIMESTAMP_LEN );
 	}
 
 	if ( !level.logFile ) {
