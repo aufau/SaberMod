@@ -1326,6 +1326,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 //	char		*areabits;
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
+	char		address[MAX_INFO_VALUE];
 	gentity_t	*ent;
 	gentity_t	*te;
 
@@ -1335,6 +1336,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	// check to see if they are on the banned IP list
 	value = Info_ValueForKey (userinfo, "ip");
+	Q_strncpyz(address, value, sizeof(address));
 	if ( G_FilterPacket( value ) ) {
 		return "Banned.";
 	}
@@ -1375,9 +1377,14 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// get and distribute relevent paramters
-	G_LogPrintf( LOG_CONNECT, "ClientConnect: %i: %s connected\n",
-		clientNum, client->pers.netname);
 	ClientUserinfoChanged( clientNum );
+	if ( isBot ) {
+		G_LogPrintf( LOG_CONNECT, "BotConnect: %i: %s connected\n",
+			clientNum, client->pers.netname);
+	} else {
+		G_LogPrintf( LOG_CONNECT, "ClientConnect: %i %s: %s connected\n",
+			clientNum, address, client->pers.netname);
+	}
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime ) {
@@ -2105,8 +2112,13 @@ void ClientDisconnect( int clientNum ) {
 		TossClientItems( ent );
 	}
 
-	G_LogPrintf( LOG_CONNECT, "ClientDisconnect: %i: %s disconnected\n",
-		clientNum, ent->client->pers.netname );
+	if ( ent->r.svFlags & SVF_BOT ) {
+		G_LogPrintf( LOG_CONNECT, "BotDisconnect: %i: %s disconnected\n",
+			clientNum, ent->client->pers.netname );
+	} else {
+		G_LogPrintf( LOG_CONNECT, "ClientDisconnect: %i: %s disconnected\n",
+			clientNum, ent->client->pers.netname );
+	}
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round
 	if ( (g_gametype.integer == GT_TOURNAMENT )
