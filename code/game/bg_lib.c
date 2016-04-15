@@ -1206,7 +1206,7 @@ float powf( float x, float y )
 #define is_digit(c)		((unsigned)to_digit(c) <= 9)
 #define to_char(n)		((n) + '0')
 
-void AddInt( char **buf_p, int val, int width, int flags ) {
+static void AddInt( char **buf_p, char * const buf_end, int val, int width, int flags ) {
 	char	text[32];
 	int		digits;
 	int		sign;
@@ -1230,26 +1230,35 @@ void AddInt( char **buf_p, int val, int width, int flags ) {
 
 	if( !( flags & LADJUST ) ) {
 		while ( digits < width ) {
-			*buf++ = ( flags & ZEROPAD ) ? '0' : ' ';
+			if ( buf < buf_end ) {
+				*buf = ( flags & ZEROPAD ) ? '0' : ' ';
+			}
+			buf++;
 			width--;
 		}
 	}
 
 	while ( digits-- ) {
-		*buf++ = text[digits];
+		if ( buf < buf_end ) {
+			*buf = text[digits];
+		}
+		buf++;
 		width--;
 	}
 
 	if( flags & LADJUST ) {
 		while ( width-- ) {
-			*buf++ = ( flags & ZEROPAD ) ? '0' : ' ';
+			if ( buf < buf_end ) {
+				*buf = ( flags & ZEROPAD ) ? '0' : ' ';
+			}
+			buf++;
 		}
 	}
 
 	*buf_p = buf;
 }
 
-void AddFloat( char **buf_p, float fval, int width, int prec, int flags ) {
+static void AddFloat( char **buf_p, char * const buf_end, float fval, int width, int prec, int flags ) {
 	char	text[32];
 	int		digits;
 	float	signedVal;
@@ -1279,15 +1288,19 @@ void AddFloat( char **buf_p, float fval, int width, int prec, int flags ) {
 	buf = *buf_p;
 
 	while ( digits < width ) {
-		*buf++ = ' ';
+		if ( buf < buf_end ) {
+			*buf = ' ';
+		}
+		buf++;
 		width--;
 	}
 
 	while ( digits-- ) {
-		*buf++ = text[digits];
+		if ( buf < buf_end ) {
+			*buf = text[digits];
+		}
+		buf++;
 	}
-
-	*buf_p = buf;
 
 	if (prec < 0)
 		prec = 6;
@@ -1301,17 +1314,24 @@ void AddFloat( char **buf_p, float fval, int width, int prec, int flags ) {
 	}
 
 	if (digits > 0) {
-		buf = *buf_p;
-		*buf++ = '.';
-		for (prec = 0; prec < digits; prec++) {
-			*buf++ = text[prec];
+		if (buf < buf_end) {
+			*buf = '.';
 		}
-		*buf_p = buf;
+		buf++;
+
+		for (prec = 0; prec < digits; prec++) {
+			if (buf < buf_end) {
+				*buf = text[prec];
+			}
+			buf++;
+		}
 	}
+
+	*buf_p = buf;
 }
 
 
-void AddString( char **buf_p, char *string, int width, int prec ) {
+static void AddString( char **buf_p, char * const buf_end, const char *string, int width, int prec ) {
 	int		size;
 	char	*buf;
 
@@ -1336,59 +1356,69 @@ void AddString( char **buf_p, char *string, int width, int prec ) {
 	width -= size;
 
 	while( size-- ) {
-		*buf++ = *string++;
+		if ( buf < buf_end ) {
+			*buf = *string++;
+		}
+		buf++;
 	}
 
 	while( width-- > 0 ) {
-		*buf++ = ' ';
+		if ( buf < buf_end ) {
+			*buf = ' ';
+		}
+		buf++;
 	}
 
 	*buf_p = buf;
 }
 
 /*
-vsprintf
+vsnprintf
 
 I'm not going to support a bunch of the more arcane stuff in here
 just to keep it simpler.  For example, the '*' and '$' are not
 currently supported.  I've tried to make it so that it will just
 parse and ignore formats we don't support.
 */
-size_t vsprintf( char *buffer, const char *fmt, va_list argptr ) {
-	int		*arg;
+int vsnprintf( char *buffer, size_t size, const char *fmt, va_list ap ) {
 	char	*buf_p;
 	char	ch;
 	int		flags;
 	int		width;
 	int		prec;
 	int		n;
-	char	sign;
+	char	* const buf_end = buffer + size - 1;
 
 	buf_p = buffer;
-	arg = (int *)argptr;
 
-	while( qtrue ) {
+	while( 1 ) {
 		// run through the format string until we hit a '%' or '\0'
-		for ( ch = *fmt; (ch = *fmt) != '\0' && ch != '%'; fmt++ ) {
-			*buf_p++ = ch;
-		}
-		if ( ch == '\0' ) {
-			goto done;
-		}
+		while ( 1 ) {
+			ch = *fmt++;
 
-		// skip over the '%'
-		fmt++;
+			if ( ch == '\0' ) {
+				goto done;
+			} else if ( ch == '%' ) {
+				break;
+			}
+			if ( buf_p < buf_end ) {
+				*buf_p = ch;
+			}
+
+			buf_p++;
+		}
 
 		// reset formatting state
 		flags = 0;
 		width = 0;
 		prec = -1;
-		sign = '\0';
 
 rflag:
 		ch = *fmt++;
 reswitch:
 		switch( ch ) {
+		case '\0':
+			goto done;
 		case '-':
 			flags |= LADJUST;
 			goto rflag;
@@ -1421,39 +1451,39 @@ reswitch:
 			} while( is_digit( ch ) );
 			width = n;
 			goto reswitch;
-		case 'c':
-			*buf_p++ = (char)*arg;
-			arg++;
-			break;
 		case 'd':
 		case 'i':
-			AddInt( &buf_p, *arg, width, flags );
-			arg++;
+			AddInt( &buf_p, buf_end, va_arg(ap, int), width, flags );
 			break;
 		case 'f':
-			AddFloat( &buf_p, *(float *)arg, width, prec, flags );
-#ifdef __LCC__
-			arg += 1;	// everything is 32 bit in my compiler
-#else
-			arg += 2;
-#endif
+			AddFloat( &buf_p, buf_end, va_arg(ap, double), width, prec, flags );
 			break;
 		case 's':
-			AddString( &buf_p, (char *)*arg, width, prec );
-			arg++;
+			AddString( &buf_p, buf_end, va_arg(ap, char *), width, prec );
 			break;
 		case '%':
-			*buf_p++ = ch;
+			if ( buf_p < buf_end ) {
+				*buf_p = ch;
+			}
+			buf_p++;
 			break;
+		case 'c':
 		default:
-			*buf_p++ = (char)*arg;
-			arg++;
+			ch = va_arg(ap, char);
+			if ( buf_p < buf_end ) {
+				*buf_p = ch;
+			}
+			buf_p++;
 			break;
 		}
 	}
 
 done:
-	*buf_p = 0;
+	if ( buf_p < buf_end )
+		*buf_p = '\0';
+	else
+		*buf_end = '\0';
+
 	return buf_p - buffer;
 }
 

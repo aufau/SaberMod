@@ -440,7 +440,7 @@ void QDECL G_Printf( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	trap_Print( text );
@@ -451,7 +451,7 @@ Q_NORETURN void QDECL G_Error( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	trap_Error( text );
@@ -815,7 +815,7 @@ Q_NORETURN void QDECL Com_Error ( int level, const char *error, ... ) {
 	char		text[1024];
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	vsnprintf (text, sizeof(text), error, argptr);
 	va_end (argptr);
 
 	trap_Error( text );
@@ -826,7 +826,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	vsnprintf (text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
 	trap_Print( text );
@@ -1687,7 +1687,7 @@ void G_LogPrintf( int event, const char *fmt, ... ) {
 		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
 
 	va_start( argptr, fmt );
-	vsprintf( string + TIMESTAMP_LEN , fmt,argptr );
+	vsnprintf( string + TIMESTAMP_LEN, sizeof(string) - TIMESTAMP_LEN, fmt, argptr );
 	va_end( argptr );
 
 	if ( g_dedicated.integer && (g_consoleFilter.integer & event)) {
