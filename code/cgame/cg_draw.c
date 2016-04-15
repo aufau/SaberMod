@@ -1937,6 +1937,25 @@ static float CG_DrawTimer( float y ) {
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
+/*
+==============
+CG_DrawClock
+==============
+*/
+static void CG_DrawClock( void )
+{
+	char	time[sizeof("00:00")];
+	qtime_t	t;
+
+	trap_RealTime( &t );
+	if (t.tm_sec & 1)
+		Com_sprintf( time, sizeof(time), "%d:%02d", t.tm_hour, t.tm_min );
+	else
+		Com_sprintf( time, sizeof(time), "%d %02d", t.tm_hour, t.tm_min );
+
+	CG_Text_Paint( 630 - CG_Text_Width (time , 0.7f, FONT_SMALL ),
+		310, 0.7f, colorWhite, time, 0, 0, 0, FONT_SMALL );
+}
 
 /*
 =================
@@ -2389,7 +2408,6 @@ static void CG_DrawDisconnect( void ) {
 
 	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga" ) );
 }
-
 
 #define	MAX_LAGOMETER_PING	900
 #define	MAX_LAGOMETER_RANGE	300
@@ -4460,6 +4478,9 @@ static void CG_Draw2D( void ) {
 	CG_DrawVote();
 	CG_DrawTeamVote();
 
+	if ( cg_drawClock.integer) {
+		CG_DrawClock();
+	}
 	CG_DrawLagometer();
 
 	if (!cg_paused.integer) {

@@ -1557,6 +1557,7 @@ extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
 extern	vmCvar_t		cg_darkenDeadBodies;
+extern	vmCvar_t		cg_drawClock;
 extern	vmCvar_t		cg_duelGlow;
 extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;
@@ -2106,6 +2107,7 @@ e_status trap_CIN_RunCinematic (int handle);
 void trap_CIN_DrawCinematic (int handle);
 void trap_CIN_SetExtents (int handle, int x, int y, int w, int h);
 
+int trap_RealTime(qtime_t *qtime);
 void trap_SnapVector( float *v );
 
 qboolean	trap_loadCamera(const char *name);
