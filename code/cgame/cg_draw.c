@@ -1928,14 +1928,19 @@ static float CG_DrawTimer( float y ) {
 	int			mins, seconds, tens;
 	int			msec;
 
-	if (cg_drawTimer.integer == 1) {
-		if (cgs.timelimit) {
-			msec = cgs.levelStartTime + cgs.timelimit * 60 * 1000 + 1000 - cg.time;
-		} else {
+	if (cg_drawTimer.integer >= 2) {
+		if (!cgs.timelimit) {
 			return y;
 		}
+
+		msec = cgs.timelimit * 60 * 1000;
+		if (!cg.warmup) {
+			msec -= cg.time - cgs.levelStartTime;
+			// intermission or overtime
+			msec = msec > 0 ? msec + 1000 : - msec;
+		}
 	} else {
-		msec = cg.time - cgs.levelStartTime;
+		msec = MAX(0, cg.time - cgs.levelStartTime);
 	}
 
 	seconds = msec / 1000;
