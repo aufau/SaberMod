@@ -62,6 +62,9 @@ cg_drawRewards 1
   Draw rewards for outstanding moves. Requires ent's "Jedi Knight
   Rewards 2" assets.
 
+cg_drawClock 0
+  Draw clock showing your local time.
+
 cg_drawTimer 2
   Count down by default. 1 reverts to original behaviour.
 
