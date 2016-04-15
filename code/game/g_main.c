@@ -1479,7 +1479,7 @@ Append information about this game to the log file
 ================
 */
 void LogExit( const char *string ) {
-	int				i, numSorted;
+	int				i;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
 	G_LogPrintf( LOG_GAME, "Exit: %s\n", string );
@@ -1490,44 +1490,27 @@ void LogExit( const char *string ) {
 	// that will get cut off when the queued intermission starts
 	trap_SetConfigstring( CS_INTERMISSION, "1" );
 
-	// don't send more than 32 scores (FIXME?)
-	numSorted = level.numConnectedClients;
-	if ( numSorted > 32 ) {
-		numSorted = 32;
-	}
-
 	if ( GT_Team(g_gametype.integer) ) {
 		G_LogPrintf( LOG_GAME_STATS, "red: %i blue: %i\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
 	}
 
-	for (i=0 ; i < numSorted ; i++) {
-		int		ping;
-
-		cl = &level.clients[level.sortedClients[i]];
-
-		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		if ( cl->pers.connected == CON_CONNECTING ) {
-			continue;
-		}
-
-		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
-
-		G_LogPrintf( LOG_GAME_STATS, "score: %3i  ping: %3i  client: %i %s\n",
-			cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i], cl->pers.netname );
-		if (g_singlePlayer.integer && g_gametype.integer == GT_TOURNAMENT) {
-			if (g_entities[cl - level.clients].r.svFlags & SVF_BOT && cl->ps.persistant[PERS_RANK] == 0) {
-				won = qfalse;
-			}
-		}
-	}
+	G_LogStats();
 
 	if (g_singlePlayer.integer) {
-		if (GT_Flag(g_gametype.integer)) {
+		if (g_gametype.integer == GT_TOURNAMENT) {
+			for (i=0 ; i < level.numPlayingClients ; i++) {
+				cl = &level.clients[level.sortedClients[i]];
+
+
+				if (g_entities[cl - level.clients].r.svFlags & SVF_BOT && cl->ps.persistant[PERS_RANK] == 0) {
+					won = qfalse;
+				}
+			}
+		} else if (GT_Flag(g_gametype.integer)) {
 			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
 		}
+
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
 	}
 }
@@ -1815,7 +1798,7 @@ void CheckExitRules( void ) {
 		int time = (g_singlePlayer.integer) ? SP_INTERMISSION_DELAY_TIME : INTERMISSION_DELAY_TIME;
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
-			ShowDamageStatistics();
+			G_PrintStats();
 			BeginIntermission();
 		}
 		return;

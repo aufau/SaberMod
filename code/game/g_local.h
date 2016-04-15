@@ -957,7 +957,8 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // g_stats.c
-void ShowDamageStatistics(void);
+void G_PrintStats(void);
+void G_LogStats(void);
 
 // ai_main.c
 

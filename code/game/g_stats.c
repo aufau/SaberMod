@@ -18,25 +18,30 @@ typedef enum {
 } playerStat_t;
 
 typedef struct {
-	const char	*label;
-	int			width;
+	const char * const	label;
+	const char * const	shortLabel;
+	int					width;
 } statColumn_t;
+
+#define STAT_COL_WIDTH 6
 
 // Keep this in the same order as playerStat_t
 const statColumn_t statCol[STAT_MAX] = {
-	{ "S", 3 },
-	{ "K", 3 },
-	{ "Cap", 3 },
-	{ "Def", 3 },
-	{ "Ast", 3 },
-	{ "Dmg", 5 },
-	{ "NetD", 5 },
-	{ "D", 3 },
-	{ "Rcv", 5 },
-	{ "TDmg", 5 },
-	{ "TRcv", 5 },
+	{ "Score",			"S", 3 },
+	{ "Kills",			"K", 3 },
+	{ "Captures",		"Cap", 3 },
+	{ "Defends",		"Def", 3 },
+	{ "Assists",		"Ast", 3 },
+	{ "Damage",			"Dmg", 5 },
+	{ "Net Damage",		"NetD", 5 },
+	{ "Deaths",			"D", 3 },
+	{ "Received",		"Rcv", 5 },
+	{ "Team Damage",	"TDmg", 5 },
+	{ "Team Received",	"TRcv", 5 },
 };
 
+static playerStat_t logColumns[] =
+{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV };
 static playerStat_t ffaColumns[] =
 { STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_MAX };
 static playerStat_t ctfColumns[] =
@@ -74,8 +79,8 @@ static void PrintStatsHeader( playerStat_t *columns )
 	for (i = 0; columns[i] != STAT_MAX; i++) {
 		playerStat_t stat = columns[i];
 
-		pad = statCol[stat].width - strlen(statCol[stat].label);
-		p += Com_sprintf(p, e - p, " %s%s", statCol[stat].label, Spaces(pad));
+		pad = statCol[stat].width - strlen(statCol[stat].shortLabel);
+		p += Com_sprintf(p, e - p, " %s%s", statCol[stat].shortLabel, Spaces(pad));
 	}
 
 	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
@@ -140,7 +145,7 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
 }
 
-void ShowDamageStatistics(void) {
+void G_PrintStats(void) {
 	playerStat_t	*columns;
 	gclient_t		*cl;
 	int				stats[STAT_MAX];
@@ -225,4 +230,63 @@ void ShowDamageStatistics(void) {
 
 	trap_SendServerCommand(-1, "print \"\n\"");
 
+}
+
+static void G_LogStatsHeader(void)
+{
+	char header[STRLEN("SH: Num")
+		+ ARRAY_LEN(logColumns) * (STAT_COL_WIDTH + 1)
+		+ 1 + STRLEN("Team")
+		+ 1 + STRLEN("Name\n") + 1];
+	int  i;
+
+	Q_strncpyz(header, "SH: Num", sizeof(header));
+	for (i = 0; i < ARRAY_LEN(logColumns); i++) {
+		const statColumn_t	*col = statCol + logColumns[i];
+		const char			*label;
+
+		if (col->label && strlen(col->label) <= STAT_COL_WIDTH) {
+			label = col->label;
+		} else {
+			label = col->shortLabel;
+		}
+
+		Q_strcat(header, sizeof(header), va(" %s%s",
+				Spaces(STAT_COL_WIDTH - strlen(label)), label));
+	}
+	G_LogPrintf(LOG_GAME_STATS, "%s %s %s\n", header, "Team", "Name");
+}
+
+static void G_LogStatsRow(int clientNum)
+{
+	char row[STRLEN("SR: Num")
+		+ ARRAY_LEN(logColumns) * (STAT_COL_WIDTH + 1)
+		+ 1 + STRLEN("Team")
+		+ 1 + MAX_NETNAME + 1];
+	int			stats[STAT_MAX];
+	gclient_t	*client = level.clients + clientNum;
+	int			i;
+
+	GetStats(stats, client);
+
+	Com_sprintf(row, sizeof(row), "SR: %3i", clientNum);
+	for (i = 0; i < ARRAY_LEN(logColumns); i++) {
+		Q_strcat(row, sizeof(row),
+			va(" %" STR(STAT_COL_WIDTH) "i", stats[logColumns[i]]));
+	}
+
+	G_LogPrintf(LOG_GAME_STATS, "%s %-4s %s\n", row,
+		teamNameUpperCase[client->sess.sessionTeam],
+		client->pers.netname);
+}
+
+void G_LogStats(void)
+{
+	int		i;
+
+	G_LogStatsHeader();
+
+	for (i = 0; i < level.numPlayingClients; i++) {
+		G_LogStatsRow(level.sortedClients[i]);
+	}
 }
