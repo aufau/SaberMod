@@ -77,9 +77,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 		tent->s.clientNum = player->s.clientNum;
 	}
 
-	// unlink to make sure it can't possibly interfere with G_KillBox
-	trap_UnlinkEntity (player);
-
 	VectorCopy ( origin, player->client->ps.origin );
 	player->client->ps.origin[2] += 1;
 
@@ -105,10 +102,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
-
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		trap_LinkEntity (player);
-	}
 }
 
 

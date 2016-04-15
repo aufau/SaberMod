@@ -992,6 +992,10 @@ static void G_FinishDuel ( gentity_t *ent )
 	ent->client->duelStarted = qfalse;
 	G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 	G_StopPrivateDuel(ent);
+
+	if (ent->health > 0) {
+		G_KillBox(ent);
+	}
 }
 
 /*

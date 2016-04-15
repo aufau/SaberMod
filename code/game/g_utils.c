@@ -710,7 +710,7 @@ Kill box
 G_KillBox
 
 Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
+of ent.
 =================
 */
 void G_KillBox (gentity_t *ent) {
@@ -724,8 +724,14 @@ void G_KillBox (gentity_t *ent) {
 	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
 	for (i=0 ; i<num ; i++) {
+		if (ent->s.number == touch[i]) {
+			continue;
+		}
 		hit = &g_entities[touch[i]];
 		if ( !hit->client ) {
+			continue;
+		}
+		if ( !G_EntitiesCollide(ent, hit) ) {
 			continue;
 		}
 
