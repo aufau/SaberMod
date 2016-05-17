@@ -1,3 +1,4 @@
+
 #include "g_local.h"
 #include "w_saber.h"
 #include "ai_main.h"
@@ -1510,10 +1511,7 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec
 
 				int modPowerLevel = -1;
 
-				if (traceEnt->client)
-				{
-					modPowerLevel = WP_AbsorbConversion(traceEnt, traceEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_LIGHTNING, self->client->ps.fd.forcePowerLevel[FP_LIGHTNING], 1);
-				}
+				modPowerLevel = WP_AbsorbConversion(traceEnt, traceEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_LIGHTNING, self->client->ps.fd.forcePowerLevel[FP_LIGHTNING], 1);
 
 				if (modPowerLevel != -1)
 				{
@@ -1745,11 +1743,10 @@ void ForceDrainDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec3_t 
 					dmg = 4;
 				}
 
-				if (traceEnt->client)
-				{
-					modPowerLevel = WP_AbsorbConversion(traceEnt, traceEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_DRAIN, self->client->ps.fd.forcePowerLevel[FP_DRAIN], 0);
-					//Since this is drain, don't absorb any power, but nullify the affect it has
-				}
+				modPowerLevel = WP_AbsorbConversion(traceEnt,
+					traceEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self,
+					FP_DRAIN, self->client->ps.fd.forcePowerLevel[FP_DRAIN], 0);
+				//Since this is drain, don't absorb any power, but nullify the affect it has
 
 				if (modPowerLevel != -1)
 				{
@@ -1810,18 +1807,16 @@ void ForceDrainDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec3_t 
 				{
 					self->client->ps.fd.forceDrainTime = level.time + 20;
 				}
+
+				if ( !Q_irand( 0, 2 ) )
+				{
+					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
+				}
 				*/
 
-				if ( traceEnt->client )
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-						//G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
-					}
 				//	traceEnt->s.powerups |= ( 1 << PW_DISINT_1 );
 
 				//	traceEnt->client->ps.powerups[PW_DISINT_1] = level.time + 500;
-				}
 
 				if (traceEnt->client->forcePowerSoundDebounce < level.time)
 				{

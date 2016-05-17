@@ -158,7 +158,7 @@ typedef enum {
 	TFP_HEAL,
 	TFP_DRAIN,
 	TFP_ABSORB
-} teamForcePowers_t;
+} teamForcePower_t;
 
 // centity_t have a direct corespondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame

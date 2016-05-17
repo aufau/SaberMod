@@ -1638,7 +1638,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					int clnum = es->trickedentindex;
 
 					cg_entities[clnum].teamPowerEffectTime = cg.time + 1000;
-					cg_entities[clnum].teamPowerType = TPF_ABSORB;
+					cg_entities[clnum].teamPowerType = TFP_ABSORB;
 				}
 				break;
 			case PDSOUND_ABSORB:

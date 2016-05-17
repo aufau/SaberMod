@@ -94,21 +94,21 @@ package : cgame ui | base/
 	../base/$(pk3) $(pk3assets); popd
 help	:
 	@echo 'Targets:'
-	@echo '  all (default)	- Build all targets'
-	@echo '  vm		- Build QVM targets in base/vm/'
-	@echo '  shared		- Build shared libraries in base/'
+	@echo '  all (default)  - Build all targets'
+	@echo '  vm             - Build QVM targets in base/vm/'
+	@echo '  shared         - Build shared libraries in base/'
 	@echo '  package        - Build clientside .pk3 package'
-	@echo '  game/cgame/ui	- Build game/cgame/ui QVM target'
-	@echo '  gameshared/..	- Build game/.. shared libraries'
-	@echo '  tools		- Build q3asm and q3lcc in bin/'
+	@echo '  game/cgame/ui  - Build game/cgame/ui QVM target'
+	@echo '  gameshared/..  - Build game/.. shared libraries'
+	@echo '  tools          - Build q3asm and q3lcc in bin/'
 	@echo 'Cleaning targets:'
-	@echo '  clean		- Same as vmclean sharedclean'
-	@echo '  vmclean	- Remove QVM and intermediate files'
-	@echo '  sharedclean	- Remove shared libraries and intermediate files'
+	@echo '  clean          - Same as vmclean sharedclean'
+	@echo '  vmclean        - Remove QVM and intermediate files'
+	@echo '  sharedclean    - Remove shared libraries and intermediate files'
 	@echo '  packageclean   - Remove .pk3 packages'
-	@echo '  toolsclean	- Remove q3asm and q3lcc'
-	@echo '  depclean	- Remove generated dependency files'
-	@echo '  distclean	- Remove all generated files'
+	@echo '  toolsclean     - Remove q3asm and q3lcc'
+	@echo '  depclean       - Remove generated dependency files'
+	@echo '  distclean      - Remove all generated files'
 version : FORCE
 	@touch code/game/bg_version.h
 
