@@ -153,7 +153,12 @@ typedef struct {
 
 //=================================================
 
-
+typedef enum {
+	TFP_REGEN,
+	TFP_HEAL,
+	TFP_DRAIN,
+	TFP_ABSORB
+} teamForcePowers_t;
 
 // centity_t have a direct corespondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
@@ -236,7 +241,7 @@ typedef struct centity_s {
 	int				trickAlphaTime;
 
 	int				teamPowerEffectTime;
-	qboolean		teamPowerType; //0 regen, 1 heal, 2 drain, 3 absorb
+	teamForcePower_t	teamPowerType;
 } centity_t;
 
 
