@@ -581,8 +581,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 
-			G_LogPrintf("------------------------------------------------------------\n" );
-			G_LogPrintf("InitGame: %s\n", serverinfo );
+			G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
+			G_LogPrintf( LOG_GAME, "InitGame: %s\n", serverinfo );
 		}
 	} else {
 		G_Printf( "Not logging to disk.\n" );
@@ -666,7 +666,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	if ( g_gametype.integer == GT_TOURNAMENT )
 	{
-		G_LogPrintf("Duel Tournament Begun: kill limit %d, win limit: %d\n", g_fraglimit.integer, g_duel_fraglimit.integer );
+		G_LogPrintf( LOG_GAME, "Duel Tournament Begun: kill limit %d, win limit: %d\n",
+			g_fraglimit.integer, g_duel_fraglimit.integer );
 	}
 }
 
@@ -681,8 +682,8 @@ void G_ShutdownGame( int restart ) {
 	G_LogWeaponOutput();
 
 	if ( level.logFile ) {
-		G_LogPrintf("ShutdownGame:\n" );
-		G_LogPrintf("------------------------------------------------------------\n" );
+		G_LogPrintf( LOG_GAME, "ShutdownGame:\n" );
+		G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
 		trap_FS_FCloseFile( level.logFile );
 	}
 
@@ -1445,7 +1446,7 @@ Print to the logfile with a time stamp if it is open
 =================
 */
 #define TIMESTAMP_LEN STRLEN("2016-04-13 13:37:00 ")
-void QDECL G_LogPrintf( const char *fmt, ... ) {
+void G_LogPrintf( logEvent_t event, const char *fmt, ... ) {
 	va_list		argptr;
 	char		string[1024];
 	qtime_t		t;
@@ -1481,7 +1482,7 @@ void LogExit( const char *string ) {
 	int				i, numSorted;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
-	G_LogPrintf( "Exit: %s\n", string );
+	G_LogPrintf( LOG_GAME, "Exit: %s\n", string );
 
 	level.intermissionQueued = level.time;
 
@@ -1496,7 +1497,7 @@ void LogExit( const char *string ) {
 	}
 
 	if ( GT_Team(g_gametype.integer) ) {
-		G_LogPrintf( "red: %i blue: %i\n",
+		G_LogPrintf( LOG_GAME_STATS, "red: %i blue: %i\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
 	}
 
@@ -1514,7 +1515,8 @@ void LogExit( const char *string ) {
 
 		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 
-		G_LogPrintf( "score: %3i  ping: %3i  client: %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i],	cl->pers.netname );
+		G_LogPrintf( LOG_GAME_STATS, "score: %3i  ping: %3i  client: %i %s\n",
+			cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i], cl->pers.netname );
 		if (g_singlePlayer.integer && g_gametype.integer == GT_TOURNAMENT) {
 			if (g_entities[cl - level.clients].r.svFlags & SVF_BOT && cl->ps.persistant[PERS_RANK] == 0) {
 				won = qfalse;
@@ -1578,14 +1580,14 @@ void CheckIntermissionExit( void ) {
 
 		if ( g_austrian.integer )
 		{
-			G_LogPrintf("Duel Results:\n");
-			//G_LogPrintf("Duel Time: %d\n", level.time );
-			G_LogPrintf("winner: %s, score: %d, wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "Duel Results:\n");
+			//G_LogPrintf( LOG_AUSTRIAN, "Duel Time: %d\n", level.time );
+			G_LogPrintf( LOG_AUSTRIAN, "winner: %s, score: %d, wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[0]].pers.netname,
 				level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE],
 				level.clients[level.sortedClients[0]].sess.wins,
 				level.clients[level.sortedClients[0]].sess.losses );
-			G_LogPrintf("loser: %s, score: %d, wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "loser: %s, score: %d, wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[1]].pers.netname,
 				level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE],
 				level.clients[level.sortedClients[1]].sess.wins,
@@ -1611,7 +1613,7 @@ void CheckIntermissionExit( void ) {
 
 			if ( g_austrian.integer )
 			{
-				G_LogPrintf("Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
 					level.clients[level.sortedClients[0]].pers.netname,
 					level.clients[level.sortedClients[0]].sess.wins,
 					level.clients[level.sortedClients[0]].sess.losses,
@@ -1635,7 +1637,7 @@ void CheckIntermissionExit( void ) {
 
 		if ( g_austrian.integer )
 		{
-			G_LogPrintf("Duel Tournament Winner: %s wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "Duel Tournament Winner: %s wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[0]].pers.netname,
 				level.clients[level.sortedClients[0]].sess.wins,
 				level.clients[level.sortedClients[0]].sess.losses );
@@ -2172,7 +2174,7 @@ void CheckTournament( void ) {
 				gDuelist2 = level.sortedClients[1];
 				if ( g_austrian.integer )
 				{
-					G_LogPrintf("Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+					G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
 						level.clients[level.sortedClients[0]].pers.netname,
 						level.clients[level.sortedClients[0]].sess.wins,
 						level.clients[level.sortedClients[0]].sess.losses,
@@ -2198,7 +2200,7 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
+				G_LogPrintf( LOG_GAME, "Warmup:\n" );
 			}
 			return;
 		}
@@ -2256,7 +2258,7 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
+				G_LogPrintf( LOG_GAME, "Warmup:\n" );
 			}
 			return; // still waiting for team members
 		}

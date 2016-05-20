@@ -825,7 +825,7 @@ void SP_worldspawn( void )
 	} else if ( g_doWarmup.integer && g_gametype.integer != GT_TOURNAMENT ) { // Turn it on
 		level.warmupTime = -1;
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-		G_LogPrintf( "Warmup:\n" );
+		G_LogPrintf( LOG_GAME, "Warmup:\n" );
 	}
 
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+0, defaultStyles[0][0]);

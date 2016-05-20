@@ -53,6 +53,24 @@ typedef enum {
 	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;
 
+// This enum is public too.
+typedef enum {
+	LOG_GAME,
+	LOG_CONNECT,
+	LOG_BEGIN,
+	LOG_USERINFO,
+	LOG_TEAM_SWITCH,
+	LOG_KILL,
+	LOG_SAY,
+	LOG_SAY_TEAM,
+	LOG_TELL,
+	LOG_VTELL,
+	LOG_ITEM,
+	LOG_WEAPON_STATS,
+	LOG_GAME_STATS,
+	LOG_AUSTRIAN,
+} logEvent_t;
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
@@ -827,7 +845,7 @@ void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
-void QDECL G_LogPrintf( const char *fmt, ... );
+void G_LogPrintf( logEvent_t event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
@@ -919,7 +937,6 @@ void ForceTelepathy(gentity_t *self);
 qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc );
 
 // g_log.c
-void QDECL G_LogPrintf( const char *fmt, ... );
 void QDECL G_LogWeaponPickup(int client, int weaponid);
 void QDECL G_LogWeaponFire(int client, int weaponid);
 void QDECL G_LogWeaponDamage(int client, int mod, int amount);
