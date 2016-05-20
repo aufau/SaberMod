@@ -72,9 +72,9 @@ obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 pk3name		:= SaberMod
 pk3			:= $(pk3name)-$(VERSION).pk3
 pk3doc		:= README.rst LICENSE.txt
-pk3assets := SOURCE.txt ui/jk2mp/ingame_about.menu	\
-ui/jk2mp/ingame_join.menu strip/SABERMOD_INGAME.sp	\
-strip/SABERMOD_MENUS.sp
+pk3assets := SOURCE.txt ui/jk2mp/ingame_about.menu		\
+ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu	\
+strip/SABERMOD_INGAME.sp strip/SABERMOD_MENUS.sp
 
 # Targets
 

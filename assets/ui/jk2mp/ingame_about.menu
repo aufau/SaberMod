@@ -7,8 +7,7 @@
 		name                    "ingame_about"
 		visible                 0
 		fullscreen              0
-		outOfBoundsClick // this closes the window if it gets a click out of the rectangle
-
+		outOfBoundsClick        // this closes the window if it gets a click out of the rectangle
 
 		rect                    10 40 320 240
 		focusColor              1 .75 0 1
