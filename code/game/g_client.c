@@ -1198,11 +1198,12 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 	}
 
-	if ( client->pers.connected == CON_CONNECTED ) {
-		if ( strcmp( oldname, client->pers.netname ) ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"", oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
+	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->pers.netname) ) {
+		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"",
+				oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
 				client->pers.netname) );
-		}
+		G_LogPrintf( LOG_RENAME, "ClientRename: %i %s: %s renamed to %s\n",
+			clientNum, client->pers.netname, oldname, client->pers.netname );
 	}
 
 	// set max health
