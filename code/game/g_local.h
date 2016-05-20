@@ -956,6 +956,9 @@ void QDECL G_ClearClientLog(int client);
 // g_saga.c
 void InitSagaMode(void);
 
+// g_stats.c
+void ShowDamageStatistics(void);
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
