@@ -1471,6 +1471,18 @@ void G_LogPrintf( logEvent_t event, const char *fmt, ... ) {
 	trap_FS_Write( string, strlen( string ), level.logFile );
 }
 
+const char *machineGameNames[GT_MAX_GAME_TYPE] = {
+	"FFA",
+	"HOLOCRON",
+	"JEDIMASTER",
+	"DUEL",
+	"SINGLE_PLAYER",
+	"TFFA",
+	"N/A",
+	"CTF",
+	"CTY"
+};
+
 /*
 ================
 LogExit
@@ -1482,7 +1494,7 @@ void LogExit( const char *string ) {
 	int				i;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
-	G_LogPrintf( LOG_GAME, "Exit: %s\n", string );
+	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", machineGameNames[g_gametype.integer], string );
 
 	level.intermissionQueued = level.time;
 
@@ -1491,8 +1503,20 @@ void LogExit( const char *string ) {
 	trap_SetConfigstring( CS_INTERMISSION, "1" );
 
 	if ( GT_Team(g_gametype.integer) ) {
-		G_LogPrintf( LOG_GAME_STATS, "red: %i blue: %i\n",
-			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
+		G_LogPrintf( LOG_GAME, "Score: %i %i: %s %s\n",
+			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
+			teamName[TEAM_RED], teamName[TEAM_BLUE]);
+	} else {
+		for (i = 0; i < level.numPlayingClients; i++) {
+			gclient_t	*client = level.clients + level.sortedClients[i];
+			int 		rank = client->ps.persistant[PERS_RANK];
+
+			if ((rank & ~RANK_TIED_FLAG) != 0) {
+				break;
+			}
+			G_LogPrintf( LOG_GAME, "Winner: %i: %s\n",
+				level.sortedClients[i], client->pers.netname );
+		}
 	}
 
 	G_LogStats();
