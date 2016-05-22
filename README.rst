@@ -113,6 +113,16 @@ g_allowVote 1
   8192 - No Kicks        16384 - With Kicks
   =====================  =====================  =====================
 
+g_log[1-4] <filename>
+  You can use 4 separate log files now.
+
+g_consoleFilter <mask>
+g_logFilter[1-4] <mask>
+  Filter events that should be printed in the dedicated server console
+  or saved in the corresponding log file using following bit mask:
+
+  TODO RELEASE
+
 g_maxGameClients 0
   Removed. Use teamsize instead.
 

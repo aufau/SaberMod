@@ -41,8 +41,6 @@ vmCvar_t	g_saberGhoul2Collision;
 vmCvar_t	g_saberAlwaysBoxTrace;
 vmCvar_t	g_saberBoxTraceSize;
 
-vmCvar_t	g_logClientInfo;
-
 vmCvar_t	g_slowmoDuelEnd;
 
 vmCvar_t	g_saberDamageScale;
@@ -87,7 +85,9 @@ vmCvar_t	g_synchronousClients;
 vmCvar_t	g_warmup;
 vmCvar_t	g_doWarmup;
 vmCvar_t	g_restarted;
-vmCvar_t	g_log;
+vmCvar_t	g_log[MAX_LOGFILES]; // Don't forget to update gameCvarTable
+vmCvar_t	g_logFilter[MAX_LOGFILES];
+vmCvar_t	g_consoleFilter;
 vmCvar_t	g_logSync;
 vmCvar_t	g_statLog;
 vmCvar_t	g_statLogFile;
@@ -170,8 +170,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_saberAlwaysBoxTrace, "g_saberAlwaysBoxTrace", "0", 0, 0, qtrue  },
 	{ &g_saberBoxTraceSize, "g_saberBoxTraceSize", "2", 0, 0, qtrue  },
 
-	{ &g_logClientInfo, "g_logClientInfo", "0", CVAR_ARCHIVE, 0, qtrue  },
-
 	{ &g_slowmoDuelEnd, "g_slowmoDuelEnd", "0", CVAR_ARCHIVE, 0, qtrue  },
 
 	{ &g_saberDamageScale, "g_saberDamageScale", "1", CVAR_ARCHIVE, 0, qtrue  },
@@ -207,7 +205,17 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_doWarmup, "g_doWarmup", "0", 0, 0, qtrue  },
-	{ &g_log, "g_log", "games.log", CVAR_ARCHIVE, 0, qfalse  },
+
+	{ &g_log[0], "g_log1", "games.log", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[2], "g_log3", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[3], "g_log4", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_logFilter[0], "g_logFilter1", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_logFilter[1], "g_logFilter2", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_logFilter[2], "g_logFilter3", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_logFilter[3], "g_logFilter4", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_consoleFilter, "g_consoleFilter", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse },
+
 	{ &g_logSync, "g_logSync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_statLog, "g_statLog", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -543,7 +551,8 @@ G_InitGame
 ============
 */
 void G_InitGame( int levelTime, int randomSeed, int restart ) {
-	int					i;
+	char	serverinfo[MAX_INFO_STRING];
+	int		i;
 
 	B_InitAlloc(); //make sure everything is clean
 
@@ -568,25 +577,23 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	//trap_SP_RegisterServer("mp_svgame");
 
-	if ( g_log.string[0] ) {
-		if ( g_logSync.integer ) {
-			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND_SYNC );
-		} else {
-			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND );
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( g_log[i].string[0] ) {
+			if ( g_logSync.integer ) {
+				trap_FS_FOpenFile( g_log[i].string, &level.logFile[i], FS_APPEND_SYNC );
+			} else {
+				trap_FS_FOpenFile( g_log[i].string, &level.logFile[i], FS_APPEND );
+			}
+			if ( !level.logFile[i] ) {
+				G_Printf( "WARNING: Couldn't open logfile: %s\n", g_log[i].string );
+			}
 		}
-		if ( !level.logFile ) {
-			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_log.string );
-		} else {
-			char	serverinfo[MAX_INFO_STRING];
-
-			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
-
-			G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
-			G_LogPrintf( LOG_GAME, "InitGame: %s\n", serverinfo );
-		}
-	} else {
-		G_Printf( "Not logging to disk.\n" );
 	}
+
+	trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+
+	G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
+	G_LogPrintf( LOG_GAME, "InitGame: %s\n", serverinfo );
 
 	G_LogWeaponInit();
 
@@ -677,14 +684,19 @@ G_ShutdownGame
 =================
 */
 void G_ShutdownGame( int restart ) {
+	int	i;
+
 	G_Printf ("==== ShutdownGame ====\n");
 
 	G_LogWeaponOutput();
 
-	if ( level.logFile ) {
-		G_LogPrintf( LOG_GAME, "ShutdownGame:\n" );
-		G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
-		trap_FS_FCloseFile( level.logFile );
+	G_LogPrintf( LOG_GAME, "ShutdownGame:\n" );
+	G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
+
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] ) {
+			trap_FS_FCloseFile( level.logFile[i] );
+		}
 	}
 
 	// write all the client session data so we can get it back
@@ -1446,11 +1458,24 @@ Print to the logfile with a time stamp if it is open
 =================
 */
 #define TIMESTAMP_LEN STRLEN("2016-04-13 13:37:00 ")
-void G_LogPrintf( logEvent_t event, const char *fmt, ... ) {
+void G_LogPrintf( int event, const char *fmt, ... ) {
 	va_list		argptr;
 	char		string[1024];
 	qtime_t		t;
+	int			i;
 
+	if ( g_dedicated.integer && (g_consoleFilter.integer & event)) {
+		goto log;
+	}
+
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] && (g_logFilter[i].integer & event) ) {
+			goto log;
+		}
+	}
+	return;
+
+ log:
 	trap_RealTime( &t );
 
 	Com_sprintf( string, sizeof(string), "%04i-%02i-%02i %02i:%02i:%02i ",
@@ -1460,15 +1485,15 @@ void G_LogPrintf( logEvent_t event, const char *fmt, ... ) {
 	vsprintf( string + TIMESTAMP_LEN , fmt,argptr );
 	va_end( argptr );
 
-	if ( g_dedicated.integer ) {
+	if ( g_dedicated.integer && (g_consoleFilter.integer & event)) {
 		G_Printf( "%s", string + TIMESTAMP_LEN );
 	}
 
-	if ( !level.logFile ) {
-		return;
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] && (g_logFilter[i].integer & event) ) {
+			trap_FS_Write( string, strlen( string ), level.logFile[i] );
+		}
 	}
-
-	trap_FS_Write( string, strlen( string ), level.logFile );
 }
 
 const char *machineGameNames[GT_MAX_GAME_TYPE] = {

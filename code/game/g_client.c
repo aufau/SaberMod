@@ -1295,10 +1295,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
-	if (g_logClientInfo.integer)
-	{
-		G_LogPrintf( LOG_USERINFO, "ClientUserInfoChanged: %i %s\n", clientNum, s );
-	}
+	G_LogPrintf( LOG_USERINFO, "ClientUserInfoChanged: %i %s\n", clientNum, s );
 }
 
 

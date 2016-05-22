@@ -33,6 +33,34 @@
 
 #define ANIMENT_SPAWNER //allow animent spawners
 
+// These are public and shouldn't be changed
+#define LOG_GAME			0x00000001
+#define LOG_CONNECT			0x00000002
+#define LOG_BEGIN			0x00000004
+#define LOG_USERINFO		0x00000008
+#define LOG_RENAME			0x00000010
+#define LOG_TEAM_SWITCH		0x00000020
+#define LOG_PRIVATE_DUEL	0x00000040
+#define LOG_KILL			0x00000080
+#define LOG_SAY				0x00000100
+#define LOG_SAY_TEAM		0x00000200
+#define LOG_TELL			0x00000400
+#define LOG_VTELL			0x00000800
+#define LOG_ITEM			0x00001000
+#define LOG_FLAG			0x00002000
+#define LOG_WEAPON_STATS	0x00004000
+#define LOG_GAME_STATS		0x00008000
+#define LOG_AUSTRIAN		0x00010000
+
+//							0x0000a3f7
+#define LOG_DEFAULT			41975
+// LOG_GAME | LOG_CONNECT | LOG_BEGIN | LOG_RENAME |
+// LOG_TEAM_SWITCH | LOG_PRIVATE_DUEL | LOG_KILL |
+// LOG_SAY | LOG_SAY_TEAM | LOG_FLAG | LOG_GAME_STATS
+
+
+#define MAX_LOGFILES		4
+
 // Never remove/rearrange items for backwards compatibility
 // DOCME in g_allowVote description
 typedef enum {
@@ -52,27 +80,6 @@ typedef enum {
 	CV_WITHKICK,
 	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;
-
-// This enum is public too.
-typedef enum {
-	LOG_GAME,
-	LOG_CONNECT,
-	LOG_BEGIN,
-	LOG_USERINFO,
-	LOG_RENAME,
-	LOG_TEAM_SWITCH,
-	LOG_PRIVATE_DUEL,
-	LOG_KILL,
-	LOG_SAY,
-	LOG_SAY_TEAM,
-	LOG_TELL,
-	LOG_VTELL,
-	LOG_ITEM,
-	LOG_FLAG,
-	LOG_WEAPON_STATS,
-	LOG_GAME_STATS,
-	LOG_AUSTRIAN,
-} logEvent_t;
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
@@ -484,7 +491,7 @@ typedef struct {
 
 	int			warmupTime;			// restart match at this time
 
-	fileHandle_t	logFile;
+	fileHandle_t	logFile[MAX_LOGFILES];
 
 	// store latched cvars here that we want to get at often
 	int			maxclients;
@@ -848,7 +855,7 @@ void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
-void G_LogPrintf( logEvent_t event, const char *fmt, ... );
+void G_LogPrintf( int event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
@@ -1017,8 +1024,6 @@ extern	vmCvar_t	g_saberGhoul2Collision;
 #endif
 extern	vmCvar_t	g_saberAlwaysBoxTrace;
 extern	vmCvar_t	g_saberBoxTraceSize;
-
-extern	vmCvar_t	g_logClientInfo;
 
 extern	vmCvar_t	g_slowmoDuelEnd;
 
