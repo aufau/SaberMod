@@ -910,13 +910,27 @@ to free floating spectator mode
 =================
 */
 void StopFollowing( gentity_t *ent ) {
-	ent->client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
-	ent->client->sess.sessionTeam = TEAM_SPECTATOR;
-	ent->client->sess.spectatorState = SPECTATOR_FREE;
-	ent->client->ps.pm_flags &= ~PMF_FOLLOW;
+	gclient_t *client = ent->client;
+
 	ent->r.svFlags &= ~SVF_BOT;
-	ent->client->ps.clientNum = ent - g_entities;
-	ent->client->ps.weapon = WP_NONE;
+	client->sess.sessionTeam = TEAM_SPECTATOR;
+	client->sess.spectatorState = SPECTATOR_FREE;
+	client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
+	client->ps.pm_flags &= ~PMF_FOLLOW;
+	client->ps.clientNum = ent - g_entities;
+	client->ps.weapon = WP_NONE;
+	client->ps.zoomMode = 0;
+	client->ps.forceHandExtend = HANDEXTEND_NONE;
+	client->ps.duelInProgress = qfalse;
+	client->ps.weaponTime = 0;
+	client->ps.saberHolstered = qtrue;
+	client->ps.saberLockTime = 0;
+	client->ps.saberLockFrame = 0;
+	client->ps.saberLockEnemy = 0;
+	client->ps.saberMove = LS_NONE;
+	client->ps.saberBlocked = 0;
+	client->ps.saberBlocking = 0;
+	client->ps.saberEntityNum = ENTITYNUM_NONE;
 }
 
 /*
