@@ -41,8 +41,6 @@ vmCvar_t	g_saberGhoul2Collision;
 vmCvar_t	g_saberAlwaysBoxTrace;
 vmCvar_t	g_saberBoxTraceSize;
 
-vmCvar_t	g_logClientInfo;
-
 vmCvar_t	g_slowmoDuelEnd;
 
 vmCvar_t	g_saberDamageScale;
@@ -87,7 +85,9 @@ vmCvar_t	g_synchronousClients;
 vmCvar_t	g_warmup;
 vmCvar_t	g_doWarmup;
 vmCvar_t	g_restarted;
-vmCvar_t	g_log;
+vmCvar_t	g_log[MAX_LOGFILES]; // Don't forget to update gameCvarTable
+vmCvar_t	g_logFilter[MAX_LOGFILES];
+vmCvar_t	g_consoleFilter;
 vmCvar_t	g_logSync;
 vmCvar_t	g_statLog;
 vmCvar_t	g_statLogFile;
@@ -170,8 +170,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_saberAlwaysBoxTrace, "g_saberAlwaysBoxTrace", "0", 0, 0, qtrue  },
 	{ &g_saberBoxTraceSize, "g_saberBoxTraceSize", "2", 0, 0, qtrue  },
 
-	{ &g_logClientInfo, "g_logClientInfo", "0", CVAR_ARCHIVE, 0, qtrue  },
-
 	{ &g_slowmoDuelEnd, "g_slowmoDuelEnd", "0", CVAR_ARCHIVE, 0, qtrue  },
 
 	{ &g_saberDamageScale, "g_saberDamageScale", "1", CVAR_ARCHIVE, 0, qtrue  },
@@ -207,7 +205,17 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_doWarmup, "g_doWarmup", "0", 0, 0, qtrue  },
-	{ &g_log, "g_log", "games.log", CVAR_ARCHIVE, 0, qfalse  },
+
+	{ &g_log[0], "g_log1", "games.log", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[2], "g_log3", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[3], "g_log4", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_logFilter[0], "g_logFilter1", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_logFilter[1], "g_logFilter2", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_logFilter[2], "g_logFilter3", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_logFilter[3], "g_logFilter4", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_consoleFilter, "g_consoleFilter", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse },
+
 	{ &g_logSync, "g_logSync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_statLog, "g_statLog", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -543,7 +551,8 @@ G_InitGame
 ============
 */
 void G_InitGame( int levelTime, int randomSeed, int restart ) {
-	int					i;
+	char	serverinfo[MAX_INFO_STRING];
+	int		i;
 
 	B_InitAlloc(); //make sure everything is clean
 
@@ -568,25 +577,23 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	//trap_SP_RegisterServer("mp_svgame");
 
-	if ( g_log.string[0] ) {
-		if ( g_logSync.integer ) {
-			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND_SYNC );
-		} else {
-			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND );
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( g_log[i].string[0] ) {
+			if ( g_logSync.integer ) {
+				trap_FS_FOpenFile( g_log[i].string, &level.logFile[i], FS_APPEND_SYNC );
+			} else {
+				trap_FS_FOpenFile( g_log[i].string, &level.logFile[i], FS_APPEND );
+			}
+			if ( !level.logFile[i] ) {
+				G_Printf( "WARNING: Couldn't open logfile: %s\n", g_log[i].string );
+			}
 		}
-		if ( !level.logFile ) {
-			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_log.string );
-		} else {
-			char	serverinfo[MAX_INFO_STRING];
-
-			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
-
-			G_LogPrintf("------------------------------------------------------------\n" );
-			G_LogPrintf("InitGame: %s\n", serverinfo );
-		}
-	} else {
-		G_Printf( "Not logging to disk.\n" );
 	}
+
+	trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+
+	G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
+	G_LogPrintf( LOG_GAME, "InitGame: %s\n", serverinfo );
 
 	G_LogWeaponInit();
 
@@ -666,7 +673,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	if ( g_gametype.integer == GT_TOURNAMENT )
 	{
-		G_LogPrintf("Duel Tournament Begun: kill limit %d, win limit: %d\n", g_fraglimit.integer, g_duel_fraglimit.integer );
+		G_LogPrintf( LOG_GAME, "Duel Tournament Begun: kill limit %d, win limit: %d\n",
+			g_fraglimit.integer, g_duel_fraglimit.integer );
 	}
 }
 
@@ -676,14 +684,19 @@ G_ShutdownGame
 =================
 */
 void G_ShutdownGame( int restart ) {
+	int	i;
+
 	G_Printf ("==== ShutdownGame ====\n");
 
 	G_LogWeaponOutput();
 
-	if ( level.logFile ) {
-		G_LogPrintf("ShutdownGame:\n" );
-		G_LogPrintf("------------------------------------------------------------\n" );
-		trap_FS_FCloseFile( level.logFile );
+	G_LogPrintf( LOG_GAME, "ShutdownGame:\n" );
+	G_LogPrintf( LOG_GAME, "------------------------------------------------------------\n" );
+
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] ) {
+			trap_FS_FCloseFile( level.logFile[i] );
+		}
 	}
 
 	// write all the client session data so we can get it back
@@ -1444,34 +1457,56 @@ G_LogPrintf
 Print to the logfile with a time stamp if it is open
 =================
 */
-void QDECL G_LogPrintf( const char *fmt, ... ) {
+#define TIMESTAMP_LEN STRLEN("2016-04-13 13:37:00 ")
+void G_LogPrintf( int event, const char *fmt, ... ) {
 	va_list		argptr;
 	char		string[1024];
-	int			min, tens, sec;
+	qtime_t		t;
+	int			i;
 
-	sec = level.time / 1000;
+	if ( g_dedicated.integer && (g_consoleFilter.integer & event)) {
+		goto log;
+	}
 
-	min = sec / 60;
-	sec -= min * 60;
-	tens = sec / 10;
-	sec -= tens * 10;
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] && (g_logFilter[i].integer & event) ) {
+			goto log;
+		}
+	}
+	return;
 
-	Com_sprintf( string, sizeof(string), "%3i:%i%i ", min, tens, sec );
+ log:
+	trap_RealTime( &t );
+
+	Com_sprintf( string, sizeof(string), "%04i-%02i-%02i %02i:%02i:%02i ",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
 
 	va_start( argptr, fmt );
-	vsprintf( string +7 , fmt,argptr );
+	vsprintf( string + TIMESTAMP_LEN , fmt,argptr );
 	va_end( argptr );
 
-	if ( g_dedicated.integer ) {
-		G_Printf( "%s", string + 7 );
+	if ( g_dedicated.integer && (g_consoleFilter.integer & event)) {
+		G_Printf( "%s", string + TIMESTAMP_LEN );
 	}
 
-	if ( !level.logFile ) {
-		return;
+	for ( i = 0; i < MAX_LOGFILES; i++ ) {
+		if ( level.logFile[i] && (g_logFilter[i].integer & event) ) {
+			trap_FS_Write( string, strlen( string ), level.logFile[i] );
+		}
 	}
-
-	trap_FS_Write( string, strlen( string ), level.logFile );
 }
+
+const char *machineGameNames[GT_MAX_GAME_TYPE] = {
+	"FFA",
+	"HOLOCRON",
+	"JEDIMASTER",
+	"DUEL",
+	"SINGLE_PLAYER",
+	"TFFA",
+	"N/A",
+	"CTF",
+	"CTY"
+};
 
 /*
 ================
@@ -1481,10 +1516,10 @@ Append information about this game to the log file
 ================
 */
 void LogExit( const char *string ) {
-	int				i, numSorted;
+	int				i;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
-	G_LogPrintf( "Exit: %s\n", string );
+	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", machineGameNames[g_gametype.integer], string );
 
 	level.intermissionQueued = level.time;
 
@@ -1492,43 +1527,39 @@ void LogExit( const char *string ) {
 	// that will get cut off when the queued intermission starts
 	trap_SetConfigstring( CS_INTERMISSION, "1" );
 
-	// don't send more than 32 scores (FIXME?)
-	numSorted = level.numConnectedClients;
-	if ( numSorted > 32 ) {
-		numSorted = 32;
-	}
-
 	if ( GT_Team(g_gametype.integer) ) {
-		G_LogPrintf( "red:%i  blue:%i\n",
-			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
-	}
+		G_LogPrintf( LOG_GAME, "Score: %i %i: %s %s\n",
+			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
+			teamName[TEAM_RED], teamName[TEAM_BLUE]);
+	} else {
+		for (i = 0; i < level.numPlayingClients; i++) {
+			gclient_t	*client = level.clients + level.sortedClients[i];
+			int 		rank = client->ps.persistant[PERS_RANK];
 
-	for (i=0 ; i < numSorted ; i++) {
-		int		ping;
-
-		cl = &level.clients[level.sortedClients[i]];
-
-		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		if ( cl->pers.connected == CON_CONNECTING ) {
-			continue;
-		}
-
-		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
-
-		G_LogPrintf( "score: %i  ping: %i  client: %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i],	cl->pers.netname );
-		if (g_singlePlayer.integer && g_gametype.integer == GT_TOURNAMENT) {
-			if (g_entities[cl - level.clients].r.svFlags & SVF_BOT && cl->ps.persistant[PERS_RANK] == 0) {
-				won = qfalse;
+			if ((rank & ~RANK_TIED_FLAG) != 0) {
+				break;
 			}
+			G_LogPrintf( LOG_GAME, "Winner: %i: %s\n",
+				level.sortedClients[i], client->pers.netname );
 		}
 	}
+
+	G_LogStats();
 
 	if (g_singlePlayer.integer) {
-		if (GT_Flag(g_gametype.integer)) {
+		if (g_gametype.integer == GT_TOURNAMENT) {
+			for (i=0 ; i < level.numPlayingClients ; i++) {
+				cl = &level.clients[level.sortedClients[i]];
+
+
+				if (g_entities[cl - level.clients].r.svFlags & SVF_BOT && cl->ps.persistant[PERS_RANK] == 0) {
+					won = qfalse;
+				}
+			}
+		} else if (GT_Flag(g_gametype.integer)) {
 			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
 		}
+
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
 	}
 }
@@ -1581,14 +1612,14 @@ void CheckIntermissionExit( void ) {
 
 		if ( g_austrian.integer )
 		{
-			G_LogPrintf("Duel Results:\n");
-			//G_LogPrintf("Duel Time: %d\n", level.time );
-			G_LogPrintf("winner: %s, score: %d, wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "Duel Results:\n");
+			//G_LogPrintf( LOG_AUSTRIAN, "Duel Time: %d\n", level.time );
+			G_LogPrintf( LOG_AUSTRIAN, "winner: %s, score: %d, wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[0]].pers.netname,
 				level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE],
 				level.clients[level.sortedClients[0]].sess.wins,
 				level.clients[level.sortedClients[0]].sess.losses );
-			G_LogPrintf("loser: %s, score: %d, wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "loser: %s, score: %d, wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[1]].pers.netname,
 				level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE],
 				level.clients[level.sortedClients[1]].sess.wins,
@@ -1614,7 +1645,7 @@ void CheckIntermissionExit( void ) {
 
 			if ( g_austrian.integer )
 			{
-				G_LogPrintf("Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
 					level.clients[level.sortedClients[0]].pers.netname,
 					level.clients[level.sortedClients[0]].sess.wins,
 					level.clients[level.sortedClients[0]].sess.losses,
@@ -1638,7 +1669,7 @@ void CheckIntermissionExit( void ) {
 
 		if ( g_austrian.integer )
 		{
-			G_LogPrintf("Duel Tournament Winner: %s wins/losses: %d/%d\n",
+			G_LogPrintf( LOG_AUSTRIAN, "Duel Tournament Winner: %s wins/losses: %d/%d\n",
 				level.clients[level.sortedClients[0]].pers.netname,
 				level.clients[level.sortedClients[0]].sess.wins,
 				level.clients[level.sortedClients[0]].sess.losses );
@@ -1756,236 +1787,6 @@ qboolean ScoreIsTied( void ) {
 	return a == b;
 }
 
-// GAME STATISTICS
-
-typedef enum {
-	STAT_SCORE,
-	STAT_KILLS,
-	STAT_CAPS,
-	STAT_DEFEND,
-	STAT_ASSIST,
-	STAT_DMG,
-	STAT_NET_DMG,
-	STAT_MAX_ASC = STAT_NET_DMG,
-	// following stats are 'better' when lower
-	STAT_KILLED,
-	STAT_RCV,
-	STAT_TDMG,
-	STAT_TRCV,
-	STAT_MAX
-} playerStat_t;
-
-typedef struct {
-	const char	*label;
-	int			width;
-} statColumn_t;
-
-// Keep this in the same order as playerStat_t
-const statColumn_t statCol[STAT_MAX] = {
-	{ "S", 3 },
-	{ "K", 3 },
-	{ "Cap", 3 },
-	{ "Def", 3 },
-	{ "Ast", 3 },
-	{ "Dmg", 5 },
-	{ "NetD", 5 },
-	{ "D", 3 },
-	{ "Rcv", 5 },
-	{ "TDmg", 5 },
-	{ "TRcv", 5 },
-};
-
-static void GetStats( int *stats, gclient_t *cl )
-{
-	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
-	stats[STAT_CAPS] = cl->ps.persistant[PERS_CAPTURES];
-	stats[STAT_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
-	stats[STAT_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
-	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
-	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
-	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
-		- cl->pers.totalDamageTakenFromEnemies;
-	stats[STAT_DMG] = cl->pers.totalDamageDealtToEnemies;
-	stats[STAT_RCV] = cl->pers.totalDamageTakenFromEnemies;
-	stats[STAT_TDMG] = cl->pers.totalDamageDealtToAllies;
-	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
-}
-
-static void PrintStatsHeader( playerStat_t *columns )
-{
-	char		line[DEFAULT_CONSOLE_WIDTH];
-	char		*p = line;
-	const char	*e = line + sizeof(line);
-	int			pad;
-	int			i;
-
-	pad = MAX_NAME_LEN - STRLEN("Name");
-	p += Com_sprintf(p, e - p, "Name%s", Spaces(pad));
-
-	for (i = 0; columns[i] != STAT_MAX; i++) {
-		playerStat_t stat = columns[i];
-
-		pad = statCol[stat].width - strlen(statCol[stat].label);
-		p += Com_sprintf(p, e - p, " %s%s", statCol[stat].label, Spaces(pad));
-	}
-
-	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
-
-}
-
-static void PrintStatsSeparator( playerStat_t *columns, const char *colorString )
-{
-	char		line[DEFAULT_CONSOLE_WIDTH];
-	char		*p = line;
-	const char	*e = line + sizeof(line);
-	int			i;
-
-	p += Com_sprintf(p, e - p, Dashes(MAX_NAME_LEN));
-
-	for (i = 0; columns[i] != STAT_MAX; i++) {
-		playerStat_t stat = columns[i];
-
-		p += Com_sprintf(p, e - p, " %s", Dashes(statCol[stat].width));
-	}
-
-	trap_SendServerCommand(-1,
-		va("print \"%s%s\n\"", colorString, line));
-}
-
-static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
-{
-	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
-	char		*p = line;
-	const char	*e = line + sizeof(line);
-	int			stats[STAT_MAX];
-	int			pad;
-	int			i;
-
-	GetStats(stats, cl);
-
-	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
-	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->pers.netname, Spaces(pad));
-
-	for (i = 0; columns[i] != STAT_MAX; i++) {
-		playerStat_t stat = columns[i];
-		char *value = va("%i", stats[stat]);
-		int len = strlen(value);
-
-		if (stats[stat] >= 1000 && len > statCol[stat].width) {
-			value = va("%ik", stats[stat] / 1000);
-			len = strlen(value);
-		}
-		if (len > statCol[stat].width) {
-			value = "";
-			len = 0;
-		}
-
-		pad = statCol[stat].width - len;
-		if (stats[stat] == bestStats[stat]) {
-			p += Com_sprintf(p, e - p, S_COLOR_GREEN " %s%s" S_COLOR_WHITE, value, Spaces(pad));
-		} else {
-			p += Com_sprintf(p, e - p, " %s%s", value, Spaces(pad));
-		}
-	}
-
-	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
-}
-
-static playerStat_t ffaColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_MAX };
-static playerStat_t ctfColumns[] =
-{ STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
-static playerStat_t tffaColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
-
-
-static void ShowDamageStatistics() {
-	playerStat_t	*columns;
-	gclient_t		*cl;
-	int				stats[STAT_MAX];
-	int				bestStats[STAT_MAX];
-	qboolean		reallyBest[STAT_MAX] = { qfalse };
-	int				i, j;
-
-	if (level.numPlayingClients == 0) {
-		return;
-	}
-
-	cl = &level.clients[level.sortedClients[0]];
-	GetStats(bestStats, cl);
-
-	for (i = 1; i < level.numPlayingClients; i++) {
-		cl = &level.clients[level.sortedClients[i]];
-		GetStats(stats, cl);
-
-		for (j = 0; j <= STAT_MAX_ASC; j++) {
-			if (stats[j] != bestStats[j]) {
-				reallyBest[j] = qtrue;
-			}
-			if (stats[j] > bestStats[j]) {
-				bestStats[j] = stats[j];
-			}
-		}
-		for (; j < STAT_MAX; j++) {
-			if (stats[j] != bestStats[j]) {
-				reallyBest[j] = qtrue;
-			}
-			if (stats[j] < bestStats[j]) {
-				bestStats[j] = stats[j];
-			}
-		}
-	}
-
-	// Don't highlight the stat if it's the same for all players
-	for (j = 0; j < STAT_MAX; j++) {
-		if (!reallyBest[j]) {
-			bestStats[j] = INT_MAX;
-		}
-	}
-
-	trap_SendServerCommand(-1, "print \"\n\"");
-
-	if (GT_Team(g_gametype.integer)) {
-		if (g_gametype.integer == GT_CTF) {
-			columns = ctfColumns;
-		} else {
-			columns = tffaColumns;
-		}
-
-		PrintStatsHeader(columns);
-
-		PrintStatsSeparator(columns, teamColorString[TEAM_RED]);
-		for (i = 0; i < level.numPlayingClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_RED)
-				PrintClientStats(cl, columns, bestStats);
-		}
-
-		PrintStatsSeparator(columns, teamColorString[TEAM_BLUE]);
-		for (i = 0; i < level.numPlayingClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_BLUE) {
-				PrintClientStats(cl, columns, bestStats);
-			}
-		}
-	} else {
-		columns = ffaColumns;
-
-		PrintStatsHeader(columns);
-
-		PrintStatsSeparator(columns, teamColorString[TEAM_FREE]);
-		for (i = 0; i < level.numPlayingClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_FREE) {
-				PrintClientStats(cl, columns, bestStats);
-			}
-		}
-	}
-
-	trap_SendServerCommand(-1, "print \"\n\"");
-
-}
-
 /*
 =================
 CheckExitRules
@@ -2046,7 +1847,7 @@ void CheckExitRules( void ) {
 		int time = (g_singlePlayer.integer) ? SP_INTERMISSION_DELAY_TIME : INTERMISSION_DELAY_TIME;
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
-			ShowDamageStatistics();
+			G_PrintStats();
 			BeginIntermission();
 		}
 		return;
@@ -2175,7 +1976,7 @@ void CheckTournament( void ) {
 				gDuelist2 = level.sortedClients[1];
 				if ( g_austrian.integer )
 				{
-					G_LogPrintf("Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+					G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
 						level.clients[level.sortedClients[0]].pers.netname,
 						level.clients[level.sortedClients[0]].sess.wins,
 						level.clients[level.sortedClients[0]].sess.losses,
@@ -2201,7 +2002,7 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
+				G_LogPrintf( LOG_GAME, "Warmup:\n" );
 			}
 			return;
 		}
@@ -2259,7 +2060,7 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
+				G_LogPrintf( LOG_GAME, "Warmup:\n" );
 			}
 			return; // still waiting for team members
 		}

@@ -1198,11 +1198,12 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 	}
 
-	if ( client->pers.connected == CON_CONNECTED ) {
-		if ( strcmp( oldname, client->pers.netname ) ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"", oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
+	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->pers.netname) ) {
+		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"",
+				oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
 				client->pers.netname) );
-		}
+		G_LogPrintf( LOG_RENAME, "ClientRename: %i %s: %s renamed to %s\n",
+			clientNum, client->pers.netname, oldname, client->pers.netname );
 	}
 
 	// set max health
@@ -1294,10 +1295,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
-	if (g_logClientInfo.integer)
-	{
-		G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
-	}
+	G_LogPrintf( LOG_USERINFO, "ClientUserInfoChanged: %i %s\n", clientNum, s );
 }
 
 
@@ -1326,6 +1324,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 //	char		*areabits;
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
+	char		address[MAX_INFO_VALUE];
 	gentity_t	*ent;
 	gentity_t	*te;
 
@@ -1335,6 +1334,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	// check to see if they are on the banned IP list
 	value = Info_ValueForKey (userinfo, "ip");
+	Q_strncpyz(address, value, sizeof(address));
 	if ( G_FilterPacket( value ) ) {
 		return "Banned.";
 	}
@@ -1375,8 +1375,14 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// get and distribute relevent paramters
-	G_LogPrintf( "ClientConnect: %i\n", clientNum);
 	ClientUserinfoChanged( clientNum );
+	if ( isBot ) {
+		G_LogPrintf( LOG_CONNECT, "BotConnect: %i: %s connected\n",
+			clientNum, client->pers.netname);
+	} else {
+		G_LogPrintf( LOG_CONNECT, "ClientConnect: %i %s: %s connected\n",
+			clientNum, address, client->pers.netname);
+	}
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime ) {
@@ -1570,7 +1576,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
-	G_LogPrintf( "ClientBegin: %i Version: %s\n", clientNum, Info_ValueForKey(userinfo, GAMEVERSION) );
+	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s: %s entered the game\n",
+		clientNum, Info_ValueForKey(userinfo, GAMEVERSION), client->pers.netname );
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
@@ -2103,7 +2110,13 @@ void ClientDisconnect( int clientNum ) {
 		TossClientItems( ent );
 	}
 
-	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
+	if ( ent->r.svFlags & SVF_BOT ) {
+		G_LogPrintf( LOG_CONNECT, "BotDisconnect: %i: %s disconnected\n",
+			clientNum, ent->client->pers.netname );
+	} else {
+		G_LogPrintf( LOG_CONNECT, "ClientDisconnect: %i: %s disconnected\n",
+			clientNum, ent->client->pers.netname );
+	}
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round
 	if ( (g_gametype.integer == GT_TOURNAMENT )

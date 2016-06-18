@@ -1428,7 +1428,8 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
+	G_LogPrintf( LOG_ITEM, "Item: %i %s: %s picked up %s\n", other->s.number,
+		ent->item->classname, other->client->pers.netname, ent->item->classname );
 
 	predict = other->client->pers.predictItemPickup;
 

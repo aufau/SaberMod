@@ -1917,7 +1917,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		obit = modNames[ meansOfDeath ];
 	}
 
-	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n",
+	G_LogPrintf(LOG_KILL, "Kill: %i %i %i: %s killed %s by %s\n",
 				killer, self->s.number, meansOfDeath, killerName,
 				self->client->pers.netname, obit );
 
@@ -1926,16 +1926,21 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		 && level.numPlayingClients >= 2 )
 	{
 		int spawnTime = (level.clients[level.sortedClients[0]].respawnTime > level.clients[level.sortedClients[1]].respawnTime) ? level.clients[level.sortedClients[0]].respawnTime : level.clients[level.sortedClients[1]].respawnTime;
-		G_LogPrintf("Duel Kill Details:\n");
-		G_LogPrintf("Kill Time: %d\n", level.time-spawnTime );
-		G_LogPrintf("victim: %s, hits on enemy %d\n", self->client->pers.netname, self->client->ps.persistant[PERS_HITS] );
+		G_LogPrintf(LOG_AUSTRIAN, "Duel Kill Details:\n");
+		G_LogPrintf(LOG_AUSTRIAN, "Kill Time: %d\n", level.time-spawnTime );
+		G_LogPrintf(LOG_AUSTRIAN, "victim: %s, hits on enemy %d\n",
+			self->client->pers.netname, self->client->ps.persistant[PERS_HITS] );
 		if ( attacker && attacker->client )
 		{
-			G_LogPrintf("killer: %s, hits on enemy %d, health: %d\n", attacker->client->pers.netname, attacker->client->ps.persistant[PERS_HITS], attacker->health );
+			G_LogPrintf(LOG_AUSTRIAN, "killer: %s, hits on enemy %d, health: %d\n",
+				attacker->client->pers.netname,
+				attacker->client->ps.persistant[PERS_HITS], attacker->health );
 			//also - if MOD_SABER, list the animation and saber style
 			if ( meansOfDeath == MOD_SABER )
 			{
-				G_LogPrintf("killer saber style: %d, killer saber anim %s\n", attacker->client->ps.fd.saberAnimLevel, animTable[(attacker->client->ps.torsoAnim&~ANIM_TOGGLEBIT)].name );
+				G_LogPrintf(LOG_AUSTRIAN, "killer saber style: %d, killer saber anim %s\n",
+					attacker->client->ps.fd.saberAnimLevel,
+					animTable[(attacker->client->ps.torsoAnim&~ANIM_TOGGLEBIT)].name );
 			}
 		}
 	}
@@ -2926,7 +2931,8 @@ void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int death
 		if ( g_austrian.integer
 			&& g_gametype.integer == GT_TOURNAMENT )
 		{
-			G_LogPrintf( "Duel Dismemberment: %s dismembered at %s\n", ent->client->pers.netname, hitLocName[hitLoc] );
+			G_LogPrintf(LOG_AUSTRIAN, "Duel Dismemberment: %s dismembered at %s\n",
+				ent->client->pers.netname, hitLocName[hitLoc] );
 		}
 	}
 	else

@@ -30,6 +30,7 @@
 
 extern const char * teamName[TEAM_NUM_TEAMS];
 extern const char * teamNameUpperCase[TEAM_NUM_TEAMS];
+extern const char * teamNameLowerCase[TEAM_NUM_TEAMS];
 extern const char * teamColorString[TEAM_NUM_TEAMS];
 extern const team_t otherTeam[TEAM_NUM_TEAMS];
 

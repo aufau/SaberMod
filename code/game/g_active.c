@@ -1156,6 +1156,16 @@ void ClientThink_real( gentity_t *ent ) {
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
 				int duelTime = (level.time - ent->client->ps.duelTime) / 1000;
+				int minutes = duelTime / 60;
+				int seconds = duelTime % 60;
+
+				G_LogPrintf(LOG_PRIVATE_DUEL,
+					"DuelWin: %i %i %i %i: %s has defeated %s in %02i:%02i with %i/%i left\n",
+					ent->s.number, duelAgainst->s.number,
+					ent->client->ps.stats[STAT_HEALTH],	ent->client->ps.stats[STAT_ARMOR],
+					ent->client->pers.netname, duelAgainst->client->pers.netname,
+					minutes, seconds,
+					ent->client->ps.stats[STAT_HEALTH],	ent->client->ps.stats[STAT_ARMOR]);
 
 				s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE
 					" in " S_COLOR_CYAN "%02i" S_COLOR_WHITE ":" S_COLOR_CYAN "%02i" S_COLOR_WHITE
@@ -1163,13 +1173,18 @@ void ClientThink_real( gentity_t *ent ) {
 					ent->client->pers.netname,
 					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
 					duelAgainst->client->pers.netname,
-					duelTime / 60,
-					duelTime % 60,
+					minutes,
+					seconds,
 					ent->client->ps.stats[STAT_HEALTH],
 					ent->client->ps.stats[STAT_ARMOR]);
 			}
 			else
 			{ //it was a draw, because we both managed to die in the same frame
+				G_LogPrintf(LOG_PRIVATE_DUEL,
+					"DuelTie: %i %i: The duel between %s and %s is ended in a draw, both fighters have died\n",
+					ent->s.number, duelAgainst->s.number,
+					ent->client->pers.netname, duelAgainst->client->pers.netname);
+
 				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
 			}
 			trap_SendServerCommand(-1, s);
@@ -1217,6 +1232,9 @@ void ClientThink_real( gentity_t *ent ) {
 				G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
 				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
 
+				G_LogPrintf(LOG_PRIVATE_DUEL, "DuelStop: %i %i: The duel between %s and %s has been severed\n",
+					ent->s.number, duelAgainst->s.number,
+					ent->client->pers.netname, duelAgainst->client->pers.netname);
 				trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELSTOP")) );
 			}
 		}
