@@ -29,7 +29,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef struct
 {
 	int				length;
-	color4ub_t		value;
+	union {
+		color4ub_t		b;
+		uint32_t		ui;
+	} value;
 	color4ub_t		map[MAX_QPATH];
 } clightstyle_t;
 

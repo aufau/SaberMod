@@ -69,23 +69,23 @@ void CG_RunLightStyles (void)
 	{
 		if (!ls->length)
 		{
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->value[3] = 255;
+			ls->value.ui = 0xffffffff;
 		}
 		else if (ls->length == 1)
 		{
-			ls->value[0] = ls->map[0][0];
-			ls->value[1] = ls->map[0][1];
-			ls->value[2] = ls->map[0][2];
-			ls->value[3] = 255; //ls->map[0][3];
+			ls->value.b[0] = ls->map[0][0];
+			ls->value.b[1] = ls->map[0][1];
+			ls->value.b[2] = ls->map[0][2];
+			ls->value.b[3] = 255; //ls->map[0][3];
 		}
 		else
 		{
-			ls->value[0] = ls->map[ofs%ls->length][0];
-			ls->value[1] = ls->map[ofs%ls->length][1];
-			ls->value[2] = ls->map[ofs%ls->length][2];
-			ls->value[3] = 255; //ls->map[ofs%ls->length][3];
+			ls->value.b[0] = ls->map[ofs%ls->length][0];
+			ls->value.b[1] = ls->map[ofs%ls->length][1];
+			ls->value.b[2] = ls->map[ofs%ls->length][2];
+			ls->value.b[3] = 255; //ls->map[ofs%ls->length][3];
 		}
-		trap_R_SetLightStyle(i, *(int*)ls->value);
+		trap_R_SetLightStyle(i, ls->value.ui);
 	}
 }
 

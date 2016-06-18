@@ -164,8 +164,7 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int animNum ) 
 			cgWeapFrame = 6;
 			cgWeapFrameTime = cg.time + 10;
 		}
-
-		if (cgWeapFrameTime < cg.time && cgWeapFrame < 10)
+		else if (cgWeapFrameTime < cg.time && cgWeapFrame < 10)
 		{
 			cgWeapFrame++;
 			cgWeapFrameTime = cg.time + 10;

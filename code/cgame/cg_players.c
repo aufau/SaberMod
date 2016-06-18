@@ -684,7 +684,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 	dir = ci->modelName;
 	fallback = DEFAULT_MALE_SOUNDPATH; //(GT_Team(cgs.gametype)) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 
-	if ( !ci->skinName || !Q_stricmp( "default", ci->skinName ) )
+	if ( ci->skinName[0] == '\0' || !Q_stricmp( "default", ci->skinName ) )
 	{//try default sounds.cfg first
 		fLen = trap_FS_FOpenFile(va("models/players/%s/sounds.cfg", dir), &f, FS_READ);
 		if ( !f )

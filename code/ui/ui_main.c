@@ -5396,11 +5396,13 @@ static void UI_BuildFindPlayerList(qboolean force) {
 	}
 	else {
 		// add a line that shows the number of servers found
-		if (!uiInfo.numFoundPlayerServers)
+		/*
+		if (numFound == 0)
 		{
-			Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers-1], sizeof(uiInfo.foundPlayerServerAddresses[0]), "no servers found");
+			Com_sprintf(uiInfo.foundPlayerServerNames[0], sizeof(uiInfo.foundPlayerServerAddresses[0]), "no servers found");
 		}
 		else
+		*/
 		{
 			trap_SP_GetStringTextString("MENUS3_SERVERS_FOUNDWITH", holdSPString, sizeof(holdSPString));
 			Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers-1], sizeof(uiInfo.foundPlayerServerAddresses[0]),
@@ -5560,7 +5562,7 @@ UI_HeadCountByColor
 static const char *UI_SelectedTeamHead(int index, int *actual) {
 	char *teamname;
 	int i,c=0;
-
+	*actual = 0;
 	switch(uiSkinColor)
 	{
 		case TEAM_BLUE:

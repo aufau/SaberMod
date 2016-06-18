@@ -983,7 +983,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 		saberQuadrant_t attQuadStart = saberMoveData[attacker->client->ps.saberMove].startQuad;
 		saberQuadrant_t attQuadEnd = saberMoveData[attacker->client->ps.saberMove].endQuad;
 		saberQuadrant_t defQuad = saberMoveData[defender->client->ps.saberMove].endQuad;
-		saberQuadrant_t quadDiff = abs(defQuad-attQuadStart);
+		int quadDiff = abs(defQuad - attQuadStart);
 
 		if ( defender->client->ps.saberMove == LS_READY )
 		{

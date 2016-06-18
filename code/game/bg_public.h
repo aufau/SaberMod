@@ -1023,6 +1023,7 @@ typedef enum {
 } saberMoveName_t;
 
 typedef enum {
+	Q_NEGATIVE = -1, // make sure this enum is signed
 	Q_BR,
 	Q_R,
 	Q_TR,
