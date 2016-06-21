@@ -288,6 +288,10 @@ clientkilled:
 		// check for kill messages about the current clientNum
 		if ( target == cg.snap->ps.clientNum ) {
 			Q_strncpyz( cg.killerName, attackerName, sizeof( cg.killerName ) );
+
+			if ( cg_followKiller.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
+				trap_SendConsoleCommand(va("follow %i", attacker));
+			}
 		}
 
 		strcat( attackerName, S_COLOR_WHITE );
@@ -1291,6 +1295,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			if ( es->number == cg.snap->ps.clientNum ) {
 				CG_ItemPickup( index );
 			}
+			if ( item->giType == IT_POWERUP && cg_followPowerup.integer &&
+				cg.snap->ps.pm_flags & PMF_FOLLOW &&
+				!cg.snap->ps.powerups[PW_REDFLAG] && !cg.snap->ps.powerups[PW_BLUEFLAG] )
+			{
+				trap_SendConsoleCommand(va("follow %i", es->number));
+			}
 		}
 		break;
 
@@ -1314,6 +1324,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			// show icon and name on status bar
 			if ( es->number == cg.snap->ps.clientNum ) {
 				CG_ItemPickup( index );
+			}
+			if ( cg_followPowerup.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
+				trap_SendConsoleCommand(va("follow %i", es->number));
 			}
 		}
 		break;

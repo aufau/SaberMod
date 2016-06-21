@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 8
+COUNT 12
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -55,6 +55,34 @@ INDEX 7
 {
    REFERENCE BEGIN_VOTE_TO_WK
    TEXT_LANGUAGE1 "Begin vote to play with WK rules."
-   TEXT_LANGUAGE1 "Begin vote to play with WK rules."
-   TEXT_LANGUAGE1 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE2 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE3 "Begin vote to play with WK rules."
+}
+INDEX 8
+{
+   REFERENCE FOLLOW_KILLER
+   TEXT_LANGUAGE1 "Follow Killer:"
+   TEXT_LANGUAGE2 "Follow Killer:"
+   TEXT_LANGUAGE3 "Follow Killer:"
+}
+INDEX 9
+{
+   REFERENCE FOLLOW_KILLER_DESC
+   TEXT_LANGUAGE1 "When player you are following dies, switch to his killer."
+   TEXT_LANGUAGE2 "When player you are following dies, switch to his killer."
+   TEXT_LANGUAGE3 "When player you are following dies, switch to his killer."
+}
+INDEX 10
+{
+   REFERENCE FOLLOW_POWERUP
+   TEXT_LANGUAGE1 "Follow Powerup:"
+   TEXT_LANGUAGE2 "Follow Powerup:"
+   TEXT_LANGUAGE3 "Follow Powerup:"
+}
+INDEX 11
+{
+   REFERENCE FOLLOW_POWERUP_DESC
+   TEXT_LANGUAGE1 "Automatically follow flag and powerup carriers."
+   TEXT_LANGUAGE2 "Automatically follow flag and powerup carriers."
+   TEXT_LANGUAGE3 "Automatically follow flag and powerup carriers."
 }

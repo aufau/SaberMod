@@ -61,6 +61,12 @@ cg_drawTimer 1
 cg_duelGlow 1
   Turn on/off duel glow.
 
+cg_followKiller 0
+  When player you are following dies, switch to his killer.
+
+cg_followPowerup 0
+  Automatically follow flag and powerup carriers.
+
 Spectating
 ..........
 
