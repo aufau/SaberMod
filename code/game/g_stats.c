@@ -18,15 +18,15 @@ typedef enum {
 } playerStat_t;
 
 typedef struct {
-	const char * const	label;
-	const char * const	shortLabel;
-	int					width;
+	const char	*label;
+	const char	*shortLabel;
+	int			width;
 } statColumn_t;
 
 #define STAT_COL_WIDTH 6
 
 // Keep this in the same order as playerStat_t
-const statColumn_t statCol[STAT_MAX] = {
+static const statColumn_t statCol[STAT_MAX] = {
 	{ "Score",			"S", 3 },
 	{ "Kills",			"K", 3 },
 	{ "Captures",		"Cap", 3 },
@@ -40,13 +40,13 @@ const statColumn_t statCol[STAT_MAX] = {
 	{ "Team Received",	"TRcv", 5 },
 };
 
-static playerStat_t logColumns[] =
+static const playerStat_t logColumns[] =
 { STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV };
-static playerStat_t ffaColumns[] =
+static const playerStat_t ffaColumns[] =
 { STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_MAX };
-static playerStat_t ctfColumns[] =
+static const playerStat_t ctfColumns[] =
 { STAT_SCORE, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
-static playerStat_t tffaColumns[] =
+static const playerStat_t tffaColumns[] =
 { STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_MAX };
 
 static void GetStats( int *stats, gclient_t *cl )
@@ -65,7 +65,7 @@ static void GetStats( int *stats, gclient_t *cl )
 	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
 }
 
-static void PrintStatsHeader( playerStat_t *columns )
+static void PrintStatsHeader( const playerStat_t *columns )
 {
 	char		line[DEFAULT_CONSOLE_WIDTH];
 	char		*p = line;
@@ -87,7 +87,7 @@ static void PrintStatsHeader( playerStat_t *columns )
 
 }
 
-static void PrintStatsSeparator( playerStat_t *columns, const char *colorString )
+static void PrintStatsSeparator( const playerStat_t *columns, const char *colorString )
 {
 	char		line[DEFAULT_CONSOLE_WIDTH];
 	char		*p = line;
@@ -106,7 +106,7 @@ static void PrintStatsSeparator( playerStat_t *columns, const char *colorString 
 		va("print \"%s%s\n\"", colorString, line));
 }
 
-static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestStats )
+static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *bestStats )
 {
 	char		line[2 * DEFAULT_CONSOLE_WIDTH]; // extra space for color codes
 	char		*p = line;
@@ -146,12 +146,12 @@ static void PrintClientStats( gclient_t *cl, playerStat_t *columns, int *bestSta
 }
 
 void G_PrintStats(void) {
-	playerStat_t	*columns;
-	gclient_t		*cl;
-	int				stats[STAT_MAX];
-	int				bestStats[STAT_MAX];
-	qboolean		reallyBest[STAT_MAX] = { qfalse };
-	int				i, j;
+	const playerStat_t	*columns;
+	gclient_t			*cl;
+	int					stats[STAT_MAX];
+	int					bestStats[STAT_MAX];
+	qboolean			reallyBest[STAT_MAX] = { qfalse };
+	int					i, j;
 
 	if (level.numPlayingClients == 0) {
 		return;

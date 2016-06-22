@@ -17,28 +17,28 @@ typedef struct teamgame_s {
 
 teamgame_t teamgame;
 
-const char * teamName[TEAM_NUM_TEAMS] = {
+const char * const teamName[TEAM_NUM_TEAMS] = {
 	"Free",
 	"Red",
 	"Blue",
 	"Spectator"
 };
 
-const char * teamNameUpperCase[TEAM_NUM_TEAMS] = {
+const char * const teamNameUpperCase[TEAM_NUM_TEAMS] = {
 	"FREE",
 	"RED",
 	"BLUE",
 	"SPECTATOR"
 };
 
-const char * teamNameLowerCase[TEAM_NUM_TEAMS] = {
+const char * const teamNameLowerCase[TEAM_NUM_TEAMS] = {
 	"free",
 	"red",
 	"blue",
 	"spectator"
 };
 
-const char * teamColorString[TEAM_NUM_TEAMS] = {
+const char * const teamColorString[TEAM_NUM_TEAMS] = {
 	S_COLOR_WHITE,
 	S_COLOR_RED,
 	S_COLOR_BLUE,

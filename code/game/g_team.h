@@ -28,10 +28,10 @@
 
 // Prototypes
 
-extern const char * teamName[TEAM_NUM_TEAMS];
-extern const char * teamNameUpperCase[TEAM_NUM_TEAMS];
-extern const char * teamNameLowerCase[TEAM_NUM_TEAMS];
-extern const char * teamColorString[TEAM_NUM_TEAMS];
+extern const char * const teamName[TEAM_NUM_TEAMS];
+extern const char * const teamNameUpperCase[TEAM_NUM_TEAMS];
+extern const char * const teamNameLowerCase[TEAM_NUM_TEAMS];
+extern const char * const teamColorString[TEAM_NUM_TEAMS];
 extern const team_t otherTeam[TEAM_NUM_TEAMS];
 
 void AddTeamScore(vec3_t origin, int team, int score);
