@@ -372,27 +372,28 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 #else
 	reward = qfalse;
 #endif
+
+	if ( cg.warmup ) {
+		return;
+	}
+
 	// lead changes
-	if (!reward && cgAnnouncerTime < cg.time) {
-		//
-		if ( !cg.warmup ) {
-			// never play lead changes during warmup
-			if ( ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK] ) {
-				if ( !GT_Team(cgs.gametype)) {
-					if (  ps->persistant[PERS_RANK] == 0 ) {
-						CG_AddBufferedSound(cgs.media.takenLeadSound);
-						cgAnnouncerTime = cg.time + 3000;
-					} else if ( ps->persistant[PERS_RANK] == RANK_TIED_FLAG ) {
-						//CG_AddBufferedSound(cgs.media.tiedLeadSound);
-					} else if ( ( ops->persistant[PERS_RANK] & ~RANK_TIED_FLAG ) == 0 ) {
-						//rww - only bother saying this if you have more than 1 kill already.
-						//joining the server and hearing "the force is not with you" is silly.
-						if (ps->persistant[PERS_SCORE] > 0)
-						{
-							CG_AddBufferedSound(cgs.media.lostLeadSound);
-							cgAnnouncerTime = cg.time + 3000;
-						}
-					}
+	if ( !reward && cgAnnouncerTime < cg.time ) {
+		// never play lead changes during warmup
+		if ( ps->persistant[PERS_RANK] != ops->persistant[PERS_RANK]
+			 && (!GT_Team(cgs.gametype) || cgs.gametype == GT_REDROVER) ) {
+			if (  ps->persistant[PERS_RANK] == 0 ) {
+				CG_AddBufferedSound(cgs.media.takenLeadSound);
+				cgAnnouncerTime = cg.time + 3000;
+			} else if ( ps->persistant[PERS_RANK] == RANK_TIED_FLAG ) {
+				//CG_AddBufferedSound(cgs.media.tiedLeadSound);
+			} else if ( ( ops->persistant[PERS_RANK] & ~RANK_TIED_FLAG ) == 0 ) {
+				//rww - only bother saying this if you have more than 1 kill already.
+				//joining the server and hearing "the force is not with you" is silly.
+				if (ps->persistant[PERS_SCORE] > 0)
+				{
+					CG_AddBufferedSound(cgs.media.lostLeadSound);
+					cgAnnouncerTime = cg.time + 3000;
 				}
 			}
 		}
@@ -420,7 +421,8 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	}
 
 	// fraglimit warnings
-	if ( cgs.fraglimit > 0 && !GT_Flag(cgs.gametype) && cgs.gametype != GT_TOURNAMENT && cgAnnouncerTime < cg.time) {
+	if ( cgs.fraglimit > 0 && cgAnnouncerTime < cg.time && !GT_Flag(cgs.gametype)
+		&& !GT_Round(cgs.gametype) && cgs.gametype != GT_TOURNAMENT ) {
 		highScore = cgs.scores1;
 		if ( !( cg.fraglimitWarnings & 4 ) && highScore == (cgs.fraglimit - 1) ) {
 			cg.fraglimitWarnings |= 1 | 2 | 4;

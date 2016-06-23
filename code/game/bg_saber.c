@@ -1629,7 +1629,7 @@ weapChecks:
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_WALK2,SETANIM_FLAG_NORMAL, 100);
 		}
-		else
+		else if(!pm->ps->saberHolstered)
 		{
 			PM_SetAnim(SETANIM_TORSO,PM_GetSaberStance(),SETANIM_FLAG_NORMAL, 100);
 		}

@@ -11,6 +11,7 @@
 // 6 - GT_SAGA, // saga
 // 7 - GT_CTF, // capture the flag
 // 8 - GT_CTY, // capture the ysalimari
+// 9 - GT_REDROVER,
 
 gametypes
 {
@@ -21,13 +22,14 @@ gametypes
 	{ "Team FFA" 5 }
 	{ "Capture the Flag" 7 }
 	{ "Capture the Ysalimari" 8 }
+	{ "Red Rover" 9 }
 }
 
 // english name, map name, vs count, par times per gametype valid gametyes for ui
 //
 maps
 {
-	{ "Bespin" "ffa_bespin" "3" "Kyle" 2 "0" 4 "240" 5 "180" 6 "180" 7 "180" }
+	{ "Bespin" "ffa_bespin" "3" "Kyle" 2 "0" 4 "240" 5 "180" 6 "180" 7 "180" 9 "180" }
 }
 
 joingametypes
@@ -40,4 +42,5 @@ joingametypes
 	{ "Team FFA" 5 }
 	{ "Capture the Flag" 7 }
 	{ "Capture the Ysalimari" 8 }
+	{ "Red Rover" 9 }
 }

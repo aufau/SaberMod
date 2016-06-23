@@ -740,6 +740,7 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "ui_about_capturelimit",	"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_duellimit",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_timelimit",		"0", CVAR_ROM|CVAR_INTERNAL );
+	trap_Cvar_Register(NULL, "ui_about_roundlimit",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_maxclients",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_teamsize",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_dmflags",		"0", CVAR_ROM|CVAR_INTERNAL );

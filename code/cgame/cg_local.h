@@ -1320,6 +1320,7 @@ typedef struct {
 	int				duel_fraglimit;
 	int				capturelimit;
 	int				timelimit;
+	int				roundlimit;
 	int				maxclients;
 	qboolean		needpass;
 	qboolean		jediVmerc;
@@ -1346,6 +1347,7 @@ typedef struct {
 	int				levelStartTime;
 
 	int				scores1, scores2;		// from configstrings
+	int				round;
 	int				jediMaster;
 	int				duelWinner;
 	int				duelist1;

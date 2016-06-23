@@ -20,6 +20,7 @@
 
 #define	INTERMISSION_DELAY_TIME	1000
 #define	SP_INTERMISSION_DELAY_TIME	5000
+#define	ROUND_INTERMISSION_DELAY_TIME	4000
 
 // gentity->flags
 #define	FL_GODMODE				0x00000010
@@ -74,6 +75,7 @@ typedef enum {
 	CV_DOWARMUP,
 	CV_TIMELIMIT,
 	CV_FRAGLIMIT,
+	CV_ROUNDLIMIT,
 	CV_TEAMSIZE,
 	CV_REMOVE,
 	CV_NOKICK,
@@ -559,6 +561,9 @@ typedef struct {
 	vec3_t		intermission_origin;	// also used for spectator spawns
 	vec3_t		intermission_angle;
 
+	int			roundQueued;			// new round was qualified, but we're
+										// doing a g_roundWarmup sec countdown
+
 	qboolean	locationLinked;			// target_locations get linked
 	gentity_t	*locationHead;			// head of the location list
 	int			bodyQueIndex;			// dead bodies
@@ -566,6 +571,7 @@ typedef struct {
 	int			portalSequence;
 	qboolean	mvapi;
 	qboolean	teamLock[TEAM_NUM_TEAMS];
+	int			round;
 } level_locals_t;
 
 
@@ -798,9 +804,10 @@ qboolean CheckGauntletAttack( gentity_t *ent );
 //
 // g_client.c
 //
-team_t TeamCount( int ignoreClientNum, int team );
+int TeamCount( int ignoreClientNum, int team );
 int TeamLeader( int team );
 team_t PickTeam( int ignoreClientNum );
+void ResetClientState( gentity_t *self );
 void SetClientViewAngle( gentity_t *ent, vec3_t angle );
 gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 void CopyToBodyQue( gentity_t *ent );
@@ -882,6 +889,7 @@ void G_RunClient			( gentity_t *ent );
 // g_team.c
 //
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
+team_t GetStrongerTeam( void );
 void Team_CheckDroppedItem( gentity_t *dropped );
 
 //

@@ -151,6 +151,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.duel_fraglimit = atoi( Info_ValueForKey( info, "duel_fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
+	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.privateDuel = atoi( Info_ValueForKey( info, "g_privateDuel") );
 	mapname = Info_ValueForKey( info, "mapname" );
@@ -170,6 +171,7 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set ( "ui_about_duellimit", va("%i", cgs.duel_fraglimit ) );
 	trap_Cvar_Set ( "ui_about_capturelimit", va("%i", cgs.capturelimit ) );
 	trap_Cvar_Set ( "ui_about_timelimit", va("%i", cgs.timelimit ) );
+	trap_Cvar_Set ( "ui_about_roundlimit", va("%i", cgs.roundlimit ) );
 	trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
 	trap_Cvar_Set ( "ui_about_teamsize", Info_ValueForKey( info, "teamsize" ) );
 	trap_Cvar_Set ( "ui_about_dmflags", va("%i", cgs.dmflags ) );
@@ -204,8 +206,8 @@ static void CG_ParseWarmup( void ) {
 	info = CG_ConfigString( CS_WARMUP );
 
 	warmup = atoi( info );
-	cg.warmupCount = -1;
 
+	cg.warmupCount = -1;
 	cg.warmup = warmup;
 }
 
@@ -223,6 +225,7 @@ void CG_SetConfigValues( void )
 
 	cgs.scores1 = atoi( CG_ConfigString( CS_SCORES1 ) );
 	cgs.scores2 = atoi( CG_ConfigString( CS_SCORES2 ) );
+	cgs.round = atoi( CG_ConfigString( CS_ROUND ) );
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	if( GT_Flag(cgs.gametype) ) {
 		s = CG_ConfigString( CS_FLAGSTATUS );
@@ -337,6 +340,8 @@ static void CG_ConfigStringModified( void ) {
 		cgs.scores1 = atoi( str );
 	} else if ( num == CS_SCORES2 ) {
 		cgs.scores2 = atoi( str );
+	} else if ( num == CS_ROUND ) {
+		cgs.round = atoi( str );
 	} else if ( num == CS_CLIENT_JEDIMASTER ) {
 		cgs.jediMaster = atoi ( str );
 	} else if ( num == CS_CLIENT_DUELWINNER ) {

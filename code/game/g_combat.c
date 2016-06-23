@@ -2073,13 +2073,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		wasJediMaster = qtrue;
 	}
 
-	//if he was charging or anything else, kill the sound
-	G_MuteSound(self->s.number, CHAN_WEAPON);
-
-	BlowDetpacks(self); //blow detpacks if they're planted
-
-	self->client->ps.fd.forceDeactivateAll = 1;
-
 	if ((self == attacker || !attacker->client) &&
 		(meansOfDeath == MOD_CRUSH || meansOfDeath == MOD_FALLING || meansOfDeath == MOD_TRIGGER_HURT || meansOfDeath == MOD_UNKNOWN) &&
 		self->client->ps.otherKillerTime > level.time)
@@ -2177,10 +2170,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 	}
 
-	self->s.weapon = WP_NONE;
-	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
-	self->client->ps.zoomMode = 0;	// Turn off zooming when we die
 
 	self->s.angles[0] = 0;
 	self->s.angles[2] = 0;
@@ -2188,21 +2178,16 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	VectorCopy( self->s.angles, self->client->ps.viewangles );
 
-	self->s.loopSound = 0;
-
 	self->r.maxs[2] = -8;
 
 	// don't allow respawn until the death anim is done
 	// g_forcerespawn may force spawning at some later time
 	self->client->respawnTime = level.time + 1700;
 
-	// remove powerups
-	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
-
+	ResetClientState(self);
 	G_PlayerDieHandleBody(self, damage, meansOfDeath, wasJediMaster);
 
 	trap_LinkEntity (self);
-
 }
 
 
@@ -3042,7 +3027,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
-	if ( level.intermissionQueued ) {
+	if ( level.intermissionQueued || level.roundQueued ) {
 		return;
 	}
 	if ( !inflictor ) {

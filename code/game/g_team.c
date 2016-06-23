@@ -212,6 +212,44 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 	return qfalse;
 }
 
+/*
+=============
+GetStrongerTeam
+
+Returns stronger team out of red and blue, or spectator on draw
+=============
+*/
+team_t GetStrongerTeam( void )
+{
+	int	health[TEAM_NUM_TEAMS] = { 0 };
+	int	redCount = TeamCount( -1, TEAM_RED );
+	int	blueCount = TeamCount( -1, TEAM_BLUE );
+	int	i;
+
+	if ( redCount > blueCount ) {
+		return TEAM_RED;
+	} else if ( blueCount > redCount ) {
+		return TEAM_BLUE;
+	}
+
+	for ( i = 0; i < level.numPlayingClients; i++ ) {
+		gclient_t *client = level.clients + level.sortedClients[i];
+
+		if ( client->ps.stats[STAT_HEALTH] > 0 ) {
+			health[client->sess.sessionTeam] += client->ps.stats[STAT_HEALTH];
+			health[client->sess.sessionTeam] += client->ps.stats[STAT_ARMOR];
+		}
+	}
+
+	if ( health[TEAM_RED] > health[TEAM_BLUE] ) {
+		return TEAM_RED;
+	} else if ( health[TEAM_BLUE] > health[TEAM_RED] ) {
+		return TEAM_BLUE;
+	}
+
+	return TEAM_SPECTATOR;
+}
+
 
 static char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
 

@@ -1561,7 +1561,7 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, streak);
 	}
-	if (GT_Team(g_gametype.integer))
+	if (GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER)
 	{
 		teamAwards = CalculateTeamAward(ent);
 		if (teamAwards)

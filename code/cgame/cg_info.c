@@ -227,6 +227,9 @@ void CG_DrawInformation( void ) {
 	case GT_CTY:
 		s = "Capture The Ysalamiri";
 		break;
+	case GT_REDROVER:
+		s = "Red Rover";
+		break;
 	default:
 		s = "Unknown Gametype";
 		break;
@@ -242,7 +245,16 @@ void CG_DrawInformation( void ) {
 		y += iPropHeight;
 	}
 
-	if (!GT_Flag(cgs.gametype)) {
+	if (GT_Round(cgs.gametype)) {
+		value = atoi( Info_ValueForKey( info, "roundlimit" ) );
+		if ( value ) {
+			UI_DrawProportionalString( 320, y, va( "Round Limit: %i", value ),
+				UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+	}
+
+	if (!GT_Flag(cgs.gametype) && !GT_Round(cgs.gametype)) {
 		value = atoi( Info_ValueForKey( info, "fraglimit" ) );
 		if ( value ) {
 			UI_DrawProportionalString( 320, y, va( "%s %i", CG_GetStripEdString("INGAMETEXT", "FRAGLIMIT"), value ),
@@ -405,6 +417,14 @@ void CG_DrawInformation( void ) {
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
 		break;
+	case GT_REDROVER:
+		UI_DrawProportionalString( 320, y, CG_GetStripEdString("SABERINGAME", "RULES_REDROVER_1"),
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		y += iPropHeight;
+		UI_DrawProportionalString( 320, y, CG_GetStripEdString("SABERINGAME", "RULES_REDROVER_2"),
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+
+		y += iPropHeight;
 	default:
 		break;
 	}

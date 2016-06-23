@@ -996,7 +996,8 @@ static qboolean PM_CheckJump( void )
 				}
 
 				if ( !doTrace ||
-					( trace.fraction < 1.0f && !(didKick && pm->noKick && trace.entityNum < MAX_CLIENTS) &&
+					( trace.fraction < 1.0f &&
+						!(didKick && (pm->ps->pm_type == PM_HARMLESS ||  pm->noKick) && trace.entityNum < MAX_CLIENTS) &&
 						( trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7) ) )
 				{//there is a wall there.. or hit a client
 					int parts;
@@ -1151,7 +1152,8 @@ static qboolean PM_CheckJump( void )
 				VectorSubtract( pm->ps->origin, traceto, idealNormal );
 				VectorNormalize( idealNormal );
 
-				if ( trace.fraction < 1.0f && !(pm->noKick && trace.entityNum < MAX_CLIENTS) )
+				if ( trace.fraction < 1.0f
+					&& !(trace.entityNum < MAX_CLIENTS && (pm->ps->pm_type == PM_HARMLESS || pm->noKick)) )
 				{//there is a wall there
 					int parts = SETANIM_LEGS;
 
@@ -2789,7 +2791,13 @@ void PM_BeginWeaponChange( int weapon ) {
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
 	pm->ps->weaponTime += 200;
-	PM_StartTorsoAnim( TORSO_DROPWEAP1 );
+	// They are almost the same, looks stupid
+	if ( pm->ps->pm_type != PM_HARMLESS
+		 || !(weapon == WP_SABER || pm->ps->weapon == WP_SABER)
+		 || (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1
+		 || (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN1 ) {
+		PM_StartTorsoAnim( TORSO_DROPWEAP1 );
+	}
 }
 
 
@@ -2810,9 +2818,13 @@ void PM_FinishWeaponChange( void ) {
 		weapon = WP_NONE;
 	}
 
-	if (weapon == WP_SABER)
+	if ( weapon == WP_SABER )
 	{
-		PM_SetSaberMove(LS_DRAW);
+		if ( pm->ps->pm_type == PM_HARMLESS ) {
+			pm->ps->saberHolstered = qtrue;
+		} else {
+			PM_SetSaberMove(LS_DRAW);
+		}
 	}
 	else
 	{
@@ -4495,6 +4507,17 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
 		pm->cmd.upmove = 0;
+		break;
+	case PM_HARMLESS:
+		pm->cmd.buttons &= BUTTON_TALK | BUTTON_GESTURE | BUTTON_WALKING | BUTTON_USE;
+		switch ( pm->cmd.generic_cmd ) {
+		case GENCMD_USE_ELECTROBINOCULARS:
+		case GENCMD_ZOOM:
+		case GENCMD_SABERATTACKCYCLE:
+			break;
+		default:
+			pm->cmd.generic_cmd = 0;
+		}
 	}
 
 	if (pm->ps->duelInProgress && pm->ps->duelTime >= pm->cmd.serverTime)

@@ -805,6 +805,8 @@ void SP_worldspawn( void )
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );		// message of the day
 
+	trap_SetConfigstring( CS_ROUND, "0");
+
 	G_SpawnString( "gravity", "800", &text );
 	trap_Cvar_Set( "g_gravity", text );
 

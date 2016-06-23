@@ -125,6 +125,8 @@ vmCvar_t	g_austrian;
 
 vmCvar_t	g_restrictChat;
 vmCvar_t	g_spawnShield;
+vmCvar_t	g_roundlimit;
+vmCvar_t	g_roundWarmup;
 vmCvar_t	g_noKick;
 
 int gDuelist1 = -1;
@@ -282,6 +284,8 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
 
@@ -1150,7 +1154,7 @@ void CalculateRanks( void ) {
 	}
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -1185,7 +1189,10 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Round(g_gametype.integer) ) {
+		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED ) ) );
+		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE ) ) );
+	} else if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -1370,6 +1377,100 @@ void BeginIntermission( void ) {
 
 }
 
+void BeginRound( void )
+{
+	level.startTime = level.time;
+	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+	trap_SetConfigstring(CS_WARMUP, "");
+	trap_SendServerCommand( -1, va("cp \"%s\"", G_GetStripEdString("SVINGAME", "BEGIN_DUEL")) );
+}
+
+/*
+==================
+Parity
+
+Calculates parity of 1s in binary representation of i
+==================
+*/
+static qboolean Parity( int i )
+{
+	qboolean parity = qtrue;
+
+	while (i) {
+		parity = !parity;
+		i &= i - 1;
+	}
+
+	return parity;
+}
+
+/*
+==================
+Shuffle
+
+Shuffle players according to score
+==================
+*/
+static void Shuffle( void )
+{
+	gentity_t	*ent;
+	int			clientNum;
+	int			newTeam;
+	int			i;
+
+	for ( i = 0 ; i < level.numNonSpectatorClients ; i++ ) {
+		clientNum = level.sortedClients[i];
+		ent = g_entities + clientNum;
+		newTeam = Parity(i) ? TEAM_RED : TEAM_BLUE;
+
+		if (ent->client->sess.sessionTeam != newTeam) {
+			G_LogPrintf ( LOG_TEAM_SWITCH, "Shuffle: %i %s %s: %s joined the %s team\n",
+				clientNum,
+				teamNameUpperCase[ent->client->sess.sessionTeam],
+				teamNameUpperCase[newTeam],
+				ent->client->pers.netname, teamNameLowerCase[newTeam]);
+		}
+
+		ent->client->sess.sessionTeam = newTeam;
+		ent->client->sess.teamLeader = qfalse;
+	}
+
+	CheckTeamLeader( TEAM_RED );
+	CheckTeamLeader( TEAM_BLUE );
+
+	for ( i = 0 ; i < level.numNonSpectatorClients ; i++ ) {
+		clientNum = level.sortedClients[i];
+		ent = g_entities + clientNum;
+
+		respawn(ent);
+		ClientUserinfoChanged(clientNum);
+	}
+
+	CalculateRanks();
+}
+
+static void NextRound( void )
+{
+	char	warmup[2];
+	int		i;
+
+	for ( i = 0; i < level.numNonSpectatorClients; i++ ) {
+		gentity_t	*ent = g_entities + level.sortedClients[i];
+
+		ResetClientState(ent);
+	}
+
+	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+	Shuffle(); // calls CheckExitRules
+
+	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
+	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
+	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
+	if ( warmup[0] == '\0' ) {
+		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
+	}
+}
+
 qboolean DuelLimitHit(void)
 {
 	int i;
@@ -1505,7 +1606,8 @@ const char *machineGameNames[GT_MAX_GAME_TYPE] = {
 	"TFFA",
 	"N/A",
 	"CTF",
-	"CTY"
+	"CTY",
+	"REDROVER",
 };
 
 /*
@@ -1527,7 +1629,7 @@ void LogExit( const char *string ) {
 	// that will get cut off when the queued intermission starts
 	trap_SetConfigstring( CS_INTERMISSION, "1" );
 
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
 		G_LogPrintf( LOG_GAME, "Score: %i %i: %s %s\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
 			teamName[TEAM_RED], teamName[TEAM_BLUE]);
@@ -1562,6 +1664,12 @@ void LogExit( const char *string ) {
 
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
 	}
+}
+
+void LogRoundExit( const char *string )
+{
+	level.intermissionQueued = level.time;
+	G_LogPrintf( LOG_GAME, "Round Exit: %s\n", string );
 }
 
 qboolean gDidDuelStuff = qfalse; //gets reset on game reinit
@@ -1799,6 +1907,11 @@ can see the last frag.
 void CheckExitRules( void ) {
  	int			i;
 	gclient_t	*cl;
+
+	if (level.warmupTime) {
+		return;
+	}
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime ) {
@@ -1844,28 +1957,72 @@ void CheckExitRules( void ) {
 	}
 
 	if ( level.intermissionQueued ) {
-		int time = (g_singlePlayer.integer) ? SP_INTERMISSION_DELAY_TIME : INTERMISSION_DELAY_TIME;
+		int time;
+
+		if ( g_singlePlayer.integer ) {
+			time = SP_INTERMISSION_DELAY_TIME;
+		} else if ( GT_Round(g_gametype.integer) ) {
+			time = ROUND_INTERMISSION_DELAY_TIME;
+		} else {
+			time = INTERMISSION_DELAY_TIME;
+		}
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
-			G_PrintStats();
-			BeginIntermission();
+			if (GT_Round(g_gametype.integer)) {
+				if ( level.numPlayingClients < 2 ) {
+					trap_SendServerCommand( -1, "print \"Not enough players.\n\"" );
+					LogExit("Not enough players.");
+					G_PrintStats();
+					BeginIntermission();
+				} else if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
+					trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
+					LogExit("Roundlimit hit.");
+					G_PrintStats();
+					BeginIntermission();
+				} else {
+					NextRound();
+				}
+			} else {
+				G_PrintStats();
+				BeginIntermission();
+			}
+		}
+		return;
+	} else if ( level.roundQueued ) {
+		if ( level.time - level.roundQueued >= g_roundWarmup.integer ) {
+			level.roundQueued = 0;
+			BeginRound();
 		}
 		return;
 	}
 
 	// check for sudden death
-	if ( ScoreIsTied() ) {
+	if ( g_gametype.integer != GT_TOURNAMENT || !g_timelimit.integer ) {
 		// always wait for sudden death
-		if (g_gametype.integer != GT_TOURNAMENT || !g_timelimit.integer)
-		{
+		if ( !GT_Round(g_gametype.integer) && ScoreIsTied() ) {
 			return;
 		}
 	}
 
-	if ( g_timelimit.integer && !level.warmupTime ) {
+	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
-//			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
+
+			if ( GT_Round(g_gametype.integer) ) {
+				team_t winner = GetStrongerTeam();
+
+				if ( winner == TEAM_SPECTATOR ) {
+					trap_SendServerCommand( -1, "cp \"Round draw\"");
+				} else {
+					level.teamScores[winner]++;
+					trap_SendServerCommand( -1,
+						va("cp \"%s team wins the round\"", teamName[winner]));
+				}
+
+				LogRoundExit( "Timelimit hit." );
+				return;
+			}
+
 			LogExit( "Timelimit hit." );
 			return;
 		}
@@ -1875,7 +2032,30 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( !GT_Flag(g_gametype.integer) && g_fraglimit.integer ) {
+	if ( GT_Round(g_gametype.integer) ) {
+		int	redCount = TeamCount( -1, TEAM_RED );
+		int	blueCount = TeamCount( -1, TEAM_BLUE );
+
+		// begin first round of the game
+		if ( level.round == 0 ) {
+			NextRound();
+			return;
+		}
+		if ( redCount == 0 ) {
+			level.teamScores[TEAM_BLUE]++;
+			trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
+			LogRoundExit( "Red team eliminated." );
+			return;
+		}
+		if ( blueCount == 0 ) {
+			level.teamScores[TEAM_RED]++;
+			trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
+			LogRoundExit( "Blue team eliminated." );
+			return;
+		}
+	}
+
+	if ( !GT_Flag(g_gametype.integer) && !GT_Round(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " %s\n\"",
 					teamColorString[TEAM_RED], teamName[TEAM_RED],
@@ -2045,7 +2225,7 @@ void CheckTournament( void ) {
 		int		counts[TEAM_NUM_TEAMS];
 		qboolean	notEnough = qfalse;
 
-		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_TEAM ) {
+		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
 

@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 12
+COUNT 15
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -85,4 +85,25 @@ INDEX 11
    TEXT_LANGUAGE1 "Automatically follow flag and powerup carriers."
    TEXT_LANGUAGE2 "Automatically follow flag and powerup carriers."
    TEXT_LANGUAGE3 "Automatically follow flag and powerup carriers."
+}
+INDEX 12
+{
+   REFERENCE ROUND_LIMIT
+   TEXT_LANGUAGE1 "Round Limit:"
+   TEXT_LANGUAGE2 "Round Limit:"
+   TEXT_LANGUAGE3 "Round Limit:"
+}
+INDEX 13
+{
+   REFERENCE THE_NUMBER_OF_ROUNDS
+   TEXT_LANGUAGE1 "The number of rounds a match will last."
+   TEXT_LANGUAGE2 "The number of rounds a match will last."
+   TEXT_LANGUAGE3 "The number of rounds a match will last."
+}
+INDEX 14
+{
+   REFERENCE RED_ROVER
+   TEXT_LANGUAGE1 "Red Rover"
+   TEXT_LANGUAGE2 "Red Rover"
+   TEXT_LANGUAGE3 "Red Rover"
 }

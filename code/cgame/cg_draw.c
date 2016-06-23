@@ -1202,6 +1202,15 @@ void CG_DrawHUD(centity_t	*cent)
 	}
 	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
 
+	if (GT_Round(cgs.gametype) && cgs.round) {
+		if (cgs.roundlimit) {
+			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+		} else {
+			scoreStr = va("Round: %i", cgs.round);
+		}
+		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
+	}
+
 	menuHUD = Menus_FindByName("righthud");
 	if (menuHUD)
 	{
@@ -3740,6 +3749,12 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_CTY ) {
 			s = "Capture the Ysalamiri";
+		} else if ( GT_Round(cgs.gametype) ) {
+			if ( cgs.round == 0 ) {
+				s = "Red Rover";
+			} else {
+				s = va("Round %i", cgs.round);
+			}
 		} else {
 			s = "";
 		}
@@ -3747,11 +3762,13 @@ static void CG_DrawWarmup( void ) {
 		CG_Text_Paint(320 - w / 2, 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}
 
-	sec = ( sec - cg.time ) / 1000;
+	sec = ( sec - cg.time );
 	if ( sec < 0 ) {
 		cg.warmup = 0;
 		sec = 0;
+		return;
 	}
+	sec /= 1000;
 //	s = va( "Starts in: %i", sec + 1 );
 	s = va( "%s: %i",CG_GetStripEdString("INGAMETEXT", "STARTS_IN"), sec + 1 );
 	if ( sec != cg.warmupCount ) {

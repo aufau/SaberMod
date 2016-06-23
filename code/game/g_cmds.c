@@ -1646,7 +1646,8 @@ static const char *gameNames[] = {
 	"Team FFA",
 	"N/A",
 	"Capture the Flag",
-	"Capture the Ysalamiri"
+	"Capture the Ysalamiri",
+	"Red Rover"
 };
 
 /*
@@ -1693,6 +1694,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) voteCmd = CV_DOWARMUP;
 	else if ( !Q_stricmp( arg1, "timelimit" ) )  voteCmd = CV_TIMELIMIT;
 	else if ( !Q_stricmp( arg1, "fraglimit" ) )  voteCmd = CV_FRAGLIMIT;
+	else if ( !Q_stricmp( arg1, "roundlimit" ) ) voteCmd = CV_ROUNDLIMIT;
 	else if ( !Q_stricmp( arg1, "teamsize" ) )   voteCmd = CV_TEAMSIZE;
 	else if ( !Q_stricmp( arg1, "remove" ) )     voteCmd = CV_REMOVE;
 	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_NOKICK;
@@ -1701,7 +1703,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, teamsize <size>, remove <player>, wk, nk.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk.\n\"" );
 		return;
 	}
 

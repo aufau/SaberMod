@@ -176,6 +176,9 @@ void UI_LoadArenas( void ) {
 			if( strstr( type, "cty" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTY);
 			}
+			if( strstr( type, "redrover" ) ) {
+				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_REDROVER);
+			}
 		} else {
 			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
 		}

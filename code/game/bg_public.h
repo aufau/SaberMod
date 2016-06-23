@@ -71,7 +71,7 @@
 #define CS_FLAGSTATUS			23		// string indicating flag status in CTF
 #define CS_SHADERSTATE			24
 #define CS_BOTINFO				25
-
+#define CS_ROUND				26		// could use SendScoreboardMessageToAllClients instead
 #define	CS_ITEMS				27		// string of 0's and 1's that tell which items are present
 
 #define CS_CLIENT_JEDIMASTER	28		// current jedi master
@@ -140,11 +140,13 @@ typedef enum {
 	GT_SAGA,			// saga
 	GT_CTF,				// capture the flag
 	GT_CTY,
+	GT_REDROVER,		// slain join your team
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
 #define GT_Team(x) ((x) >= GT_TEAM)
+#define GT_Round(x) ((x) == GT_REDROVER)
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -190,7 +192,8 @@ typedef enum {
 	PM_DEAD,		// no acceleration or turning, but free falling
 	PM_FREEZE,		// stuck in place with no control
 	PM_INTERMISSION,	// no movement or status bar
-	PM_SPINTERMISSION	// no movement or status bar
+	PM_SPINTERMISSION,	// no movement or status bar
+	PM_HARMLESS		// can't use weapons, items, force powers
 } pmtype_t;
 
 typedef enum {

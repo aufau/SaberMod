@@ -191,7 +191,7 @@ void G_PrintStats(void) {
 
 	trap_SendServerCommand(-1, "print \"\n\"");
 
-	if (GT_Team(g_gametype.integer)) {
+	if (GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER) {
 		if (g_gametype.integer == GT_CTF) {
 			columns = ctfColumns;
 		} else {
@@ -215,16 +215,18 @@ void G_PrintStats(void) {
 			}
 		}
 	} else {
-		columns = ffaColumns;
+		if (g_gametype.integer == GT_REDROVER) {
+			columns = tffaColumns;
+		} else {
+			columns = ffaColumns;
+		}
 
 		PrintStatsHeader(columns);
 
 		PrintStatsSeparator(columns, teamColorString[TEAM_FREE]);
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_FREE) {
-				PrintClientStats(cl, columns, bestStats);
-			}
+			PrintClientStats(cl, columns, bestStats);
 		}
 	}
 

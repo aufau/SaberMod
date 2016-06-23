@@ -1228,7 +1228,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		}
 
 		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
+		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM && g_gametype.integer != GT_REDROVER ) {
 			// respawning rules
 
 			// New method:  If the player has less than half the minimum, give them the minimum, else add 1/2 the min.
@@ -1261,7 +1261,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	G_LogWeaponPickup(other->s.number, ent->item->giTag);
 
 	// team deathmatch has slow weapon respawns
-	if ( g_gametype.integer == GT_TEAM )
+	if ( g_gametype.integer == GT_TEAM || g_gametype.integer == GT_REDROVER )
 	{
 		return adjustRespawnTime(RESPAWN_TEAM_WEAPON, ent->item->giType, ent->item->giTag);
 	}

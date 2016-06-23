@@ -2229,7 +2229,7 @@ void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent)
 		{ //switching away from the saber
 			trap_S_StartSound(cent->lerpOrigin, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound( "sound/weapons/saber/saberoffquick.wav" ));
 		}
-		else if (ps->weapon == WP_SABER && cg_entities[cent->currentState.number].weapon != ps->weapon)
+		else if (ps->weapon == WP_SABER && cg_entities[cent->currentState.number].weapon != ps->weapon && !ps->saberHolstered)
 		{ //switching to the saber
 			trap_S_StartSound(cent->lerpOrigin, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound( "sound/weapons/saber/saberon.wav" ));
 		}

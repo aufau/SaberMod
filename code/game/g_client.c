@@ -739,6 +739,40 @@ void CopyToBodyQue( gentity_t *ent ) {
 
 //======================================================================
 
+/*
+==================
+ResetClientState
+
+Remove items, force powers, powerups and sounds
+==================
+*/
+void ResetClientState( gentity_t *self )
+{
+	//if he was charging or anything else, kill the sound
+	G_MuteSound(self->s.number, CHAN_WEAPON);
+
+	BlowDetpacks(self); //blow detpacks if they're planted
+
+	self->client->ps.fd.forceDeactivateAll = 1;
+
+	self->s.weapon = WP_NONE;
+	self->s.powerups = 0;
+	self->client->ps.zoomMode = 0;
+	self->s.loopSound = 0;
+
+	if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+		Team_ReturnFlag( TEAM_FREE );
+	}
+	else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+		Team_ReturnFlag( TEAM_RED );
+	}
+	else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+		Team_ReturnFlag( TEAM_BLUE );
+	}
+
+	// remove powerups
+	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
+}
 
 /*
 ==================
@@ -768,7 +802,9 @@ respawn
 void respawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	CopyToBodyQue (ent);
+	if (ent->health <= 0) {
+		CopyToBodyQue (ent);
+	}
 
 	if (gEscaping)
 	{
@@ -794,7 +830,7 @@ TeamCount
 Returns number of players on a team
 ================
 */
-team_t TeamCount( int ignoreClientNum, int team ) {
+int TeamCount( int ignoreClientNum, int team ) {
 	int		i;
 	int		count = 0;
 
@@ -1438,7 +1474,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			int preSess;
 
 			//SetTeam(ent, "");
-			ent->client->sess.sessionTeam = PickTeam(-1);
+			ent->client->sess.sessionTeam = PickTeam(clientNum);
 			trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
 
 			if (ent->client->sess.sessionTeam == TEAM_RED)
