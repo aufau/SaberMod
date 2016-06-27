@@ -517,7 +517,7 @@ struct gclient_s {
 	qboolean	inactivityWarning;	// qtrue if the five seoond warning has been given
 	int			rewardTime;			// clear the EF_AWARD_IMPRESSIVE, etc when time > this
 
-	int			airOutTime;
+	int			airOutTime;			// time the players needs to breathe
 
 	int			lastKillTime;		// for multiple kill rewards
 
@@ -1095,6 +1095,19 @@ void G_StopPrivateDuel(gentity_t *ent);
 void G_BackupWorld( void );
 void G_RollbackWorld( int serverTime, int contents );
 void G_RestoreWorld( void );
+
+// g_debug.c
+#if !defined(NDEBUG) && !defined(Q3_VM)
+void G_StaticCheck(void);
+void G_EntityStateCheckRep(const entityState_t *s);
+void G_ClientCheckRep(const gclient_t *cl);
+void G_EntityCheckRep(const gentity_t *ent);
+#else
+#define G_StaticCheck()
+#define G_EntityStateCheckRep(x)
+#define G_ClientCheckRep(x)
+#define G_EntityCheckRep(x)
+#endif
 
 // ai_main.c
 

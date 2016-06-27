@@ -644,6 +644,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	char	serverinfo[MAX_INFO_STRING];
 	int		i;
 
+	G_StaticCheck();
+
 	B_InitAlloc(); //make sure everything is clean
 
 	G_Printf ("------- Game Initialization -------\n");
@@ -2966,6 +2968,8 @@ void G_RunFrame( int levelTime ) {
 	start = trap_Milliseconds();
 	ent = &g_entities[0];
 	for (i=0 ; i<level.num_entities ; i++, ent++) {
+		G_EntityCheckRep( ent );
+
 		if ( !ent->inuse ) {
 			continue;
 		}
@@ -3052,6 +3056,7 @@ start = trap_Milliseconds();
 		if ( ent->inuse ) {
 			ClientEndFrame( ent );
 		}
+		G_EntityCheckRep( ent );
 	}
 end = trap_Milliseconds();
 

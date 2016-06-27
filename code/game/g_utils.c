@@ -435,6 +435,7 @@ void G_InitGentity( gentity_t *e, int blameEntityNum ) {
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;
 	e->s.modelGhoul2 = 0; //assume not
+	e->freetime = 0;
 
 	G_BlameForEntity( blameEntityNum, e);
 }
@@ -651,6 +652,8 @@ gentity_t *G_TempEntity( const vec3_t origin, entity_event_t event, int blameEnt
 	gentity_t		*e;
 	vec3_t		snapped;
 
+	assert(0 <= (int)(event & ~EV_EVENT_BITS) && (event & ~EV_EVENT_BITS) < EV_MAX);
+
 	e = G_Spawn( blameEntityNum );
 	e->s.eType = ET_EVENTS + event;
 
@@ -702,7 +705,6 @@ static gentity_t *G_SoundTempEntity( const vec3_t origin, int event, int channel
 	e = G_Spawn( blameEntityNum );
 
 	e->s.eType = ET_EVENTS + event;
-	e->inuse = qtrue;
 
 	e->classname = "tempEntity";
 	e->eventTime = level.time;
