@@ -271,6 +271,7 @@ struct gentity_s {
 	// 3. ENTITYNUM_NONE for entities that don't belong to anyone but
 	// can be ommited by dueling players
 	int			blameEntityNum;
+	unsigned	dimension;
 };
 
 #define DAMAGEREDIRECT_HEAD		1
@@ -944,8 +945,12 @@ void QDECL G_ClearClientLog(int client);
 void InitSagaMode(void);
 
 // g_dimensions.c
+#define DEFAULT_DIMENSION	0x1
+#define ALL_DIMENSIONS		0xffffffff
+
 void G_BlameForEntity( int blame, gentity_t *ent );
-qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
+unsigned G_GetFreeDuelDimension(void);
+unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
 

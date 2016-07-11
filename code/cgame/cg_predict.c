@@ -81,14 +81,20 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 		}
 
 		if (duelTest && ent->number < MAX_CLIENTS && cg.snap) {
+			// keep this in sync with G_EntitiesCollide
+			// logic. Perfectly it should be part of bg_pmove
+			// or bg_misc.
 			if (cg.snap->ps.duelInProgress) {
 				if (ent->number != cg.snap->ps.duelIndex) {
 					continue;
 				}
-			} else if (ent->bolt1) {	// duel in progress
-				continue;
+			} else {
+				if (ent->bolt1) {	// ent duel in progress
+					continue;
+				}
 			}
 		}
+
 		if (ent->number > MAX_CLIENTS && cg.snap && ent->genericenemyindex && (ent->genericenemyindex-1024) == cg.snap->ps.clientNum)
 		{ //rww - method of keeping objects from colliding in client-prediction (in case of ownership)
 			continue;

@@ -17,6 +17,12 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 	}
 
 	ent->blameEntityNum = blame;
+	// For now cgame can ignore only dueling players
+	if (ent - g_entities < MAX_CLIENTS) {
+		ent->dimension = DEFAULT_DIMENSION;
+	} else {
+		ent->dimension = ALL_DIMENSIONS;
+	}
 
 	if (mvapi) {
 		mvsharedEntity_t	*mvEnt = mv_entities + ent->s.number;
@@ -47,21 +53,62 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 	}
 }
 
-qboolean G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
+unsigned G_GetFreeDuelDimension(void)
 {
-	assert(ent1->s.number != ent2->s.number);
+	unsigned dimension;
+	qboolean free;
+	int i;
 
-	if (ent1->client->ps.duelInProgress) {
-		if (ent2->s.number == ent1->client->ps.duelIndex) {
-			return qtrue;
-		} else {
-			return qfalse;
+	for (dimension = 1 << 15; dimension != 0; dimension <<= 1) {
+		free = qtrue;
+
+		for (i = 0; i < level.maxclients; i++) {
+			if (!g_entities[i].inuse) {
+				continue;
+			}
+			if ((g_entities[i].dimension & dimension) != 0) {
+				free = qfalse;
+				break;
+			}
 		}
-	} else if (ent2->client->ps.duelInProgress) {
-		return qfalse;
-	} else {
-		return qtrue;
+
+		if (free) {
+			return dimension;
+		}
 	}
+
+	assert(0); // didn't find a free dimension
+	return DEFAULT_DIMENSION;
+}
+
+unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
+{
+	unsigned common = ent1->dimension & ent2->dimension;
+
+#ifndef NDEBUG
+	qboolean collision;
+
+	// cgame collision test has to follow the same logic
+	if (ent1->client && ent2->client) {
+		if (ent1->client->ps.duelInProgress) {
+			if (ent1->client->ps.duelIndex == ent2->s.number) {
+				collision = qtrue;
+			} else {
+				collision = qfalse;
+			}
+		} else {
+			if (ent2->client->ps.duelInProgress) {
+				collision = qfalse;
+			} else {
+				collision = qtrue;
+			}
+		}
+
+		assert(!!common == collision);
+	}
+#endif
+
+	return common;
 }
 
 void G_StartPrivateDuel(gentity_t *ent)

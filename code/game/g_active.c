@@ -988,6 +988,7 @@ void G_UpdateClientBroadcasts ( gentity_t *self )
 
 static void G_FinishDuel ( gentity_t *ent )
 {
+	ent->dimension = DEFAULT_DIMENSION;
 	ent->client->ps.duelInProgress = qfalse;
 	ent->client->duelStarted = qfalse;
 	G_AddEvent(ent, EV_PRIVATE_DUEL, 0);

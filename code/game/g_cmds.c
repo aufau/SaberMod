@@ -2395,9 +2395,15 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 
 	if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
 	{
+		unsigned dimension;
+
 		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
 			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
 		trap_SendServerCommand(-1, s);
+
+		dimension = G_GetFreeDuelDimension();
+		ent->dimension = dimension;
+		challenged->dimension = dimension;
 
 		ent->client->ps.duelInProgress = qtrue;
 		challenged->client->ps.duelInProgress = qtrue;
