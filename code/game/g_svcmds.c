@@ -432,7 +432,7 @@ void	Svcmd_Remove_f( void )
 	int			delay;
 
 	if ( trap_Argc() < 2 ) {
-		trap_Printf( "Usage: remove <player> [seconds]\n" );
+		trap_Print( "Usage: remove <player> [seconds]\n" );
 		return;
 	}
 
@@ -467,7 +467,7 @@ void	Svcmd_Announce_f( void )
 	char	*str = ConcatArgs(1);
 
 	if ( !str[0] ) {
-		trap_Printf( "Usage: announce <message>\n" );
+		trap_Print( "Usage: announce <message>\n" );
 		return;
 	}
 
@@ -489,7 +489,7 @@ void	Svcmd_Tell_f( void )
 	int			clientNum;
 
 	if ( trap_Argc() < 2 ) {
-		trap_Printf( "Usage: tell <player> [message]\n" );
+		trap_Print( "Usage: tell <player> [message]\n" );
 		return;
 	}
 

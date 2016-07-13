@@ -395,7 +395,7 @@ void QDECL G_Printf( const char *fmt, ... ) {
 	vsprintf (text, fmt, argptr);
 	va_end (argptr);
 
-	trap_Printf( text );
+	trap_Print( text );
 }
 
 Q_NORETURN void QDECL G_Error( const char *fmt, ... ) {

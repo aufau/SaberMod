@@ -58,7 +58,13 @@
 
 #include "bg_lib.h"
 
+#ifdef NDEBUG
 #define assert(exp)     ((void)0)
+#else
+#define assert(exp) \
+	if (!(exp)) \
+		trap_Print(__FILE__ ":" STR(__LINE__) ": Assertion `" STR(exp) "' failed.\n");
+#endif
 
 #else
 

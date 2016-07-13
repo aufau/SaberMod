@@ -1107,7 +1107,7 @@ extern  vmCvar_t	g_restrictChat;
 extern  vmCvar_t	g_spawnShield;
 extern  vmCvar_t	g_noKick;
 
-void	trap_Printf( const char *fmt );
+void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );
 int		trap_Argc( void );

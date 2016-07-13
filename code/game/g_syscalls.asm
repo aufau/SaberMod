@@ -1,6 +1,6 @@
 code
 
-equ trap_Printf								  -1	; G_PRINT
+equ trap_Print								  -1	; G_PRINT
 equ trap_Error								  -2	; G_ERROR
 equ trap_Milliseconds						  -3	; G_MILLISECONDS
 equ trap_Cvar_Register						  -4	; G_CVAR_REGISTER

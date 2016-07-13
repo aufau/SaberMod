@@ -109,11 +109,11 @@ static void G_LoadArenasFromFile( char *filename ) {
 
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 	if ( !f ) {
-		trap_Printf( va( S_COLOR_RED "file not found: %s\n", filename ) );
+		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
 		return;
 	}
 	if ( len >= MAX_ARENAS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
+		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -312,7 +312,7 @@ static void G_LoadArenas( void ) {
 		Q_strcat(filename, sizeof(filename), dirptr);
 		G_LoadArenasFromFile(filename);
 	}
-	trap_Printf( va( "%i arenas parsed\n", g_numArenas ) );
+	trap_Print( va( "%i arenas parsed\n", g_numArenas ) );
 
 	for( n = 0; n < g_numArenas; n++ ) {
 		Info_SetValueForKey( g_arenaInfos[n], "num", va( "%i", n ) );
@@ -867,7 +867,7 @@ void Svcmd_AddBot_f( void ) {
 	// name
 	trap_Argv( 1, name, sizeof( name ) );
 	if ( !name[0] ) {
-		trap_Printf( "Usage: Addbot <botname> [skill 1-5] [team] [msec delay] [altname]\n" );
+		trap_Print( "Usage: Addbot <botname> [skill 1-5] [team] [msec delay] [altname]\n" );
 		return;
 	}
 
@@ -917,7 +917,7 @@ void Svcmd_BotList_f( void ) {
 	char model[MAX_QPATH];
 	char personality[MAX_QPATH];
 
-	trap_Printf("^1name             model            personality              funname\n");
+	trap_Print("^1name             model            personality              funname\n");
 	for (i = 0; i < g_numBots; i++) {
 		Q_strncpyz(name, Info_ValueForKey( g_botInfos[i], "name" ), sizeof(name));
 		if ( !*name ) {
@@ -935,7 +935,7 @@ void Svcmd_BotList_f( void ) {
 		if (!*personality ) {
 			strcpy(personality, "botfiles/default.jkb");
 		}
-		trap_Printf(va("%-16s %-16s %-20s %-20s\n", name, model, personality, funname));
+		trap_Print(va("%-16s %-16s %-20s %-20s\n", name, model, personality, funname));
 	}
 }
 
@@ -1011,11 +1011,11 @@ static void G_LoadBotsFromFile( char *filename ) {
 
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 	if ( !f ) {
-		trap_Printf( va( S_COLOR_RED "file not found: %s\n", filename ) );
+		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
 		return;
 	}
 	if ( len >= MAX_BOTS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
+		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -1065,7 +1065,7 @@ static void G_LoadBots( void ) {
 		Q_strcat(filename, sizeof(filename), dirptr);
 		G_LoadBotsFromFile(filename);
 	}
-	trap_Printf( va( "%i bots parsed\n", g_numBots ) );
+	trap_Print( va( "%i bots parsed\n", g_numBots ) );
 }
 
 
@@ -1077,7 +1077,7 @@ G_GetBotInfoByNumber
 */
 char *G_GetBotInfoByNumber( int num ) {
 	if( num < 0 || num >= g_numBots ) {
-		trap_Printf( va( S_COLOR_RED "Invalid bot number: %i\n", num ) );
+		trap_Print( va( S_COLOR_RED "Invalid bot number: %i\n", num ) );
 		return NULL;
 	}
 	return g_botInfos[num];
