@@ -1232,7 +1232,7 @@ void ClientThink_real( gentity_t *ent ) {
 		if (other->s.number == ent->s.number) {
 			continue;
 		}
-		if (!G_EntitiesCollide(ent, other)) {
+		if (!G_CommonDimension(ent, other)) {
 			other->r.contents &= ~CONTENTS_BODY;
 		}
 	}

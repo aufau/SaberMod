@@ -731,7 +731,7 @@ void G_KillBox (gentity_t *ent) {
 		if ( !hit->client ) {
 			continue;
 		}
-		if ( !G_EntitiesCollide(ent, hit) ) {
+		if ( !G_CommonDimension(ent, hit) ) {
 			continue;
 		}
 

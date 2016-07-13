@@ -948,6 +948,13 @@ void InitSagaMode(void);
 #define DEFAULT_DIMENSION	0x1
 #define ALL_DIMENSIONS		0xffffffff
 
+// not pretty. remove it when we're sure it works correctly.
+#ifdef NDEBUG
+#define G_CommonDimension(ent1, ent2) ((ent1)->dimension & (ent2)->dimension)
+#else
+#define G_CommonDimension(ent1, ent2) G_EntitiesCollide((ent1), (ent2))
+#endif
+
 void G_BlameForEntity( int blame, gentity_t *ent );
 unsigned G_GetFreeDuelDimension(void);
 unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
