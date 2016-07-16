@@ -66,22 +66,13 @@ void	G_DebugBoxLines(vec3_t mins, vec3_t maxs, int duration)
 
 void SaberUpdateSelf(gentity_t *ent)
 {
-	gentity_t *owner;
-
-	if (ent->r.ownerNum == ENTITYNUM_NONE)
-	{
-		ent->think = G_FreeEntity;
-		ent->nextthink = level.time;
-		return;
-	}
-
-	owner = &g_entities[ent->r.ownerNum];
+	gentity_t *owner = &g_entities[ent->r.ownerNum];
 
 	if (!owner->inuse ||
 		!owner->client ||
+		owner->client->ps.saberEntityNum != ent->s.number ||
 		owner->client->sess.sessionTeam == TEAM_SPECTATOR)
 	{
-		owner->client->ps.saberEntityNum = ENTITYNUM_NONE;
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;
 		return;
@@ -2500,18 +2491,10 @@ void saberBackToOwner(gentity_t *saberent)
 	vec3_t dir;
 	float ownerLen;
 
-	if (saberent->r.ownerNum == ENTITYNUM_NONE)
-	{
-		MakeDeadSaber(saberent);
-
-		saberent->think = G_FreeEntity;
-		saberent->nextthink = level.time;
-		return;
-	}
-
-	if (!g_entities[saberent->r.ownerNum].inuse ||
-		!g_entities[saberent->r.ownerNum].client ||
-		g_entities[saberent->r.ownerNum].client->sess.sessionTeam == TEAM_SPECTATOR)
+	if (!saberOwner->inuse ||
+		!saberOwner->client ||
+		saberOwner->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwner->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
 
@@ -2655,19 +2638,10 @@ void saberFirstThrown(gentity_t *saberent)
 	float		vLen;
 	gentity_t	*saberOwn = &g_entities[saberent->r.ownerNum];
 
-	if (saberent->r.ownerNum == ENTITYNUM_NONE)
-	{
-		MakeDeadSaber(saberent);
-
-		saberent->think = G_FreeEntity;
-		saberent->nextthink = level.time;
-		return;
-	}
-
-	if (!saberOwn ||
-		!saberOwn->inuse ||
+	if (!saberOwn->inuse ||
 		!saberOwn->client ||
-		saberOwn->client->sess.sessionTeam == TEAM_SPECTATOR)
+		saberOwn->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwn->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
 
