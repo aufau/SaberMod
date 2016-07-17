@@ -376,7 +376,7 @@ qboolean PlaceShield(gentity_t *playerent)
 		if ( !tr.startsolid && !tr.allsolid )
 		{
 			// got enough room so place the portable shield
-			shield = G_Spawn( playerent->s.clientNum );
+			shield = G_Spawn( playerent->s.number );
 
 			// Figure out what direction the shield is facing.
 			if (fabs(fwd[0]) > fabs(fwd[1]))
@@ -1005,7 +1005,7 @@ void ItemUse_Sentry( gentity_t *ent )
 	fwdorg[1] = ent->client->ps.origin[1] + fwd[1]*64;
 	fwdorg[2] = ent->client->ps.origin[2] + fwd[2]*64;
 
-	sentry = G_Spawn( ent->s.clientNum );
+	sentry = G_Spawn( ent->s.number );
 
 	sentry->classname = "sentryGun";
 	sentry->s.modelindex = G_ModelIndex("models/items/psgun.glm"); //replace ASAP

@@ -458,11 +458,11 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 			{ //broadcast and stop the shot because it was blocked
 				gentity_t *te = NULL;
 
-				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT, ent->s.clientNum );
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT, ent->s.number );
 				VectorCopy( muzzle, tent->s.origin2 );
 				tent->s.eventParm = ent->s.number;
 
-				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, ent->s.clientNum );
+				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, ent->s.number );
 				VectorCopy(tr.endpos, te->s.origin);
 				VectorCopy(tr.plane.normal, te->s.angles);
 				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
@@ -484,7 +484,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	}
 
 	// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
-	tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT, ent->s.clientNum );
+	tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT, ent->s.number );
 	VectorCopy( muzzle, tent->s.origin2 );
 	tent->s.eventParm = ent->s.number;
 
@@ -504,7 +504,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
 
-			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.clientNum );
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.number );
 			tent->s.eventParm = DirToByte( tr.plane.normal );
 			if (traceEnt->client)
 			{
@@ -514,7 +514,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		else
 		{
 			 // Hmmm, maybe don't make any marks on things that could break
-			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.clientNum );
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.number );
 			tent->s.eventParm = DirToByte( tr.plane.normal );
 			tent->s.weapon = 1;
 		}
@@ -627,12 +627,12 @@ void WP_DisruptorAltFire( gentity_t *ent )
 			{ //broadcast and stop the shot because it was blocked
 				gentity_t *te = NULL;
 
-				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.clientNum );
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
 				VectorCopy( muzzle, tent->s.origin2 );
 				tent->s.shouldtarget = fullCharge;
 				tent->s.eventParm = ent->s.number;
 
-				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, ent->s.clientNum );
+				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, ent->s.number );
 				VectorCopy(tr.endpos, te->s.origin);
 				VectorCopy(tr.plane.normal, te->s.angles);
 				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
@@ -646,7 +646,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		}
 
 		// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
-		tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.clientNum );
+		tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
 		VectorCopy( muzzle, tent->s.origin2 );
 		tent->s.shouldtarget = fullCharge;
 		tent->s.eventParm = ent->s.number;
@@ -660,7 +660,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 				// Create a simple impact type mark
 //				G_PlayEffect( G_EffectIndex( "disruptor/alt_hit" ), tr.endpos, tr.plane.normal );
-				tent = G_TempEntity(tr.endpos, EV_MISSILE_MISS, ent->s.clientNum);
+				tent = G_TempEntity(tr.endpos, EV_MISSILE_MISS, ent->s.number);
 				tent->s.eventParm = DirToByte(tr.plane.normal);
 				tent->s.eFlags |= EF_ALT_FIRING;
 
@@ -684,14 +684,14 @@ void WP_DisruptorAltFire( gentity_t *ent )
 						G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage,
 								DAMAGE_NO_KNOCKBACK/*|DAMAGE_HALF_ARMOR_REDUCTION*/, MOD_DISRUPTOR_SNIPER );
 
-						tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.clientNum );
+						tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.number );
 						tent->s.eventParm = DirToByte( tr.plane.normal );
 					}
 				 }
 				 else
 				 {
 					 // Hmmm, maybe don't make any marks on things that could break
-					 tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.clientNum );
+					 tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.number );
 					tent->s.eventParm = DirToByte( tr.plane.normal );
 				 }
 				break; // and don't try any more traces
@@ -728,7 +728,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 					VectorClear(traceEnt->client->ps.velocity);
 				}
 
-				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.clientNum );
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.number );
 				tent->s.eventParm = DirToByte( tr.plane.normal );
 				if (traceEnt->client)
 				{

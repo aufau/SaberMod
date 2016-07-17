@@ -707,7 +707,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 		body->s.weapon = WP_BLASTER; //lie to keep from putting a saber on the corpse, because it was thrown at death
 	}
 
-	G_AddEvent(body, EV_BODY_QUEUE_COPY, ent->s.clientNum);
+	G_AddEvent(body, EV_BODY_QUEUE_COPY, ent->s.number);
 
 	body->r.svFlags = ent->r.svFlags | SVF_BROADCAST;
 	VectorCopy (ent->r.mins, body->r.mins);
@@ -785,8 +785,8 @@ void respawn( gentity_t *ent ) {
 	ClientSpawn(ent);
 
 	// add a teleportation effect
-	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, ent->s.clientNum );
-	tent->s.clientNum = ent->s.clientNum;
+	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, ent->s.number );
+	tent->s.clientNum = ent->s.number;
 }
 
 /*
@@ -1578,7 +1578,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// send event
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
-		tent->s.clientNum = ent->s.clientNum;
+		tent->s.clientNum = ent->s.number;
 
 		if ( g_gametype.integer != GT_TOURNAMENT  ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
@@ -2110,7 +2110,7 @@ void ClientDisconnect( int clientNum ) {
 	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT, clientNum );
-		tent->s.clientNum = ent->s.clientNum;
+		tent->s.clientNum = ent->s.number;
 
 		// They don't get to take powerups with them!
 		// Especially important for stuff like CTF flags

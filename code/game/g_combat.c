@@ -2090,7 +2090,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	killer = G_LogPlayerDie( self, attacker, meansOfDeath );
 
 	// broadcast the death event to everyone
-	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY, self->s.clientNum );
+	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY, self->s.number );
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
@@ -2583,7 +2583,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 		boltAngles[1] = -boltMatrix.matrix[1][1];
 		boltAngles[2] = -boltMatrix.matrix[2][1];
 
-		te = G_TempEntity( boltPoint, EV_SABER_HIT, self->s.clientNum );
+		te = G_TempEntity( boltPoint, EV_SABER_HIT, self->s.number );
 
 		VectorCopy(boltPoint, te->s.origin);
 		VectorCopy(boltAngles, te->s.angles);
@@ -3346,7 +3346,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			//G_Sound(targ, CHAN_AUTO, protectHitSound);
 			if (targ->client->forcePowerSoundDebounce < level.time)
 			{
-				G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT, targ->s.clientNum);
+				G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT, targ->s.number);
 				targ->client->forcePowerSoundDebounce = level.time + 400;
 			}
 

@@ -3081,7 +3081,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 			{
 				gentity_t *te;
 				vec3_t dir;
-				te = G_TempEntity( g_entities[self->client->ps.saberEntityNum].r.currentOrigin, EV_SABER_BLOCK, self->s.clientNum );
+				te = G_TempEntity( g_entities[self->client->ps.saberEntityNum].r.currentOrigin, EV_SABER_BLOCK, self->s.number );
 				VectorSet( dir, 0, 1, 0 );
 				VectorCopy(g_entities[self->client->ps.saberEntityNum].r.currentOrigin, te->s.origin);
 				VectorCopy(dir, te->s.angles);

@@ -114,7 +114,7 @@ unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 void G_StartPrivateDuel(gentity_t *ent)
 {
 	if (mvapi) {
-		int	clientNum = ent->s.clientNum;
+		int	clientNum = ent->s.number;
 		int opponentNum;
 		int	i;
 
@@ -144,7 +144,7 @@ void G_StartPrivateDuel(gentity_t *ent)
 void G_StopPrivateDuel(gentity_t *ent)
 {
 	if (mvapi) {
-		int clientNum = ent->s.clientNum;
+		int clientNum = ent->s.number;
 		int i;
 
 		for (i = 0; i < level.num_entities; i++) {
