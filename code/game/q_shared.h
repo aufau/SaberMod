@@ -2104,10 +2104,10 @@ typedef enum
 
 
 enum {
-	FONT_NONE = 0,
-	FONT_SMALL,
+	FONT_NONE,
+	FONT_SMALL=1,
 	FONT_MEDIUM,
-	FONT_LARGE,
+	FONT_LARGE
 };
 
 /*

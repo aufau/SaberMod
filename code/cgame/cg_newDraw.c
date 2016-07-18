@@ -375,7 +375,7 @@ const char *CG_GameTypeString(void) {
 	return "";
 }
 
-
+extern int MenuFontToHandle(int iMenuFont);
 
 // maxX param is initially an X limit, but is also used as feedback. 0 = text was clipped to fit within, else maxX = next pos
 //
@@ -383,8 +383,12 @@ static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4
 {
 	qboolean bIsTrailingPunctuation;
 
+	// this is kinda dirty, but...
+	//
+	int iFontIndex = MenuFontToHandle(iMenuFont);
+
 	//float fMax = *maxX;
-	int iPixelLen = CG_Text_Width(text, scale, iMenuFont);
+	int iPixelLen = trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 	if (x + iPixelLen > *maxX)
 	{
 		// whole text won't fit, so we need to print just the amount that does...
@@ -396,7 +400,7 @@ static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4
 		char *psOutLastGood = psOut;
 		unsigned int uiLetter;
 
-		while (*psText && (x + CG_Text_Width(sTemp, scale, iMenuFont)<=*maxX)
+		while (*psText && (x + trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale)<=*maxX)
 			   && psOut < &sTemp[sizeof(sTemp)-1]	// sanity
 				)
 		{
