@@ -1689,6 +1689,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "nextmap" ) )    voteCmd = CV_NEXTMAP;
 	else if ( !Q_stricmp( arg1, "map" ) )        voteCmd = CV_MAP;
 	else if ( !Q_stricmp( arg1, "g_gametype" ) ) voteCmd = CV_GAMETYPE;
+	else if ( !Q_stricmp( arg1, "gametype" ) )   voteCmd = CV_GAMETYPE;
 	else if ( !Q_stricmp( arg1, "kick" ) )       voteCmd = CV_KICK;
 	else if ( !Q_stricmp( arg1, "clientkick" ) ) voteCmd = CV_CLIENTKICK;
 	else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) voteCmd = CV_DOWARMUP;
@@ -1703,7 +1704,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk.\n\"" );
 		return;
 	}
 
@@ -1728,17 +1729,42 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
 		// special case for g_gametype, check for bad values
-		i = atoi( arg2 );
-		if( i == GT_SINGLE_PLAYER || i < GT_FFA || i >= GT_MAX_GAME_TYPE) {
-			trap_SendServerCommand( ent-g_entities, "print \"Invalid gametype.\n\"" );
+		if ( isdigit( arg2[0] ) ) {
+			i = atoi( arg2 );
+		} else {
+			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
+				if ( !Q_stricmp(gameNames[i], arg2) ||
+					!Q_stricmp(machineGameNames[i], arg2) )
+					break;
+			}
+		}
+
+		if( i == GT_SINGLE_PLAYER || i == GT_SAGA || i < 0 || i >= GT_MAX_GAME_TYPE) {
+			char		gametypes[MAX_PRINT_TEXT] = { 0 };
+			qboolean	printSep = qfalse;
+			char		*p;
+
+			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
+				if (i != GT_SINGLE_PLAYER && i != GT_SAGA) {
+					if (printSep)
+						Q_strcat(gametypes, sizeof(gametypes), ", ");
+					Q_strcat(gametypes, sizeof(gametypes), machineGameNames[i]);
+					printSep = qtrue;
+				}
+			}
+			for (p = gametypes; *p != '\0'; p++)
+				*p = tolower(*p);
+
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"Valid gametypes are: %s\n\"", gametypes) );
 			return;
 		}
 
 		level.votingGametype = qtrue;
 		level.votingGametypeTo = i;
 
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", arg1, gameNames[i] );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_gametype %d", i );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "gametype %s", gameNames[i] );
 		break;
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting

@@ -366,7 +366,8 @@ typedef int		clipHandle_t;
 #define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
 #define MAX_TEAMNAME		32      // max length of a team name "spectators" but also g_blueTeam
 
-#define	MAX_SAY_TEXT	150
+#define	MAX_SAY_TEXT		150
+#define MAX_PRINT_TEXT		1024
 
 // paramters for command buffer stuffing
 typedef enum {

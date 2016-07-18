@@ -857,6 +857,7 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 extern vmCvar_t g_ff_objectives;
 extern qboolean gDoSlowMoDuel;
 extern int gSlowMoDuelTime;
+extern const char *machineGameNames[GT_MAX_GAME_TYPE];
 
 void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
