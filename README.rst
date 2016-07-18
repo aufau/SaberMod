@@ -142,6 +142,10 @@ g_restrictChat 0
 g_spawnShield 25
   Ammount of shield player gets on spawn.
 
+g_teamForceBalance <number>
+  Prevents players from joining the weaker team if difference
+  is greater than `number`.
+
 g_teamsizeMin 2
   Minimum votable teamsize
 

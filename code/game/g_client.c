@@ -899,7 +899,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 			otherCount = TeamCount( ignoreClientNum,
 				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
 
-			if ( count - otherCount  > 1 ) {
+			if ( count - otherCount > g_teamForceBalance.integer ) {
 				return qfalse;
 			}
 		}
