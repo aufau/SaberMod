@@ -1363,6 +1363,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
 	pm.noKick = ( g_dmflags.integer & DF_NO_KICK ) > 0;
+	pm.noYDFA = ( g_dmflags.integer & DF_NO_YDFA ) > 0;
 
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;

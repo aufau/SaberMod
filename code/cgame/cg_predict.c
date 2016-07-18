@@ -609,6 +609,7 @@ void CG_PredictPlayerState( void ) {
 	}
 	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
 	cg_pmove.noKick = ( cgs.dmflags & DF_NO_KICK ) > 0;
+	cg_pmove.noYDFA = ( cgs.dmflags & DF_NO_YDFA ) > 0;
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;

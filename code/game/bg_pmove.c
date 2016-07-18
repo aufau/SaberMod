@@ -1202,7 +1202,7 @@ static qboolean PM_CheckJump( void )
 			if ( animLength - pm->ps->torsoTimer < 500 )
 			{//just started the saberMove
 				//check for special-case jump attacks
-				if ( pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 )
+				if ( !pm->noYDFA && pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 )
 				{//using medium attacks
 					if (PM_GroundDistance() < 32 &&
 						!BG_InSpecialJump(pm->ps->legsAnim))

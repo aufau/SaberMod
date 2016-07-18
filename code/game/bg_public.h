@@ -252,6 +252,7 @@ typedef struct {
 	int			debugLevel;			// if set, diagnostic output will be printed
 	qboolean	noFootsteps;		// if the game is setup for no footsteps by the server
 	qboolean	noKick;				// players can't kick each another
+	qboolean	noYDFA;				// disable pmove ydfa (attack and then jump)
 	qboolean	gauntletHit;		// true if a gauntlet attack would actually hit something
 
 	int			framecount;
@@ -790,6 +791,7 @@ qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 #define DF_FIXED_FOV			16
 #define	DF_NO_FOOTSTEPS			32
 #define	DF_NO_KICK				64
+#define	DF_NO_YDFA				128
 
 // content masks
 #define	MASK_ALL				(-1)

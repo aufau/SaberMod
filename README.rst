@@ -101,15 +101,19 @@ New and modified cvars with default values.
 teamsize
   See callvote_ teamsize.
 
-dmflags
-  New bitmask 64 - disable kicking other players.
+dmflags 0
+  Sum of values from the following list:
+
+  =====================  =====================  =====================
+  8 - No fall damage     16 - Fixed fov (80)    32 - No footsteps
+  64 - No kick mode      128 - league mod YDFA
+  =====================  =====================  =====================
 
 g_allowVote 1
   0 / 1 - disable / enable all votes
 
-  Moreover you can decide what votes should be available by setting it
-  to sum of values corresponding to desired votes from the following
-  list:
+  Moreover you can decide what votes should be available by setting
+  it to a sum of values from the following list:
 
   =====================  =====================  =====================
   2 - Map Restart        4 - Next Map           8 - Map
