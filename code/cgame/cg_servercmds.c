@@ -273,7 +273,7 @@ void CG_UpdateConfigString( int num, qboolean init )
 			cgs.gameSounds[ num-CS_SOUNDS] = trap_S_RegisterSound( str );
 		}
 	}
-	else if ( num >= CS_EFFECTS && num < CS_SOUNDS+MAX_SOUNDS )
+	else if ( num >= CS_EFFECTS && num < CS_EFFECTS+MAX_FX )
 	{
 		if ( (!init || str[0]) && str[0] != '*' ) {	// player specific sounds don't register here
 			cgs.gameEffects[ num-CS_EFFECTS] = trap_FX_RegisterEffect( str );
