@@ -60,6 +60,7 @@
 #define	CS_VOTE_YES				10
 #define	CS_VOTE_NO				11
 
+// Each teamvote string takes 2 indices
 #define CS_TEAMVOTE_TIME		12
 #define CS_TEAMVOTE_STRING		14
 #define	CS_TEAMVOTE_YES			16
@@ -90,7 +91,7 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 #define CS_LOCATIONS			(CS_CHARSKINS+MAX_CHARSKINS)
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS)
+#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS) // unused
 #define CS_EFFECTS				(CS_PARTICLES+MAX_LOCATIONS)
 #define	CS_LIGHT_STYLES			(CS_EFFECTS + MAX_FX)
 #define CS_STRING_PACKAGES		(CS_LIGHT_STYLES + (MAX_LIGHT_STYLES*3))

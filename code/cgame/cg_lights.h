@@ -11,6 +11,6 @@ typedef struct
 
 void	CG_ClearLightStyles (void);
 void	CG_RunLightStyles (void);
-void	CG_SetLightstyle (int i);
+void    CG_SetLightstyle (int i);
 
 #endif // CG_LIGHTS_H_INC

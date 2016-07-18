@@ -1862,12 +1862,10 @@ void CG_InitConsoleCommands( void );
 // cg_servercmds.c
 //
 void CG_ExecuteNewServerCommands( int latestSequence );
-void CG_ParseServerinfo( void );
-void CG_SetConfigValues( void );
 void CG_LoadVoiceChats( void );
-void CG_ShaderStateChanged(void);
 void CG_VoiceChatLocal( int mode, qboolean voiceOnly, int clientNum, int color, const char *cmd );
 void CG_PlayBufferedVoiceChats( void );
+void CG_UpdateConfigString( int num, qboolean init );
 
 //
 // cg_playerstate.c

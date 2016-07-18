@@ -759,16 +759,7 @@ static void CG_ForceModelChange( void ) {
 	int		i;
 
 	for (i=0 ; i<MAX_CLIENTS ; i++) {
-		const char		*clientInfo;
-		void	*oldGhoul2;
-
-		clientInfo = CG_ConfigString( CS_PLAYERS+i );
-		if ( !clientInfo[0] ) {
-			continue;
-		}
-
-		oldGhoul2 = cgs.clientinfo[i].ghoul2Model;
-		CG_NewClientInfo( i, qtrue);
+		CG_UpdateConfigString( CS_PLAYERS + i, qfalse );
 	}
 }
 
@@ -953,7 +944,6 @@ static void CG_RegisterSounds( void ) {
 	int		i;
 	char	items[MAX_ITEMS+1];
 	char	name[MAX_QPATH];
-	const char	*soundName;
 
 	// voice commands
 	// rww - no "voice commands" I guess.
@@ -1201,25 +1191,11 @@ static void CG_RegisterSounds( void ) {
 	}
 
 	for ( i = 1 ; i < MAX_SOUNDS ; i++ ) {
-		soundName = CG_ConfigString( CS_SOUNDS+i );
-		if ( !soundName[0] ) {
-			break;
-		}
-		if ( soundName[0] == '*' ) {
-			continue;	// custom sound
-		}
-		cgs.gameSounds[i] = trap_S_RegisterSound( soundName );
+		CG_UpdateConfigString( CS_SOUNDS + i, qtrue );
 	}
 
 	for ( i = 1 ; i < MAX_FX ; i++ ) {
-		soundName = CG_ConfigString( CS_EFFECTS+i );
-		if ( !soundName[0] ) {
-			break;
-		}
-		if ( soundName[0] == '*' ) {
-			continue;	// custom sound
-		}
-		cgs.gameEffects[i] = trap_FX_RegisterEffect( soundName );
+		CG_UpdateConfigString( CS_EFFECTS + i, qtrue );
 	}
 
 	cg.loadLCARSStage = 2;
@@ -1242,19 +1218,11 @@ static void CG_RegisterSounds( void ) {
 //-------------------------------------
 static void CG_RegisterEffects( void )
 {
-	const char	*effectName;
 	int			i;
 
 	for ( i = 1 ; i < MAX_FX ; i++ )
 	{
-		effectName = CG_ConfigString( CS_EFFECTS + i );
-
-		if ( !effectName[0] )
-		{
-			break;
-		}
-
-		trap_FX_RegisterEffect( effectName );
+		CG_UpdateConfigString( CS_EFFECTS + i, qtrue );
 	}
 
 	// Set up the glass effects mini-system.
@@ -1581,13 +1549,7 @@ Ghoul2 Insert End
 
 	// register all the server specified models
 	for (i=1 ; i<MAX_MODELS ; i++) {
-		const char		*modelName;
-
-		modelName = CG_ConfigString( CS_MODELS+i );
-		if ( !modelName[0] ) {
-			break;
-		}
-		cgs.gameModels[i] = trap_R_RegisterModel( modelName );
+		CG_UpdateConfigString( CS_MODELS + i, qtrue );
 	}
 	cg.loadLCARSStage = 8;
 /*
@@ -1596,13 +1558,7 @@ Ghoul2 Insert Start
 	CG_LoadingString("skins");
 	// register all the server specified models
 	for (i=1 ; i<MAX_CHARSKINS ; i++) {
-		const char		*modelName;
-
-		modelName = CG_ConfigString( CS_CHARSKINS+i );
-		if ( !modelName[0] ) {
-			break;
-		}
-		cgs.skins[i] = trap_R_RegisterSkin( modelName );
+		CG_UpdateConfigString( CS_CHARSKINS + i, qtrue );
 	}
 
 	CG_InitG2Weapons();
@@ -1750,23 +1706,14 @@ static void CG_RegisterClients( void ) {
 	int		i;
 
 	CG_LoadingClient(cg.clientNum);
-	CG_NewClientInfo(cg.clientNum, qfalse);
+	CG_UpdateConfigString( CS_PLAYERS + cg.clientNum, qtrue );
 
 	for (i=0 ; i<MAX_CLIENTS ; i++) {
-		const char		*clientInfo;
-
-		if (cg.clientNum == i) {
-			continue;
+		if (i != cg.clientNum) {
+			CG_LoadingClient( i );
+			CG_UpdateConfigString( CS_PLAYERS + i, qtrue );
 		}
-
-		clientInfo = CG_ConfigString( CS_PLAYERS+i );
-		if ( !clientInfo[0]) {
-			continue;
-		}
-		CG_LoadingClient( i );
-		CG_NewClientInfo( i, qfalse);
 	}
-	CG_BuildSpectatorString();
 }
 
 //===========================================================================
@@ -2468,7 +2415,6 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
-	const char	*s;
 	int i = 0;
 
 	trap_CG_RegisterSharedMemory(cg.sharedBuffer);
@@ -2643,12 +2589,12 @@ Ghoul2 Insert End
 	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
 
-	s = CG_ConfigString( CS_LEVEL_START_TIME );
-	cgs.levelStartTime = atoi( s );
+	// Update config strings
+	for ( i = 0; i < CS_MODELS; i++ ) {
+		CG_UpdateConfigString( i, qtrue );
+	}
 
 	trap_SP_Register( "sabermod_ingame" );
-
-	CG_ParseServerinfo();
 
 	// load the new map
 	CG_LoadingString( "collision map" );
@@ -2685,19 +2631,12 @@ Ghoul2 Insert End
 	// remove the last loading update
 	cg.infoScreenText[0] = 0;
 
-	// Make sure we have update values (scores)
-	CG_SetConfigValues();
-
-	CG_StartMusic(qfalse);
-
 	CG_LoadingString( "Clearing light styles" );
 	CG_ClearLightStyles();
 
 	CG_LoadingString( "" );
 
 	CG_InitTeamChat();
-
-	CG_ShaderStateChanged();
 
 	CG_InitScoreboardColumns();
 
