@@ -984,7 +984,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	entityState_t	*es;
 	int				event;
 	vec3_t			dir;
-	const char		*s;
 	int				clientNum;
 	clientInfo_t	*ci;
 	int				eID = 0;
@@ -2060,18 +2059,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				fxDir[1] = 1;
 			}
 
-			if ( cgs.gameEffects[ es->eventParm ] )
-			{
-				trap_FX_PlayEffectID(cgs.gameEffects[es->eventParm], es->origin, fxDir );
-			}
-			else
-			{
-				s = CG_ConfigString( CS_EFFECTS + es->eventParm );
-				if (s && s[0])
-				{
-					trap_FX_PlayEffectID(trap_FX_RegisterEffect(s), es->origin, fxDir );
-				}
-			}
+			trap_FX_PlayEffectID(cgs.gameEffects[es->eventParm], es->origin, fxDir );
 		}
 		break;
 
@@ -2097,23 +2085,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else
 		{
-			if ( cgs.gameSounds[ es->eventParm ] ) {
-				trap_S_StartSound (NULL, es->number, CHAN_VOICE, cgs.gameSounds[ es->eventParm ] );
-			} else {
-				s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-				trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, s ) );
-			}
+			trap_S_StartSound (NULL, es->number, CHAN_VOICE, cgs.gameSounds[ es->eventParm ] );
 		}
 		break;
 
 	case EV_GLOBAL_SOUND:	// play from the player's head so it never diminishes
 		DEBUGNAME("EV_GLOBAL_SOUND");
-		if ( cgs.gameSounds[ es->eventParm ] ) {
-			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.gameSounds[ es->eventParm ] );
-		} else {
-			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, CG_CustomSound( es->number, s ) );
-		}
+		trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.gameSounds[ es->eventParm ] );
 		break;
 
 	case EV_GLOBAL_TEAM_SOUND:	// play from the player's head so it never diminishes
@@ -2193,12 +2171,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_ENTITY_SOUND:
 		DEBUGNAME("EV_ENTITY_SOUND");
 		//somewhat of a hack - weapon is the caller entity's index, trickedentindex is the proper sound channel
-		if ( cgs.gameSounds[ es->eventParm ] ) {
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
-		} else {
-			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, CG_CustomSound( es->weapon, s ) );
-		}
+		trap_S_StartSound (NULL, es->weapon, es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
 		break;
 
 	case EV_PLAY_ROFF:
@@ -2215,15 +2188,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_DEBRIS");
 		if (es->weapon)
 		{
-			if (cgs.gameSounds[es->weapon])
-			{
-				isnd = cgs.gameSounds[es->weapon];
-			}
-			else
-			{
-				s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-				isnd = CG_CustomSound( es->number, s );
-			}
+			isnd = cgs.gameSounds[es->weapon];
 		}
 		else
 		{
@@ -2314,16 +2279,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_STARTLOOPINGSOUND:
 		DEBUGNAME("EV_STARTLOOPINGSOUND");
-		if ( cgs.gameSounds[ es->eventParm ] )
-		{
-			isnd = cgs.gameSounds[es->eventParm];
-		}
-		else
-		{
-			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-			isnd = CG_CustomSound(es->number, s);
-		}
-
+		isnd = cgs.gameSounds[es->eventParm];
 		trap_S_AddRealLoopingSound( es->number, es->pos.trBase, vec3_origin, isnd );
 		es->loopSound = isnd;
 		break;
