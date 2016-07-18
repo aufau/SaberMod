@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 4
+COUNT 8
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -38,6 +38,42 @@ INDEX 3
    TEXT_LANGUAGE3 "The game ends when one team is eliminated."
    TEXT_LANGUAGE6 "The game ends when one team is eliminated."
    TEXT_LANGUAGE8 "The game ends when one team is eliminated."
+}
+INDEX 4
+{
+   REFERENCE NAME
+   TEXT_LANGUAGE1 "Name"
+   TEXT_LANGUAGE2 "Nom"
+   TEXT_LANGUAGE3 "Name"
+   TEXT_LANGUAGE6 "Name"
+   TEXT_LANGUAGE8 "Name"
+}
+INDEX 5
+{
+   REFERENCE SCORE
+   TEXT_LANGUAGE1 "Score"
+   TEXT_LANGUAGE2 "Score"
+   TEXT_LANGUAGE3 "Punkte"
+   TEXT_LANGUAGE6 "Score"
+   TEXT_LANGUAGE8 "Score"
+}
+INDEX 6
+{
+   REFERENCE TIME
+   TEXT_LANGUAGE1 "Time"
+   TEXT_LANGUAGE2 "Temps"
+   TEXT_LANGUAGE3 "Zeit"
+   TEXT_LANGUAGE6 "Time"
+   TEXT_LANGUAGE8 "Time"
+}
+INDEX 7
+{
+   REFERENCE PING
+   TEXT_LANGUAGE1 "Ping"
+   TEXT_LANGUAGE2 "Ping"
+   TEXT_LANGUAGE3 "Ping"
+   TEXT_LANGUAGE6 "Ping"
+   TEXT_LANGUAGE8 "Ping"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

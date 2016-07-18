@@ -8,6 +8,8 @@ INDEX 0
    TEXT_LANGUAGE1 "Team Size:"
    TEXT_LANGUAGE2 "Team Size:"
    TEXT_LANGUAGE3 "Team Size:"
+   TEXT_LANGUAGE6 "Team Size:"
+   TEXT_LANGUAGE8 "Team Size:"
 }
 INDEX 1
 {
@@ -15,6 +17,8 @@ INDEX 1
    TEXT_LANGUAGE1 "Follow"
    TEXT_LANGUAGE2 "Follow"
    TEXT_LANGUAGE3 "Follow"
+   TEXT_LANGUAGE6 "Follow"
+   TEXT_LANGUAGE8 "Follow"
 }
 INDEX 2
 {
@@ -22,6 +26,8 @@ INDEX 2
    TEXT_LANGUAGE1 "Remove"
    TEXT_LANGUAGE2 "Remove"
    TEXT_LANGUAGE3 "Remove"
+   TEXT_LANGUAGE6 "Remove"
+   TEXT_LANGUAGE8 "Remove"
 }
 INDEX 3
 {
@@ -29,6 +35,8 @@ INDEX 3
    TEXT_LANGUAGE1 "Begin vote to remove this player"
    TEXT_LANGUAGE2 "Begin vote to remove this player"
    TEXT_LANGUAGE3 "Begin vote to remove this player"
+   TEXT_LANGUAGE6 "Begin vote to remove this player"
+   TEXT_LANGUAGE8 "Begin vote to remove this player"
 }
 INDEX 4
 {
@@ -36,6 +44,8 @@ INDEX 4
    TEXT_LANGUAGE1 "No Kicks"
    TEXT_LANGUAGE2 "No Kicks"
    TEXT_LANGUAGE3 "No Kicks"
+   TEXT_LANGUAGE6 "No Kicks"
+   TEXT_LANGUAGE8 "No Kicks"
 }
 INDEX 5
 {
@@ -43,6 +53,8 @@ INDEX 5
    TEXT_LANGUAGE1 "With Kicks"
    TEXT_LANGUAGE2 "With Kicks"
    TEXT_LANGUAGE3 "With Kicks"
+   TEXT_LANGUAGE6 "With Kicks"
+   TEXT_LANGUAGE8 "With Kicks"
 }
 INDEX 6
 {
@@ -50,6 +62,8 @@ INDEX 6
    TEXT_LANGUAGE1 "Begin vote to play with NK rules."
    TEXT_LANGUAGE2 "Begin vote to play with NK rules."
    TEXT_LANGUAGE3 "Begin vote to play with NK rules."
+   TEXT_LANGUAGE6 "Begin vote to play with NK rules."
+   TEXT_LANGUAGE8 "Begin vote to play with NK rules."
 }
 INDEX 7
 {
@@ -57,6 +71,8 @@ INDEX 7
    TEXT_LANGUAGE1 "Begin vote to play with WK rules."
    TEXT_LANGUAGE2 "Begin vote to play with WK rules."
    TEXT_LANGUAGE3 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE6 "Begin vote to play with WK rules."
+   TEXT_LANGUAGE8 "Begin vote to play with WK rules."
 }
 INDEX 8
 {
@@ -64,6 +80,8 @@ INDEX 8
    TEXT_LANGUAGE1 "Follow Killer:"
    TEXT_LANGUAGE2 "Follow Killer:"
    TEXT_LANGUAGE3 "Follow Killer:"
+   TEXT_LANGUAGE6 "Follow Killer:"
+   TEXT_LANGUAGE8 "Follow Killer:"
 }
 INDEX 9
 {
@@ -71,6 +89,8 @@ INDEX 9
    TEXT_LANGUAGE1 "When player you are following dies, switch to his killer."
    TEXT_LANGUAGE2 "When player you are following dies, switch to his killer."
    TEXT_LANGUAGE3 "When player you are following dies, switch to his killer."
+   TEXT_LANGUAGE6 "When player you are following dies, switch to his killer."
+   TEXT_LANGUAGE8 "When player you are following dies, switch to his killer."
 }
 INDEX 10
 {
@@ -78,6 +98,8 @@ INDEX 10
    TEXT_LANGUAGE1 "Follow Powerup:"
    TEXT_LANGUAGE2 "Follow Powerup:"
    TEXT_LANGUAGE3 "Follow Powerup:"
+   TEXT_LANGUAGE6 "Follow Powerup:"
+   TEXT_LANGUAGE8 "Follow Powerup:"
 }
 INDEX 11
 {
@@ -85,6 +107,8 @@ INDEX 11
    TEXT_LANGUAGE1 "Automatically follow flag and powerup carriers."
    TEXT_LANGUAGE2 "Automatically follow flag and powerup carriers."
    TEXT_LANGUAGE3 "Automatically follow flag and powerup carriers."
+   TEXT_LANGUAGE6 "Automatically follow flag and powerup carriers."
+   TEXT_LANGUAGE8 "Automatically follow flag and powerup carriers."
 }
 INDEX 12
 {
@@ -92,6 +116,8 @@ INDEX 12
    TEXT_LANGUAGE1 "Round Limit:"
    TEXT_LANGUAGE2 "Round Limit:"
    TEXT_LANGUAGE3 "Round Limit:"
+   TEXT_LANGUAGE6 "Round Limit:"
+   TEXT_LANGUAGE8 "Round Limit:"
 }
 INDEX 13
 {
@@ -99,6 +125,8 @@ INDEX 13
    TEXT_LANGUAGE1 "The number of rounds a match will last."
    TEXT_LANGUAGE2 "The number of rounds a match will last."
    TEXT_LANGUAGE3 "The number of rounds a match will last."
+   TEXT_LANGUAGE6 "The number of rounds a match will last."
+   TEXT_LANGUAGE8 "The number of rounds a match will last."
 }
 INDEX 14
 {
@@ -106,4 +134,6 @@ INDEX 14
    TEXT_LANGUAGE1 "Red Rover"
    TEXT_LANGUAGE2 "Red Rover"
    TEXT_LANGUAGE3 "Red Rover"
+   TEXT_LANGUAGE6 "Red Rover"
+   TEXT_LANGUAGE8 "Red Rover"
 }

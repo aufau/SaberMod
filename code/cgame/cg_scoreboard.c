@@ -105,7 +105,7 @@ void CG_InitScoreboardColumns()
 {
 	const char *label;
 
-	label = CG_GetStripEdString("MENUS3", "SCORE");
+	label = CG_GetStripEdString("SABERINGAME", "SCORE");
 	columnData[SBC_SCORE] = CG_InitScoreboardColumn(label, "-999", SB_SCALE_LARGE);
 	label = "C";
 	columnData[SBC_CAP] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
@@ -113,10 +113,10 @@ void CG_InitScoreboardColumns()
 	columnData[SBC_AST] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
 	label = "D";
 	columnData[SBC_DEF] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
-	label = CG_GetStripEdString("MENUS3", "TIME");
+	label = CG_GetStripEdString("SABERINGAME", "TIME");
 	// Assumption: Time is last, there is enough space for 9999
 	columnData[SBC_TIME] = CG_InitScoreboardColumn(label, "9999", SB_SCALE_LARGE);
-	label = CG_GetStripEdString("MENUS0", "PING");
+	label = CG_GetStripEdString("SABERINGAME", "PING");
 	columnData[SBC_PING] = CG_InitScoreboardColumn(label, "999", SB_SCALE_LARGE);
 	label = CG_GetStripEdString("INGAMETEXT", "W_L");
 	// Assumption: W/L is always next to score column and "Score"
@@ -603,7 +603,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	x = SB_SCORELINE_X;
 
-	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("MENUS3", "NAME"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("SABERINGAME", "NAME"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 
 	x = 640 - SB_SCORELINE_X;
 
