@@ -1041,6 +1041,14 @@ Ghoul2 Insert End
 				trap_G2API_SetBoneAngles(cent->ghoul2, 0, "cranium", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, cgs.gameModels, 100, cg.time);
 			}
 		}
+
+		// darken bodies
+		if (cg.snap->ps.duelInProgress || cg_darkenDeadBodies.integer) {
+			ent.shaderRGBA[0] = 50;
+			ent.shaderRGBA[1] = 50;
+			ent.shaderRGBA[2] = 50;
+			ent.renderfx |= RF_RGB_TINT;
+		}
 	}
 
 	if (s1->eType == ET_HOLOCRON && s1->modelindex < -100)

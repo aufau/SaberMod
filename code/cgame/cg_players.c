@@ -7079,6 +7079,13 @@ stillDoSaber:
 		legs.renderfx |= RF_MINLIGHT;
 	}
 
+	if (cg_darkenDeadBodies.integer && dead) {
+		legs.shaderRGBA[0] = 50;
+		legs.shaderRGBA[1] = 50;
+		legs.shaderRGBA[2] = 50;
+		legs.renderfx |= RF_RGB_TINT;
+	}
+
 	if (cg.snap->ps.duelInProgress /*&& cent->currentState.number != cg.snap->ps.clientNum*/)
 	{ //I guess go ahead and glow your own client too in a duel
 		if (cent->currentState.number != cg.snap->ps.duelIndex &&

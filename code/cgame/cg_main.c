@@ -533,6 +533,7 @@ vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	cg_chatBeep;
+vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_duelGlow;
 vmCvar_t	cg_followKiller;
 vmCvar_t	cg_followPowerup;
@@ -685,6 +686,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 
 	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE},
+	{ &cg_darkenDeadBodies, "cg_darkenDeadBodies", "0", CVAR_ARCHIVE},
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
 	{ &cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE},
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},

@@ -55,6 +55,9 @@ handicap <x>
 cg_chatBeep 1
   Turn on/off chat beep.
 
+cg_darkenDeadBodies 0
+  Darken dead bodies outside of duel too.
+
 cg_drawTimer 2
   Count down by default. 1 reverts to original behaviour.
 

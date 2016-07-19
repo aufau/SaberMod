@@ -1553,6 +1553,7 @@ extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
+extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_duelGlow;
 extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;
