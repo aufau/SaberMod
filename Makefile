@@ -122,7 +122,7 @@ FORCE	:
 
 # QVM Targets
 
-run_as = $(AS) $(ASFLAGS) -vq3 -o $@
+run_as = $(AS) $(ASFLAGS) -vq3 -m -o $@
 
 base/vm/jk2mpgame.qvm : $(asm_game) $(AS) | base/vm/
 	$(echo_cmd) "Q3ASM $@"
