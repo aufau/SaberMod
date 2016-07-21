@@ -2154,27 +2154,35 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 	float veclen;
 	gentity_t *te;
 
-	if (saberOwner && saberOwner->client && saberOwner->client->ps.saberAttackWound > level.time)
+	if (!ent->inuse || !ent->takedamage || ent->health <= 0 ||
+		ent->s.number == saberOwner->s.number)
 	{
 		return qfalse;
 	}
 
-	if (ent && ent->client && ent->inuse && ent->s.number != saberOwner->s.number &&
-		ent->health > 0 && ent->takedamage &&
-		trap_InPVS(ent->client->ps.origin, saberent->r.currentOrigin) &&
-		ent->client->sess.sessionTeam != TEAM_SPECTATOR &&
-		ent->client->pers.connected)
+	if (saberOwner->client->ps.saberAttackWound > level.time)
+	{
+		return qfalse;
+	}
+
+	if (ent->client)
 	{ //hit a client
-		if (ent->inuse && ent->client &&
-			ent->client->ps.duelInProgress &&
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+			ent->client->pers.connected != CON_CONNECTED)
+		{
+			return qfalse;
+		}
+		if (ent->client->ps.duelInProgress &&
 			ent->client->ps.duelIndex != saberOwner->s.number)
 		{
 			return qfalse;
 		}
-
-		if (ent->inuse && ent->client &&
-			saberOwner->client->ps.duelInProgress &&
+		if (saberOwner->client->ps.duelInProgress &&
 			saberOwner->client->ps.duelIndex != ent->s.number)
+		{
+			return qfalse;
+		}
+		if (!trap_InPVS(ent->client->ps.origin, saberent->r.currentOrigin))
 		{
 			return qfalse;
 		}
@@ -2249,12 +2257,17 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 				}
 
 				saberOwner->client->ps.saberAttackWound = level.time + 500;
+				return qtrue;
 			}
 		}
 	}
-	else if (ent && !ent->client && ent->inuse && ent->takedamage && ent->health > 0 && ent->s.number != saberOwner->s.number &&
-		ent->s.number != saberent->s.number && trap_InPVS(ent->r.currentOrigin, saberent->r.currentOrigin))
+	else if (ent->s.number != saberent->s.number)
 	{ //hit a non-client
+		if (!trap_InPVS(ent->r.currentOrigin, saberent->r.currentOrigin))
+		{
+			return qfalse;
+		}
+
 		VectorSubtract(saberent->r.currentOrigin, ent->r.currentOrigin, vecsub);
 		veclen = VectorLength(vecsub);
 
@@ -2296,17 +2309,18 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 				}
 
 				saberOwner->client->ps.saberAttackWound = level.time + 500;
+				return qtrue;
 			}
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 { //we're going to cheat and damage players within the saber's radius, just for the sake of doing things more "efficiently" (and because the saber entity has no server g2 instance)
-	int i = 0;
-	int dist = 0;
+	int i;
+	int dist;
 	gentity_t *ent;
 	gentity_t *saberOwner = &g_entities[saberent->r.ownerNum];
 
@@ -2329,13 +2343,18 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 		return;
 	}
 
-	while (i < MAX_GENTITIES)
+	// perhaps trap_EntitiesInBox would be faster (it takes max/min into account though)
+	for (i = 0; i < level.num_entities; i++)
 	{
 		ent = &g_entities[i];
 
-		CheckThrownSaberDamaged(saberent, saberOwner, ent, dist, returning);
+		// few conditions from CheckThrownSaberDamaged for optimization
+		if (!ent->inuse || !ent->takedamage || ent->health <= 0)
+		{
+			continue;
+		}
 
-		i++;
+		CheckThrownSaberDamaged(saberent, saberOwner, ent, dist, returning);
 	}
 }
 
