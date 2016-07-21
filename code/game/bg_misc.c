@@ -1557,41 +1557,29 @@ void BG_CycleInven(playerState_t *ps, int direction)
 	i = bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag;
 	original = i;
 
-	if (direction == 1)
-	{ //next
-		i++;
-	}
-	else
-	{ //previous
-		i--;
+	// Don't go into endless loop
+	if (original < HI_NONE || HI_NUM_HOLDABLE <= original) {
+		Com_Error( ERR_DROP, "BG_CycleInven: item index out of range" );
 	}
 
-	while (i != original)
-	{ //go in a full loop until hitting something, if hit nothing then select nothing
+	do { //go in a full loop until hitting something, if hit nothing then select nothing
+		i += direction;
+
+		if (i < HI_NONE)
+		{ //wrap around to the last
+			i = HI_NUM_HOLDABLE - 1;
+		}
+		else if (i >= HI_NUM_HOLDABLE)
+		{ //wrap around to the first
+			i = HI_NONE;
+		}
+
 		if (ps->stats[STAT_HOLDABLE_ITEMS] & (1 << i))
 		{ //we have it, select it.
 			ps->stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(i, IT_HOLDABLE);
 			break;
 		}
-
-		if (direction == 1)
-		{ //next
-			i++;
-		}
-		else
-		{ //previous
-			i--;
-		}
-
-		if (i < 0)
-		{ //wrap around to the last
-			i = HI_NUM_HOLDABLE;
-		}
-		else if (i >= HI_NUM_HOLDABLE)
-		{ //wrap around to the first
-			i = 0;
-		}
-	}
+	} while (i != original);
 }
 
 /*
