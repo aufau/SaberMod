@@ -2205,8 +2205,8 @@ static void CG_DrawUpperRight( void ) {
 CG_DrawReward
 ===================
 */
-#ifdef JK2AWARDS
 static void CG_DrawReward( void ) {
+#ifdef JK2AWARDS
 	float	*color;
 	int		i, count;
 	float	x, y;
@@ -2271,8 +2271,8 @@ static void CG_DrawReward( void ) {
 		}
 	}
 	trap_R_SetColor( NULL );
-}
 #endif
+}
 
 
 /*
@@ -4410,7 +4410,7 @@ static void CG_Draw2D( void ) {
 			}
 
 			//Do we want to use this system again at some point?
-			//CG_DrawReward();
+			CG_DrawReward();
 		}
 
 	}

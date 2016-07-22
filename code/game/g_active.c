@@ -1113,7 +1113,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// clear the rewards if time
 	if ( level.time > client->rewardTime ) {
-		client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		client->ps.eFlags &= ~EF_AWARDS;
 	}
 
 	if ( client->noclip ) {

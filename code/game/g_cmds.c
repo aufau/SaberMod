@@ -462,22 +462,52 @@ void Cmd_Give_f (gentity_t *ent)
 
 	if (Q_stricmp(name, "excellent") == 0) {
 		ent->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_EXCELLENT;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "impressive") == 0) {
 		ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
-	if (Q_stricmp(name, "gauntletaward") == 0) {
+	if (Q_stricmp(name, "gauntletaward") == 0 ||
+		Q_stricmp(name, "humiliation") == 0) {
 		ent->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_GAUNTLET;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		return;
+	}
+	if (Q_stricmp(name, "denied") == 0) {
+		ent->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
+		ent->s.eFlags &= ~EF_AWARDS;
+		ent->s.eFlags |= EF_AWARD_DENIED;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		return;
+	}
+	if (Q_stricmp(name, "capture") == 0) {
+		ent->client->ps.persistant[PERS_CAPTURES]++;
+		ent->s.eFlags &= ~EF_AWARDS;
+		ent->s.eFlags |= EF_AWARD_CAP;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "defend") == 0) {
 		ent->client->ps.persistant[PERS_DEFEND_COUNT]++;
+		ent->s.eFlags &= ~EF_AWARDS;
+		ent->s.eFlags |= EF_AWARD_DEFEND;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "assist") == 0) {
 		ent->client->ps.persistant[PERS_ASSIST_COUNT]++;
+		ent->s.eFlags &= ~EF_AWARDS;
+		ent->s.eFlags |= EF_AWARD_ASSIST;
+		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 

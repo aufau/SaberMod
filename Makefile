@@ -13,7 +13,7 @@ tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
 CFLAGS		= -g -fvisibility=hidden
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
-DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME
+DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME -DJK2AWARDS
 VERSION		= $(shell git describe --always --tags --dirty)
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC

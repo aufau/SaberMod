@@ -3213,47 +3213,76 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
 		return;
 	}
-/*
-	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_DEFEND ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalDefend );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_ASSIST ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalAssist );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_CAP ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
-		return;
-	}
-
-	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-	if ( !(cent->currentState.eFlags & EF_DEAD) &&
-		cg.snap->ps.persistant[PERS_TEAM] == team &&
-		GT_Team(cgs.gametype)) {
-		if (cg_drawFriend.integer) {
-			CG_PlayerFloatSprite( cent, cgs.media.friendShader );
+#ifdef JK2AWARDS
+	// don't draw them over our own head, there is a reward queue
+	// for this in CG_CheckLocalSound
+	if ( cg_drawRewards.integer && cent->currentState.number != cg.snap->ps.clientNum) {
+		if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
+			return;
 		}
-		return;
+
+		if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_DEFEND ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalDefend );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_ASSIST ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalAssist );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_CAP ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
+			return;
+		}
 	}
-*/
+#endif
+	if (cg_drawFriend.integer && GT_Team(cgs.gametype) &&
+		cent->currentState.number != cg.snap->ps.clientNum)		// Don't show a sprite above a player's own head in 3rd person.
+	{
+		team = cgs.clientinfo[ cent->currentState.clientNum ].team;
+		if (!(cent->currentState.eFlags & EF_DEAD) &&
+			(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ||
+				cg.snap->ps.persistant[PERS_TEAM] == team))
+		{
+			if (team == TEAM_RED) {
+				CG_PlayerFloatSprite( cent, cgs.media.teamRedShader );
+			} else if (team == TEAM_BLUE) {
+				CG_PlayerFloatSprite( cent, cgs.media.teamBlueShader );
+			}
+			return;
+		}
+	}
+
+	if (cgs.gametype == GT_JEDIMASTER && cg_drawFriend.integer &&
+		cent->currentState.number != cg.snap->ps.clientNum)		// Don't show a sprite above a player's own head in 3rd person.
+	{
+		if (!(cent->currentState.eFlags & EF_DEAD))
+		{
+			if (CG_ThereIsAMaster())
+			{
+				if (!cg.snap->ps.isJediMaster)
+				{
+					if (!cent->currentState.isJediMaster)
+					{
+						CG_PlayerFloatSprite( cent, cgs.media.teamRedShader);
+						return;
+					}
+				}
+			}
+		}
+	}
 }
 
 /*
@@ -5999,44 +6028,6 @@ void CG_Player( centity_t *cent ) {
 	}
 
 // minimal_add:
-
-	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-
-	if (GT_Team(cgs.gametype) && cg_drawFriend.integer &&
-		cent->currentState.number != cg.snap->ps.clientNum)			// Don't show a sprite above a player's own head in 3rd person.
-	{	// If the view is either a spectator or on the same team as this character, show a symbol above their head.
-		if ((cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.snap->ps.persistant[PERS_TEAM] == team) &&
-			!(cent->currentState.eFlags & EF_DEAD))
-		{
-			if (team == TEAM_RED)
-			{
-				CG_PlayerFloatSprite( cent, cgs.media.teamRedShader);
-			}
-			else	// if (team == TEAM_BLUE)
-			{
-				CG_PlayerFloatSprite( cent, cgs.media.teamBlueShader);
-			}
-		}
-	}
-
-	if (cgs.gametype == GT_JEDIMASTER && cg_drawFriend.integer &&
-		cent->currentState.number != cg.snap->ps.clientNum)			// Don't show a sprite above a player's own head in 3rd person.
-	{	// If the view is either a spectator or on the same team as this character, show a symbol above their head.
-		if ((cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.snap->ps.persistant[PERS_TEAM] == team) &&
-			!(cent->currentState.eFlags & EF_DEAD))
-		{
-			if (CG_ThereIsAMaster())
-			{
-				if (!cg.snap->ps.isJediMaster)
-				{
-					if (!cent->currentState.isJediMaster)
-					{
-						CG_PlayerFloatSprite( cent, cgs.media.teamRedShader);
-					}
-				}
-			}
-		}
-	}
 
 	if (cent->isATST)
 	{

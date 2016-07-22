@@ -1073,10 +1073,6 @@ static void CG_RegisterSounds( void ) {
 	trap_S_RegisterSound("sound/weapons/force/grip.mp3"); //PDSOUND_FORCEGRIP
 
 	if ( GT_Team(cgs.gametype) || cg_buildScript.integer ) {
-
-#ifdef JK2AWARDS
-		cgs.media.captureAwardSound = trap_S_RegisterSound( "sound/teamplay/flagcapture_yourteam.wav" );
-#endif
 		cgs.media.redLeadsSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM046");
 		cgs.media.blueLeadsSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM045");
 		cgs.media.teamsTiedSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM032" );
@@ -1085,6 +1081,11 @@ static void CG_RegisterSounds( void ) {
 		cgs.media.blueScoredSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM043" );
 
 		if ( GT_Flag(cgs.gametype) || cg_buildScript.integer ) {
+#ifdef JK2AWARDS
+			cgs.media.assistSound = trap_S_RegisterSound( "sound/chars/protocol/misc/assist.mp3" );
+			cgs.media.captureSound = trap_S_RegisterSound( "sound/chars/protocol/misc/capture.mp3" );
+			cgs.media.defendSound = trap_S_RegisterSound( "sound/chars/protocol/misc/defense.mp3" );
+#endif
 			cgs.media.redFlagReturnedSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM042" );
 			cgs.media.blueFlagReturnedSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM041" );
 			cgs.media.redTookFlagSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM040" );
@@ -1124,11 +1125,10 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.crackleSound = trap_S_RegisterSound( "sound/effects/energy_crackle.wav" );
 #ifdef JK2AWARDS
-	cgs.media.impressiveSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM025" );
-	cgs.media.excellentSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM053" );
-	cgs.media.deniedSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM017" );
-	cgs.media.humiliationSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM019" );
-	cgs.media.defendSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM024" );
+	cgs.media.impressiveSound = trap_S_RegisterSound( "sound/chars/protocol/misc/impressive.mp3" );
+	cgs.media.excellentSound = trap_S_RegisterSound( "sound/chars/protocol/misc/excellent.mp3" );
+	cgs.media.deniedSound = trap_S_RegisterSound( "sound/chars/protocol/misc/denied.mp3" );
+	cgs.media.humiliationSound = trap_S_RegisterSound( "sound/chars/protocol/misc/humiliation.mp3" );
 #endif
 
 	cgs.media.takenLeadSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM051");
