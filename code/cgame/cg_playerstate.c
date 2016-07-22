@@ -275,13 +275,15 @@ pushReward
 ==================
 */
 #ifdef JK2AWARDS
-static void pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount) {
-	if (cg.rewardStack < (MAX_REWARDSTACK-1)) {
+static qboolean pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount) {
+	if ((sfx || shader) && cg.rewardStack < (MAX_REWARDSTACK-1)) {
 		cg.rewardStack++;
 		cg.rewardSound[cg.rewardStack] = sfx;
 		cg.rewardShader[cg.rewardStack] = shader;
 		cg.rewardCount[cg.rewardStack] = rewardCount;
+		return qtrue;
 	}
+	return qfalse;
 }
 #endif
 
@@ -325,53 +327,58 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	reward = qfalse;
 	if (ps->persistant[PERS_CAPTURES] != ops->persistant[PERS_CAPTURES]) {
 		sfx = cgs.media.captureSound;
-		pushReward(sfx, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]))
+			reward = qtrue;
 		//Com_Printf("capture\n");
 	}
 	if (ps->persistant[PERS_IMPRESSIVE_COUNT] != ops->persistant[PERS_IMPRESSIVE_COUNT]) {
 		sfx = cgs.media.impressiveSound;
-		pushReward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]))
+			reward = qtrue;
 		//Com_Printf("impressive\n");
 	}
 	if (ps->persistant[PERS_EXCELLENT_COUNT] != ops->persistant[PERS_EXCELLENT_COUNT]) {
 		sfx = cgs.media.excellentSound;
-		pushReward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]))
+			reward = qtrue;
 		//Com_Printf("excellent\n");
 	}
 	if (ps->persistant[PERS_GAUNTLET_FRAG_COUNT] != ops->persistant[PERS_GAUNTLET_FRAG_COUNT]) {
 		sfx = cgs.media.humiliationSound;
-		pushReward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]))
+			reward = qtrue;
 		//Com_Printf("guantlet frag\n");
 	}
 	if (ps->persistant[PERS_DEFEND_COUNT] != ops->persistant[PERS_DEFEND_COUNT]) {
 		sfx = cgs.media.defendSound;
-		pushReward(sfx, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]))
+			reward = qtrue;
 		//Com_Printf("defend\n");
 	}
 	if (ps->persistant[PERS_ASSIST_COUNT] != ops->persistant[PERS_ASSIST_COUNT]) {
 		sfx = cgs.media.assistSound;
-		pushReward(sfx, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]);
-		reward = qtrue;
+		if (pushReward(sfx, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]))
+			reward = qtrue;
 		//Com_Printf("assist\n");
 	}
 	// if any of the player event bits changed
 	if (ps->persistant[PERS_PLAYEREVENTS] != ops->persistant[PERS_PLAYEREVENTS]) {
 		if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD) !=
-				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
-			trap_S_StartLocalSound( cgs.media.deniedSound, CHAN_ANNOUNCER );
+			(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
+			if ( cgs.media.deniedSound ) {
+				trap_S_StartLocalSound( cgs.media.deniedSound, CHAN_ANNOUNCER );
+				reward = qtrue;
+			}
 		}
 		/*
 		else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD) !=
 				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD)) {
-			trap_S_StartLocalSound( cgs.media.humiliationSound, CHAN_ANNOUNCER );
+			if ( cgs.media.humiliationSound ) {
+				trap_S_StartLocalSound( cgs.media.humiliationSound, CHAN_ANNOUNCER );
+				reward = qtrue;
+			}
 		}
 		*/
-		reward = qtrue;
 	}
 #else
 	reward = qfalse;

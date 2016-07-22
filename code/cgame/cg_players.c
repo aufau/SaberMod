@@ -3183,6 +3183,25 @@ static void CG_PlayerFloatSpriteRGBA( centity_t *cent, qhandle_t shader, vec4_t 
 }
 #endif
 
+qboolean CG_ThereIsAMaster(void)
+{
+	int i = 0;
+	centity_t *cent;
+
+	while (i < MAX_CLIENTS)
+	{
+		cent = &cg_entities[i];
+
+		if (cent && cent->currentState.isJediMaster)
+		{
+			return qtrue;
+		}
+
+		i++;
+	}
+
+	return qfalse;
+}
 
 /*
 ===============
@@ -3192,7 +3211,7 @@ Float sprites over the player's head
 ===============
 */
 static void CG_PlayerSprites( centity_t *cent ) {
-//	int		team;
+	int		team;
 
 	if (cg.snap &&
 		CG_IsMindTricked(cent->currentState.trickedentindex,
@@ -3216,33 +3235,45 @@ static void CG_PlayerSprites( centity_t *cent ) {
 #ifdef JK2AWARDS
 	if ( cg_drawRewards.integer ) {
 		if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-			return;
+			if ( cgs.media.medalImpressive ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
+				return;
+			}
 		}
 
 		if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
-			return;
+			if ( cgs.media.medalExcellent ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
+				return;
+			}
 		}
 
 		if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
-			return;
+			if ( cgs.media.medalGauntlet ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
+				return;
+			}
 		}
 
 		if ( cent->currentState.eFlags & EF_AWARD_DEFEND ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalDefend );
-			return;
+			if ( cgs.media.medalDefend ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalDefend );
+				return;
+			}
 		}
 
 		if ( cent->currentState.eFlags & EF_AWARD_ASSIST ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalAssist );
-			return;
+			if ( cgs.media.medalAssist ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalAssist );
+				return;
+			}
 		}
 
 		if ( cent->currentState.eFlags & EF_AWARD_CAP ) {
-			CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
-			return;
+			if ( cgs.media.medalCapture ) {
+				CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
+				return;
+			}
 		}
 	}
 #endif
@@ -4733,26 +4764,6 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 
 extern char *forceHolocronModels[];
 
-qboolean CG_ThereIsAMaster(void)
-{
-	int i = 0;
-	centity_t *cent;
-
-	while (i < MAX_CLIENTS)
-	{
-		cent = &cg_entities[i];
-
-		if (cent && cent->currentState.isJediMaster)
-		{
-			return qtrue;
-		}
-
-		i++;
-	}
-
-	return qfalse;
-}
-
 //rww - here begins the majority of my g2animent stuff.
 void CG_FootStepGeneric(centity_t *cent, int anim)
 {
@@ -5788,7 +5799,6 @@ void CG_Player( centity_t *cent ) {
 	float			angle;
 	vec3_t			angles, dir, elevated, enang, seekorg;
 	int				iwantout = 0, successchange = 0;
-	int				team;
 	float			prefig = 0;
 	centity_t		*enent;
 	mdxaBone_t 		boltMatrix, lHandMatrix;
