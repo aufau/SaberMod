@@ -2233,6 +2233,11 @@ static void CG_DrawReward( void ) {
 		}
 	}
 
+	// play sound only
+	if ( !cg.rewardShader[0] ) {
+		return;
+	}
+
 	trap_R_SetColor( color );
 
 	/*
