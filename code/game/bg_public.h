@@ -379,6 +379,7 @@ typedef enum {
 #define	EF_AWARD_DEFEND		0x00010000		// draw a defend sprite
 #define	EF_AWARD_ASSIST		0x00020000		// draw a assist sprite
 #define EF_AWARD_DENIED		0x00040000		// denied
+#define EF_AWARDS			0x00078000		// sum of all awards for clearing
 
 #define EF_TEAMVOTED		0x00080000		// already cast a team vote
 #define EF_SEEKERDRONE		0x00100000		// show seeker drone floating around head

@@ -1102,7 +1102,6 @@ typedef struct {
 	sfxHandle_t excellentSound;
 	sfxHandle_t deniedSound;
 	sfxHandle_t humiliationSound;
-	sfxHandle_t defendSound;
 #endif
 
 	sfxHandle_t takenLeadSound;
@@ -1119,15 +1118,16 @@ typedef struct {
 	sfxHandle_t medkitSound;
 
 	// teamplay sounds
-#ifdef JK2AWARDS
-	sfxHandle_t captureAwardSound;
-#endif
 	sfxHandle_t redScoredSound;
 	sfxHandle_t blueScoredSound;
 	sfxHandle_t redLeadsSound;
 	sfxHandle_t blueLeadsSound;
 	sfxHandle_t teamsTiedSound;
-
+#ifdef JK2AWARDS
+	sfxHandle_t	assistSound;
+	sfxHandle_t captureSound;
+	sfxHandle_t defendSound;
+#endif
 	sfxHandle_t redFlagReturnedSound;
 	sfxHandle_t blueFlagReturnedSound;
 	sfxHandle_t	redTookFlagSound;

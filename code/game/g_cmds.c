@@ -468,8 +468,17 @@ void Cmd_Give_f (gentity_t *ent)
 		ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
 		return;
 	}
-	if (Q_stricmp(name, "gauntletaward") == 0) {
+	if (Q_stricmp(name, "gauntletaward") == 0 ||
+		Q_stricmp(name, "humiliation") == 0) {
 		ent->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+		return;
+	}
+	if (Q_stricmp(name, "denied") == 0) {
+		ent->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
+		return;
+	}
+	if (Q_stricmp(name, "capture") == 0) {
+		ent->client->ps.persistant[PERS_CAPTURES]++;
 		return;
 	}
 	if (Q_stricmp(name, "defend") == 0) {
