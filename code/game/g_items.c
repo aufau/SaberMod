@@ -206,13 +206,9 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if (GT_Team(g_gametype.integer))
 	{ // let teammates through
-		// compare the parent's team to the "other's" team
-		if (self->parent && ( self->parent->client) && (other->client))
+		if (self->s.teamowner == other->client->sess.sessionTeam)
 		{
-			if (OnSameTeam(self->parent, other))
-			{
-				ShieldGoNotSolid(self);
-			}
+			ShieldGoNotSolid(self);
 		}
 	}
 	else
@@ -229,7 +225,7 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 void CreateShield(gentity_t *ent)
 {
 	trace_t		tr;
-	vec3_t		mins, maxs, end, posTraceEnd, negTraceEnd, start;
+	vec3_t		end, posTraceEnd, negTraceEnd, start;
 	int			height, posWidth, negWidth, halfWidth = 0;
 	qboolean	xaxis;
 	int			paramData = 0;
@@ -241,8 +237,6 @@ void CreateShield(gentity_t *ent)
 	height = (int)(MAX_SHIELD_HEIGHT * tr.fraction);
 
 	// use angles to find the proper axis along which to align the shield
-	VectorSet(mins, -SHIELD_HALFTHICKNESS, -SHIELD_HALFTHICKNESS, 0);
-	VectorSet(maxs, SHIELD_HALFTHICKNESS, SHIELD_HALFTHICKNESS, height);
 	VectorCopy(ent->r.currentOrigin, posTraceEnd);
 	VectorCopy(ent->r.currentOrigin, negTraceEnd);
 
@@ -290,7 +284,7 @@ void CreateShield(gentity_t *ent)
 	else
 	{
 		VectorSet(ent->r.mins, -SHIELD_HALFTHICKNESS, -halfWidth, -(height>>1));
-		VectorSet(ent->r.maxs, SHIELD_HALFTHICKNESS, halfWidth, height);
+		VectorSet(ent->r.maxs, SHIELD_HALFTHICKNESS, halfWidth, height>>1);
 	}
 	ent->clipmask = MASK_SHOT;
 
@@ -389,9 +383,6 @@ qboolean PlaceShield(gentity_t *playerent)
 			shield->think = CreateShield;
 			shield->nextthink = level.time + 500;	// power up after .5 seconds
 			shield->parent = playerent;
-
-			// Set team number.
-			shield->s.otherEntityNum2 = playerent->client->sess.sessionTeam;
 
 			shield->s.eType = ET_SPECIAL;
 			shield->s.modelindex =  HI_SHIELD;	// this'll be used in CG_Useable() for rendering.
