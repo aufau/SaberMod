@@ -235,7 +235,7 @@ void FX_DrawPortableShield(centity_t *cent)
 	posWidth = ((cent->currentState.time2 >> 8) & 255);
 	negWidth = (cent->currentState.time2 & 255);
 
-	team = (cent->currentState.otherEntityNum2);
+	team = cent->currentState.teamowner;
 
 	VectorClear(normal);
 
