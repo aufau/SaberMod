@@ -242,6 +242,9 @@ typedef struct centity_s {
 
 	int				teamPowerEffectTime;
 	teamForcePower_t	teamPowerType;
+
+	vec3_t			mins;
+	vec3_t			maxs;
 } centity_t;
 
 

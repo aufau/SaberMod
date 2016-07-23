@@ -49,6 +49,38 @@ void CG_BuildSolidList( void ) {
 		}
 
 		if ( cent->nextState.solid ) {
+			// pre-calculate bbox mins/maxs
+			if ( cent->nextState.eType == ET_SPECIAL &&
+				cent->nextState.modelindex == HI_SHIELD &&
+				cent->nextState.time2)
+			{
+				// special case(s) for non-symmetric bbox
+				int solid = cent->nextState.time2;
+				qboolean xaxis = (solid >> 24) & 1;
+				int height = (solid >> 16) & 255;
+				int posWidth = (solid >> 8) & 255;
+				int negWidth = solid & 255;
+
+				if (xaxis) {
+					VectorSet( cent->mins, -negWidth, -SHIELD_HALFTHICKNESS, 0 );
+					VectorSet( cent->maxs, posWidth, SHIELD_HALFTHICKNESS, height );
+				} else {
+					VectorSet( cent->mins, -SHIELD_HALFTHICKNESS, -negWidth, 0 );
+					VectorSet( cent->maxs, SHIELD_HALFTHICKNESS, posWidth, height );
+				}
+			}
+			else if ( cent->nextState.solid != SOLID_BMODEL )
+			{
+				// encoded bbox
+				int solid = cent->nextState.solid;
+				int x = solid & 255;
+				int zd = (solid >> 8) & 255;
+				int zu = ((solid >> 16) & 255) - 32;
+
+				VectorSet( cent->mins, -x, -x, -zd );
+				VectorSet( cent->maxs, x, x, zu );
+			}
+
 			cg_solidEntities[cg_numSolidEntities] = cent;
 			cg_numSolidEntities++;
 			continue;
@@ -64,11 +96,10 @@ CG_ClipMoveToEntities
 */
 static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 							int skipNumber, int mask, trace_t *tr ) {
-	int			i, x, zd, zu;
+	int			i;
 	trace_t		trace;
 	entityState_t	*ent;
 	clipHandle_t 	cmodel;
-	vec3_t		bmins, bmaxs;
 	vec3_t		origin, angles;
 	centity_t	*cent;
 
@@ -91,40 +122,7 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 			VectorCopy( cent->lerpAngles, angles );
 			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
 		} else {
-			// calculate mins/maxs
-			if ( cent->currentState.eType == ET_SPECIAL &&
-				cent->currentState.modelindex == HI_SHIELD &&
-				cent->currentState.time2)
-			{
-				// special case for forcefield's non-symmetric bbox
-				int	solid = cent->currentState.time2;
-				qboolean xaxis = (solid >> 24) & 1;
-				int height = (solid >> 16) & 255;
-				int posWidth = (solid >> 8) & 255;
-				int negWidth = solid & 255;
-
-				if (xaxis) {
-					VectorSet( bmins, negWidth, -SHIELD_HALFTHICKNESS, 0 );
-					VectorSet( bmaxs, posWidth, SHIELD_HALFTHICKNESS, height );
-				} else {
-					VectorSet( bmins, -SHIELD_HALFTHICKNESS, negWidth, 0 );
-					VectorSet( bmaxs, SHIELD_HALFTHICKNESS, posWidth, height );
-				}
-			}
-			else
-			{
-				// encoded bbox
-				x = (ent->solid & 255);
-				zd = ((ent->solid>>8) & 255);
-				zu = ((ent->solid>>16) & 255) - 32;
-
-				bmins[0] = bmins[1] = -x;
-				bmaxs[0] = bmaxs[1] = x;
-				bmins[2] = -zd;
-				bmaxs[2] = zu;
-			}
-
-			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
+			cmodel = trap_CM_TempBoxModel( cent->mins, cent->maxs );
 			VectorCopy( vec3_origin, angles );
 			VectorCopy( cent->lerpOrigin, origin );
 		}
