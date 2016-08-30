@@ -214,20 +214,25 @@ static void CG_StepOffset( void ) {
 	}
 }
 
-#define CAMERA_DAMP_INTERVAL	50
+static const vec3_t	cameramins = { -CAMERA_SIZE, -CAMERA_SIZE, -CAMERA_SIZE };
+static const vec3_t	cameramaxs = { CAMERA_SIZE, CAMERA_SIZE, CAMERA_SIZE };
 
-static vec3_t	cameramins = { -CAMERA_SIZE, -CAMERA_SIZE, -CAMERA_SIZE };
-static vec3_t	cameramaxs = { CAMERA_SIZE, CAMERA_SIZE, CAMERA_SIZE };
-vec3_t	camerafwd, cameraup;
+typedef struct dampPos_s {
+	vec3_t	ideal;		// ideal location
+	vec3_t	prevIdeal;
+	vec3_t	damp;		// position = ideal + damp
+} dampPos_t;
 
-vec3_t	cameraFocusAngles,			cameraFocusLoc;
-vec3_t	cameraIdealTarget,			cameraIdealLoc;
-vec3_t	cameraCurTarget={0,0,0},	cameraCurLoc={0,0,0};
-vec3_t	cameraOldLoc={0,0,0},		cameraNewLoc={0,0,0};
-double	cameraLastFrame=0.0;
-
-float	cameraLastYaw=0;
-float	cameraStiffFactor=0.0f;
+static struct {
+	dampPos_t	target;
+	dampPos_t	loc;
+	vec3_t		fwd;
+	vec3_t		focus;
+	vec3_t		focusAngles;
+	float		lastYaw;
+	float		stiffFactor;
+	double		lastTime;
+} cam;
 
 /*
 ===============
@@ -264,23 +269,23 @@ static void CG_CalcIdealThirdPersonViewTarget(void)
 	// Initialize IdealTarget
 	if (gCGHasFallVector)
 	{
-		VectorCopy(gCGFallVector, cameraFocusLoc);
+		VectorCopy(gCGFallVector, cam.focus);
 	}
 	else
 	{
-		VectorCopy(cg.refdef.vieworg, cameraFocusLoc);
+		VectorCopy(cg.refdef.vieworg, cam.focus);
 	}
 
 	// Add in the new viewheight
-	cameraFocusLoc[2] += cg.snap->ps.viewheight;
+	cam.focus[2] += cg.snap->ps.viewheight;
 
 	// Add in a vertical offset from the viewpoint, which puts the actual target above the head, regardless of angle.
-//	VectorMA(cameraFocusLoc, thirdPersonVertOffset, cameraup, cameraIdealTarget);
+//	VectorMA(cam.focus, thirdPersonVertOffset, cameraup, cam.target.ideal);
 
 	// Add in a vertical offset from the viewpoint, which puts the actual target above the head, regardless of angle.
-	VectorCopy( cameraFocusLoc, cameraIdealTarget );
-	cameraIdealTarget[2] += cg_thirdPersonVertOffset.value;
-	//VectorMA(cameraFocusLoc, cg_thirdPersonVertOffset.value, cameraup, cameraIdealTarget);
+	VectorCopy( cam.focus, cam.target.ideal );
+	cam.target.ideal[2] += cg_thirdPersonVertOffset.value;
+	//VectorMA(cam.focus, cg_thirdPersonVertOffset.value, cameraup, cam.target.ideal);
 }
 
 
@@ -300,7 +305,7 @@ static void CG_CalcIdealThirdPersonViewLocation(void)
 		thirdPersonRange = 300;
 	}
 
-	VectorMA(cameraIdealTarget, -(thirdPersonRange), camerafwd, cameraIdealLoc);
+	VectorMA(cam.target.ideal, -(thirdPersonRange), cam.fwd, cam.loc.ideal);
 }
 
 
@@ -308,134 +313,136 @@ static void CG_CalcIdealThirdPersonViewLocation(void)
 static void CG_ResetThirdPersonViewDamp(void)
 {
 	trace_t trace;
+	vec3_t	target;
 
 	// Cap the pitch within reasonable limits
-	if (cameraFocusAngles[PITCH] > 89.0)
+	if (cam.focusAngles[PITCH] > 89.0)
 	{
-		cameraFocusAngles[PITCH] = 89.0;
+		cam.focusAngles[PITCH] = 89.0;
 	}
-	else if (cameraFocusAngles[PITCH] < -89.0)
+	else if (cam.focusAngles[PITCH] < -89.0)
 	{
-		cameraFocusAngles[PITCH] = -89.0;
+		cam.focusAngles[PITCH] = -89.0;
 	}
 
-	AngleVectors(cameraFocusAngles, camerafwd, NULL, cameraup);
+	AngleVectors(cam.focusAngles, cam.fwd, NULL, NULL);
 
-	// Set the cameraIdealTarget
+	// Set the cam.target.ideal
 	CG_CalcIdealThirdPersonViewTarget();
 
-	// Set the cameraIdealLoc
+	// Set the cam.loc.ideal
 	CG_CalcIdealThirdPersonViewLocation();
 
 	// Now, we just set everything to the new positions.
-	VectorCopy(cameraIdealLoc, cameraCurLoc);
-	VectorCopy(cameraIdealTarget, cameraCurTarget);
+	VectorClear(cam.loc.damp);
+	VectorClear(cam.target.damp);
+	VectorCopy(cam.loc.ideal, cam.loc.prevIdeal);
+	VectorCopy(cam.target.ideal, cam.target.prevIdeal);
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
-	CG_Trace(&trace, cameraFocusLoc, cameramins, cameramaxs, cameraCurTarget, cg.snap->ps.clientNum, MASK_CAMERACLIP);
+	CG_Trace(&trace, cam.focus, cameramins, cameramaxs, cam.target.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
 	if (trace.fraction <= 1.0)
 	{
-		VectorCopy(trace.endpos, cameraCurTarget);
+		VectorSubtract(trace.endpos, cam.target.ideal, cam.target.damp);
 	}
+
+	VectorAdd(cam.target.ideal, cam.target.damp, target);
 
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
-	CG_Trace(&trace, cameraCurTarget, cameramins, cameramaxs, cameraCurLoc, cg.snap->ps.clientNum, MASK_CAMERACLIP);
+	CG_Trace(&trace, target, cameramins, cameramaxs, cam.loc.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
 	if (trace.fraction <= 1.0)
 	{
-		VectorCopy(trace.endpos, cameraCurLoc);
+		VectorSubtract(trace.endpos, cam.loc.ideal, cam.loc.damp);
 	}
 
-	cameraLastFrame = cg.playerPhysicsTime;
-	cameraLastYaw = cameraFocusAngles[YAW];
-	cameraStiffFactor = 0.0f;
+	cam.lastTime = cg.playerPhysicsTime;
+	cam.lastYaw = cam.focusAngles[YAW];
+	cam.stiffFactor = 0.0f;
+}
+
+static void CG_DampPosition(dampPos_t *pos, float dampfactor, float physicstime)
+{
+	vec3_t idealDelta;
+
+	VectorSubtract(pos->ideal, pos->prevIdeal, idealDelta);
+
+	if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
+	{
+		// FPS-independent solution thanks to semigroup property:
+		// If t1, t2 are positive physicstime periods and
+		// dampfactor, velocity don't change
+		// damp_(t1 + t2)(pos) = damp_t1(damp_t2(pos))
+
+		// if physicstime == simulationtime (stable framerate equal to
+		// cg_camerafps) result is the same as in original code.
+		vec3_t	velocity;
+		vec3_t	shift;
+		float	dtime;
+		float	invdtime;
+		float	timeadjfactor;
+		float	codampfactor;
+		float	simulationtime;
+
+		// Use physicstime to get average velocity
+		if (physicstime == 0.0f)
+			return;
+		// save previous ideal position only when it changes
+		VectorCopy(pos->ideal, pos->prevIdeal);
+		simulationtime = 1000.0f / cg_camerafps.integer;
+		dtime = physicstime / simulationtime;
+		invdtime = simulationtime / physicstime;
+		timeadjfactor = powf(dampfactor, dtime);
+		// velocity is in units / simulated frame time
+		VectorScale(idealDelta, invdtime, velocity);
+		// shift = velocity * dampfactor / (1 - dampfactor)
+		codampfactor = dampfactor / (1.0f - dampfactor);
+		VectorScale(velocity, codampfactor, shift);
+		// damp(dtime) = dampfactor^dtime * (damp(0) + shift) - shift
+		pos->damp[0] = timeadjfactor * (pos->damp[0] + shift[0]) - shift[0];
+		pos->damp[1] = timeadjfactor * (pos->damp[1] + shift[1]) - shift[1];
+		pos->damp[2] = timeadjfactor * (pos->damp[2] + shift[2]) - shift[2];
+	}
+	else
+	{
+		// original:
+		// idealDelta_n = ideal_n+1 - ideal_n
+		// damp_n+1 = dampfactor * (damp_n - idealDelta_n)
+		VectorCopy(pos->ideal, pos->prevIdeal);
+		VectorSubtract(pos->damp, idealDelta, pos->damp);
+		VectorScale(pos->damp, dampfactor, pos->damp);
+	}
 }
 
 // This is called every frame.
 static void CG_UpdateThirdPersonTargetDamp(void)
 {
 	trace_t trace;
-	vec3_t	targetdiff;
-	vec3_t	oldDelta;
-	vec3_t	idealDelta;
-	float	dampfactor, dtime, ratio;
+	vec3_t	target;
+	float	dampfactor;
 
-	VectorSubtract(cameraCurTarget, cameraIdealTarget, oldDelta);
-	VectorCopy(cameraIdealTarget, idealDelta);
-
-	// Set the cameraIdealTarget
+	// Set the cam.target.ideal
 	// Automatically get the ideal target, to avoid jittering.
 	CG_CalcIdealThirdPersonViewTarget();
 
-	VectorSubtract(cameraIdealTarget, idealDelta, idealDelta);
-
 	if (cg_thirdPersonTargetDamp.value>=1.0)
 	{	// No damping.
-		VectorCopy(cameraIdealTarget, cameraCurTarget);
+		VectorClear(cam.target.damp);
 	}
 	else if (cg_thirdPersonTargetDamp.value>=0.0)
 	{
 		dampfactor = 1.0-cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
 
-		if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
-		{
-			vec3_t	newDelta;
-			vec3_t	velocity;
-			vec3_t	shift;
-			float	invdtime;
-			float	timeadjfactor;
-			float	codampfactor;
-			int		simulationtime;
-			float	physicstime;
-
-			// use physics time to get a real velocity
-			physicstime = cg.playerPhysicsTime - cameraLastFrame;
-			if (physicstime == 0.0f)
-				return;
-			simulationtime = 1000 / cg_camerafps.integer;
-			dtime = physicstime / simulationtime;
-			invdtime = simulationtime / physicstime;
-			timeadjfactor = powf(dampfactor, dtime);
-			// velocity is in units / simulated frame time
-			VectorScale(idealDelta, invdtime, velocity);
-			// shift = velocity * dampfactor / (1 - dampfactor)
-			codampfactor = dampfactor / (1.0f - dampfactor);
-			VectorScale(velocity, codampfactor, shift);
-			// delta(dtime) = dampfactor^dtime * (delta(0) + shift) - shift
-			newDelta[0] = timeadjfactor * (oldDelta[0] + shift[0]) - shift[0];
-			newDelta[1] = timeadjfactor * (oldDelta[1] + shift[1]) - shift[1];
-			newDelta[2] = timeadjfactor * (oldDelta[2] + shift[2]) - shift[2];
-
-			VectorAdd(cameraIdealTarget, newDelta, cameraCurTarget);
-		}
-		else
-		{
-			// Calculate the difference from the current position to the new one.
-			VectorSubtract(cameraIdealTarget, cameraCurTarget, targetdiff);
-
-			// Now we calculate how much of the difference we cover in the time allotted.
-			// The equation is (Damp)^(time)
-
-			// Note that since there are a finite number of "practical" delta millisecond values possible,
-			// the ratio should be initialized into a chart ultimately.
-			// dtime = (float)(cg.time-cameraLastFrame) * (1.0/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
-			// ratio = powi(dampfactor, dtime);
-
-			// fau - and this is how original powi really worked in mp
-			ratio = dampfactor;
-
-			// This value is how much distance is "left" from the ideal.
-			VectorMA(cameraIdealTarget, -ratio, targetdiff, cameraCurTarget);
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		}
+		CG_DampPosition(&cam.target, dampfactor, cg.playerPhysicsTime - cam.lastTime);
 	}
 
 	// Now we trace to see if the new location is cool or not.
+	VectorAdd(cam.target.ideal, cam.target.damp, target);
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
-	CG_Trace(&trace, cameraFocusLoc, cameramins, cameramaxs, cameraCurTarget, cg.snap->ps.clientNum, MASK_CAMERACLIP);
+	CG_Trace(&trace, cam.focus, cameramins, cameramaxs, target, cg.snap->ps.clientNum, MASK_CAMERACLIP);
 	if (trace.fraction < 1.0)
 	{
-		VectorCopy(trace.endpos, cameraCurTarget);
+		VectorSubtract(trace.endpos, cam.target.ideal, cam.target.damp);
 	}
 
 	// Note that previously there was an upper limit to the number of physics traces that are done through the world
@@ -448,18 +455,11 @@ static void CG_UpdateThirdPersonTargetDamp(void)
 static void CG_UpdateThirdPersonCameraDamp(void)
 {
 	trace_t trace;
-	vec3_t	locdiff;
-	vec3_t	oldDelta;
-	vec3_t	idealDelta;
-	float dampfactor, dtime, ratio;
+	vec3_t	location, target;
+	float	dampfactor;
 
-	VectorSubtract(cameraCurLoc, cameraIdealLoc, oldDelta);
-	VectorCopy(cameraIdealLoc, idealDelta);
-
-	// Set the cameraIdealLoc
+	// Set the cam.loc.ideal
 	CG_CalcIdealThirdPersonViewLocation();
-
-	VectorSubtract(cameraIdealLoc, idealDelta, idealDelta);
 
 	// First thing we do is calculate the appropriate damping factor for the camera.
 	dampfactor=0.0;
@@ -468,7 +468,7 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 		double pitch;
 
 		// Note that the camera pitch has already been capped off to 89.
-		pitch = Q_fabs(cameraFocusAngles[PITCH]);
+		pitch = Q_fabs(cam.focusAngles[PITCH]);
 
 		// The higher the pitch, the larger the factor, so as you look up, it damps a lot less.
 		pitch /= 89.0;
@@ -477,79 +477,32 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 		dampfactor += cg_thirdPersonCameraDamp.value;
 
 		// Now we also multiply in the stiff factor, so that faster yaw changes are stiffer.
-		if (cameraStiffFactor > 0.0f)
-		{	// The cameraStiffFactor is how much of the remaining damp below 1 should be shaved off, i.e. approach 1 as stiffening increases.
-			dampfactor += (1.0-dampfactor)*cameraStiffFactor;
+		if (cam.stiffFactor > 0.0f)
+		{	// The cam.stiffFactor is how much of the remaining damp below 1 should be shaved off, i.e. approach 1 as stiffening increases.
+			dampfactor += (1.0-dampfactor)*cam.stiffFactor;
 		}
 	}
 
 	if (dampfactor>=1.0)
 	{	// No damping.
-		VectorCopy(cameraIdealLoc, cameraCurLoc);
+		VectorClear(cam.loc.damp);
 	}
 	else if (dampfactor>=0.0)
 	{
 		dampfactor = 1.0-dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
 
-		if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
-		{
-			vec3_t	newDelta;
-			vec3_t	velocity;
-			vec3_t	shift;
-			float	invdtime;
-			float	timeadjfactor;
-			float	codampfactor;
-			int		simulationtime;
-			float	physicstime;
-
-			// use physics time to get a real velocity
-			physicstime = cg.playerPhysicsTime - cameraLastFrame;
-			if (physicstime == 0.0f)
-				return;
-			simulationtime = 1000 / cg_camerafps.integer;
-			dtime = physicstime / simulationtime;
-			invdtime = simulationtime / physicstime;
-			timeadjfactor = powf(dampfactor, dtime);
-			// velocity is in units / simulated frame time
-			VectorScale(idealDelta, invdtime, velocity);
-			// shift = velocity * dampfactor / (1 - dampfactor)
-			codampfactor = dampfactor / (1.0f - dampfactor);
-			VectorScale(velocity, codampfactor, shift);
-			// delta(dtime) = dampfactor^dtime * (delta(0) + shift) - shift
-			newDelta[0] = timeadjfactor * (oldDelta[0] + shift[0]) - shift[0];
-			newDelta[1] = timeadjfactor * (oldDelta[1] + shift[1]) - shift[1];
-			newDelta[2] = timeadjfactor * (oldDelta[2] + shift[2]) - shift[2];
-
-			VectorAdd(cameraIdealLoc, newDelta, cameraCurLoc);
-		}
-		else
-		{
-			// Calculate the difference from the current position to the new one.
-			VectorSubtract(cameraIdealLoc, cameraCurLoc, locdiff);
-
-			// Now we calculate how much of the difference we cover in the time allotted.
-			// The equation is (Damp)^(time)
-			// dtime = (float)(cg.time-cameraLastFrame) * (1.0/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
-
-			// Note that since there are a finite number of "practical" delta millisecond values possible,
-			// the ratio should be initialized into a chart ultimately.
-			// ratio = powi(dampfactor, dtime);
-
-			// fau - and this is how original powi really worked in mp
-			ratio = dampfactor;
-
-			// This value is how much distance is "left" from the ideal.
-			VectorMA(cameraIdealLoc, -ratio, locdiff, cameraCurLoc);
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		}
+		CG_DampPosition(&cam.loc, dampfactor, cg.playerPhysicsTime - cam.lastTime);
 	}
 
+	VectorAdd(cam.loc.ideal, cam.loc.damp, location);
+	VectorAdd(cam.target.ideal, cam.target.damp, target);
+
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
-	CG_Trace(&trace, cameraCurTarget, cameramins, cameramaxs, cameraCurLoc, cg.snap->ps.clientNum, MASK_CAMERACLIP);
+	CG_Trace(&trace, target, cameramins, cameramaxs, location, cg.snap->ps.clientNum, MASK_CAMERACLIP);
 
 	if (trace.fraction < 1.0)
 	{
-		VectorCopy( trace.endpos, cameraCurLoc );
+		VectorSubtract( trace.endpos, cam.loc.ideal, cam.loc.damp );
 
 		//FIXME: when the trace hits movers, it gets very very jaggy... ?
 		/*
@@ -564,7 +517,7 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 				{
 					vec3_t	diff;
 					VectorSubtract( cent->lerpOrigin, gent->currentOrigin, diff );
-					VectorAdd( cameraCurLoc, diff, cameraCurLoc );
+					VectorAdd( location, diff, location );
 				}
 			}
 		}
@@ -590,69 +543,70 @@ extern vmCvar_t cg_thirdPersonHorzOffset;
 static void CG_OffsetThirdPersonView( void )
 {
 	vec3_t diff;
+	vec3_t target, location;
 	float thirdPersonHorzOffset = cg_thirdPersonHorzOffset.value;
 	float deltayaw;
 
-	cameraStiffFactor = 0.0;
+	cam.stiffFactor = 0.0;
 
 	// Set camera viewing direction.
-	VectorCopy( cg.refdefViewAngles, cameraFocusAngles );
+	VectorCopy( cg.refdefViewAngles, cam.focusAngles );
 
 	// if dead, look at killer
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 )
 	{
-		cameraFocusAngles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
+		cam.focusAngles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
 	}
 	else
 	{	// Add in the third Person Angle.
-		cameraFocusAngles[YAW] += cg_thirdPersonAngle.value;
-		cameraFocusAngles[PITCH] += cg_thirdPersonPitchOffset.value;
+		cam.focusAngles[YAW] += cg_thirdPersonAngle.value;
+		cam.focusAngles[PITCH] += cg_thirdPersonPitchOffset.value;
 	}
 
 	// The next thing to do is to see if we need to calculate a new camera target location.
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cameraLastFrame == 0 || cameraLastFrame > cg.playerPhysicsTime || cg.thisFrameTeleport)
+	if (cam.lastTime == 0 || cam.lastTime > cg.playerPhysicsTime || cg.thisFrameTeleport)
 	{
 		CG_ResetThirdPersonViewDamp();
 	}
 	else
 	{
 		// Cap the pitch within reasonable limits
-		if (cameraFocusAngles[PITCH] > 80.0)
+		if (cam.focusAngles[PITCH] > 80.0)
 		{
-			cameraFocusAngles[PITCH] = 80.0;
+			cam.focusAngles[PITCH] = 80.0;
 		}
-		else if (cameraFocusAngles[PITCH] < -80.0)
+		else if (cam.focusAngles[PITCH] < -80.0)
 		{
-			cameraFocusAngles[PITCH] = -80.0;
+			cam.focusAngles[PITCH] = -80.0;
 		}
 
-		AngleVectors(cameraFocusAngles, camerafwd, NULL, cameraup);
+		AngleVectors(cam.focusAngles, cam.fwd, NULL, NULL);
 
-		deltayaw = fabs(cameraFocusAngles[YAW] - cameraLastYaw);
+		deltayaw = fabs(cam.focusAngles[YAW] - cam.lastYaw);
 		if (deltayaw > 180.0f)
 		{ // Normalize this angle so that it is between 0 and 180.
 			deltayaw = fabs(deltayaw - 360.0f);
 		}
 		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
-			cameraStiffFactor = deltayaw / (cg.playerPhysicsTime - cameraLastFrame);
+			cam.stiffFactor = deltayaw / (cg.playerPhysicsTime - cam.lastTime);
 		} else {
-			cameraStiffFactor = deltayaw / (cg.time - cg.oldTime);
+			cam.stiffFactor = deltayaw / (cg.time - cg.oldTime);
 		}
-		if (cameraStiffFactor < 1.0)
+		if (cam.stiffFactor < 1.0)
 		{
-			cameraStiffFactor = 0.0;
+			cam.stiffFactor = 0.0;
 		}
-		else if (cameraStiffFactor > 2.5)
+		else if (cam.stiffFactor > 2.5)
 		{
-			cameraStiffFactor = 0.75;
+			cam.stiffFactor = 0.75;
 		}
 		else
 		{	// 1 to 2 scales from 0.0 to 0.5
-			cameraStiffFactor = (cameraStiffFactor-1.0f)*0.5f;
+			cam.stiffFactor = (cam.stiffFactor-1.0f)*0.5f;
 		}
-		cameraLastYaw = cameraFocusAngles[YAW];
+		cam.lastYaw = cam.focusAngles[YAW];
 
 		// Move the target to the new location.
 		CG_UpdateThirdPersonTargetDamp();
@@ -662,17 +616,19 @@ static void CG_OffsetThirdPersonView( void )
 	// Now interestingly, the Quake method is to calculate a target focus point above the player, and point the camera at it.
 	// We won't do that for now.
 
+	VectorAdd(cam.target.ideal, cam.target.damp, target);
+	VectorAdd(cam.loc.ideal, cam.loc.damp, location);
+
 	// We must now take the angle taken from the camera target and location.
-	/*VectorSubtract(cameraCurTarget, cameraCurLoc, diff);
-	VectorNormalize(diff);
+	VectorSubtract(target, location, diff);
+	/*VectorNormalize(diff);
 	vectoangles(diff, cg.refdefViewAngles);*/
-	VectorSubtract(cameraCurTarget, cameraCurLoc, diff);
 	{
 		float dist = VectorNormalize(diff);
 		//under normal circumstances, should never be 0.00000 and so on.
 		if ( !dist || (diff[0] == 0 || diff[1] == 0) )
 		{//must be hitting something, need some value to calc angles, so use cam forward
-			VectorCopy( camerafwd, diff );
+			VectorCopy( cam.fwd, diff );
 		}
 	}
 	vectoangles(diff, cg.refdefViewAngles);
@@ -681,13 +637,13 @@ static void CG_OffsetThirdPersonView( void )
 	if ( thirdPersonHorzOffset != 0.0f )
 	{
 		AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-		VectorMA( cameraCurLoc, thirdPersonHorzOffset, cg.refdef.viewaxis[1], cameraCurLoc );
+		VectorMA( location, thirdPersonHorzOffset, cg.refdef.viewaxis[1], location );
 	}
 
 	// ...and of course we should copy the new view location to the proper spot too.
-	VectorCopy(cameraCurLoc, cg.refdef.vieworg);
+	VectorCopy(location, cg.refdef.vieworg);
 
-	cameraLastFrame = cg.playerPhysicsTime;
+	cam.lastTime = cg.playerPhysicsTime;
 }
 
 
