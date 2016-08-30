@@ -1332,14 +1332,6 @@ int irand(int min, int max)
 	return(result);
 }
 
-float powi ( float x, int y )
-{
-	float r = x;
-	for ( y--; y>0; y-- )
-		r = r * r;
-	return r;
-}
-
 // Returns `base` raised to the power of `exp`
 
 float Q_pown(float base, int exp)
