@@ -86,6 +86,8 @@
 #define DEFAULT_REDTEAM_NAME		"Empire"
 #define DEFAULT_BLUETEAM_NAME		"Rebellion"
 
+#define CAMERA_MIN_FPS		15
+
 typedef enum {
 	FOOTSTEP_NORMAL,
 	FOOTSTEP_METAL,
