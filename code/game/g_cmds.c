@@ -940,16 +940,30 @@ to free floating spectator mode
 =================
 */
 void StopFollowing( gentity_t *ent ) {
-	gclient_t *client = ent->client;
+	gclient_t	*client = ent->client;
+	int			i;
 
 	ent->r.svFlags &= ~SVF_BOT;
 	client->sess.sessionTeam = TEAM_SPECTATOR;
 	client->sess.spectatorState = SPECTATOR_FREE;
 	client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
+	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;
+	client->ps.eFlags &= ~EF_DISINTEGRATION;
 	client->ps.clientNum = ent - g_entities;
 	client->ps.weapon = WP_NONE;
+	client->ps.viewangles[ROLL] = 0.0f;
+	ent->health = client->ps.stats[STAT_HEALTH] = 100;
+	client->ps.legsAnim = 0;
+	client->ps.legsTimer = 0;
+	client->ps.torsoAnim = 0;
+	client->ps.torsoTimer = 0;
+	client->ps.emplacedIndex = 0;
+	client->ps.isJediMaster = qfalse;
 	client->ps.zoomMode = 0;
+	client->ps.zoomLocked = qfalse;
+	client->ps.zoomLockTime = 0;
+	client->ps.fallingToDeath = 0;
 	client->ps.forceHandExtend = HANDEXTEND_NONE;
 	client->ps.duelInProgress = qfalse;
 	client->ps.weaponTime = 0;
@@ -961,6 +975,10 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberBlocked = 0;
 	client->ps.saberBlocking = 0;
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
+	for (i = 0; i < PW_NUM_POWERUPS; i++)
+		client->ps.powerups[i] = 0;
+
+	SetClientViewAngle( ent, client->ps.viewangles );
 }
 
 /*
