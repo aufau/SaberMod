@@ -240,7 +240,9 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 		return;
 	}
 
-	f = (float)( cg.time - prev->serverTime ) / ( next->serverTime - prev->serverTime );
+	// fau - for player it would more correct to interpolate between
+	// commandTimes (but requires one more snaphost ahead)
+	f = cg.frameInterpolation;
 
 	i = next->ps.bobCycle;
 	if ( i < prev->ps.bobCycle ) {
