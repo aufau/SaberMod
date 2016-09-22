@@ -665,6 +665,7 @@ typedef struct {
 //	snapshot_t	activeSnapshots[2];
 
 	float		frameInterpolation;	// (float)( cg.time - cg.frame->serverTime ) / (cg.nextFrame->serverTime - cg.frame->serverTime)
+	double		playerPhysicsTime;	// interpolated physics (command) time
 
 	qboolean	mMapChange;
 
