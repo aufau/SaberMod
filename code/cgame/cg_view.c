@@ -224,7 +224,7 @@ vec3_t	cameraFocusAngles,			cameraFocusLoc;
 vec3_t	cameraIdealTarget,			cameraIdealLoc;
 vec3_t	cameraCurTarget={0,0,0},	cameraCurLoc={0,0,0};
 vec3_t	cameraOldLoc={0,0,0},		cameraNewLoc={0,0,0};
-int		cameraLastFrame=0;
+double	cameraLastFrame=0.0;
 
 float	cameraLastYaw=0;
 float	cameraStiffFactor=0.0f;
@@ -345,7 +345,7 @@ static void CG_ResetThirdPersonViewDamp(void)
 		VectorCopy(trace.endpos, cameraCurLoc);
 	}
 
-	cameraLastFrame = cg.predictedPlayerState.commandTime;
+	cameraLastFrame = cg.playerPhysicsTime;
 	cameraLastYaw = cameraFocusAngles[YAW];
 	cameraStiffFactor = 0.0f;
 }
@@ -385,15 +385,15 @@ static void CG_UpdateThirdPersonTargetDamp(void)
 			float	timeadjfactor;
 			float	codampfactor;
 			int		simulationtime;
-			int		physicstime;
+			float	physicstime;
 
 			// use physics time to get a real velocity
-			physicstime = cg.predictedPlayerState.commandTime - cameraLastFrame;
-			if (physicstime == 0)
+			physicstime = cg.playerPhysicsTime - cameraLastFrame;
+			if (physicstime == 0.0f)
 				return;
 			simulationtime = 1000 / cg_camerafps.integer;
-			dtime = (float) physicstime / simulationtime;
-			invdtime = (float) simulationtime / physicstime;
+			dtime = physicstime / simulationtime;
+			invdtime = simulationtime / physicstime;
 			timeadjfactor = powf(dampfactor, dtime);
 			// velocity is in units / simulated frame time
 			VectorScale(idealDelta, invdtime, velocity);
@@ -500,15 +500,15 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 			float	timeadjfactor;
 			float	codampfactor;
 			int		simulationtime;
-			int		physicstime;
+			float	physicstime;
 
 			// use physics time to get a real velocity
-			physicstime = cg.predictedPlayerState.commandTime - cameraLastFrame;
-			if (physicstime == 0)
+			physicstime = cg.playerPhysicsTime - cameraLastFrame;
+			if (physicstime == 0.0f)
 				return;
 			simulationtime = 1000 / cg_camerafps.integer;
-			dtime = (float) physicstime / simulationtime;
-			invdtime = (float) simulationtime / physicstime;
+			dtime = physicstime / simulationtime;
+			invdtime = simulationtime / physicstime;
 			timeadjfactor = powf(dampfactor, dtime);
 			// velocity is in units / simulated frame time
 			VectorScale(idealDelta, invdtime, velocity);
@@ -612,7 +612,7 @@ static void CG_OffsetThirdPersonView( void )
 	// The next thing to do is to see if we need to calculate a new camera target location.
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cameraLastFrame == 0 || cameraLastFrame > cg.predictedPlayerState.commandTime || cg.thisFrameTeleport)
+	if (cameraLastFrame == 0 || cameraLastFrame > cg.playerPhysicsTime || cg.thisFrameTeleport)
 	{
 		CG_ResetThirdPersonViewDamp();
 	}
@@ -636,7 +636,7 @@ static void CG_OffsetThirdPersonView( void )
 			deltayaw = fabs(deltayaw - 360.0f);
 		}
 		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
-			cameraStiffFactor = deltayaw / (cg.predictedPlayerState.commandTime - cameraLastFrame);
+			cameraStiffFactor = deltayaw / (cg.playerPhysicsTime - cameraLastFrame);
 		} else {
 			cameraStiffFactor = deltayaw / (cg.time - cg.oldTime);
 		}
@@ -687,7 +687,7 @@ static void CG_OffsetThirdPersonView( void )
 	// ...and of course we should copy the new view location to the proper spot too.
 	VectorCopy(cameraCurLoc, cg.refdef.vieworg);
 
-	cameraLastFrame = cg.predictedPlayerState.commandTime;
+	cameraLastFrame = cg.playerPhysicsTime;
 }
 
 
