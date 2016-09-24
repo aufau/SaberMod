@@ -223,8 +223,8 @@ Authors
   + Witold *fau* Piłat <witold.pilat@gmail.com> (c) 2015-2016
   + Dziablo (c) 2015-2016
 
-Contributors
-------------
+Thanks
+------
 
 * Daggolin (boy) - Technical discussion, sharing patches and his JK2
   modding expertise.
@@ -232,6 +232,9 @@ Contributors
   servers and events.
 * Xycaleth - Creating League mod that was a great inspiration to
   SaberMod and sharing it's source code.
+* Developers of jk2mv, mvsdk, Jedi Academy, OpenJK, ioq3, jomme, JA++
+  (japp), League Mod and other open source id tech 3 mods for various
+  code bugfixes.
 
 .. _GitHub : https://github.com/aufau/SaberMod
 .. _`JK2 SDK GPL`: https://github.com/aufau/jk2sdk-gpl
