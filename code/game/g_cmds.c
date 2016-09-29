@@ -1014,7 +1014,14 @@ void Cmd_Team_f( gentity_t *ent ) {
 	}
 
 	if ( ent->client->switchTeamTime > level.time ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSWITCH")) );
+		if ( ent->client->switchTeamTime - level.time > 5000 ) {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"You were removed. May not switch teams for %d seconds\n\"",
+					(ent->client->switchTeamTime - level.time + 999) / 1000));
+		} else {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSWITCH")) );
+		}
 		return;
 	}
 

@@ -452,6 +452,8 @@ void	Svcmd_Remove_f( void )
 
 	ent = g_entities + clientNum;
 	SetTeam( ent, TEAM_SPECTATOR );
+	// overwrite "joined the spectators" message
+	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->pers.netname) );
 	ent->client->switchTeamTime = level.time + delay;
 }
 
