@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 8
+COUNT 10
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -74,6 +74,24 @@ INDEX 7
    TEXT_LANGUAGE3 "Ping"
    TEXT_LANGUAGE6 "Ping"
    TEXT_LANGUAGE8 "Ping"
+}
+INDEX 8
+{
+   REFERENCE RULES_CLANARENA_1
+   TEXT_LANGUAGE1 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE2 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE3 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE6 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE8 "Rules:  Join with your teammates to defeat players on the other team."
+}
+INDEX 9
+{
+   REFERENCE RULES_CLANARENA_2
+   TEXT_LANGUAGE1 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE2 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE3 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE6 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE8 "When one team succeeds a new round begins with all players rejuvenated."
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

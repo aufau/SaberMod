@@ -179,6 +179,9 @@ void UI_LoadArenas( void ) {
 			if( strstr( type, "redrover" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_REDROVER);
 			}
+			if ( strstr( type, "clanarena" ) ) {
+				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CLANARENA);
+			}
 		} else {
 			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
 		}

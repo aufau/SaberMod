@@ -159,17 +159,17 @@ void BotSelectWeapon(int client, int weapon)
 
 void BotReportStatus(bot_state_t *bs)
 {
-	if (g_gametype.integer == GT_TEAM || g_gametype.integer == GT_REDROVER)
-	{
-		trap_EA_SayTeam(bs->client, teamplayStateDescriptions[bs->teamplayState]);
-	}
-	else if (g_gametype.integer == GT_SAGA)
+	if (g_gametype.integer == GT_SAGA)
 	{
 		trap_EA_SayTeam(bs->client, sagaStateDescriptions[bs->sagaState]);
 	}
 	else if (GT_Flag(g_gametype.integer))
 	{
 		trap_EA_SayTeam(bs->client, ctfStateDescriptions[bs->ctfState]);
+	}
+	else if (GT_Team(g_gametype.integer))
+	{
+		trap_EA_SayTeam(bs->client, teamplayStateDescriptions[bs->teamplayState]);
 	}
 }
 
@@ -209,7 +209,7 @@ void BotOrder(gentity_t *ent, int clientnum, int ordernum)
 		stateMin = SAGASTATE_NONE;
 		stateMax = SAGASTATE_MAXSAGASTATES;
 	}
-	else if (g_gametype.integer == GT_TEAM || g_gametype.integer == GT_REDROVER)
+	else if (GT_Team(g_gametype.integer))
 	{
 		stateMin = TEAMPLAYSTATE_NONE;
 		stateMax = TEAMPLAYSTATE_MAXTPSTATES;
@@ -4103,7 +4103,7 @@ void CommanderBotAI(bot_state_t *bs)
 	{
 		CommanderBotSagaAI(bs);
 	}
-	else if (g_gametype.integer == GT_TEAM || g_gametype.integer == GT_REDROVER)
+	else if (GT_Team(g_gametype.integer))
 	{
 		CommanderBotTeamplayAI(bs);
 	}

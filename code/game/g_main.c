@@ -1191,7 +1191,7 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( GT_Round(g_gametype.integer) ) {
+	if ( g_gametype.integer == GT_REDROVER ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED ) ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE ) ) );
 	} else if ( GT_Team(g_gametype.integer) ) {
@@ -1610,6 +1610,7 @@ const char *machineGameNames[GT_MAX_GAME_TYPE] = {
 	"CTF",
 	"CTY",
 	"REDROVER",
+	"CLANARENA",
 };
 
 /*

@@ -371,7 +371,9 @@ const char *CG_GameTypeString(void) {
 		return "Capture the Ysalamiri";
     } else if ( cgs.gametype == GT_REDROVER ) {
         return "Red Rover";
-    }
+    } else if ( cgs.gametype == GT_CLANARENA ) {
+		return "Clan Arena";
+	}
 	return "";
 }
 

@@ -1701,7 +1701,8 @@ static const char *gameNames[] = {
 	"N/A",
 	"Capture the Flag",
 	"Capture the Ysalamiri",
-	"Red Rover"
+	"Red Rover",
+	"Clan Arena",
 };
 
 /*
