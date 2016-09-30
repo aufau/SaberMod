@@ -4717,6 +4717,7 @@ static int UI_MapCountByGameType(qboolean singlePlayer) {
 	case GT_JEDIMASTER:
 	case GT_TEAM:
 	case GT_REDROVER:
+	case GT_CLANARENA:
 		game = GT_FFA;
 	}
 

@@ -3725,15 +3725,18 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_CTY ) {
 			s = "Capture the Ysalamiri";
-		} else if ( GT_Round(cgs.gametype) ) {
-			if ( cgs.round == 0 ) {
-				s = "Red Rover";
-			} else {
-				s = va("Round %i", cgs.round);
-			}
+		} else if ( cgs.gametype == GT_REDROVER ) {
+			s = "Red Rover";
+		} else if ( cgs.gametype == GT_CLANARENA ) {
+			s = "Clan Arena";
 		} else {
 			s = "";
 		}
+
+		if ( GT_Round(cgs.gametype) && cgs.round > 0 ) {
+			s = va("Round %i", cgs.round);
+		}
+
 		w = CG_Text_Width(s, 1.5f, FONT_MEDIUM);
 		CG_Text_Paint(320 - w / 2, 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}
