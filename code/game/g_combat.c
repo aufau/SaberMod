@@ -3162,6 +3162,27 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
+		if ( g_instagib.integer ) {
+			if (dflags & DAMAGE_RADIUS)
+				return;
+
+			switch (mod) {
+			case MOD_FORCE_DARK:
+			case MOD_WATER:
+			case MOD_SLIME:
+			case MOD_LAVA:
+			case MOD_CRUSH:
+			case MOD_TELEFRAG:
+			case MOD_FALLING:
+			case MOD_SUICIDE:
+			case MOD_TARGET_LASER:
+			case MOD_TRIGGER_HURT:
+			case MOD_MELEE:
+				break;
+			default:
+				damage = 9999;
+			}
+		}
 
 		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
 		// if the attacker was on the same team

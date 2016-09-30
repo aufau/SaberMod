@@ -128,6 +128,7 @@ vmCvar_t	g_spawnShield;
 vmCvar_t	g_roundlimit;
 vmCvar_t	g_roundWarmup;
 vmCvar_t	g_noKick;
+vmCvar_t	g_instagib;
 
 int gDuelist1 = -1;
 int gDuelist2 = -1;
@@ -287,6 +288,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
 
 // bk001129 - made static to avoid aliasing

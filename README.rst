@@ -130,6 +130,9 @@ g_allowVote 1
   8192 - No Kicks        16384 - With Kicks
   =====================  =====================  =====================
 
+g_instagib 0
+  Enable simple instagib mode for all weapons. Splash does no damage.
+
 g_log[1-4] <filename>
   You can use 4 separate log files now.
 
