@@ -1380,6 +1380,14 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 	}
 
 	G_Say( ent, NULL, mode, p );
+
+	if ( !strcmp( p, "!info" ) )
+	{
+		trap_SendServerCommand( ent-g_entities,
+			"print \"" S_LINE_PREFIX S_COLOR_WHITE "This server is running "
+			GAMEVERSION_C S_COLOR_WHITE " version " GIT_VERSION " by "
+			S_COLOR_BRAND AUTHOR S_COLOR_WHITE ".\n\"" );
+	}
 }
 
 /*
