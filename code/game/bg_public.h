@@ -12,7 +12,9 @@
 #include "anims.h"
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	"SaberMod"
+#define	GAMEVERSION			"SaberMod"
+#define GAMEVERSION_C		S_COLOR_BRAND "S" S_COLOR_WHITE "aber" S_COLOR_BRAND "M" S_COLOR_WHITE "od"
+#define AUTHOR				"fau"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40

@@ -737,6 +737,9 @@ extern	vec4_t		colorDkBlue;
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
 
+#define S_COLOR_BRAND	"^2"
+#define S_LINE_PREFIX	S_COLOR_BRAND "> "
+
 extern vec4_t	g_color_table[8];
 
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
