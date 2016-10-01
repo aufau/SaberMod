@@ -1688,7 +1688,7 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 			return 0;
 		}
 
-		if (en->client->sess.sessionTeam == TEAM_SPECTATOR)
+		if (en->client->sess.spectatorState != SPECTATOR_NOT)
 		{
 			return 0;
 		}
@@ -3031,7 +3031,7 @@ void Saga_DefendFromAttackers(bot_state_t *bs)
 		ent = &g_entities[i];
 
 		if (ent && ent->client && ent->client->sess.sessionTeam != g_entities[bs->client].client->sess.sessionTeam &&
-			ent->health > 0 && ent->client->sess.sessionTeam != TEAM_SPECTATOR)
+			ent->health > 0 && ent->client->sess.spectatorState == SPECTATOR_NOT)
 		{
 			VectorSubtract(ent->client->ps.origin, bs->origin, a);
 
@@ -5692,7 +5692,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 
 	if (g_entities[bs->client].inuse &&
 		g_entities[bs->client].client &&
-		g_entities[bs->client].client->sess.sessionTeam == TEAM_SPECTATOR)
+		g_entities[bs->client].client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		bs->wpCurrent = NULL;
 		bs->currentEnemy = NULL;

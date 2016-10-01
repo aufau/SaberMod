@@ -673,7 +673,7 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( ent->client->sess.spectatorState != SPECTATOR_NOT ) {
 		return;
 	}
 	if (ent->health <= 0) {
@@ -777,11 +777,19 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 		client->pers.netname, teamNameLowerCase[client->sess.sessionTeam]);
 }
 
+/*
+=================
+SetTeamSpec
+
+Doesn't handle switching from/to SPECTATOR_NOT state without team
+change yet.
+=================
+*/
 static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
 {
 	gclient_t	*client;
 	int			clientNum;
-	int			oldTeam;
+	team_t		oldTeam;
 	int			teamLeader;
 
 	client = ent->client;
@@ -793,12 +801,9 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 	}
 
 	// fast path for switching followed player
-	if ( team == oldTeam ) {
-		if ( team == TEAM_SPECTATOR ) {
-			client->sess.spectatorState = specState;
-			client->sess.spectatorClient = specClient;
-		}
-
+	if ( team == oldTeam) {
+		client->sess.spectatorState = specState;
+		client->sess.spectatorClient = specClient;
 		return qfalse;
 	}
 
@@ -813,7 +818,7 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 
 	// he starts at 'base'
 	client->pers.teamState.state = TEAM_BEGIN;
-	if ( oldTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
 		client->ps.stats[STAT_HEALTH] = ent->health = 0;
@@ -864,7 +869,8 @@ SetTeam
 */
 qboolean SetTeam( gentity_t *ent, team_t team )
 {
-	return SetTeamSpec( ent, team, SPECTATOR_FREE, 0 );
+	spectatorState_t state = (team == TEAM_SPECTATOR) ? SPECTATOR_FREE : SPECTATOR_NOT;
+	return SetTeamSpec( ent, team, state, 0 );
 }
 
 /*
@@ -1043,7 +1049,7 @@ Cmd_Team_f
 void Cmd_ForceChanged_f( gentity_t *ent )
 {
 //	Cmd_Kill_f(ent);
-	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+	if (ent->client->sess.spectatorState != SPECTATOR_NOT)
 	{ //if it's a spec, just make the changes now
 		//trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "FORCEAPPLIED")) );
 		//No longer print it, as the UI calls this a lot.
@@ -1160,7 +1166,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		}
 
 		// can't follow another spectator
-		if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR ) {
+		if ( level.clients[ clientnum ].sess.spectatorState != SPECTATOR_NOT ) {
 			continue;
 		}
 
@@ -1205,7 +1211,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 
 	// Sanity check
 	if (client->pers.connected != CON_CONNECTED  ||
-		client->sess.sessionTeam == TEAM_SPECTATOR)
+		client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		StopFollowing(ent);
 		return;

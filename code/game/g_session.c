@@ -157,7 +157,10 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 		}
 	}
 
-	sess->spectatorState = SPECTATOR_FREE;
+	if ( sess->sessionTeam == TEAM_SPECTATOR )
+		sess->spectatorState = SPECTATOR_FREE;
+	else
+		sess->spectatorState = SPECTATOR_NOT;
 	sess->spectatorTime = level.time;
 
 	G_WriteClientSessionData( client );

@@ -2162,7 +2162,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( client->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 			continue;
 		}
 		if ( client->sess.spectatorClient == self->s.number ) {
