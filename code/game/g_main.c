@@ -1936,8 +1936,7 @@ void CheckExitRules( void ) {
 		{
 			if (g_entities[i].inuse && g_entities[i].client && g_entities[i].health > 0)
 			{
-				if (g_entities[i].client->sess.sessionTeam != TEAM_SPECTATOR &&
-					!(g_entities[i].client->ps.pm_flags & PMF_FOLLOW))
+				if (g_entities[i].client->sess.spectatorState == SPECTATOR_NOT)
 				{
 					numLiveClients++;
 				}
@@ -2683,7 +2682,7 @@ void G_RunFrame( int levelTime ) {
 		{
 			G_CheckClientTimeouts ( ent );
 
-			if((!level.intermissiontime)&&!(ent->client->ps.pm_flags&PMF_FOLLOW) && ent->client->sess.sessionTeam != TEAM_SPECTATOR)
+			if((!level.intermissiontime)&&!(ent->client->ps.pm_flags&PMF_FOLLOW) && ent->client->sess.spectatorState == SPECTATOR_NOT)
 			{
 				WP_ForcePowersUpdate(ent, &ent->client->pers.cmd );
 				WP_SaberPositionUpdate(ent, &ent->client->pers.cmd);

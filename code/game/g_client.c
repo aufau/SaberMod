@@ -1603,7 +1603,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		// send event
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 		tent->s.clientNum = ent->s.clientNum;
@@ -1687,7 +1687,7 @@ void ClientSpawn(gentity_t *ent) {
 	// find a spawn point
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState != SPECTATOR_NOT ) {
 		spawnPoint = SelectSpectatorSpawnPoint (
 						spawn_origin, spawn_angles);
 	} else if ( GT_Flag(g_gametype.integer) ) {
@@ -1953,7 +1953,7 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 	client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
 
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		client->ps.stats[STAT_WEAPONS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
@@ -2009,16 +2009,13 @@ void ClientSpawn(gentity_t *ent) {
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	SetClientViewAngle( ent, spawn_angles );
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-
-	} else {
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		G_KillBox( ent );
 		trap_LinkEntity (ent);
 
 		// force the base weapon up
 		client->ps.weapon = WP_BRYAR_PISTOL;
 		client->ps.weaponstate = FIRST_WEAPON;
-
 	}
 
 	// don't allow full run speed for a bit
@@ -2041,7 +2038,7 @@ void ClientSpawn(gentity_t *ent) {
 
 		// select the highest weapon number available, after any
 		// spawn given items have fired
-		client->ps.weapon = 1;
+		client->ps.weapon = 0;
 		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
 			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
 				client->ps.weapon = i;
@@ -2057,7 +2054,7 @@ void ClientSpawn(gentity_t *ent) {
 	ClientThink( ent-g_entities );
 
 	// positively link the client, even if the command times are weird
-	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
@@ -2128,8 +2125,7 @@ void ClientDisconnect( int clientNum ) {
 
 	// stop any following clients
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR
-			&& level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
+		if (level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
 			&& level.clients[i].sess.spectatorClient == clientNum ) {
 			StopFollowing( &g_entities[i] );
 		}
@@ -2137,7 +2133,7 @@ void ClientDisconnect( int clientNum ) {
 
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED
-		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		&& ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
 

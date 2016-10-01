@@ -71,7 +71,7 @@ void SaberUpdateSelf(gentity_t *ent)
 	if (!owner->inuse ||
 		!owner->client ||
 		owner->client->ps.saberEntityNum != ent->s.number ||
-		owner->client->sess.sessionTeam == TEAM_SPECTATOR)
+		owner->client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;
@@ -2167,7 +2167,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 
 	if (ent->client)
 	{ //hit a client
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		if ( ent->client->sess.spectatorState != SPECTATOR_NOT ||
 			ent->client->pers.connected != CON_CONNECTED)
 		{
 			return qfalse;
@@ -2512,7 +2512,7 @@ void saberBackToOwner(gentity_t *saberent)
 
 	if (!saberOwner->inuse ||
 		!saberOwner->client ||
-		saberOwner->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwner->client->sess.spectatorState != SPECTATOR_NOT ||
 		saberOwner->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
@@ -2659,7 +2659,7 @@ void saberFirstThrown(gentity_t *saberent)
 
 	if (!saberOwn->inuse ||
 		!saberOwn->client ||
-		saberOwn->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwn->client->sess.spectatorState != SPECTATOR_NOT ||
 		saberOwn->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
