@@ -1192,8 +1192,8 @@ void CalculateRanks( void ) {
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
 	if ( g_gametype.integer == GT_REDROVER ) {
-		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED ) ) );
-		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE ) ) );
+		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED, qfalse ) ) );
+		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE, qfalse ) ) );
 	} else if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
@@ -1456,15 +1456,22 @@ static void NextRound( void )
 	char	warmup[2];
 	int		i;
 
-	for ( i = 0; i < level.numNonSpectatorClients; i++ ) {
-		gentity_t	*ent = g_entities + level.sortedClients[i];
+	if ( g_gametype.integer == GT_REDROVER ) {
+		level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+		Shuffle(); // calls CheckExitRules
+	} else {
+		for ( i = 0; i < level.numNonSpectatorClients; i++ ) {
+			gentity_t	*ent = g_entities + level.sortedClients[i];
 
-		ResetClientState(ent);
+			ResetClientState(ent);
+			SetTeam(ent, ent->client->sess.sessionTeam);
+			respawn(ent);
+			// don't block G_KillBox in respawn
+			level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+		}
 	}
 
-	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
-	Shuffle(); // calls CheckExitRules
-
+	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
 	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
 	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
@@ -1971,9 +1978,22 @@ void CheckExitRules( void ) {
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
 			if (GT_Round(g_gametype.integer)) {
-				if ( level.numPlayingClients < 2 ) {
-					trap_SendServerCommand( -1, "print \"Not enough players.\n\"" );
-					LogExit("Not enough players.");
+				qboolean abort = qfalse;
+
+				if ( g_gametype.integer == GT_REDROVER ) {
+					if ( level.numPlayingClients < 2 )
+						abort = qtrue;
+				} else {
+					int	redCount = TeamCount( -1, TEAM_RED, qtrue );
+					int	blueCount = TeamCount( -1, TEAM_BLUE, qtrue );
+
+					if ( redCount == 0 || blueCount == 0 )
+						abort = qtrue;
+				}
+
+				if ( abort ) {
+					trap_SendServerCommand( -1, "print \"Game aborted. Not enough players.\n\"" );
+					LogExit("Game aborted. Not enough players.");
 					G_PrintStats();
 					BeginIntermission();
 				} else if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
@@ -2030,31 +2050,33 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( level.numPlayingClients < 2 ) {
-		return;
-	}
-
 	if ( GT_Round(g_gametype.integer) ) {
-		int	redCount = TeamCount( -1, TEAM_RED );
-		int	blueCount = TeamCount( -1, TEAM_BLUE );
+		int	redCount = TeamCount( -1, TEAM_RED, qfalse );
+		int	blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
 
 		// begin first round of the game
 		if ( level.round == 0 ) {
-			NextRound();
+			if ( redCount > 0 && blueCount > 0 )
+				NextRound();
 			return;
+		} else {
+			if ( redCount == 0 ) {
+				level.teamScores[TEAM_BLUE]++;
+				trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
+				LogRoundExit( "Red team eliminated." );
+				return;
+			}
+			if ( blueCount == 0 ) {
+				level.teamScores[TEAM_RED]++;
+				trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
+				LogRoundExit( "Blue team eliminated." );
+				return;
+			}
 		}
-		if ( redCount == 0 ) {
-			level.teamScores[TEAM_BLUE]++;
-			trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
-			LogRoundExit( "Red team eliminated." );
-			return;
-		}
-		if ( blueCount == 0 ) {
-			level.teamScores[TEAM_RED]++;
-			trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
-			LogRoundExit( "Blue team eliminated." );
-			return;
-		}
+	}
+
+	if ( level.numPlayingClients < 2 ) {
+		return;
 	}
 
 	if ( !GT_Flag(g_gametype.integer) && !GT_Round(g_gametype.integer) && g_fraglimit.integer ) {
@@ -2228,8 +2250,8 @@ void CheckTournament( void ) {
 		qboolean	notEnough = qfalse;
 
 		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
-			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
+			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE, qtrue );
+			counts[TEAM_RED] = TeamCount( -1, TEAM_RED, qtrue );
 
 			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
 				notEnough = qtrue;

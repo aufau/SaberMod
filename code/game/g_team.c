@@ -222,23 +222,26 @@ Returns stronger team out of red and blue, or spectator on draw
 team_t GetStrongerTeam( void )
 {
 	int	health[TEAM_NUM_TEAMS] = { 0 };
-	int	redCount = TeamCount( -1, TEAM_RED );
-	int	blueCount = TeamCount( -1, TEAM_BLUE );
+	int count[TEAM_NUM_TEAMS] = { 0 };
 	int	i;
-
-	if ( redCount > blueCount ) {
-		return TEAM_RED;
-	} else if ( blueCount > redCount ) {
-		return TEAM_BLUE;
-	}
 
 	for ( i = 0; i < level.numPlayingClients; i++ ) {
 		gclient_t *client = level.clients + level.sortedClients[i];
 
-		if ( client->ps.stats[STAT_HEALTH] > 0 ) {
-			health[client->sess.sessionTeam] += client->ps.stats[STAT_HEALTH];
-			health[client->sess.sessionTeam] += client->ps.stats[STAT_ARMOR];
+		if ( client->sess.spectatorState == SPECTATOR_NOT &&
+			client->ps.stats[STAT_HEALTH] > 0 )
+		{
+			team_t team = client->sess.sessionTeam;
+			count[team]++;
+			health[team] += client->ps.stats[STAT_HEALTH];
+			health[team] += client->ps.stats[STAT_ARMOR];
 		}
+	}
+
+	if ( count[TEAM_RED] > count[TEAM_BLUE] ) {
+		return TEAM_RED;
+	} else if ( count[TEAM_BLUE] > count[TEAM_RED] ) {
+		return TEAM_BLUE;
 	}
 
 	if ( health[TEAM_RED] > health[TEAM_BLUE] ) {
