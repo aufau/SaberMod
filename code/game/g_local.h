@@ -804,7 +804,7 @@ qboolean CheckGauntletAttack( gentity_t *ent );
 //
 // g_client.c
 //
-int TeamCount( int ignoreClientNum, int team );
+int TeamCount( int ignoreClientNum, int team, qboolean dead );
 int TeamLeader( int team );
 team_t PickTeam( int ignoreClientNum );
 void ResetClientState( gentity_t *self );

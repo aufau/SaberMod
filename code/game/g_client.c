@@ -830,7 +830,7 @@ TeamCount
 Returns number of players on a team
 ================
 */
-int TeamCount( int ignoreClientNum, int team ) {
+int TeamCount( int ignoreClientNum, int team, qboolean dead ) {
 	int		i;
 	int		count = 0;
 
@@ -840,6 +840,12 @@ int TeamCount( int ignoreClientNum, int team ) {
 		}
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
 			continue;
+		}
+		if ( !dead ) {
+			if (level.clients[i].sess.spectatorState != SPECTATOR_NOT ||
+				level.clients[i].ps.stats[STAT_HEALTH] <= 0) {
+				continue;
+			}
 		}
 		if ( level.clients[i].sess.sessionTeam == team ) {
 			count++;
@@ -886,7 +892,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 
 	// Works in FFA and counts CON_CONNECTING clients unlike
 	// level.numNonSpectatorClients
-	count = TeamCount( ignoreClientNum, team );
+	count = TeamCount( ignoreClientNum, team, qtrue );
 
 	if ( g_gametype.integer == GT_TOURNAMENT && count >= 2 ) {
 		return qfalse;
@@ -897,7 +903,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
 		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
 			otherCount = TeamCount( ignoreClientNum,
-				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
+				team == TEAM_RED ? TEAM_BLUE : TEAM_RED, qtrue );
 
 			if ( count - otherCount > g_teamForceBalance.integer ) {
 				return qfalse;
@@ -918,8 +924,8 @@ TEAM_SPECTATOR.
 team_t PickTeam( int ignoreClientNum ) {
 	int		counts[TEAM_NUM_TEAMS];
 
-	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
-	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
+	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE, qtrue );
+	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED, qtrue );
 
 	if ( g_teamsize.integer > 0
 		&& MIN(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
