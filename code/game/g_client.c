@@ -1563,9 +1563,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	//first-time force power initialization
 	WP_InitForcePowers( ent );
 
-	//init saber ent
-	WP_SaberInitBladeData( ent );
-
 	// First time model setup for that player.
 	trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
 	modelname = Info_ValueForKey (userinfo, "model");
@@ -2064,6 +2061,9 @@ void ClientSpawn(gentity_t *ent) {
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
+
+		//init saber ent
+		WP_SaberInitBladeData( ent );
 	}
 
 	if (g_spawnInvulnerability.integer)
