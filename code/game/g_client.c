@@ -650,6 +650,10 @@ void CopyToBodyQue( gentity_t *ent ) {
 		return;
 	}
 
+	if (ent->r.contents != CONTENTS_CORPSE) {
+		return;
+	}
+
 	trap_UnlinkEntity (ent);
 
 	// if client is in a nodrop area, don't leave the body
@@ -802,9 +806,7 @@ respawn
 void respawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	if (ent->health <= 0) {
-		CopyToBodyQue (ent);
-	}
+	CopyToBodyQue (ent);
 
 	if (gEscaping)
 	{

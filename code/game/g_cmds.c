@@ -812,9 +812,7 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 	//
 
 	// if the player was dead leave the body
-	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-		CopyToBodyQue(ent);
-	}
+	CopyToBodyQue(ent);
 
 	// he starts at 'base'
 	client->pers.teamState.state = TEAM_BEGIN;
