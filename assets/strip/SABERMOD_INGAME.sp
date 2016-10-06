@@ -24,11 +24,11 @@ INDEX 1
 INDEX 2
 {
    REFERENCE RULES_REDROVER_1
-   TEXT_LANGUAGE1 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE2 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE3 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE6 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE8 "Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE1 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE2 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE3 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE6 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE8 "Rules:  Kill enemy players to make them reinforce your team."
 }
 INDEX 3
 {
