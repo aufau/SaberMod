@@ -153,6 +153,10 @@ g_restrictChat 0
   Prevent spectators from speaking to players and all clients from
   speaking to dueling players.
 
+g_roundWarmup 10
+  How many seconds players get to reposition themselves at the start
+  of a round.
+
 g_spawnShield 25
   Ammount of shield player gets on spawn.
 
@@ -162,6 +166,28 @@ g_teamForceBalance <number>
 
 g_teamsizeMin 2
   Minimum votable teamsize
+
+roundlimit 0
+  Number of rounds in a round-based match.
+
+Round-based gametypes
+.....................
+
+In round-based gametypes players spawn with all available weapons and
+items (controlled by `g_weaponDisable` and `disable_*` cvars), however
+there are no pickups on the map. Players gain one point for killing
+an enemy and one point for each 50 damage dealt to enemy team. A round
+lasts until either one team gets eliminated or a timelimit
+is hit. Match ends when a roundlimit is hit.
+
+Red Rover (g_gametype 9)
+  It can be described as a FFA gametype with a twist. There are two
+  teams, player who gets killed respawns in the opposing team. Round
+  ends when one team gets eliminated, but the overall winner is a
+  person who scores most points.
+
+Clan Arena (g_gametype 10)
+  Player who gets killed is must spectate until the end of the round.
 
 Build
 =====
@@ -204,7 +230,8 @@ comes from ioquake3 and it has been slightly modified by it's
 developers.
 
 Some files in `assets` directory are modified assets from the
-original, non-free JK2 1.04 release.
+original, non-free JK2 1.04 release and licensed under *JK2 Editing
+Tools 2.0* EULA.
 
 Remaining parts of JK2 SDK GPL are licensed under GPLv2 as free
 software. Read LICENSE.txt and README-raven.txt to learn
