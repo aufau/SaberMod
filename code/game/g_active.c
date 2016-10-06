@@ -1033,15 +1033,11 @@ void G_Respawn( gentity_t *ent ) {
 
 	if ( level.intermissionQueued )
 		return;
-	if ( level.intermissiontime )
-		return;
 
 	if ( g_gametype.integer == GT_REDROVER ) {
 		G_SwitchTeam(ent);
 		respawn( ent );
-	} else if ( GT_Round(g_gametype.integer) && level.round > 0 &&
-		!level.roundQueued && !level.warmupTime)
-	{
+	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
 		// follow whatever. sess.spectatorClient will be fixed
 		// in SpectatorClientEndFrame
 

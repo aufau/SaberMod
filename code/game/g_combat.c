@@ -541,7 +541,7 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( !ent->client ) {
 		return;
 	}
-	if (level.warmupTime || level.roundQueued ||
+	if (level.warmupTime || level.roundQueued || level.round == 0 ||
 		level.intermissionQueued || level.intermissiontime )
 	{
 		return;
@@ -3521,9 +3521,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	// don't log damage stats
+	if (level.warmupTime || level.intermissiontime || level.intermissionQueued ||
+		level.roundQueued || level.round == 0 )
+	{
+		return;
+	}
+
 	// Final health damage
 	take = MAX(0, oldHealth) - MAX(0, targ->health) + asave;
-	if (take && client) {
+	if (take && client)
+	{
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
 		if (attacker->client) {

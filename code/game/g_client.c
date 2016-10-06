@@ -645,7 +645,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 	gentity_t		*body;
 	int			contents;
 
-	if (level.intermissiontime || level.roundQueued) {
+	if (level.intermissiontime) {
 		return;
 	}
 
