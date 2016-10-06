@@ -1985,6 +1985,15 @@ int G_ItemDisabled( gitem_t *item ) {
 
 /*
 ============
+G_HoldableDisabled
+============
+*/
+qboolean G_HoldableDisabled( holdable_t holdable ) {
+	return G_ItemDisabled(BG_FindItemForHoldable(holdable));
+}
+
+/*
+============
 G_SpawnItem
 
 Sets the clipping size and plants the object on the floor.
