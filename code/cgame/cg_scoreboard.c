@@ -81,6 +81,7 @@ static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_NET_DMG, SBC_P
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 
 sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, float scale)
 {
@@ -597,6 +598,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 		break;
 	case GT_CTF:
 		columns = ctfColumns;
+		break;
+	case GT_CLANARENA:
+		columns = caColumns;
 		break;
 	default:
 		columns = ffaColumns;
