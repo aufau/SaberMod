@@ -23,7 +23,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	int			stringlength;
 	int			i, j;
 	gclient_t	*cl;
-	int			numSorted, scoreFlags, accuracy, perfect, netDamage;
+	int			numSorted, scoreFlags, accuracy, dead, netDamage;
 
 	// send the latest information on all clients
 	string[0] = 0;
@@ -54,7 +54,8 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		else {
 			accuracy = 0;
 		}
-		perfect = ( cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0 ) ? 1 : 0;
+		// perfect = ( cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0 ) ? 1 : 0;
+		dead = ( cl->sess.spectatorState != SPECTATOR_NOT || cl->ps.stats[STAT_HEALTH] <= 0 );
 
 		netDamage = cl->pers.totalDamageDealtToEnemies;
 		netDamage -= cl->pers.totalDamageTakenFromEnemies;
@@ -77,7 +78,8 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 //			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
 			cl->ps.persistant[PERS_DEFEND_COUNT],
 			cl->ps.persistant[PERS_ASSIST_COUNT],
-			perfect,
+			dead,
+//			perfect,
 			cl->ps.persistant[PERS_CAPTURES]);
 		j = strlen(entry);
 		if (stringlength + j > 1022)
