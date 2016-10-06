@@ -1476,6 +1476,12 @@ static void NextRound( void )
 			if ( ent->client->pers.connected == CON_CONNECTED )
 				respawn( ent );
 		}
+
+		// clean up dead bodies
+		for ( i = 0; i < BODY_QUEUE_SIZE ; i++ ) {
+			trap_UnlinkEntity( level.bodyQue[i] );
+			level.bodyQue[i]->physicsObject = qfalse;
+		}
 	}
 
 	// repeat the round in case of draw
