@@ -1586,18 +1586,23 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.registered = !strcmp(gameversion, GIT_VERSION);
 	if (!client->pers.registered) {
 		if (gameversion[0] == '\0') {
-			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " plugin.\"");
+			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " clientside.\"");
 		} else {
 			trap_SendServerCommand( clientNum, "cp \""
 				"Your game and this server run different versions of\n"
 				GAMEVERSION "\n"
-				"Please download " GAME_VERSION " plugin.\"");
+				"Please download " GAME_VERSION " clientside.\"");
 		}
 
-		trap_SendServerCommand( clientNum, "print\"" S_COLOR_CYAN
-			"\nTo download client plugin set /cl_allowdownload 1 /mv_allowdownload 1 and reconnect."
-			" Alternatively you should be able to get it from"
-			" http://jk2world.net/files/sm/" GAME_VERSION ".pk3\n\"");
+		if (trap_Cvar_VariableIntegerValue("mv_allowDownload") ||
+			trap_Cvar_VariableIntegerValue("sv_allowDownload"))
+		{
+			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
+				"To update your clientside mod type `\\cl_allowdownload 1`, `\\mv_allowdownload 1` in the console and reconnect.\n\"" );
+		} else {
+			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
+				"Download " GAME_VERSION " clientside from https://github.com/aufau/SaberMod/releases\n\"" );
+		}
 	}
 
 	// locate ent at a spawn point
