@@ -959,7 +959,7 @@ void StopFollowing( gentity_t *ent ) {
 	// shall be fixed in SpectatorClientEndFrame
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// let NextRound call this
-		if ( !level.intermissiontime && !level.roundQueued ) {
+		if ( !level.roundQueued ) {
 			return;
 		}
 	}
@@ -1445,10 +1445,10 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 		p = ConcatArgs( 1 );
 	}
 
-	if ( g_restrictChat.integer && mode == SAY_ALL && !level.warmupTime &&
-		 ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		mode = SAY_TEAM;
-	}
+	if ( g_restrictChat.integer && mode == SAY_ALL && ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+		if ( !level.warmupTime && !level.intermissiontime )
+			if ( !GT_Round(g_gametype.integer) || level.round > 0 )
+				mode = SAY_TEAM;
 
 	G_Say( ent, NULL, mode, p );
 }
@@ -1496,7 +1496,8 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	p = ConcatArgs( 2 );
 
 	if ( g_restrictChat.integer ) {
-		if ( !level.warmupTime &&
+		if ( !level.warmupTime && !level.intermissiontime &&
+			( !GT_Round(g_gametype.integer) || level.round > 0 ) &&
 			 ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
 			 target->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 			trap_SendServerCommand( ent-g_entities,
