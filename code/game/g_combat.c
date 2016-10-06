@@ -3528,8 +3528,21 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				attacker->client->pers.totalDamageDealtToAllies += take;
 			} else {
 				client->pers.totalDamageTakenFromEnemies += take;
-				attacker->client->pers.totalDamageDealtToEnemies += take;
+
+				if (GT_Round(g_gametype.integer)) {
+					int	oldScore, newScore;
+
+					oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+					newScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+
+					if (newScore != oldScore)
+						AddScore(attacker, targ->r.currentOrigin, newScore - oldScore);
+				} else {
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+				}
 			}
+
 		}
 	}
 }
