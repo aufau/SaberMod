@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 10
+COUNT 11
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -92,6 +92,15 @@ INDEX 9
    TEXT_LANGUAGE3 "When one team succeeds a new round begins with all players rejuvenated."
    TEXT_LANGUAGE6 "When one team succeeds a new round begins with all players rejuvenated."
    TEXT_LANGUAGE8 "When one team succeeds a new round begins with all players rejuvenated."
+}
+INDEX 10
+{
+   REFERENCE DEAD
+   TEXT_LANGUAGE1 "DEAD"
+   TEXT_LANGUAGE2 "DEAD"
+   TEXT_LANGUAGE3 "DEAD"
+   TEXT_LANGUAGE6 "DEAD"
+   TEXT_LANGUAGE8 "DEAD"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.
