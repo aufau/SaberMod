@@ -26,6 +26,8 @@
 
 #define OVERLOAD_ATTACK_BASE_SOUND_TIME		20000
 
+#define RND_DAMAGE_SCORE					50
+
 // Prototypes
 
 extern const char * const teamName[TEAM_NUM_TEAMS];
