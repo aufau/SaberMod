@@ -3027,7 +3027,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
-	if ( level.intermissionQueued || level.roundQueued ) {
+	if ( level.intermissionQueued ) {
 		return;
 	}
 	if ( !inflictor ) {
@@ -3162,6 +3162,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
+		if ( level.roundQueued ) {
+			return;
+		}
+
 		if ( g_instagib.integer ) {
 			if (dflags & DAMAGE_RADIUS)
 				return;

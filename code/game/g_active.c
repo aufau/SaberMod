@@ -1022,6 +1022,54 @@ static void G_SwitchTeam( gentity_t *ent ) {
 
 /*
 ==============
+G_Respawn
+
+Handle manual respawn
+==============
+*/
+void G_Respawn( gentity_t *ent ) {
+	gclient_t	*client = ent->client;
+
+	if ( g_gametype.integer == GT_REDROVER ) {
+		G_SwitchTeam(ent);
+		respawn( ent );
+	} else if ( GT_Round(g_gametype.integer) && level.round > 0 &&
+		!level.roundQueued && !level.warmupTime)
+	{
+		team_t	team = client->sess.sessionTeam;
+		int		followNum = -1;
+		int		num;
+		int		i;
+
+		// find a team member still in game
+		for (i = 0; i < level.numPlayingClients; i++) {
+			num = level.sortedClients[i];
+
+			if ( level.clients[num].sess.sessionTeam == team
+				&& level.clients[num].sess.spectatorState == SPECTATOR_NOT
+				&& level.clients[num].ps.stats[STAT_HEALTH] > 0)
+			{
+				followNum = i;
+				break;
+			}
+		}
+
+		if ( followNum != -1 ) {
+			// SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, followNum );
+			CopyToBodyQue( ent );
+			client->sess.spectatorState = SPECTATOR_FOLLOW;
+			client->sess.spectatorClient = followNum;
+			trap_UnlinkEntity( ent );
+			ClientSpawn( ent );
+		}
+		// otherwise wait for next round as dead
+	} else {
+		respawn( ent );
+	}
+}
+
+/*
+==============
 ClientThink
 
 This will be called once for each client frame, which will
@@ -1313,10 +1361,7 @@ void ClientThink_real( gentity_t *ent ) {
 		(level.time - FALL_FADE_TIME) > ent->client->ps.fallingToDeath)
 	{ //die!
 		player_die(ent, ent, ent, 100000, MOD_FALLING);
-		if ( g_gametype.integer == GT_REDROVER ) {
-			G_SwitchTeam(ent);
-		}
-		respawn(ent);
+		G_Respawn(ent);
 		ent->client->ps.fallingToDeath = 0;
 
 		G_MuteSound(ent->s.number, CHAN_VOICE); //stop screaming, because you are dead!
@@ -1721,19 +1766,13 @@ void ClientThink_real( gentity_t *ent ) {
 			// forcerespawn is to prevent users from waiting out powerups
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
-				if ( g_gametype.integer == GT_REDROVER ) {
-					G_SwitchTeam(ent);
-				}
-				respawn( ent );
+				G_Respawn( ent );
 				return;
 			}
 
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
-				if ( g_gametype.integer == GT_REDROVER ) {
-					G_SwitchTeam(ent);
-				}
-				respawn( ent );
+				G_Respawn( ent );
 			}
 		}
 		else if (gDoSlowMoDuel)

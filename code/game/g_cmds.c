@@ -947,6 +947,12 @@ void StopFollowing( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 	int			i;
 
+	// don't allow team player free floating
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		Cmd_FollowCycle_f( ent, 1 );
+		return;
+	}
+
 	ent->r.svFlags &= ~SVF_BOT;
 	client->sess.sessionTeam = TEAM_SPECTATOR;
 	client->sess.spectatorState = SPECTATOR_FREE;
@@ -1118,16 +1124,19 @@ Cmd_FollowCycle_f
 =================
 */
 void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
+	gclient_t	*client = ent->client;
+	qboolean	teamRestrict;
+	team_t		team;
 	int			clientnum;
 	int			original;
 
-	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		return;
-	} else if ( ent->client->sess.spectatorState == SPECTATOR_FREE ) {
+	} else if ( client->sess.spectatorState == SPECTATOR_FREE ) {
 		gentity_t *target = G_CrosshairPlayer(ent, 8192);
 
 		if (target) {
-			SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->client->ps.clientNum);
 			return;
 		}
 	}
@@ -1136,7 +1145,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		G_Error( "Cmd_FollowCycle_f: bad dir %i", dir );
 	}
 
-	clientnum = ent->client->sess.spectatorClient;
+	clientnum = client->sess.spectatorClient;
 
 	if (clientnum == -1) {
 		clientnum = level.follow1;
@@ -1145,6 +1154,15 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 	if ( clientnum < 0 || clientnum >= level.maxclients ) {
 		clientnum = 0;
+	}
+
+	// can't make yourself a following non-spectator here
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		teamRestrict = qtrue;
+		team = client->sess.sessionTeam;
+	} else {
+		teamRestrict = qfalse;
+		team = TEAM_SPECTATOR;
 	}
 
 	original = clientnum;
@@ -1168,8 +1186,13 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 			continue;
 		}
 
+		// can't spy on opposing team
+		if ( teamRestrict && level.clients[ clientnum ].sess.sessionTeam != team ) {
+			continue;
+		}
+
 		// this is good, we can use it
-		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, clientnum );
+		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, clientnum );
 		return;
 	} while ( clientnum != original );
 
@@ -1178,21 +1201,26 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 void Cmd_SmartFollowCycle_f( gentity_t *ent )
 {
-	gentity_t	*target;
-	gclient_t	*client;
+	gclient_t	*client = ent->client;
 	gclient_t	*ci;
+	qboolean	teamRestrict;
+	team_t		followTeam;
 	int			clientNum, clientRank;
 	int			i;
 
 	clientNum = -1;
 
-	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		return;
-	} else if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
-		clientNum = ent->client->sess.spectatorClient;
-	} else if ((target = G_CrosshairPlayer(ent, 8192))) {
-		SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
-		return;
+	} else if ( client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+		clientNum = client->sess.spectatorClient;
+	} else if ( client->sess.spectatorState == SPECTATOR_FREE ) {
+		gentity_t	*target = G_CrosshairPlayer(ent, 8192);
+
+		if ( target ) {
+			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			return;
+		}
 	}
 
 	if (clientNum == -1) {
@@ -1205,19 +1233,32 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		clientNum = level.sortedClients[0];
 	}
 
-	client = level.clients + clientNum;
+	ci = level.clients + clientNum;
 
 	// Sanity check
-	if (client->pers.connected != CON_CONNECTED  ||
-		client->sess.spectatorState != SPECTATOR_NOT)
+	if (ci->pers.connected != CON_CONNECTED  ||
+		ci->sess.spectatorState != SPECTATOR_NOT)
 	{
 		StopFollowing(ent);
 		return;
 	}
 
+	// can't make yourself a following non-spectator here
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		teamRestrict = qtrue;
+		followTeam = client->sess.sessionTeam;
+	} else {
+		teamRestrict = qfalse;
+		followTeam = ci->sess.sessionTeam;
+	}
+
 	// Alternate between dueling players
-	if ( client->ps.duelInProgress ) {
-		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, client->ps.duelIndex );
+	if ( ci->ps.duelInProgress ) {
+		if ( !teamRestrict ||
+			level.clients[ci->ps.duelIndex].sess.sessionTeam == followTeam )
+		{
+			SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, ci->ps.duelIndex );
+		}
 		return;
 	}
 
@@ -1239,10 +1280,16 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		}
 		ci = &level.clients[level.sortedClients[i]];
 
+		if (ci->sess.spectatorState != SPECTATOR_NOT)
+			continue;
+		if (teamRestrict && ci->sess.sessionTeam != followTeam)
+			continue;
+
 		if (ci->ps.isJediMaster || ci->ps.powerups[PW_REDFLAG] ||
 			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI])
 		{
-			SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
+			SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
+			// must return here, SetTeamSpec calls CalculateRanks!
 			return;
 		}
 	} while (i != clientRank);
@@ -1254,16 +1301,25 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 				i = level.numPlayingClients - 1;
 			}
 			ci = &level.clients[level.sortedClients[i]];
-		} while (ci->sess.sessionTeam != client->sess.sessionTeam);
 
-		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
+			if (ci->sess.spectatorState == SPECTATOR_NOT && ci->sess.sessionTeam == followTeam) {
+				SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
+				return;
+			}
+		} while (i != clientRank);
 	} else {
 		// Cycle through sorted players
-		if (--i < 0) {
-			i = level.numPlayingClients - 1;
-		}
+		do {
+			if (--i < 0) {
+				i = level.numPlayingClients - 1;
+			}
+			ci = &level.clients[level.sortedClients[i]];
 
-		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, level.sortedClients[i] );
+			if (ci->sess.spectatorState == SPECTATOR_NOT) {
+				SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
+				return;
+			}
+		} while (i != clientRank);
 	}
 }
 

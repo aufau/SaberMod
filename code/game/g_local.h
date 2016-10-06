@@ -885,6 +885,7 @@ void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
 void ClientEndFrame			( gentity_t *ent );
 void G_RunClient			( gentity_t *ent );
+void G_Respawn				( gentity_t *ent );
 
 //
 // g_team.c

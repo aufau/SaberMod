@@ -1453,21 +1453,28 @@ static void Shuffle( void )
 
 static void NextRound( void )
 {
+	gentity_t	*ent;
 	char	warmup[2];
 	int		i;
 
+	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+
 	if ( g_gametype.integer == GT_REDROVER ) {
-		level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
 		Shuffle(); // calls CheckExitRules
 	} else {
-		for ( i = 0; i < level.numNonSpectatorClients; i++ ) {
-			gentity_t	*ent = g_entities + level.sortedClients[i];
+		for ( i = 0; i < level.maxclients; i++ ) {
+			ent = g_entities + i;
 
-			ResetClientState(ent);
-			SetTeam(ent, ent->client->sess.sessionTeam);
-			respawn(ent);
-			// don't block G_KillBox in respawn
-			level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
+			if ( !ent->inuse )
+				continue;
+
+			if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+				ResetClientState(ent);
+				ent->client->sess.spectatorState = SPECTATOR_NOT;
+			}
+
+			if ( ent->client->pers.connected == CON_CONNECTED )
+				respawn( ent );
 		}
 	}
 
