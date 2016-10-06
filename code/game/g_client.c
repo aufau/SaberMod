@@ -1928,15 +1928,16 @@ void ClientSpawn(gentity_t *ent) {
 		{
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
 		}
-		else if (g_gametype.integer == GT_JEDIMASTER)
-		{
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
-		}
 
 		if (g_gametype.integer == GT_JEDIMASTER)
 		{
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
 			client->ps.stats[STAT_WEAPONS] &= ~(1 << WP_SABER);
 			client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
+		}
+		else if ( GT_Round(g_gametype.integer) )
+		{
+			client->ps.stats[STAT_WEAPONS] |= ~wDisable & LEGAL_WEAPONS;
 		}
 
 		if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL))
@@ -1961,11 +1962,24 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 	client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
 
+	if ( GT_Round(g_gametype.integer) && !HasSetSaberOnly() ) {
+		for ( i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++ ) {
+			if ( i == HI_DATAPAD || i == HI_BINOCULARS )
+				continue;
+			if ( !G_HoldableDisabled(i) )
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << i);
+		}
+
+		for ( i = 0; i < AMMO_MAX; i++ )
+			client->ps.ammo[i] = ammoData[i].max;
+	}
+
 	if ( client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		client->ps.stats[STAT_WEAPONS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
+		client->ps.weapon = WP_NONE;
 	}
 
 	client->ps.ammo[AMMO_BLASTER] = 100; //ammoData[AMMO_BLASTER].max; //100 seems fair.
@@ -1981,6 +1995,7 @@ void ClientSpawn(gentity_t *ent) {
 		client->ps.ammo[WP_BRYAR_PISTOL] = 100;
 	}
 */
+
 	client->ps.rocketLockIndex = MAX_CLIENTS;
 	client->ps.rocketLockTime = 0;
 
@@ -2044,13 +2059,15 @@ void ClientSpawn(gentity_t *ent) {
 		// fire the targets of the spawn point
 		G_UseTargets( spawnPoint, ent );
 
-		// select the highest weapon number available, after any
-		// spawn given items have fired
-		client->ps.weapon = 0;
-		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
-			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-				client->ps.weapon = i;
-				break;
+		if ( !GT_Round(g_gametype.integer) ) {
+			// select the highest weapon number available, after any
+			// spawn given items have fired
+			client->ps.weapon = 0;
+			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+					client->ps.weapon = i;
+					break;
+				}
 			}
 		}
 	}

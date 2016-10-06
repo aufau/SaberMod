@@ -92,16 +92,11 @@ extern ammoData_t ammoData[AMMO_MAX];
 // Specific weapon information
 
 #define FIRST_WEAPON		WP_BRYAR_PISTOL		// this is the first weapon for next and prev weapon switching
-#define MAX_PLAYER_WEAPONS	WP_NUM_WEAPONS-1	// this is the max you can switch to and get with the give all.
-
+#define LEGAL_WEAPONS		((1 << (WP_DET_PACK + 1))  - ( 1 << WP_NONE ))
 
 #define DEFAULT_SHOTGUN_SPREAD	700
 #define DEFAULT_SHOTGUN_COUNT	11
 
 #define	LIGHTNING_RANGE		768
-
-
-
-
 
 #endif//#ifndef __WEAPONS_H__

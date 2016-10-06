@@ -633,6 +633,8 @@ void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
 void SaveRegisteredItems( void );
 
+qboolean	G_HoldableDisabled( holdable_t holdable );
+
 //
 // g_utils.c
 //
