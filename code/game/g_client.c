@@ -645,12 +645,15 @@ void CopyToBodyQue( gentity_t *ent ) {
 	gentity_t		*body;
 	int			contents;
 
-	if (level.intermissiontime)
-	{
+	if (level.intermissiontime || level.roundQueued) {
 		return;
 	}
 
 	if (ent->r.contents != CONTENTS_CORPSE) {
+		return;
+	}
+
+	if (ent->client->sess.spectatorState != SPECTATOR_NOT) {
 		return;
 	}
 
