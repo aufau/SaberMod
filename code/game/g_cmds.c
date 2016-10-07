@@ -1762,11 +1762,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "remove" ) )     voteCmd = CV_REMOVE;
 	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_NOKICK;
 	else if ( !Q_stricmp( arg1, "wk" ) )         voteCmd = CV_WITHKICK;
+	else if ( !Q_stricmp( arg1, "mode" ) )       voteCmd = CV_MODE;
 	else                                         voteCmd = CV_INVALID;
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode [mode].\n\"" );
 		return;
 	}
 
@@ -1929,6 +1930,42 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			"dmflags %d; g_friendlyFire 0; g_noKick 0", g_dmflags.integer & ~DF_NO_KICK );
 		Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		break;
+	case CV_MODE:
+	{
+		fileHandle_t	f;
+		char			config[MAX_QPATH];
+
+		// add .cfg extension for comparing
+		Com_sprintf( config, sizeof(config), "modes/%s.cfg", arg2 );
+
+		if ( arg2[0] == '\0' || arg2[0] == '?' || trap_FS_FOpenFile( config, &f, FS_READ) < 0 )
+		{
+			// list modes and return
+			char	filelist[MAX_QPATH * 20];
+			char	*file = filelist;
+			int		numfiles;
+			int		len;
+			int		i;
+
+			trap_SendServerCommand( ent-g_entities, "print \"Pick one of the following modes:\n\"" );
+			numfiles = trap_FS_GetFileList( "modes", ".cfg", filelist, sizeof(filelist) );
+
+			for ( i = 0; i < numfiles; i++ ) {
+				len = strlen(file);
+				file[len - 4] = '\0'; // strip extension
+				trap_SendServerCommand( ent-g_entities,
+					va("print \"" S_COLOR_BRAND "Mode" S_COLOR_WHITE " %s\n\"", file) );
+				file += len + 1;
+			}
+
+			return;
+		}
+		trap_FS_FCloseFile( f );
+
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "exec \"%s\"", config );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Mode %s", arg2 );
+		break;
+	}
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
