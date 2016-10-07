@@ -857,6 +857,33 @@ void SP_worldspawn( void )
 				i, lengthRed, lengthGreen, lengthBlue);
 		}
 	}
+
+	// write available modes to CS_MODES
+	{
+		char	cs[MAX_INFO_STRING];
+		char	filelist[MAX_INFO_STRING * 3];
+		char	*file = filelist;
+		int		numfiles;
+		int		len;
+		int		i;
+
+		cs[0] = '\0';
+		numfiles = trap_FS_GetFileList( "modes", ".cfg", filelist, sizeof(filelist) );
+		// filelist looks like this: tffa.cfg\0ctf.cfg\0ca.cfg\0
+
+		for ( i = 0; i < numfiles; i++ ) {
+			len = strlen( file );
+			file[len - 4] = '\\'; // strip extension and use '\\' as separator
+			file[len - 3] = '\0';
+			Q_strcat( cs, sizeof( cs ), file );
+			file += len + 1;
+		}
+
+		if ( strlen( cs ) + 1 >= sizeof( cs ) )
+			Com_Printf( "WARNING: Too many modes. Delete some or use shorter names.\n" );
+
+		trap_SetConfigstring( CS_MODES, cs );
+	}
 }
 
 
