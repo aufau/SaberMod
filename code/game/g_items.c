@@ -1925,6 +1925,24 @@ void ClearRegisteredItems( void ) {
 	RegisterItem( BG_FindItemForWeapon( WP_BRYAR_PISTOL ) );
 	RegisterItem( BG_FindItemForWeapon( WP_STUN_BATON ) );
 	RegisterItem( BG_FindItemForWeapon( WP_SABER ) );
+
+	if ( GT_Round(g_gametype.integer) ) {
+		int	weapons = ~g_weaponDisable.integer & LEGAL_WEAPONS;
+		int	i;
+
+		for ( i = 0; i < WP_NUM_WEAPONS; i++ )
+			if ( (1 << i) & weapons )
+				RegisterItem( BG_FindItemForWeapon( i ) );
+
+		for ( i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++ ) {
+			if ( i != HI_DATAPAD && i != HI_BINOCULARS ) {
+				gitem_t *item = BG_FindItemForHoldable( i );
+
+				if ( !G_ItemDisabled( item ) )
+					RegisterItem( item );
+			}
+		}
+	}
 }
 
 /*
