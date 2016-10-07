@@ -1941,21 +1941,19 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if ( arg2[0] == '\0' || arg2[0] == '?' || trap_FS_FOpenFile( config, &f, FS_READ) < 0 )
 		{
 			// list modes and return
-			char	filelist[MAX_QPATH * 20];
-			char	*file = filelist;
-			int		numfiles;
-			int		len;
-			int		i;
+			char	modes[MAX_INFO_STRING];
+			char	*mode = modes;
+			char	*next;
 
 			trap_SendServerCommand( ent-g_entities, "print \"Pick one of the following modes:\n\"" );
-			numfiles = trap_FS_GetFileList( "modes", ".cfg", filelist, sizeof(filelist) );
 
-			for ( i = 0; i < numfiles; i++ ) {
-				len = strlen(file);
-				file[len - 4] = '\0'; // strip extension
+			trap_GetConfigstring( CS_MODES, modes, sizeof(modes) );
+
+			while ( (next = strchr(mode, '\\')) ) {
+				*next = '\0';
 				trap_SendServerCommand( ent-g_entities,
-					va("print \"" S_COLOR_BRAND "Mode" S_COLOR_WHITE " %s\n\"", file) );
-				file += len + 1;
+					va("print \"" S_COLOR_BRAND "Mode" S_COLOR_WHITE " %s\n\"", mode) );
+				mode = next + 1;
 			}
 
 			return;
