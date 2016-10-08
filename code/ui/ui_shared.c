@@ -1868,7 +1868,7 @@ qboolean Item_TextScroll_HandleKey ( itemDef_t *item, int key, qboolean down, qb
 		max = Item_TextScroll_MaxScroll(item);
 
 		viewmax = (item->window.rect.h / scrollPtr->lineHeight);
-		if ( key == A_CURSOR_UP || key == A_KP_8 )
+		if ( key == A_CURSOR_UP || key == A_KP_8 || key == A_MWHEELUP )
 		{
 			scrollPtr->startPos--;
 			if (scrollPtr->startPos < 0)
@@ -1878,7 +1878,7 @@ qboolean Item_TextScroll_HandleKey ( itemDef_t *item, int key, qboolean down, qb
 			return qtrue;
 		}
 
-		if ( key == A_CURSOR_DOWN || key == A_KP_2 )
+		if ( key == A_CURSOR_DOWN || key == A_KP_2 || key == A_MWHEELDOWN )
 		{
 			scrollPtr->startPos++;
 			if (scrollPtr->startPos > max)
@@ -2292,107 +2292,91 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 	listBoxDef_t *listPtr = (listBoxDef_t*)item->typeData;
 	int count = DC->feederCount(item->special);
 	int max, viewmax;
+	int step = 0;
+	int scroll = 0;
 
 	if (force || (Rect_ContainsPoint(&item->window.rect, DC->cursorx, DC->cursory) && item->window.flags & WINDOW_HASFOCUS)) {
 		max = Item_ListBox_MaxScroll(item);
 		if (item->window.flags & WINDOW_HORIZONTAL) {
 			viewmax = (item->window.rect.w / listPtr->elementWidth);
 			if ( key == A_CURSOR_LEFT || key == A_KP_4 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos--;
-					if (listPtr->cursorPos < 0) {
-						listPtr->cursorPos = 0;
-					}
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos--;
-					if (listPtr->startPos < 0)
-						listPtr->startPos = 0;
-				}
-				return qtrue;
-			}
-			if ( key == A_CURSOR_RIGHT || key == A_KP_6 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos++;
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= count) {
-						listPtr->cursorPos = count-1;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos++;
-					if (listPtr->startPos >= count)
-						listPtr->startPos = count-1;
-				}
-				return qtrue;
-			}
-		}
-		else {
+				step = -1;
+			else if ( key == A_CURSOR_RIGHT || key == A_KP_6 )
+				step = 1;
+			else if ( key == A_MWHEELUP )
+				scroll = 1;
+			else if ( key == A_MWHEELDOWN )
+				scroll = -1;
+		} else {
 			viewmax = (item->window.rect.h / listPtr->elementHeight);
 			if ( key == A_CURSOR_UP || key == A_KP_8 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos--;
-					if (listPtr->cursorPos < 0) {
-						listPtr->cursorPos = 0;
-					}
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos--;
-					if (listPtr->startPos < 0)
-						listPtr->startPos = 0;
-				}
-				return qtrue;
-			}
+				step = -1;
 			if ( key == A_CURSOR_DOWN || key == A_KP_2 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos++;
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= count) {
-						listPtr->cursorPos = count-1;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos++;
-					if (listPtr->startPos > max)
-						listPtr->startPos = max;
-				}
-				return qtrue;
-			}
+				step = 1;
+			else if ( key == A_MWHEELUP )
+				scroll = -1;
+			else if ( key == A_MWHEELDOWN )
+				scroll = 1;
 		}
+
+		if ( step == -1 ) {
+			if (!listPtr->notselectable) {
+				listPtr->cursorPos--;
+				if (listPtr->cursorPos < 0) {
+					listPtr->cursorPos = 0;
+				}
+				if (listPtr->cursorPos < listPtr->startPos) {
+					listPtr->startPos = listPtr->cursorPos;
+				}
+				if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = listPtr->cursorPos - viewmax + 1;
+				}
+				item->cursorPos = listPtr->cursorPos;
+				DC->feederSelection(item->special, item->cursorPos);
+			}
+			else {
+				listPtr->startPos--;
+				if (listPtr->startPos < 0)
+					listPtr->startPos = 0;
+			}
+			return qtrue;
+		}
+
+		if ( step == 1 ) {
+			if (!listPtr->notselectable) {
+				listPtr->cursorPos++;
+				if (listPtr->cursorPos < listPtr->startPos) {
+					listPtr->startPos = listPtr->cursorPos;
+				}
+				if (listPtr->cursorPos >= count) {
+					listPtr->cursorPos = count-1;
+				}
+				if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = listPtr->cursorPos - viewmax + 1;
+				}
+				item->cursorPos = listPtr->cursorPos;
+				DC->feederSelection(item->special, item->cursorPos);
+			}
+			else {
+				listPtr->startPos++;
+				if (listPtr->startPos >= count)
+					listPtr->startPos = count-1;
+			}
+			return qtrue;
+		}
+
+		if ( scroll == -1 ) {
+			listPtr->startPos--;
+			if (listPtr->startPos < 0)
+				listPtr->startPos = 0;
+		}
+
+		if (scroll == 1) {
+			listPtr->startPos++;
+			if (listPtr->startPos > max)
+				listPtr->startPos = max;
+		}
+
 		// mouse hit
 		if (key == A_MOUSE1 || key == A_MOUSE2) {
 			if (item->window.flags & WINDOW_LB_LEFTARROW) {
