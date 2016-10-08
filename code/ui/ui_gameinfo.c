@@ -323,3 +323,22 @@ char *UI_GetBotNameByNumber( int num ) {
 	}
 	return "Kyle";
 }
+
+void UI_LoadModes( void ) {
+	char *mode;
+	int i;
+
+	trap_GetConfigString( CS_MODES, uiInfo.modeBuf, sizeof( uiInfo.modeBuf ) );
+	mode = uiInfo.modeBuf;
+
+	for ( i = 0; i < MAX_MODES; i++ ) {
+		uiInfo.modeList[i] = mode;
+		mode = strchr( mode, '\\' );
+		if (!mode)
+			break;
+		*mode++ = '\0';
+	}
+
+	uiInfo.modeCount = i;
+	uiInfo.modeIndex = 0;
+}

@@ -617,6 +617,7 @@ typedef struct {
 #define MAX_MODS 64
 #define MAX_DEMOS 256
 #define MAX_MOVIES 256
+#define MAX_MODES 128
 #define MAX_PLAYERMODELS 256
 
 #define MAX_SCROLLTEXT_SIZE		4096
@@ -800,6 +801,11 @@ typedef struct {
 	int movieCount;
 	int movieIndex;
 	int previewMovie;
+
+	char modeBuf[MAX_INFO_STRING];
+	const char *modeList[MAX_MODES];
+	int modeCount;
+	int modeIndex;
 
 	char scrolltext[MAX_SCROLLTEXT_SIZE];
 	const char *scrolltextLine[MAX_SCROLLTEXT_LINES];
@@ -1103,6 +1109,8 @@ void UI_SPUnlock_f( void );
 void UI_SPUnlockMedals_f( void );
 
 void UI_InitGameinfo( void );
+
+void UI_LoadModes( void );
 
 //
 // ui_login.c

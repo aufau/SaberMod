@@ -2082,6 +2082,12 @@ static void UI_DrawAllMapsSelection(rectDef_t *rect, float scale, vec4_t color, 
 	}
 }
 
+static void UI_DrawModesSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
+	if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
+	  Text_Paint(rect->x, rect->y, scale, color, uiInfo.modeList[uiInfo.modeIndex], 0, 0, textStyle, iMenuFont);
+	}
+}
+
 static void UI_DrawOpponentName(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
   Text_Paint(rect->x, rect->y, scale, color, UI_Cvar_VariableString("ui_opponentName"), 0, 0, textStyle, iMenuFont);
 }
@@ -2288,6 +2294,8 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 		case UI_TIER_GAMETYPE:
 			break;
 		case UI_ALLMAPS_SELECTION:
+			break;
+		case UI_MODES_SELECTION:
 			break;
 		case UI_OPPONENT_NAME:
 			break;
@@ -2825,6 +2833,9 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_MAPS_SELECTION:
 			UI_DrawAllMapsSelection(&rect, scale, color, textStyle, qfalse, iMenuFont);
+			break;
+		case UI_MODES_SELECTION:
+			UI_DrawModesSelection(&rect, scale, color, textStyle, iMenuFont);
 			break;
 		case UI_OPPONENT_NAME:
 			UI_DrawOpponentName(&rect, scale, color, textStyle, iMenuFont);
@@ -4320,6 +4331,8 @@ static void UI_RunMenuScript(char **args)
 			UI_LoadMovies();
 		} else if (Q_stricmp(name, "LoadMods") == 0) {
 			UI_LoadMods();
+		} else if (Q_stricmp(name, "loadModes") == 0) {
+			UI_LoadModes();
 		} else if (Q_stricmp(name, "playMovie") == 0) {
 			if (uiInfo.previewMovie >= 0) {
 			  trap_CIN_StopCinematic(uiInfo.previewMovie);
@@ -4427,6 +4440,10 @@ static void UI_RunMenuScript(char **args)
 		} else if (Q_stricmp(name, "voteMap") == 0) {
 			if (ui_currentNetMap.integer >=0 && ui_currentNetMap.integer < uiInfo.mapCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map %s\n",uiInfo.mapList[ui_currentNetMap.integer].mapLoadName) );
+			}
+		} else if (Q_stricmp(name, "voteMode") == 0) {
+			if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote mode \"%s\"\n",uiInfo.modeList[uiInfo.modeIndex]) );
 			}
 		} else if (Q_stricmp(name, "voteKick") == 0) {
 			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
@@ -5450,6 +5467,9 @@ static int UI_FeederCount(float feederID)
 
 		case FEEDER_DEMOS:
 			return uiInfo.demoCount;
+
+		case FEEDER_MODES:
+			return uiInfo.modeCount;
 	}
 
 	return 0;
@@ -5766,6 +5786,10 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 		if (index >= 0 && index < uiInfo.demoCount) {
 			return uiInfo.demoList[index];
 		}
+	} else if (feederID == FEEDER_MODES) {
+		if (index >= 0 && index < uiInfo.modeCount) {
+			return uiInfo.modeList[index];
+		}
 	}
 	return "";
 }
@@ -6004,6 +6028,8 @@ qboolean UI_FeederSelection(float feederID, int index) {
 		uiInfo.previewMovie = -1;
 	} else if (feederID == FEEDER_DEMOS) {
 		uiInfo.demoIndex = index;
+	} else if (feederID == FEEDER_MODES) {
+		uiInfo.modeIndex = index;
 	}
 
 	return qtrue;
