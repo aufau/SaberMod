@@ -2678,7 +2678,7 @@
 		//----------------------------------------------------------------------------------------------
 		itemDef
 		{
-			name                    serverinfo
+			name                    modlist
 			group                   mods
 			rect                    302 184 300 200
 			type                    ITEM_TYPE_LISTBOX
@@ -2695,8 +2695,7 @@
 			outlinecolor            .5 .5 .5 .5
 			elementtype             LISTBOX_TEXT
 			feeder                  9
-			notselectable
-			visible                 0
+			visible                 1
 			columns                 1 2 40 20               // 200 80 30
 		}
 
