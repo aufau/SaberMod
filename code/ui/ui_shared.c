@@ -2344,13 +2344,11 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 				}
 				item->cursorPos = listPtr->cursorPos;
 				DC->feederSelection(item->special, item->cursorPos);
+				return qtrue;
+			} else {
+				scroll = -1;
 			}
-			else {
-				listPtr->startPos--;
-				if (listPtr->startPos < 0)
-					listPtr->startPos = 0;
-			}
-			return qtrue;
+
 		}
 
 		if ( step == 1 ) {
@@ -2367,25 +2365,24 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 				}
 				item->cursorPos = listPtr->cursorPos;
 				DC->feederSelection(item->special, item->cursorPos);
+				return qtrue;
+			} else {
+				scroll = 1;
 			}
-			else {
-				listPtr->startPos++;
-				if (listPtr->startPos >= count)
-					listPtr->startPos = count-1;
-			}
-			return qtrue;
 		}
 
 		if ( scroll == -1 ) {
 			listPtr->startPos--;
 			if (listPtr->startPos < 0)
 				listPtr->startPos = 0;
+			return qtrue;
 		}
 
 		if (scroll == 1) {
 			listPtr->startPos++;
 			if (listPtr->startPos > max)
 				listPtr->startPos = max;
+			return qtrue;
 		}
 
 		// mouse hit
