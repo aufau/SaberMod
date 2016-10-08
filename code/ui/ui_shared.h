@@ -152,7 +152,6 @@ typedef struct listBoxDef_s {
 	int startPos;
 	int endPos;
 	int drawPadding;
-	int cursorPos;
 	float elementWidth;
 	float elementHeight;
 	int elementStyle;
