@@ -659,6 +659,7 @@
 			name                    kick
 			group                   grpCallVote
 			text                    @MENUS0_KICK_PLAYER
+			ownerdraw				UI_PLAYER_LIST_SELECTION
 			rect                    120 25 230 20
 			textalign               0
 			textalignx              5
