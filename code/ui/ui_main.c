@@ -2088,6 +2088,12 @@ static void UI_DrawModesSelection(rectDef_t *rect, float scale, vec4_t color, in
 	}
 }
 
+static void UI_DrawPlayerListSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
+	if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
+	  Text_Paint(rect->x, rect->y, scale, color, uiInfo.playerNames[uiInfo.playerIndex], 0, 0, textStyle, iMenuFont);
+	}
+}
+
 static void UI_DrawOpponentName(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
   Text_Paint(rect->x, rect->y, scale, color, UI_Cvar_VariableString("ui_opponentName"), 0, 0, textStyle, iMenuFont);
 }
@@ -2836,6 +2842,9 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_MODES_SELECTION:
 			UI_DrawModesSelection(&rect, scale, color, textStyle, iMenuFont);
+			break;
+		case UI_PLAYER_LIST_SELECTION:
+			UI_DrawPlayerListSelection(&rect, scale, color, textStyle, iMenuFont);
 			break;
 		case UI_OPPONENT_NAME:
 			UI_DrawOpponentName(&rect, scale, color, textStyle, iMenuFont);
