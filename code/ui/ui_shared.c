@@ -25,7 +25,6 @@ typedef struct scrollInfo_s {
 	float xStart;
 	float yStart;
 	itemDef_t *item;
-	qboolean scrollDir;
 } scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
@@ -2778,7 +2777,7 @@ static void Scroll_ListBox_AutoFunc(void *p) {
 		// need to scroll which is done by simulating a click to the item
 		// this is done a bit sideways as the autoscroll "knows" that the item is a listbox
 		// so it calls it directly
-		Item_ListBox_HandleKey(si->item, si->scrollKey, qtrue, qfalse);
+		Item_ListBox_HandleKey(si->item, si->scrollKey, qtrue, qtrue);
 		si->nextScrollTime = DC->realTime + si->adjustValue;
 	}
 
@@ -2865,7 +2864,7 @@ static void Scroll_ListBox_SelectFunc(void *p) {
 	if (listPtr->notselectable)
 		return;
 
-	// no scrolling for now
+	si->scrollKey = A_NULL;
 
 	if (item->window.flags & WINDOW_HORIZONTAL) {
 		if (listPtr->elementStyle == LISTBOX_IMAGE) {
@@ -2875,9 +2874,10 @@ static void Scroll_ListBox_SelectFunc(void *p) {
 			r.w = item->window.rect.w - 2 - listPtr->drawPadding;
 			if (Rect_ContainsPoint(&r, x, y)) {
 				pos = (x - r.x) / listPtr->elementWidth + listPtr->startPos;
-				if (pos >= listPtr->endPos) {
-					pos = listPtr->endPos;
-				}
+			} else if (x < r.x) {
+				si->scrollKey = A_CURSOR_LEFT;
+			} else if (x > r.x + r.w) {
+				si->scrollKey = A_CURSOR_RIGHT;
 			}
 		} else {
 			// text hit..
@@ -2890,16 +2890,28 @@ static void Scroll_ListBox_SelectFunc(void *p) {
 		r.h = item->window.rect.h - 2 - listPtr->drawPadding;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			pos = (y - LISTBOX_HIGHLIGHT_DROP - r.y) / listPtr->elementHeight + listPtr->startPos;
-			if (pos > listPtr->endPos) {
-				pos = listPtr->endPos;
-			}
+		} else if (y < r.y) {
+			si->scrollKey = A_CURSOR_UP;
+		} else if (y > r.y + r.h) {
+			si->scrollKey = A_CURSOR_DOWN;
 		}
 	}
+
+	if (si->scrollKey != A_NULL) {
+		Scroll_ListBox_AutoFunc( si );
+		return;
+	}
+
+	if (pos < listPtr->startPos)
+		pos = listPtr->startPos;
+	if (pos > listPtr->endPos)
+		pos = listPtr->endPos;
 
 	if (item->cursorPos != pos) {
 		item->cursorPos = pos;
 		DC->feederSelection(item->special, item->cursorPos);
 	}
+
 }
 
 static void Scroll_Slider_ThumbFunc(void *p) {
@@ -2942,7 +2954,6 @@ void Item_StartCapture(itemDef_t *item, int key)
 				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
 				scrollInfo.adjustValue = SCROLL_TIME_START;
 				scrollInfo.scrollKey = key;
-				scrollInfo.scrollDir = (flags & WINDOW_LB_LEFTARROW) ? qtrue : qfalse;
 				scrollInfo.item = item;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_ListBox_AutoFunc;
@@ -2956,6 +2967,9 @@ void Item_StartCapture(itemDef_t *item, int key)
 				captureFunc = &Scroll_ListBox_ThumbFunc;
 				itemCapture = item;
 			} else {
+				scrollInfo.nextScrollTime = DC->realTime + SCROLL_TIME_START;
+				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
+				scrollInfo.adjustValue = SCROLL_TIME_START;
 				scrollInfo.item = item;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_ListBox_SelectFunc;
@@ -2972,7 +2986,6 @@ void Item_StartCapture(itemDef_t *item, int key)
 				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
 				scrollInfo.adjustValue = SCROLL_TIME_START;
 				scrollInfo.scrollKey = key;
-				scrollInfo.scrollDir = (flags & WINDOW_LB_LEFTARROW) ? qtrue : qfalse;
 				scrollInfo.item = item;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_TextScroll_AutoFunc;
