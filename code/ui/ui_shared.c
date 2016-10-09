@@ -4469,7 +4469,7 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	x	 = item->window.rect.x + 1;
 	y	 = item->window.rect.y + 1;
 
-	for (i = scrollPtr->startPos; i < count; i++)
+	for (i = scrollPtr->startPos; i < count; i++, scrollPtr->endPos++)
 	{
 		const char *text;
 
@@ -4482,15 +4482,14 @@ void Item_TextScroll_Paint(itemDef_t *item)
 		DC->drawText(x + 4, y, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle, item->iMenuFont);
 
 		size -= scrollPtr->lineHeight;
-		if (size < scrollPtr->lineHeight)
-		{
-			scrollPtr->drawPadding = scrollPtr->lineHeight - size;
+		y += scrollPtr->lineHeight;
+
+		if (size < scrollPtr->lineHeight) {
 			break;
 		}
-
-		scrollPtr->endPos++;
-		y += scrollPtr->lineHeight;
 	}
+
+	scrollPtr->drawPadding = size;
 }
 
 void Item_ListBox_Paint(itemDef_t *item) {
@@ -4530,7 +4529,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
@@ -4543,14 +4542,14 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 
 				size -= listPtr->elementWidth;
+				x += listPtr->elementWidth;
+
 				if (size < listPtr->elementWidth) {
-					listPtr->drawPadding = size; //listPtr->elementWidth - size;
 					break;
 				}
-				x += listPtr->elementWidth;
-				listPtr->endPos++;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		} else {
 			//
 		}
@@ -4582,7 +4581,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
@@ -4594,19 +4593,19 @@ void Item_ListBox_Paint(itemDef_t *item) {
 					DC->drawRect(x, y, listPtr->elementWidth - 1, listPtr->elementHeight - 1, item->window.borderSize, item->window.borderColor);
 				}
 
-				listPtr->endPos++;
 				size -= listPtr->elementWidth;
+				y += listPtr->elementHeight;
+
 				if (size < listPtr->elementHeight) {
-					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
-				y += listPtr->elementHeight;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		} else {
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				const char *text;
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
@@ -4663,14 +4662,14 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 
 				size -= listPtr->elementHeight;
+				y += listPtr->elementHeight;
+
 				if (size < listPtr->elementHeight) {
-					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
-				listPtr->endPos++;
-				y += listPtr->elementHeight;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		}
 	}
 }
