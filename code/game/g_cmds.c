@@ -1767,7 +1767,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode [mode].\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>.\n\"" );
 		return;
 	}
 
@@ -1938,24 +1938,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		// add .cfg extension for comparing
 		Com_sprintf( config, sizeof(config), "modes/%s.cfg", arg2 );
 
-		if ( arg2[0] == '\0' || arg2[0] == '?' || trap_FS_FOpenFile( config, &f, FS_READ) < 0 )
-		{
-			// list modes and return
-			char	modes[MAX_INFO_STRING];
-			char	*mode = modes;
-			char	*next;
-
-			trap_SendServerCommand( ent-g_entities, "print \"Pick one of the following modes:\n\"" );
-
-			trap_GetConfigstring( CS_MODES, modes, sizeof(modes) );
-
-			while ( (next = strchr(mode, '\\')) ) {
-				*next = '\0';
-				trap_SendServerCommand( ent-g_entities,
-					va("print \"" S_COLOR_BRAND "Mode" S_COLOR_WHITE " %s\n\"", mode) );
-				mode = next + 1;
-			}
-
+		if ( arg2[0] == '\0' ) {
+			trap_SendServerCommand( ent-g_entities, "print \"Usage: callvote mode <name>\n\"" );
+			return;
+		}
+		if ( trap_FS_FOpenFile( config, &f, FS_READ) < 0 ) {
+			trap_SendServerCommand( ent-g_entities, "print \"Unknown mode.\n\"" );
 			return;
 		}
 		trap_FS_FCloseFile( f );
