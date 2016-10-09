@@ -12,10 +12,10 @@
 
 #define LISTBOX_HIGHLIGHT_DROP	2
 
-#define SCROLL_TIME_START					500
+#define SCROLL_TIME_START					250
 #define SCROLL_TIME_ADJUST				150
-#define SCROLL_TIME_ADJUSTOFFSET	40
-#define SCROLL_TIME_FLOOR					20
+#define SCROLL_TIME_ADJUSTOFFSET	25
+#define SCROLL_TIME_FLOOR					30
 
 typedef struct scrollInfo_s {
 	int nextScrollTime;
