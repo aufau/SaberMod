@@ -1194,6 +1194,10 @@ static void CG_RegisterSounds( void ) {
 		CG_UpdateConfigString( CS_SOUNDS + i, qtrue );
 	}
 
+	for ( i = 1 ; i < MAX_FX ; i++ ) {
+		CG_UpdateConfigString( CS_EFFECTS + i, qtrue );
+	}
+
 	cg.loadLCARSStage = 2;
 
 	// FIXME: only needed with item
