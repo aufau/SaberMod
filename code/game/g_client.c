@@ -1683,6 +1683,7 @@ void ClientSpawn(gentity_t *ent) {
 	void		*ghoul2save;
 	int		saveSaberNum = ENTITYNUM_NONE;
 	int		wDisable = 0;
+	int		wSpawn = 0;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1815,8 +1816,10 @@ void ClientSpawn(gentity_t *ent) {
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
-	//give default weapons
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_NONE );
+
+	//
+	// give default weapons
+	//
 
 	if (g_gametype.integer == GT_TOURNAMENT)
 	{
@@ -1827,7 +1830,8 @@ void ClientSpawn(gentity_t *ent) {
 		wDisable = g_weaponDisable.integer;
 	}
 
-
+	// g_spawnWeapons 0 means original behaviour, we're checking it later
+	wSpawn = g_spawnWeapons.integer & LEGAL_WEAPONS;
 
 	if ( g_gametype.integer != GT_HOLOCRON
 		&& g_gametype.integer != GT_JEDIMASTER
@@ -1886,73 +1890,109 @@ void ClientSpawn(gentity_t *ent) {
 		{//no force powers set
 			client->ps.trueNonJedi = qtrue;
 			client->ps.trueJedi = qfalse;
-			if (!wDisable || !(wDisable & (1 << WP_BRYAR_PISTOL)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
+			// no saber for you, even with g_spawnWeapons
+			wSpawn &= ~(1 << WP_SABER);
+
+			if (!g_spawnWeapons.integer) {
+				wSpawn = (1 << WP_BRYAR_PISTOL) | (1 << WP_BLASTER) | (1 << WP_BOWCASTER);
+				wSpawn &= ~wDisable;
+				wSpawn |= (1 << WP_STUN_BATON);
 			}
-			if (!wDisable || !(wDisable & (1 << WP_BLASTER)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BLASTER );
-			}
-			if (!wDisable || !(wDisable & (1 << WP_BOWCASTER)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BOWCASTER );
-			}
-			client->ps.stats[STAT_WEAPONS] &= ~(1 << WP_SABER);
-			client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-			client->ps.ammo[AMMO_POWERCELL] = ammoData[AMMO_POWERCELL].max;
-			client->ps.weapon = WP_BRYAR_PISTOL;
 		}
 	}
 	else
 	{//jediVmerc is incompatible with this gametype, turn it off!
 		trap_Cvar_Set( "g_jediVmerc", "0" );
-		if (g_gametype.integer == GT_HOLOCRON)
-		{
-			//always get free saber level 1 in holocron
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SABER );	//these are precached in g_items, ClearRegisteredItems()
-		}
-		else
-		{
-			if (client->ps.fd.forcePowerLevel[FP_SABERATTACK])
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SABER );	//these are precached in g_items, ClearRegisteredItems()
-			}
+
+		if (!g_spawnWeapons.integer) {
+			// these few lines reproduce original logic suprisingly
+			// give base weapon
+			if (g_gametype.integer == GT_HOLOCRON)
+				wSpawn = 1 << WP_SABER;
+			else if (g_gametype.integer == GT_JEDIMASTER)
+				wSpawn = 1 << WP_STUN_BATON;
+			else if (client->ps.fd.forcePowerLevel[FP_SABERATTACK])
+				wSpawn = 1 << WP_SABER;
 			else
-			{ //if you don't have saber attack rank then you don't get a saber
-				client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-			}
-		}
+				wSpawn = 1 << WP_STUN_BATON;
 
-		if (!wDisable || !(wDisable & (1 << WP_BRYAR_PISTOL)))
-		{
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
-		}
-
-		if (g_gametype.integer == GT_JEDIMASTER)
-		{
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
-			client->ps.stats[STAT_WEAPONS] &= ~(1 << WP_SABER);
-			client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-		}
-		else if ( GT_Round(g_gametype.integer) )
-		{
-			client->ps.stats[STAT_WEAPONS] |= ~wDisable & LEGAL_WEAPONS;
-		}
-
-		if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL))
-		{
-			client->ps.weapon = WP_BRYAR_PISTOL;
-		}
-		else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
-		{
-			client->ps.weapon = WP_SABER;
-		}
-		else
-		{
-			client->ps.weapon = WP_STUN_BATON;
+			// give bryar conditionally
+			if (!(wDisable & (1 << WP_BRYAR_PISTOL)) || g_gametype.integer == GT_JEDIMASTER)
+				wSpawn |= 1 << WP_BRYAR_PISTOL;
 		}
 	}
+
+	// few sane restriction to match original behaviour without
+	// introducing more cvars
+
+	// WP_NONE is not usable yet, give saber or baton
+	if (!(wSpawn & ~(1 << WP_NONE)))
+		wSpawn = (1 << WP_STUN_BATON) | (1 << WP_SABER);
+
+	// disable saber if player has no force attack
+	if (!client->ps.fd.forcePowerLevel[FP_SABERATTACK])
+		wSpawn &= ~(1 << WP_SABER);
+
+	// disable stun baton if player has saber already
+	if (wSpawn & (1 << WP_SABER))
+		wSpawn &= ~(1 << WP_STUN_BATON);
+
+	// weapons given on spawn need to be precached in ClearRegisteredItems()
+	client->ps.stats[STAT_WEAPONS] = wSpawn | (1 << WP_NONE);
+
+	//
+	// initial weapon selection
+	//
+
+	if ((wSpawn & client->ps.weapon) &&
+		client->ps.weapon != WP_NONE)
+	{
+		// spawn player with last selected weapon if it's available
+	}
+	else
+	{
+		// if not try 1. bryar 2. saber 3. highest available
+		// this is consisten with original behaviour
+		if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL)) {
+			client->ps.weapon = WP_BRYAR_PISTOL;
+		} else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER)) {
+			client->ps.weapon = WP_SABER;
+		} else {
+			client->ps.weapon = WP_NONE;
+			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+					client->ps.weapon = i;
+					break;
+				}
+			}
+		}
+	}
+
+	//
+	// ammo distribution
+	//
+
+	// give ammo only for weapons owned by player
+	for (i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++) {
+		if (wSpawn & (1 << i)) {
+			// gitem_t	*it = BG_FindItemForWeapon(i);
+			ammo_t	ammo = weaponData[i].ammoIndex;
+
+			// GT_Round check is here because it determines
+			// spawning weapons too
+			if (GT_Round(g_gametype.integer)) {
+				client->ps.ammo[ammo] = ammoData[ammo].max;
+			} else {
+				// give weapon pickup ammo quantity
+				// client->ps.ammo[ammo] = item->quantity;
+				client->ps.ammo[ammo] = ammoData[ammo].init;
+			}
+		}
+	}
+
+	//
+	// give default holdable items
+	//
 
 	/*
 	client->ps.stats[STAT_HOLDABLE_ITEMS] |= ( 1 << HI_BINOCULARS );
@@ -1969,9 +2009,6 @@ void ClientSpawn(gentity_t *ent) {
 			if ( !G_HoldableDisabled(i) )
 				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << i);
 		}
-
-		for ( i = 0; i < AMMO_MAX; i++ )
-			client->ps.ammo[i] = ammoData[i].max;
 	}
 
 	if ( client->sess.spectatorState != SPECTATOR_NOT )
@@ -1981,20 +2018,6 @@ void ClientSpawn(gentity_t *ent) {
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
 		client->ps.weapon = WP_NONE;
 	}
-
-	client->ps.ammo[AMMO_BLASTER] = 100; //ammoData[AMMO_BLASTER].max; //100 seems fair.
-//	client->ps.ammo[AMMO_POWERCELL] = ammoData[AMMO_POWERCELL].max;
-//	client->ps.ammo[AMMO_FORCE] = ammoData[AMMO_FORCE].max;
-//	client->ps.ammo[AMMO_METAL_BOLTS] = ammoData[AMMO_METAL_BOLTS].max;
-//	client->ps.ammo[AMMO_ROCKETS] = ammoData[AMMO_ROCKETS].max;
-/*
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_BRYAR_PISTOL);
-	if ( g_gametype.integer == GT_TEAM ) {
-		client->ps.ammo[WP_BRYAR_PISTOL] = 50;
-	} else {
-		client->ps.ammo[WP_BRYAR_PISTOL] = 100;
-	}
-*/
 
 	client->ps.rocketLockIndex = MAX_CLIENTS;
 	client->ps.rocketLockTime = 0;
@@ -2037,8 +2060,7 @@ void ClientSpawn(gentity_t *ent) {
 		trap_LinkEntity (ent);
 
 		// force the base weapon up
-		client->ps.weapon = WP_BRYAR_PISTOL;
-		client->ps.weaponstate = FIRST_WEAPON;
+		client->ps.weaponstate = WEAPON_READY;
 	}
 
 	// don't allow full run speed for a bit
@@ -2056,13 +2078,17 @@ void ClientSpawn(gentity_t *ent) {
 	if ( level.intermissiontime ) {
 		MoveClientToIntermission( ent );
 	} else {
+		int spawnWeapons = client->ps.stats[STAT_WEAPONS];
 		// fire the targets of the spawn point
 		G_UseTargets( spawnPoint, ent );
 
-		if ( !GT_Round(g_gametype.integer) ) {
+		// fau - this respects new weapon selection rules earlier
+		// while maintaining compatibility with maps giving weapons
+		// on spawn.
+		if ( client->ps.stats[STAT_WEAPONS] != spawnWeapons ) {
 			// select the highest weapon number available, after any
 			// spawn given items have fired
-			client->ps.weapon = 0;
+			client->ps.weapon = WP_NONE;
 			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
 				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
 					client->ps.weapon = i;

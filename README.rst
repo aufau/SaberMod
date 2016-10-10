@@ -167,6 +167,12 @@ g_teamForceBalance <number>
 g_teamsizeMin 2
   Minimum votable teamsize
 
+g_spawnWeapons 0
+  Controls weapons given to players on spawn using the same bitmask
+  as `g_weaponDisable`. The later cvar affects weapons and ammo
+  spawned on a map, and if a game is considered saber-only. Setting
+  this cvar to 0 restores original behaviour of `g_weaponDisable`.
+
 roundlimit 0
   Number of rounds in a round-based match.
 
@@ -174,7 +180,7 @@ Round-based gametypes
 .....................
 
 In round-based gametypes players spawn with all available weapons and
-items (controlled by `g_weaponDisable` and `disable_*` cvars), however
+items (controlled by `g_spawnWeapons` and `disable_*` cvars), however
 there are no pickups on the map. Players gain one point for killing
 an enemy and one point for each 50 damage dealt to enemy team. A round
 lasts until either one team gets eliminated or a timelimit
@@ -183,11 +189,11 @@ is hit. Match ends when a roundlimit is hit.
 Red Rover (g_gametype 9)
   It can be described as a FFA gametype with a twist. There are two
   teams, player who gets killed respawns in the opposing team. Round
-  ends when one team gets eliminated, but the overall winner is a
-  person who scores most points.
+  ends when one team gets eliminated, but the match winner is a person
+  who scores most points.
 
 Clan Arena (g_gametype 10)
-  Player who gets killed is must spectate until the end of the round.
+  Player who dies must spectate until the end of a round.
 
 Build
 =====

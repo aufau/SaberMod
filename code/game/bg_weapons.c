@@ -288,43 +288,53 @@ ammoData_t ammoData[AMMO_MAX] =
 {
 	{	// AMMO_NONE
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		0				//	int		max;		// Max amount player can hold of ammo
+		0,				//	int		max;		// Max amount player can hold of ammo
+		0,				//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_FORCE
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		100				//	int		max;		// Max amount player can hold of ammo
+		100,			//	int		max;		// Max amount player can hold of ammo
+		100,			//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_BLASTER
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		300				//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_POWERCELL
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		300				//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_METAL_BOLTS
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		300				//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		max;		// Max amount player can hold of ammo
+		300,			//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_ROCKETS
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		25				//	int		max;		// Max amount player can hold of ammo
+		25,				//	int		max;		// Max amount player can hold of ammo
+		25,				//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_EMPLACED
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		800				//	int		max;		// Max amount player can hold of ammo
+		800,			//	int		max;		// Max amount player can hold of ammo
+		800,			//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_THERMAL
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		10				//	int		max;		// Max amount player can hold of ammo
+		10,				//	int		max;		// Max amount player can hold of ammo
+		10,				//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_TRIPMINE
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		10				//	int		max;		// Max amount player can hold of ammo
+		10,				//	int		max;		// Max amount player can hold of ammo
+		5,				//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_DETPACK
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		10				//	int		max;		// Max amount player can hold of ammo
+		10,				//	int		max;		// Max amount player can hold of ammo
+		2,				//	int		init;		// Amount of ammo players spawn with
 	}
 };
 
