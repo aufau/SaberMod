@@ -1435,6 +1435,7 @@ static void Shuffle( void )
 				teamNameUpperCase[ent->client->sess.sessionTeam],
 				teamNameUpperCase[newTeam],
 				ent->client->pers.netname, teamNameLowerCase[newTeam]);
+			ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
 		}
 
 		ent->client->sess.sessionTeam = newTeam;
@@ -1475,6 +1476,8 @@ static void NextRound( void )
 			if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 				ResetClientState(ent);
 				ent->client->sess.spectatorState = SPECTATOR_NOT;
+				ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
+				// not changing teams here, but settings may change
 			}
 
 			if ( ent->client->pers.connected == CON_CONNECTED )

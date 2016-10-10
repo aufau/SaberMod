@@ -725,8 +725,6 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 {
 	int clientnum;
 
-	client->ps.fd.forceDoInit = 1; //every time we change teams make sure our force powers are set right
-
 	if ( client->sess.sessionTeam == TEAM_RED ) {
 		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
 			client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEREDTEAM")) );
@@ -838,6 +836,8 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
+
+	client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
 
 	client->sess.teamLeader = qfalse;
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
