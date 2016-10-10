@@ -1972,20 +1972,25 @@ void ClientSpawn(gentity_t *ent) {
 	// ammo distribution
 	//
 
-	// give ammo only for weapons owned by player
-	for (i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++) {
-		if (wSpawn & (1 << i)) {
-			// gitem_t	*it = BG_FindItemForWeapon(i);
-			ammo_t	ammo = weaponData[i].ammoIndex;
+	if (g_infiniteAmmo.integer) {
+		for (i = AMMO_NONE + 1; i < AMMO_MAX; i++)
+			client->ps.ammo[i] = INFINITE_AMMO;
+	} else {
+		// give ammo only for weapons owned by player
+		for (i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++) {
+			if (wSpawn & (1 << i)) {
+				// gitem_t	*it = BG_FindItemForWeapon(i);
+				ammo_t	ammo = weaponData[i].ammoIndex;
 
-			// GT_Round check is here because it determines
-			// spawning weapons too
-			if (GT_Round(g_gametype.integer)) {
-				client->ps.ammo[ammo] = ammoData[ammo].max;
-			} else {
-				// give weapon pickup ammo quantity
-				// client->ps.ammo[ammo] = item->quantity;
-				client->ps.ammo[ammo] = ammoData[ammo].init;
+				// GT_Round check is here because it determines
+				// spawning weapons too
+				if (GT_Round(g_gametype.integer)) {
+					client->ps.ammo[ammo] = ammoData[ammo].max;
+				} else {
+					// give weapon pickup ammo quantity
+					// client->ps.ammo[ammo] = item->quantity;
+					client->ps.ammo[ammo] = ammoData[ammo].init;
+				}
 			}
 		}
 	}

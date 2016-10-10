@@ -962,7 +962,10 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 	numColor_i = CT_HUD_ORANGE;
 
 	trap_R_SetColor( colorTable[numColor_i] );
-	CG_DrawNumField (x + 30, y + 26, 3, value, 6, 12, NUM_FONT_SMALL,qfalse);
+	if (value == INFINITE_AMMO)
+		CG_DrawRotatePic2(x + 42, y + 33, 8, 16, -90, cgs.media.smallnumberShaders[8] );
+	else
+		CG_DrawNumField (x + 30, y + 26, 3, value, 6, 12, NUM_FONT_SMALL,qfalse);
 
 
 //cg.snap->ps.ammo[weaponData[cg.snap->ps.weapon].ammoIndex]
@@ -1091,7 +1094,10 @@ void CG_DrawHUD(centity_t	*cent)
 		}
 		else
 		{
-			Com_sprintf(ammoString, sizeof(ammoString), "%i", cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex]);
+			if (cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex] != INFINITE_AMMO)
+				Com_sprintf(ammoString, sizeof(ammoString), "%i", cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex]);
+			else
+				Com_sprintf(ammoString, sizeof(ammoString), "INF");
 		}
 
 		UI_DrawProportionalString( SCREEN_WIDTH-(weapX+16+32), y+40, va( "%s", ammoString ),

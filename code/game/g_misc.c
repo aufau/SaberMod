@@ -981,9 +981,9 @@ void ammo_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *act
 				add = self->count;
 			}
 
-			activator->client->ps.ammo[AMMO_BLASTER] += add;
-			activator->client->ps.ammo[AMMO_POWERCELL] += add;
-			activator->client->ps.ammo[AMMO_METAL_BOLTS] += add;
+			Add_Ammo(activator, AMMO_BLASTER, add);
+			Add_Ammo(activator, AMMO_POWERCELL, add);
+			Add_Ammo(activator, AMMO_METAL_BOLTS, add);
 
 			self->count -= add;
 			stop = 0;
