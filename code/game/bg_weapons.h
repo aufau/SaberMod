@@ -82,6 +82,7 @@ typedef struct  ammoData_s
 {
 //	char	icon[32];	// Name of ammo icon file
 	int		max;		// Max amount player can hold of ammo
+	int		init;		// Amount of ammo players spawn with
 } ammoData_t;
 
 
@@ -92,7 +93,7 @@ extern ammoData_t ammoData[AMMO_MAX];
 // Specific weapon information
 
 #define FIRST_WEAPON		WP_BRYAR_PISTOL		// this is the first weapon for next and prev weapon switching
-#define LEGAL_WEAPONS		((1 << (WP_DET_PACK + 1))  - ( 1 << WP_NONE ))
+#define LEGAL_WEAPONS		((1 << (WP_DET_PACK + 1)) - (1 << (WP_NONE + 1)))
 
 #define DEFAULT_SHOTGUN_SPREAD	700
 #define DEFAULT_SHOTGUN_COUNT	11

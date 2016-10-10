@@ -3729,8 +3729,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolea
 
 qboolean HasSetSaberOnly(void)
 {
-	int i = 0;
-	int wDisable = 0;
+	int wEnable;
 
 	if (g_gametype.integer == GT_JEDIMASTER)
 	{ //set to 0
@@ -3739,23 +3738,17 @@ qboolean HasSetSaberOnly(void)
 
 	if (g_gametype.integer == GT_TOURNAMENT)
 	{
-		wDisable = g_duelWeaponDisable.integer;
+		wEnable = ~g_duelWeaponDisable.integer;
 	}
 	else
 	{
-		wDisable = g_weaponDisable.integer;
+		wEnable = ~g_weaponDisable.integer;
 	}
 
-	while (i < WP_NUM_WEAPONS)
-	{
-		if (!(wDisable & (1 << i)) &&
-			i != WP_SABER && i != WP_NONE)
-		{
-			return qfalse;
-		}
+	wEnable &= LEGAL_WEAPONS;
 
-		i++;
-	}
+	if (wEnable & ~(1 << WP_NONE) & ~(1 << WP_SABER))
+		return qfalse;
 
 	return qtrue;
 }

@@ -1108,6 +1108,7 @@ extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_restrictChat;
 extern  vmCvar_t	g_spawnShield;
+extern	vmCvar_t	g_spawnWeapons;
 extern  vmCvar_t	g_noKick;
 extern	vmCvar_t	g_instagib;
 

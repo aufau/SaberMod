@@ -1918,22 +1918,27 @@ void G_CheckTeamItems( void ) {
 ClearRegisteredItems
 ==============
 */
+int G_ItemDisabled( gitem_t *item );
 void ClearRegisteredItems( void ) {
+	int	weapons;
+	int	i;
+
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
-	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_BRYAR_PISTOL ) );
-	RegisterItem( BG_FindItemForWeapon( WP_STUN_BATON ) );
-	RegisterItem( BG_FindItemForWeapon( WP_SABER ) );
+	// register weapons players get on spawn because they may be not
+	// registered when loading map entities
+	if ( g_spawnWeapons.integer )
+		weapons = g_spawnWeapons.integer & LEGAL_WEAPONS;
+	else
+		weapons = (1 << WP_BRYAR_PISTOL) | (1 << WP_STUN_BATON) |
+			(1 << WP_SABER) | (1 << WP_BOWCASTER);
 
-	if ( GT_Round(g_gametype.integer) ) {
-		int	weapons = ~g_weaponDisable.integer & LEGAL_WEAPONS;
-		int	i;
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		if ( (1 << i) & weapons )
+			RegisterItem( BG_FindItemForWeapon( i ) );
 
-		for ( i = 0; i < WP_NUM_WEAPONS; i++ )
-			if ( (1 << i) & weapons )
-				RegisterItem( BG_FindItemForWeapon( i ) );
-
+	// register holdable items players get on spawn
+	if ( GT_Round( g_gametype.integer ) )  {
 		for ( i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++ ) {
 			if ( i != HI_DATAPAD && i != HI_BINOCULARS ) {
 				gitem_t *item = BG_FindItemForHoldable( i );
