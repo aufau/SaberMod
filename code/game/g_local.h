@@ -1110,6 +1110,7 @@ extern  vmCvar_t	g_restrictChat;
 extern  vmCvar_t	g_spawnShield;
 extern	vmCvar_t	g_spawnWeapons;
 extern  vmCvar_t	g_noKick;
+extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
 
 void	trap_Print( const char *fmt );

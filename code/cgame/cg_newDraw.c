@@ -188,7 +188,7 @@ float CG_GetValue(int ownerDraw) {
   case CG_PLAYER_AMMO_VALUE:
 		if ( cent->currentState.weapon )
 		{
-			return ps->ammo[weaponData[cent->currentState.weapon].ammoIndex];
+			return MIN(ps->ammo[weaponData[cent->currentState.weapon].ammoIndex], 999);
 		}
     break;
   case CG_PLAYER_SCORE:

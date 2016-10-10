@@ -130,6 +130,9 @@ g_allowVote 1
   8192 - No Kicks        16384 - With Kicks
   =====================  =====================  =====================
 
+g_infiniteAmmo 0
+  Players spawn with infinite ammo for all weapons.
+
 g_instagib 0
   Enable simple instagib mode for all weapons. Splash does no damage.
 
