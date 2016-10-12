@@ -927,26 +927,38 @@ TEAM_SPECTATOR.
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
-	int		counts[TEAM_NUM_TEAMS];
+	int			counts[TEAM_NUM_TEAMS];
+	qboolean	locked[TEAM_NUM_TEAMS];
 
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE, qtrue );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED, qtrue );
+	// team can be locked by team lock and teamsize
+	locked[TEAM_RED] = level.teamLock[TEAM_RED];
+	locked[TEAM_BLUE] = level.teamLock[TEAM_BLUE];
 
-	if ( g_teamsize.integer > 0
-		&& MIN(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
-		return TEAM_SPECTATOR;
+	if ( g_teamsize.integer > 0 ) {
+		if ( counts[TEAM_BLUE] >= g_teamsize.integer )
+			locked[TEAM_BLUE] = qtrue;
+		if ( counts[TEAM_RED] >= g_teamsize.integer )
+			locked[TEAM_RED] = qtrue;
 	}
-	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
-		return TEAM_RED;
-	}
-	if ( counts[TEAM_RED] > counts[TEAM_BLUE] ) {
+	// pick team
+	if ( !locked[TEAM_BLUE] && !locked[TEAM_RED] ) {
+		if ( counts[TEAM_RED] > counts[TEAM_BLUE] )
+			return TEAM_BLUE;
+		if ( counts[TEAM_BLUE] > counts[TEAM_RED] )
+			return TEAM_RED;
+		if ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] )
+			return TEAM_RED;
 		return TEAM_BLUE;
 	}
-	// equal team count, so join the team with the lowest score
-	if ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] ) {
+	// at least one is locked
+	if ( !locked[TEAM_BLUE] )
+		return TEAM_BLUE;
+	if ( !locked[TEAM_RED] )
 		return TEAM_RED;
-	}
-	return TEAM_BLUE;
+
+	return TEAM_SPECTATOR;
 }
 
 /*
