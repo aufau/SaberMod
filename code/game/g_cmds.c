@@ -800,6 +800,11 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 		StopFollowing( ent );
 	}
 
+	// new players must wait for next round
+	if ( team != TEAM_SPECTATOR )
+		if ( level.round > 0 && g_gametype.integer != GT_REDROVER )
+			specState = SPECTATOR_FREE;
+
 	// fast path for switching followed player
 	if ( team == oldTeam) {
 		client->sess.spectatorState = specState;
@@ -870,6 +875,7 @@ SetTeam
 qboolean SetTeam( gentity_t *ent, team_t team )
 {
 	spectatorState_t state = (team == TEAM_SPECTATOR) ? SPECTATOR_FREE : SPECTATOR_NOT;
+
 	return SetTeamSpec( ent, team, state, 0 );
 }
 
