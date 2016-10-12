@@ -1291,7 +1291,7 @@ void MoveClientToIntermission( gentity_t *ent ) {
 
 	ent->client->ps.eFlags = 0;
 	ent->s.eFlags = 0;
-	ent->s.eType = ET_GENERAL;
+	ent->s.eType = ET_INVISIBLE;
 	ent->s.modelindex = 0;
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
