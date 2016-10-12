@@ -1031,39 +1031,26 @@ Handle manual respawn
 void G_Respawn( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 
+	if ( level.intermissionQueued )
+		return;
+	if ( level.intermissiontime )
+		return;
+
 	if ( g_gametype.integer == GT_REDROVER ) {
 		G_SwitchTeam(ent);
 		respawn( ent );
 	} else if ( GT_Round(g_gametype.integer) && level.round > 0 &&
 		!level.roundQueued && !level.warmupTime)
 	{
-		team_t	team = client->sess.sessionTeam;
-		int		followNum = -1;
-		int		num;
-		int		i;
+		// follow whatever. sess.spectatorClient will be fixed
+		// in SpectatorClientEndFrame
 
-		// find a team member still in game
-		for (i = 0; i < level.numPlayingClients; i++) {
-			num = level.sortedClients[i];
-
-			if ( level.clients[num].sess.sessionTeam == team
-				&& level.clients[num].sess.spectatorState == SPECTATOR_NOT
-				&& level.clients[num].ps.stats[STAT_HEALTH] > 0)
-			{
-				followNum = i;
-				break;
-			}
-		}
-
-		if ( followNum != -1 ) {
-			// SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, followNum );
-			CopyToBodyQue( ent );
-			client->sess.spectatorState = SPECTATOR_FOLLOW;
-			client->sess.spectatorClient = followNum;
-			trap_UnlinkEntity( ent );
-			ClientSpawn( ent );
-		}
-		// otherwise wait for next round as dead
+		// currently this is the only entry point for spactating while
+		// not in TEAM_SPECTATOR. The exit is in NextRound.
+		CopyToBodyQue( ent );
+		client->sess.spectatorState = SPECTATOR_FOLLOW;
+		trap_UnlinkEntity( ent );
+		ClientSpawn( ent );
 	} else {
 		respawn( ent );
 	}
@@ -1857,26 +1844,69 @@ SpectatorClientEndFrame
 ==================
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
-	// if we are doing a chase cam or a remote view, grab the latest info
-	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
-		int		clientNum, flags;
+	gclient_t	*client = ent->client;
+	gclient_t	*cl;
+	int			clientNum;
 
-		clientNum = ent->client->sess.spectatorClient;
+	clientNum = client->sess.spectatorClient;
 
-		// team follow1 and team follow2 go to the score leader and runner up
-		if ( clientNum == -1 ) {
-			clientNum = level.follow1;
-		} else if ( clientNum == -2 ) {
-			clientNum = level.follow2;
+	// team follow1 and team follow2 go to the score leader and runner up
+	if ( clientNum == -1 ) {
+		clientNum = level.follow1;
+	} else if ( clientNum == -2 ) {
+		clientNum = level.follow2;
+	}
+
+	// currently spectators outside of TEAM_SPECTATOR can only follow
+	// their teammates
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		qboolean	found = qfalse;
+		team_t		team = client->sess.sessionTeam;
+		int			original;
+
+		if ( clientNum < 0 || clientNum >= level.maxclients ) {
+			clientNum = 0;
 		}
-		if ( clientNum >= 0 ) {
-			gclient_t *cl = &level.clients[ clientNum ];
+
+		original = clientNum;
+
+		do {
+			cl = level.clients + clientNum;
+
+			if (cl->pers.connected == CON_CONNECTED &&
+				cl->sess.spectatorState == SPECTATOR_NOT &&
+				cl->sess.sessionTeam == team )
+			{
+				found = qtrue;
+				break;
+			}
+
+			clientNum++;
+			if ( clientNum >= level.maxclients )
+				clientNum = 0;
+
+		} while (clientNum != original);
+
+		if ( found ) {
+			client->sess.spectatorState = SPECTATOR_FOLLOW;
+			client->sess.spectatorClient = clientNum;
+		} else {
+			// wait until the next round in whatever state we are
+		}
+	}
+
+	// if we are doing a chase cam or a remote view, grab the latest info
+	if ( client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+		int		flags;
+
+		if ( clientNum >= 0 && clientNum < level.maxclients ) {
+			cl = &level.clients[ clientNum ];
 
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.spectatorState == SPECTATOR_NOT ) {
-				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
-				ent->client->ps = cl->ps;
-				ent->client->ps.pm_flags |= PMF_FOLLOW;
-				ent->client->ps.eFlags = flags;
+				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
+				client->ps = cl->ps;
+				client->ps.pm_flags |= PMF_FOLLOW;
+				client->ps.eFlags = flags;
 			} else {
 				StopFollowing(ent);
 			}
@@ -1886,10 +1916,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		return;
 	}
 
-	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
-		ent->client->ps.pm_flags |= PMF_SCOREBOARD;
+	if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
+		client->ps.pm_flags |= PMF_SCOREBOARD;
 	} else {
-		ent->client->ps.pm_flags &= ~PMF_SCOREBOARD;
+		client->ps.pm_flags &= ~PMF_SCOREBOARD;
 	}
 }
 
