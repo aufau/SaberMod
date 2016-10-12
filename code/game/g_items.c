@@ -1927,6 +1927,7 @@ ClearRegisteredItems
 int G_ItemDisabled( gitem_t *item );
 void ClearRegisteredItems( void ) {
 	int	weapons;
+	int items;
 	int	i;
 
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
@@ -1944,15 +1945,15 @@ void ClearRegisteredItems( void ) {
 			RegisterItem( BG_FindItemForWeapon( i ) );
 
 	// register holdable items players get on spawn
-	if ( GT_Round( g_gametype.integer ) )  {
-		for ( i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++ ) {
-			if ( i != HI_DATAPAD && i != HI_BINOCULARS ) {
-				gitem_t *item = BG_FindItemForHoldable( i );
+	items = g_spawnItems.integer & LEGAL_ITEMS;
+	i = 0;
 
-				if ( !G_ItemDisabled( item ) )
-					RegisterItem( item );
-			}
-		}
+	while ( items ) {
+		if ( items & 1 )
+			RegisterItem( BG_FindItemForHoldable( i ) );
+
+		items >>= 1;
+		i++;
 	}
 }
 
@@ -2010,15 +2011,6 @@ int G_ItemDisabled( gitem_t *item ) {
 
 	Com_sprintf(name, sizeof(name), "disable_%s", item->classname);
 	return trap_Cvar_VariableIntegerValue( name );
-}
-
-/*
-============
-G_HoldableDisabled
-============
-*/
-qboolean G_HoldableDisabled( holdable_t holdable ) {
-	return G_ItemDisabled(BG_FindItemForHoldable(holdable));
 }
 
 /*

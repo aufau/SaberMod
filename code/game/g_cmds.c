@@ -397,12 +397,7 @@ void Cmd_Give_f (gentity_t *ent)
 
 	if (give_all)
 	{
-		// don't give HI_NONE, it's broken in cgame
-		for (i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++)
-		{
-			if (i != HI_DATAPAD)
-				ent->client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << i);
-		}
+		ent->client->ps.stats[STAT_HOLDABLE_ITEMS] |= LEGAL_ITEMS;
 	}
 
 	if (give_all || Q_stricmp( name, "health") == 0)
