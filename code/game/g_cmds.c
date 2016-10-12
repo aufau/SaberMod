@@ -949,16 +949,19 @@ void StopFollowing( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 	int			i;
 
-	// don't allow team player free floating
+	// don't allow team player free floating. sess.spectatorClient
+	// shall be fixed in SpectatorClientEndFrame
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		Cmd_FollowCycle_f( ent, 1 );
-		return;
+		// let NextRound call this
+		if ( !level.intermissiontime && !level.roundQueued ) {
+			return;
+		}
 	}
 
-	ent->r.svFlags &= ~SVF_BOT;
-	client->sess.sessionTeam = TEAM_SPECTATOR;
+	// bots can follow too
+	// ent->r.svFlags &= ~SVF_BOT;
 	client->sess.spectatorState = SPECTATOR_FREE;
-	client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
+	client->ps.persistant[ PERS_TEAM ] = client->sess.sessionTeam;
 	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;
 	client->ps.eFlags &= ~EF_DISINTEGRATION;
