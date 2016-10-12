@@ -170,6 +170,13 @@ g_teamForceBalance <number>
 g_teamsizeMin 2
   Minimum votable teamsize
 
+g_spawnItems 0
+  What items will be given to players on spawn. Use following bitmask:
+
+  ================  ================  ===============  ===============
+  2 - Seeker Drone  4 - Forcefield    8 - Bacta        64 - Sentry
+  ================  ================  ===============  ===============
+
 g_spawnWeapons 0
   Controls weapons given to players on spawn using the same bitmask
   as `g_weaponDisable`. The later cvar affects weapons and ammo

@@ -2013,22 +2013,26 @@ void ClientSpawn(gentity_t *ent) {
 	// give default holdable items
 	//
 
-	/*
-	client->ps.stats[STAT_HOLDABLE_ITEMS] |= ( 1 << HI_BINOCULARS );
-	client->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_BINOCULARS, IT_HOLDABLE);
-	*/
+	{
+		int iSpawn = g_spawnItems.integer & LEGAL_ITEMS;
+		int item = 0;
 
-	client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
-	client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
+		// items given on spawn need to be precached in ClearRegisteredItems()
+		client->ps.stats[STAT_HOLDABLE_ITEMS] = iSpawn;
 
-	if ( GT_Round(g_gametype.integer) && !HasSetSaberOnly() ) {
-		for ( i = HI_NONE + 1; i < HI_NUM_HOLDABLE; i++ ) {
-			if ( i == HI_DATAPAD || i == HI_BINOCULARS )
-				continue;
-			if ( !G_HoldableDisabled(i) )
-				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << i);
+		if ( iSpawn ) {
+			while ( !(iSpawn & 1) ) {
+				item++;
+				iSpawn >>= 1;
+			}
 		}
+
+		client->ps.stats[STAT_HOLDABLE_ITEM] = item;
 	}
+
+	//
+	// all the hard work we've done is wasted on spectators :-(
+	//
 
 	if ( client->sess.spectatorState != SPECTATOR_NOT )
 	{
