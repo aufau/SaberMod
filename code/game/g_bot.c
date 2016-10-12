@@ -545,8 +545,15 @@ void G_CheckMinimumPlayers( void ) {
 	trap_Cvar_Update(&bot_minplayers);
 	minplayers = bot_minplayers.integer;
 	if (minplayers <= 0) return;
+	if (g_teamsize.integer && minplayers >= g_teamsize.integer) {
+		minplayers = g_teamsize.integer;
+	}
 
-	if (GT_Team(g_gametype.integer)) {
+	switch (g_gametype.integer) {
+	case GT_TEAM:
+	case GT_CTF:
+	case GT_CTY:
+	case GT_CLANARENA:
 		if (minplayers >= g_maxclients.integer / 2) {
 			minplayers = (g_maxclients.integer / 2) -1;
 		}
@@ -554,7 +561,7 @@ void G_CheckMinimumPlayers( void ) {
 		humanplayers = G_CountHumanPlayers( TEAM_RED );
 		botplayers = G_CountBotPlayers(	TEAM_RED );
 		//
-		if (humanplayers + botplayers < minplayers) {
+		if (humanplayers + botplayers < minplayers && !level.teamLock[TEAM_RED]) {
 			G_AddRandomBot( TEAM_RED );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
 			G_RemoveRandomBot( TEAM_RED );
@@ -563,13 +570,13 @@ void G_CheckMinimumPlayers( void ) {
 		humanplayers = G_CountHumanPlayers( TEAM_BLUE );
 		botplayers = G_CountBotPlayers( TEAM_BLUE );
 		//
-		if (humanplayers + botplayers < minplayers) {
+		if (humanplayers + botplayers < minplayers && !level.teamLock[TEAM_BLUE]) {
 			G_AddRandomBot( TEAM_BLUE );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
 			G_RemoveRandomBot( TEAM_BLUE );
 		}
-	}
-	else if (g_gametype.integer == GT_TOURNAMENT ) {
+		break;
+	case GT_TOURNAMENT:
 		if (minplayers >= g_maxclients.integer) {
 			minplayers = g_maxclients.integer-1;
 		}
@@ -585,32 +592,36 @@ void G_CheckMinimumPlayers( void ) {
 				G_RemoveRandomBot( -1 );
 			}
 		}
-	}
-	else if (g_gametype.integer == GT_FFA) {
+		break;
+	case GT_FFA:
+	case GT_HOLOCRON:
+	case GT_JEDIMASTER:
 		if (minplayers >= g_maxclients.integer) {
 			minplayers = g_maxclients.integer-1;
 		}
 		humanplayers = G_CountHumanPlayers( TEAM_FREE );
 		botplayers = G_CountBotPlayers( TEAM_FREE );
 		//
-		if (humanplayers + botplayers < minplayers) {
+		if (humanplayers + botplayers < minplayers && !level.teamLock[TEAM_FREE]) {
 			G_AddRandomBot( TEAM_FREE );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
 			G_RemoveRandomBot( TEAM_FREE );
 		}
-	}
-	else if (g_gametype.integer == GT_HOLOCRON || g_gametype.integer == GT_JEDIMASTER) {
+		break;
+	case GT_REDROVER:
+		minplayers *= 2;
 		if (minplayers >= g_maxclients.integer) {
 			minplayers = g_maxclients.integer-1;
 		}
-		humanplayers = G_CountHumanPlayers( TEAM_FREE );
-		botplayers = G_CountBotPlayers( TEAM_FREE );
+		humanplayers = G_CountHumanPlayers( TEAM_RED ) + G_CountHumanPlayers( TEAM_BLUE );
+		botplayers = G_CountBotPlayers( TEAM_RED ) + G_CountBotPlayers( TEAM_BLUE );
 		//
-		if (humanplayers + botplayers < minplayers) {
-			G_AddRandomBot( TEAM_FREE );
+		if (humanplayers + botplayers < minplayers && !level.teamLock[TEAM_RED] && !level.teamLock[TEAM_BLUE]) {
+			G_AddRandomBot( -1 );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
-			G_RemoveRandomBot( TEAM_FREE );
+			G_RemoveRandomBot( -1 );
 		}
+		break;
 	}
 }
 
