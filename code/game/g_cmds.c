@@ -2551,6 +2551,14 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	ent->client->ps.duelIndex = challenged->s.number;
 }
 
+// Cmd_FixSkinBug_f: Debugging command to find out what's causing ellusive "skinbug"
+static void Cmd_FixSkinBug_f( gentity_t *ent )
+{
+	trap_SendServerCommand( -1, va("print \"Attempting to fix skin bug on player: %d s.number: %d s.eType: %d r.ownerNum: %d\n",
+			ent-g_entities, ent->s.number, ent->s.eType, ent->r.ownerNum ) );
+	ent->r.ownerNum = ENTITYNUM_NONE;
+}
+
 void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 
 #ifdef _DEBUG
@@ -2810,6 +2818,10 @@ void ClientCommand( int clientNum ) {
 		{
 			giveError = qtrue;
 		}
+		else if (!Q_stricmp(cmd, "fixskinbug"))
+		{
+			giveError = qtrue;
+		}
 
 		if (giveError)
 		{
@@ -2864,6 +2876,8 @@ void ClientCommand( int clientNum ) {
 		Cmd_SetViewpos_f( ent );
 	else if (Q_stricmp (cmd, "stats") == 0)
 		Cmd_Stats_f( ent );
+	else if (Q_stricmp(cmd, "fixskinbug") == 0)
+		Cmd_FixSkinBug_f( ent );
 	/*
 	else if (Q_stricmp(cmd, "#mm") == 0 && CheatsOk( ent ))
 	{
