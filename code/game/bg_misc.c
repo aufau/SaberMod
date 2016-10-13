@@ -5,20 +5,6 @@
 #include "q_shared.h"
 #include "bg_public.h"
 
-#ifdef QAGAME
-#include "g_local.h"
-#endif
-
-#ifdef UI_EXPORTS
-#include "../ui/ui_local.h"
-#endif
-
-#ifndef UI_EXPORTS
-#ifndef QAGAME
-#include "../cgame/cg_local.h"
-#endif
-#endif
-
 //rww - not putting @ in front of these because
 //we don't need them in a cgame striped lookup.
 //Let me know if this causes problems, pat.
@@ -1773,11 +1759,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) 
 		result[2] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime;		// FIXME: local gravity...
 		break;
 	default:
-#ifdef QAGAME
-		Com_Error( ERR_DROP, "BG_EvaluateTrajectory: [GAME SIDE] unknown trType: %i", tr->trType );
-#else
-		Com_Error( ERR_DROP, "BG_EvaluateTrajectory: [CLIENTGAME SIDE] unknown trType: %i", tr->trType );
-#endif
+		Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trType );
 		break;
 	}
 }

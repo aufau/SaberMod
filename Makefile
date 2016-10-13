@@ -11,9 +11,9 @@ LBURG   = bin/lburg
 
 tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
-CFLAGS		= -g -fvisibility=hidden
+CFLAGS		= -ggdb3 -fvisibility=hidden -pipe
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
-DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DQAGAME -DJK2AWARDS
+DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DJK2AWARDS
 VERSION		= $(shell git describe --always --tags --dirty)
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
