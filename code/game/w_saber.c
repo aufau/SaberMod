@@ -3743,6 +3743,7 @@ qboolean HasSetSaberOnly(void)
 		wEnable = ~g_weaponDisable.integer;
 	}
 
+	wEnable |= g_spawnWeapons.integer;
 	wEnable &= LEGAL_WEAPONS;
 
 	if (wEnable & ~(1 << WP_NONE) & ~(1 << WP_SABER))

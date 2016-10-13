@@ -294,7 +294,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
