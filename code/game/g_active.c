@@ -846,7 +846,7 @@ void SendPendingPredictableEvents( playerState_t *ps ) {
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_TempEntity( ps->origin, event );
+		t = G_TempEntity( ps->origin, event, ps->clientNum );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;
@@ -986,7 +986,6 @@ void G_UpdateClientBroadcasts ( gentity_t *self )
 	G_UpdateForceSightBroadcasts ( self );
 }
 
-
 static void G_SwitchTeam( gentity_t *ent ) {
 	gclient_t	*client;
 	int			team, oldTeam;
@@ -1050,6 +1049,19 @@ void G_Respawn( gentity_t *ent ) {
 		ClientSpawn( ent );
 	} else {
 		respawn( ent );
+	}
+}
+
+static void G_FinishDuel ( gentity_t *ent )
+{
+	ent->dimension = DEFAULT_DIMENSION;
+	ent->client->ps.duelInProgress = qfalse;
+	ent->client->duelStarted = qfalse;
+	G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
+	G_StopPrivateDuel(ent);
+
+	if (ent->health > 0) {
+		G_KillBox(ent);
 	}
 }
 
@@ -1207,21 +1219,14 @@ void ClientThink_real( gentity_t *ent ) {
 		if (!duelAgainst || !duelAgainst->client || !duelAgainst->inuse ||
 			duelAgainst->client->ps.duelIndex != ent->s.number)
 		{
-			ent->client->ps.duelInProgress = 0;
-			ent->client->duelStarted = qfalse;
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
+			G_FinishDuel(ent);
 		}
 		else if (duelAgainst->health < 1 || duelAgainst->client->ps.stats[STAT_HEALTH] < 1)
 		{
 			char *s;
 
-			ent->client->ps.duelInProgress = 0;
-			ent->client->duelStarted = qfalse;
-			duelAgainst->client->ps.duelInProgress = 0;
-			duelAgainst->client->duelStarted = qfalse;
-
-			G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
-			G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+			G_FinishDuel(ent);
+			G_FinishDuel(duelAgainst);
 
 			if (ent->health > 0 && ent->client->ps.stats[STAT_HEALTH] > 0)
 			{
@@ -1294,19 +1299,28 @@ void ClientThink_real( gentity_t *ent ) {
 
 			if (subLen >= 1024)
 			{
-				ent->client->ps.duelInProgress = 0;
-				ent->client->duelStarted = qfalse;
-				duelAgainst->client->ps.duelInProgress = 0;
-				duelAgainst->client->duelStarted = qfalse;
-
-				G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
-				G_AddEvent(duelAgainst, EV_PRIVATE_DUEL, 0);
+				G_FinishDuel(ent);
+				G_FinishDuel(duelAgainst);
 
 				G_LogPrintf(LOG_PRIVATE_DUEL, "DuelStop: %i %i: The duel between %s and %s has been severed\n",
 					ent->s.number, duelAgainst->s.number,
 					ent->client->pers.netname, duelAgainst->client->pers.netname);
 				trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELSTOP")) );
 			}
+		}
+	}
+
+	for (i = 0; i < level.maxclients; i++) {
+		gentity_t *other = g_entities + i;
+
+		if (!other->inuse) {
+			continue;
+		}
+		if (other->s.number == ent->s.number) {
+			continue;
+		}
+		if (!G_CommonDimension(ent, other)) {
+			other->r.contents &= ~CONTENTS_BODY;
 		}
 	}
 
@@ -1752,7 +1766,7 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
 				G_Respawn( ent );
-				return;
+				goto reset_contents;
 			}
 
 			// pressing attack or use is the normal respawn method
@@ -1764,13 +1778,33 @@ void ClientThink_real( gentity_t *ent ) {
 		{
 			client->respawnTime = level.time + 1000;
 		}
-		return;
+		goto reset_contents;
 	}
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );
 
 	G_UpdateClientBroadcasts ( ent );
+reset_contents:
+	// Reset CONTENTS_BODY flag. Unfortunately it's tied to pm_type now.
+	for (i = 0; i < level.maxclients; i++) {
+		gentity_t *other = g_entities + i;
+
+		if (!other->inuse) {
+			continue;
+		}
+
+		switch (other->client->ps.pm_type) {
+		case PM_NORMAL:
+		case PM_FLOAT:
+		case PM_NOCLIP:
+		case PM_FREEZE:
+			other->r.contents |= CONTENTS_BODY;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 /*

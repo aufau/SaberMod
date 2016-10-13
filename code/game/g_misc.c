@@ -70,15 +70,12 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
 	if ( player->client->sess.spectatorState == SPECTATOR_NOT ) {
-		tent = G_TempEntity( player->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
-		tent->s.clientNum = player->s.clientNum;
+		tent = G_TempEntity( player->client->ps.origin, EV_PLAYER_TELEPORT_OUT, player->s.number );
+		tent->s.clientNum = player->s.number;
 
-		tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN );
-		tent->s.clientNum = player->s.clientNum;
+		tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN, player->s.number );
+		tent->s.clientNum = player->s.number;
 	}
-
-	// unlink to make sure it can't possibly interfere with G_KillBox
-	trap_UnlinkEntity (player);
 
 	VectorCopy ( origin, player->client->ps.origin );
 	player->client->ps.origin[2] += 1;
@@ -105,10 +102,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
-
-	if ( player->client->sess.spectatorState == SPECTATOR_NOT ) {
-		trap_LinkEntity (player);
-	}
 }
 
 
@@ -1230,7 +1223,7 @@ gentity_t *CreateNewDamageBox( gentity_t *ent )
 
 	//We do not want the client to have any real knowledge of the entity whatsoever. It will only
 	//ever be used on the server.
-	dmgBox = G_Spawn();
+	dmgBox = G_Spawn( ENTITYNUM_WORLD );
 	dmgBox->classname = "dmg_box";
 
 	dmgBox->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -2812,7 +2805,7 @@ void G_SpawnExampleAnimEnt(vec3_t pos, int aeType, animentCustomInfo_t *aeInfo)
 		}
 	}
 
-	animEnt = G_Spawn();
+	animEnt = G_Spawn( ENTITYNUM_NONE );
 
 	animEnt->watertype = aeType; //set the animent type
 

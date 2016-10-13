@@ -515,7 +515,7 @@ void Cmd_Give_f (gentity_t *ent)
 			return;
 		}
 
-		it_ent = G_Spawn();
+		it_ent = G_Spawn( ENTITYNUM_WORLD );
 		VectorCopy( ent->r.currentOrigin, it_ent->s.origin );
 		it_ent->classname = it->classname;
 		G_SpawnItem (it_ent, it);
@@ -2593,11 +2593,19 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
+	ent->client->ps.duelIndex = challenged->s.number;
+
 	if (challenged->client->ps.duelIndex == ent->s.number && challenged->client->ps.duelTime >= level.time)
 	{
+		unsigned dimension;
+
 		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
 			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
 		trap_SendServerCommand(-1, s);
+
+		dimension = G_GetFreeDuelDimension();
+		ent->dimension = dimension;
+		challenged->dimension = dimension;
 
 		ent->client->ps.duelInProgress = qtrue;
 		challenged->client->ps.duelInProgress = qtrue;
@@ -2629,6 +2637,9 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		challenged->client->ps.stats[STAT_ARMOR] =
 			challenged->client->ps.stats[STAT_HEALTH] =
 			challenged->health = challenged->client->ps.stats[STAT_MAX_HEALTH];
+
+		G_StartPrivateDuel(ent);
+		G_StartPrivateDuel(challenged);
 	}
 	else
 	{
@@ -2640,8 +2651,6 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 
 	ent->client->ps.forceHandExtend = HANDEXTEND_DUELCHALLENGE;
 	ent->client->ps.forceHandExtendTime = level.time + 1000;
-
-	ent->client->ps.duelIndex = challenged->s.number;
 }
 
 // Cmd_FixSkinBug_f: Debugging command to find out what's causing ellusive "skinbug"

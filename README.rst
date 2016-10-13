@@ -93,6 +93,9 @@ cg_followKiller 0
 cg_followPowerup 0
   Automatically follow flag and powerup carriers.
 
+cg_privateDuel 0
+  Hide all other players and entities when duelling.
+
 Spectating
 ..........
 

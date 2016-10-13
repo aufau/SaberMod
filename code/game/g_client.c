@@ -608,7 +608,7 @@ void InitBodyQue (void) {
 
 	level.bodyQueIndex = 0;
 	for (i=0; i<BODY_QUEUE_SIZE ; i++) {
-		ent = G_Spawn();
+		ent = G_Spawn( ENTITYNUM_NONE );
 		ent->classname = "bodyque";
 		ent->neverFree = qtrue;
 		level.bodyQue[i] = ent;
@@ -714,7 +714,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 		body->s.weapon = WP_BLASTER; //lie to keep from putting a saber on the corpse, because it was thrown at death
 	}
 
-	G_AddEvent(body, EV_BODY_QUEUE_COPY, ent->s.clientNum);
+	G_AddEvent(body, EV_BODY_QUEUE_COPY, ent->s.number);
 
 	body->r.svFlags = ent->r.svFlags | SVF_BROADCAST;
 	VectorCopy (ent->r.mins, body->r.mins);
@@ -741,6 +741,8 @@ void CopyToBodyQue( gentity_t *ent ) {
 	}
 
 	VectorCopy ( body->s.pos.trBase, body->r.currentOrigin );
+
+	G_BlameForEntity( ent->s.number, body );
 	trap_LinkEntity (body);
 }
 
@@ -824,8 +826,8 @@ void respawn( gentity_t *ent ) {
 	ClientSpawn(ent);
 
 	// add a teleportation effect
-	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-	tent->s.clientNum = ent->s.clientNum;
+	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, ent->s.number );
+	tent->s.clientNum = ent->s.number;
 }
 
 /*
@@ -1210,14 +1212,15 @@ if desired.
 ============
 */
 void ClientUserinfoChanged( int clientNum ) {
-	gentity_t *ent;
+	gentity_t	*ent;
+	gclient_t	*client;
+	qboolean	privateDuel;
 	int		teamTask, teamLeader, team, health;
 	char	*s;
 	char	model[MAX_QPATH];
 	//char	headModel[MAX_QPATH];
 	char	forcePowers[MAX_QPATH];
 	char	oldname[MAX_NETNAME];
-	gclient_t	*client;
 	char	c1[11]; // Enough for hex color, just in case
 	char	c2[11]; // 0xffffffff
 	char	redTeam[MAX_TEAMNAME];
@@ -1328,6 +1331,17 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.pmoveFixed = qtrue;
 	}
 	*/
+	s = Info_ValueForKey( userinfo, "cg_privateDuel" );
+	privateDuel = ( *s && atoi( s ) ) ? qtrue : qfalse;
+	if (privateDuel != client->pers.privateDuel) {
+		client->pers.privateDuel = privateDuel;
+
+		if (privateDuel) {
+			G_StartPrivateDuel( ent );
+		} else {
+			G_StopPrivateDuel( ent );
+		}
+	}
 
 	// team task (0 = none, 1 = offence, 2 = defence)
 	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
@@ -1457,7 +1471,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
-	te = G_TempEntity( vec3_origin, EV_CLIENTJOIN );
+	te = G_TempEntity( vec3_origin, EV_CLIENTJOIN, ENTITYNUM_WORLD ); // ENTITYNUM_WORLD for a good reason
 	te->r.svFlags |= SVF_BROADCAST;
 	te->s.eventParm = clientNum;
 
@@ -1535,7 +1549,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	if ( ent->r.linked ) {
 		trap_UnlinkEntity( ent );
 	}
-	G_InitGentity( ent );
+	G_InitGentity( ent, clientNum );
 	ent->touch = 0;
 	ent->pain = 0;
 	ent->client = client;
@@ -1632,8 +1646,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		// send event
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-		tent->s.clientNum = ent->s.clientNum;
+		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
+		tent->s.clientNum = ent->s.number;
 
 		if ( g_gametype.integer != GT_TOURNAMENT  ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
@@ -2208,8 +2222,8 @@ void ClientDisconnect( int clientNum ) {
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
-		tent->s.clientNum = ent->s.clientNum;
+		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT, clientNum );
+		tent->s.clientNum = ent->s.number;
 
 		// They don't get to take powerups with them!
 		// Especially important for stuff like CTF flags

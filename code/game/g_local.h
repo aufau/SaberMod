@@ -296,6 +296,13 @@ struct gentity_s {
 	int			damageRedirectTo; //this entity number
 
 	gitem_t		*item;			// for bonus items
+
+	// 1. Number of a client who should be blamed for this entity
+	// 2. ENTITYNUM_WORLD for entities that should be always broadcasted
+	// 3. ENTITYNUM_NONE for entities that don't belong to anyone but
+	// can be ommited by dueling players
+	int			blameEntityNum;
+	unsigned	dimension;
 };
 
 #define DAMAGEREDIRECT_HEAD		1
@@ -386,6 +393,7 @@ typedef struct {
 	qboolean	registered;
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
+	qboolean	privateDuel;		// matches player's cg_privateDuel
 } clientPersistant_t;
 
 
@@ -569,7 +577,7 @@ typedef struct {
 	int			bodyQueIndex;			// dead bodies
 	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
 	int			portalSequence;
-	qboolean	mvapi;
+
 	qboolean	teamLock[TEAM_NUM_TEAMS];
 	int			round;
 } level_locals_t;
@@ -650,14 +658,14 @@ void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
-void	G_InitGentity( gentity_t *e );
-gentity_t	*G_Spawn (void);
-gentity_t *G_TempEntity( vec3_t origin, int event );
-gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang);
+void	G_InitGentity( gentity_t *e, int blameEntityNum );
+gentity_t	*G_Spawn ( int blameEntityNum );
+gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum );
+gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
 gentity_t *G_ScreenShake(vec3_t org, gentity_t *target, float intensity, int duration, qboolean global);
 void	G_MuteSound( int entnum, int channel );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
-void	G_SoundAtLoc( vec3_t loc, int channel, int soundIndex );
+void	G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum );
 void	G_EntitySound( gentity_t *ent, int channel, int soundIndex );
 void	TryUse( gentity_t *ent );
 void	G_SendG2KillQueue(void);
@@ -935,7 +943,7 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
 // w_force.c / w_saber.c
-gentity_t *G_PreDefSound(vec3_t org, int pdSound);
+gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum);
 qboolean HasSetSaberOnly(void);
 void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower );
 void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd );
@@ -979,6 +987,23 @@ void InitSagaMode(void);
 void G_PrintStats(void);
 void G_LogStats(void);
 
+// g_dimensions.c
+#define DEFAULT_DIMENSION	0x1
+#define ALL_DIMENSIONS		0xffffffff
+
+// not pretty. remove it when we're sure it works correctly.
+#ifdef NDEBUG
+#define G_CommonDimension(ent1, ent2) ((ent1)->dimension & (ent2)->dimension)
+#else
+#define G_CommonDimension(ent1, ent2) G_EntitiesCollide((ent1), (ent2))
+#endif
+
+void G_BlameForEntity( int blame, gentity_t *ent );
+unsigned G_GetFreeDuelDimension(void);
+unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
+void G_StartPrivateDuel(gentity_t *ent);
+void G_StopPrivateDuel(gentity_t *ent);
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
@@ -1008,7 +1033,9 @@ int BotAIStartFrame( int time );
 
 
 extern	level_locals_t	level;
+extern	qboolean		mvapi;
 extern	gentity_t		g_entities[MAX_GENTITIES];
+extern	mvsharedEntity_t mv_entities[MAX_GENTITIES];
 
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
