@@ -218,6 +218,8 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 
 	*out = cg.snap->ps;
 
+	cg.playerPhysicsTime = prev->ps.commandTime;
+
 	// if we are still allowing local input, short circuit the view angles
 	if ( grabAngles ) {
 		usercmd_t	cmd;
@@ -238,7 +240,9 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 		return;
 	}
 
-	f = (float)( cg.time - prev->serverTime ) / ( next->serverTime - prev->serverTime );
+	// fau - for player it would more correct to interpolate between
+	// commandTimes (but requires one more snaphost ahead)
+	f = cg.frameInterpolation;
 
 	i = next->ps.bobCycle;
 	if ( i < prev->ps.bobCycle ) {
@@ -256,6 +260,7 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 			f * (next->ps.velocity[i] - prev->ps.velocity[i] );
 	}
 
+	cg.playerPhysicsTime += (double) f * (next->ps.commandTime - prev->ps.commandTime);
 }
 
 /*
@@ -819,6 +824,8 @@ void CG_PredictPlayerState( void ) {
 			CG_Printf("WARNING: dropped event\n");
 		}
 	}
+
+	cg.playerPhysicsTime = cg.predictedPlayerState.commandTime;
 
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );

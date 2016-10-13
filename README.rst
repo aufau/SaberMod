@@ -52,6 +52,14 @@ Cvars
 handicap <x>
   Lower your max health to x and damage to x%.
 
+cg_camerafps <fps>
+  Enable FPS-independent third person camera that behaves exactly like
+  original camera running at <fps> frames per second and in perfect
+  conditions. Setting this to your `com_maxfps` value seamlessly fixes
+  camera warping in many scenarios: unstable fps, unstable connection,
+  overloaded server, local server, high velocity movement, demo
+  playback. 0 restores original behaviour.
+
 cg_chatBeep 1
   Turn on/off chat beep.
 

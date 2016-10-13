@@ -162,6 +162,8 @@ static void CG_TransitionSnapshot( void ) {
 		// teleporting checks are irrespective of prediction
 		if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT ) {
 			cg.thisFrameTeleport = qtrue;	// will be cleared by prediction code
+		} else if ( cg_camerafps.integer >= CAMERA_MIN_FPS ) {
+			cg.thisFrameTeleport = qfalse;	// clear for interpolated player with new camera damping
 		}
 
 		// if we are not doing client side movement prediction for any
@@ -387,5 +389,19 @@ void CG_ProcessSnapshots( void ) {
 		CG_Error( "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
 	}
 
+	// set cg.frameInterpolation
+	if ( cg.nextSnap ) {
+		int		delta;
+
+		delta = (cg.nextSnap->serverTime - cg.snap->serverTime);
+		if ( delta == 0 ) {
+			cg.frameInterpolation = 0;
+		} else {
+			cg.frameInterpolation = (float)( cg.time - cg.snap->serverTime ) / delta;
+		}
+	} else {
+		cg.frameInterpolation = 0;	// actually, it should never be used, because
+									// no entities should be marked as interpolating
+	}
 }
 
