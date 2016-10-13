@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 15
+COUNT 20
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -32,11 +32,11 @@ INDEX 2
 INDEX 3
 {
    REFERENCE BEGIN_VOTE_TO_REMOVE
-   TEXT_LANGUAGE1 "Begin vote to remove this player"
-   TEXT_LANGUAGE2 "Begin vote to remove this player"
-   TEXT_LANGUAGE3 "Begin vote to remove this player"
-   TEXT_LANGUAGE6 "Begin vote to remove this player"
-   TEXT_LANGUAGE8 "Begin vote to remove this player"
+   TEXT_LANGUAGE1 "Begin vote to remove this player."
+   TEXT_LANGUAGE2 "Begin vote to remove this player."
+   TEXT_LANGUAGE3 "Begin vote to remove this player."
+   TEXT_LANGUAGE6 "Begin vote to remove this player."
+   TEXT_LANGUAGE8 "Begin vote to remove this player."
 }
 INDEX 4
 {
@@ -136,4 +136,49 @@ INDEX 14
    TEXT_LANGUAGE3 "Red Rover"
    TEXT_LANGUAGE6 "Red Rover"
    TEXT_LANGUAGE8 "Red Rover"
+}
+INDEX 15
+{
+   REFERENCE MODE
+   TEXT_LANGUAGE1 "Mode"
+   TEXT_LANGUAGE2 "Mode"
+   TEXT_LANGUAGE3 "Mode"
+   TEXT_LANGUAGE6 "Mode"
+   TEXT_LANGUAGE8 "Mode"
+}
+INDEX 16
+{
+   REFERENCE MODE_INFO
+   TEXT_LANGUAGE1 "Set a different game mode."
+   TEXT_LANGUAGE2 "Set a different game mode."
+   TEXT_LANGUAGE3 "Set a different game mode."
+   TEXT_LANGUAGE6 "Set a different game mode."
+   TEXT_LANGUAGE8 "Set a different game mode."
+}
+INDEX 17
+{
+   REFERENCE SET_MODE
+   TEXT_LANGUAGE1 "Set Mode:"
+   TEXT_LANGUAGE2 "Set Mode:"
+   TEXT_LANGUAGE3 "Set Mode:"
+   TEXT_LANGUAGE6 "Set Mode:"
+   TEXT_LANGUAGE8 "Set Mode:"
+}
+INDEX 18
+{
+   REFERENCE SELECT_MODE
+   TEXT_LANGUAGE1 "Select desired mode."
+   TEXT_LANGUAGE2 "Select desired mode."
+   TEXT_LANGUAGE3 "Select desired mode."
+   TEXT_LANGUAGE6 "Select desired mode."
+   TEXT_LANGUAGE8 "Select desired mode."
+}
+INDEX 19
+{
+   REFERENCE BEGIN_VOTE_MODE
+   TEXT_LANGUAGE1 "Begin vote to change game mode."
+   TEXT_LANGUAGE2 "Begin vote to change game mode."
+   TEXT_LANGUAGE3 "Begin vote to change game mode."
+   TEXT_LANGUAGE6 "Begin vote to change game mode."
+   TEXT_LANGUAGE8 "Begin vote to change game mode."
 }

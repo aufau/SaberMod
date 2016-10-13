@@ -33,6 +33,10 @@ follow [first|second]
 Callvote
 ........
 
+mode [mode]
+  Switch to one of admin-defined game modes. To see a full list type
+  `callvote mode`.
+
 nk [mode]
   No Kick. `mode` can be 1 - no dmg, 2 - no knockback, 3 - no kicking
 
@@ -142,7 +146,7 @@ g_allowVote 1
   16 - Gametype          32 - Kick              64 - Client Kick
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
-  8192 - No Kicks        16384 - With Kicks
+  8192 - No Kicks        16384 - With Kicks     32768 - Mode
   =====================  =====================  =====================
 
 g_damagePlums
