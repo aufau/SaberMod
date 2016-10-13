@@ -831,8 +831,8 @@ qboolean CalculateEfficiency(gentity_t *ent, int *efficiency)
 		player = g_entities + i;
 		if (!player->inuse)
 			continue;
-		nShotsFired = player->client->accuracy_shots; //player->client->ps.persistant[PERS_ACCURACY_SHOTS];
-		nShotsHit = player->client->accuracy_hits; //player->client->ps.persistant[PERS_ACCURACY_HITS];
+		nShotsFired = player->client->pers.accuracy_shots;
+		nShotsHit = player->client->pers.accuracy_hits;
 		fAccuracyRatio = ( ((float)nShotsHit)/((float)nShotsFired) );
 		if (fAccuracyRatio > fBestRatio)
 		{

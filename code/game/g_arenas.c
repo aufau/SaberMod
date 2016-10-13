@@ -50,8 +50,8 @@ void UpdateTournamentInfo( void ) {
 		Com_sprintf( msg, sizeof(msg), "postgame %i %i 0 0 0 0 0 0 0 0 0 0 0", level.numNonSpectatorClients, playerClientNum );
 	}
 	else {
-		if( player->client->accuracy_shots ) {
-			accuracy = player->client->accuracy_hits * 100 / player->client->accuracy_shots;
+		if( player->client->pers.accuracy_shots ) {
+			accuracy = player->client->pers.accuracy_hits * 100 / player->client->pers.accuracy_shots;
 		}
 		else {
 			accuracy = 0;
