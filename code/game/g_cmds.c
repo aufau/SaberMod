@@ -48,8 +48,8 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
-		if( cl->accuracy_shots ) {
-			accuracy = cl->accuracy_hits * 100 / cl->accuracy_shots;
+		if( cl->pers.accuracy_shots ) {
+			accuracy = cl->pers.accuracy_hits * 100 / cl->pers.accuracy_shots;
 		}
 		else {
 			accuracy = 0;

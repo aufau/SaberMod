@@ -383,6 +383,8 @@ typedef struct {
 	int			totalDamageTakenFromAllies;
 	int			totalDamageDealtToAllies;
 	qboolean	registered;
+	int			accuracy_shots;		// total number of shots
+	int			accuracy_hits;		// total number of hits
 } clientPersistant_t;
 
 
@@ -426,9 +428,6 @@ struct gclient_s {
 	int			damageBoxHandle_LLeg; //entity number of left leg damage box
 
 	int			accurateCount;		// for "impressive" reward sound
-
-	int			accuracy_shots;		// total number of shots
-	int			accuracy_hits;		// total number of hits
 
 	//
 	int			lastkilled_client;	// last client that this client killed
