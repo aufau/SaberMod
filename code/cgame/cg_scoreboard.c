@@ -81,6 +81,7 @@ static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_NET_DMG, SBC_P
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 
 sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, float scale)
 {
@@ -370,7 +371,14 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	// add the "ready" marker for intermission exiting
 	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) )
 	{
-		CG_Text_Paint (SB_SCORELINE_X - 64, y + 2, 0.7f * scale, colorWhite, CG_GetStripEdString("INGAMETEXT", "READY"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		UI_DrawScaledProportionalString(SB_SCORELINE_X - 31, y + 2,
+			CG_GetStripEdString("INGAMETEXT", "READY"), UI_RIGHT, colorWhite, 0.7f * scale);
+	}
+	else if ( GT_Round(cgs.gametype) && cg.predictedPlayerState.pm_type != PM_INTERMISSION &&
+		score->dead && ci->team != TEAM_SPECTATOR )
+	{
+		UI_DrawScaledProportionalString(SB_SCORELINE_X - 31, y + 2,
+			CG_GetStripEdString("SABERINGAME", "DEAD"), UI_RIGHT, colorRed, 0.7f * scale);
 	}
 }
 
@@ -590,6 +598,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 		break;
 	case GT_CTF:
 		columns = ctfColumns;
+		break;
+	case GT_CLANARENA:
+		columns = caColumns;
 		break;
 	default:
 		columns = ffaColumns;

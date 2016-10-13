@@ -188,7 +188,7 @@ float CG_GetValue(int ownerDraw) {
   case CG_PLAYER_AMMO_VALUE:
 		if ( cent->currentState.weapon )
 		{
-			return ps->ammo[weaponData[cent->currentState.weapon].ammoIndex];
+			return MIN(ps->ammo[weaponData[cent->currentState.weapon].ammoIndex], 999);
 		}
     break;
   case CG_PLAYER_SCORE:
@@ -371,7 +371,9 @@ const char *CG_GameTypeString(void) {
 		return "Capture the Ysalamiri";
     } else if ( cgs.gametype == GT_REDROVER ) {
         return "Red Rover";
-    }
+    } else if ( cgs.gametype == GT_CLANARENA ) {
+		return "Clan Arena";
+	}
 	return "";
 }
 
@@ -639,7 +641,8 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 			value = score->impressiveCount;
 			break;
 		case CG_PERFECT:
-			value = score->perfect;
+			// value = score->perfect;
+			value = 0;
 			break;
 		case CG_GAUNTLET:
 			value = score->guantletCount;

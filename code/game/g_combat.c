@@ -541,8 +541,12 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( !ent->client ) {
 		return;
 	}
-	// no scoring during pre-match warmup
-	if ( level.warmupTime ) {
+	if (GT_Round(g_gametype.integer) && level.round == 0) {
+		return;
+	}
+	if (level.warmupTime || level.roundQueued ||
+		level.intermissionQueued || level.intermissiontime )
+	{
 		return;
 	}
 	// show score plum
@@ -607,7 +611,8 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 
 	launched->count = bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
 
-	self->client->ps.ammo[weaponData[weapon].ammoIndex] -= bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
+	if (self->client->ps.ammo[weaponData[weapon].ammoIndex] != INFINITE_AMMO)
+		self->client->ps.ammo[weaponData[weapon].ammoIndex] -= bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
 
 	if (self->client->ps.ammo[weaponData[weapon].ammoIndex] < 0)
 	{
@@ -640,6 +645,9 @@ void TossClientItems( gentity_t *self ) {
 	float		angle;
 	int			i;
 	gentity_t	*drop;
+
+	if ( GT_Round(g_gametype.integer) )
+		return;
 
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
@@ -2162,7 +2170,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( client->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 			continue;
 		}
 		if ( client->sess.spectatorClient == self->s.number ) {
@@ -3030,7 +3038,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
-	if ( level.intermissionQueued || level.roundQueued ) {
+	if ( level.intermissionQueued ) {
 		return;
 	}
 	if ( !inflictor ) {
@@ -3165,6 +3173,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
+		if ( level.roundQueued ) {
+			return;
+		}
+
 		if ( g_instagib.integer ) {
 			if (dflags & DAMAGE_RADIUS)
 				return;
@@ -3512,24 +3524,51 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	// don't log damage stats
+	if (level.warmupTime || level.intermissiontime || level.intermissionQueued ||
+		level.roundQueued )
+	{
+		return;
+	}
+
 	// Final health damage
 	take = MAX(0, oldHealth) - MAX(0, targ->health) + asave;
-	if (take && client) {
+
+	if (g_damagePlums.integer && take && client && attacker->client) {
+		ScorePlum(attacker->s.number, client->ps.origin, take);
+		//ScorePlum(attacker, targ->r.currentOrigin, take);
+	}
+
+	if (GT_Round(g_gametype.integer) && level.round == 0) {
+		return;
+	}
+
+	if (take && client)
+	{
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
 		if (attacker->client) {
+
 			if (client == attacker->client || OnSameTeam(targ, attacker)) {
 				client->pers.totalDamageTakenFromAllies += take;
 				attacker->client->pers.totalDamageDealtToAllies += take;
 			} else {
 				client->pers.totalDamageTakenFromEnemies += take;
-				attacker->client->pers.totalDamageDealtToEnemies += take;
+
+				if (GT_Round(g_gametype.integer)) {
+					int	oldScore, newScore;
+
+					oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+					newScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+
+					if (newScore != oldScore)
+						AddScore(attacker, targ->r.currentOrigin, newScore - oldScore);
+				} else {
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+				}
 			}
 
-			if (g_damagePlums.integer) {
-				ScorePlum(attacker->s.number, client->ps.origin, take);
-				//ScorePlum(attacker, targ->r.currentOrigin, take);
-			}
 		}
 	}
 }

@@ -148,12 +148,13 @@ typedef enum {
 	GT_CTF,				// capture the flag
 	GT_CTY,
 	GT_REDROVER,		// slain join your team
+	GT_CLANARENA,		// round-based tffa
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
 #define GT_Team(x) ((x) >= GT_TEAM)
-#define GT_Round(x) ((x) == GT_REDROVER)
+#define GT_Round(x) ((x) >= GT_REDROVER)
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -459,6 +460,8 @@ typedef enum {
 	HI_NUM_HOLDABLE
 } holdable_t;
 
+// HI_NONE breaks item selector cycle in cgame
+#define LEGAL_ITEMS ((1 << HI_SEEKER) | (1 << HI_SHIELD) | (1 << HI_MEDPAC) | (1 << HI_SENTRY_GUN))
 
 typedef enum {
 	CTFMESSAGE_FRAGGED_FLAG_CARRIER,

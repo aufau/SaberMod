@@ -125,10 +125,13 @@ vmCvar_t	g_austrian;
 
 vmCvar_t    g_damagePlums;
 vmCvar_t	g_restrictChat;
+vmCvar_t	g_spawnItems;
 vmCvar_t	g_spawnShield;
+vmCvar_t	g_spawnWeapons;
 vmCvar_t	g_roundlimit;
 vmCvar_t	g_roundWarmup;
 vmCvar_t	g_noKick;
+vmCvar_t	g_infiniteAmmo;
 vmCvar_t	g_instagib;
 
 
@@ -287,10 +290,13 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
 
@@ -1194,9 +1200,9 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( GT_Round(g_gametype.integer) ) {
-		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED ) ) );
-		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE ) ) );
+	if ( g_gametype.integer == GT_REDROVER ) {
+		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED, qfalse ) ) );
+		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE, qfalse ) ) );
 	} else if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
@@ -1434,6 +1440,7 @@ static void Shuffle( void )
 				teamNameUpperCase[ent->client->sess.sessionTeam],
 				teamNameUpperCase[newTeam],
 				ent->client->pers.netname, teamNameLowerCase[newTeam]);
+			ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
 		}
 
 		ent->client->sess.sessionTeam = newTeam;
@@ -1459,20 +1466,44 @@ static void NextRound( void )
 	char	warmup[2];
 	int		i;
 
-	for ( i = 0; i < level.numNonSpectatorClients; i++ ) {
-		gentity_t	*ent = g_entities + level.sortedClients[i];
-
-		ResetClientState(ent);
-	}
-
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
-	Shuffle(); // calls CheckExitRules
-
+	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
 	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
 	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
 	if ( warmup[0] == '\0' ) {
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
+	}
+
+	if ( g_gametype.integer == GT_REDROVER ) {
+		Shuffle(); // calls CheckExitRules
+	} else {
+		gentity_t	*ent;
+
+		for ( i = 0; i < level.maxclients; i++ ) {
+			ent = g_entities + i;
+
+			if ( !ent->inuse )
+				continue;
+
+			// add even connecting players so they can respawn later
+			if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+				if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
+					StopFollowing( ent );
+				ent->client->sess.spectatorState = SPECTATOR_NOT;
+				ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
+				// not changing teams here, but settings may change
+			}
+
+			if ( ent->client->pers.connected == CON_CONNECTED )
+				respawn( ent );
+		}
+
+		// clean up dead bodies
+		for ( i = 0; i < BODY_QUEUE_SIZE ; i++ ) {
+			trap_UnlinkEntity( level.bodyQue[i] );
+			level.bodyQue[i]->physicsObject = qfalse;
+		}
 	}
 }
 
@@ -1613,6 +1644,7 @@ const char *machineGameNames[GT_MAX_GAME_TYPE] = {
 	"CTF",
 	"CTY",
 	"REDROVER",
+	"CLANARENA",
 };
 
 /*
@@ -1938,8 +1970,7 @@ void CheckExitRules( void ) {
 		{
 			if (g_entities[i].inuse && g_entities[i].client && g_entities[i].health > 0)
 			{
-				if (g_entities[i].client->sess.sessionTeam != TEAM_SPECTATOR &&
-					!(g_entities[i].client->ps.pm_flags & PMF_FOLLOW))
+				if (g_entities[i].client->sess.spectatorState == SPECTATOR_NOT)
 				{
 					numLiveClients++;
 				}
@@ -1974,9 +2005,22 @@ void CheckExitRules( void ) {
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
 			if (GT_Round(g_gametype.integer)) {
-				if ( level.numPlayingClients < 2 ) {
-					trap_SendServerCommand( -1, "print \"Not enough players.\n\"" );
-					LogExit("Not enough players.");
+				qboolean abort = qfalse;
+
+				if ( g_gametype.integer == GT_REDROVER ) {
+					if ( level.numPlayingClients < 2 )
+						abort = qtrue;
+				} else {
+					int	redCount = TeamCount( -1, TEAM_RED, qtrue );
+					int	blueCount = TeamCount( -1, TEAM_BLUE, qtrue );
+
+					if ( redCount == 0 || blueCount == 0 )
+						abort = qtrue;
+				}
+
+				if ( abort ) {
+					trap_SendServerCommand( -1, "print \"Game aborted. Not enough players.\n\"" );
+					LogExit("Game aborted. Not enough players.");
 					G_PrintStats();
 					BeginIntermission();
 				} else if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
@@ -2033,31 +2077,33 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( level.numPlayingClients < 2 ) {
-		return;
-	}
-
 	if ( GT_Round(g_gametype.integer) ) {
-		int	redCount = TeamCount( -1, TEAM_RED );
-		int	blueCount = TeamCount( -1, TEAM_BLUE );
+		int	redCount = TeamCount( -1, TEAM_RED, qfalse );
+		int	blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
 
 		// begin first round of the game
 		if ( level.round == 0 ) {
-			NextRound();
+			if ( redCount > 0 && blueCount > 0 )
+				NextRound();
 			return;
+		} else {
+			if ( redCount == 0 ) {
+				level.teamScores[TEAM_BLUE]++;
+				trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
+				LogRoundExit( "Red team eliminated." );
+				return;
+			}
+			if ( blueCount == 0 ) {
+				level.teamScores[TEAM_RED]++;
+				trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
+				LogRoundExit( "Blue team eliminated." );
+				return;
+			}
 		}
-		if ( redCount == 0 ) {
-			level.teamScores[TEAM_BLUE]++;
-			trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
-			LogRoundExit( "Red team eliminated." );
-			return;
-		}
-		if ( blueCount == 0 ) {
-			level.teamScores[TEAM_RED]++;
-			trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
-			LogRoundExit( "Blue team eliminated." );
-			return;
-		}
+	}
+
+	if ( level.numPlayingClients < 2 ) {
+		return;
 	}
 
 	if ( !GT_Flag(g_gametype.integer) && !GT_Round(g_gametype.integer) && g_fraglimit.integer ) {
@@ -2231,8 +2277,8 @@ void CheckTournament( void ) {
 		qboolean	notEnough = qfalse;
 
 		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
-			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
+			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE, qtrue );
+			counts[TEAM_RED] = TeamCount( -1, TEAM_RED, qtrue );
 
 			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
 				notEnough = qtrue;
@@ -2685,7 +2731,7 @@ void G_RunFrame( int levelTime ) {
 		{
 			G_CheckClientTimeouts ( ent );
 
-			if((!level.intermissiontime)&&!(ent->client->ps.pm_flags&PMF_FOLLOW) && ent->client->sess.sessionTeam != TEAM_SPECTATOR)
+			if((!level.intermissiontime)&&!(ent->client->ps.pm_flags&PMF_FOLLOW) && ent->client->sess.spectatorState == SPECTATOR_NOT)
 			{
 				WP_ForcePowersUpdate(ent, &ent->client->pers.cmd );
 				WP_SaberPositionUpdate(ent, &ent->client->pers.cmd);

@@ -229,6 +229,9 @@ void CG_DrawInformation( void ) {
 	case GT_REDROVER:
 		s = "Red Rover";
 		break;
+	case GT_CLANARENA:
+		s = "Clan Arena";
+		break;
 	default:
 		s = "Unknown Gametype";
 		break;
@@ -422,8 +425,16 @@ void CG_DrawInformation( void ) {
 		y += iPropHeight;
 		UI_DrawProportionalString( 320, y, CG_GetStripEdString("SABERINGAME", "RULES_REDROVER_2"),
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
-
 		y += iPropHeight;
+		break;
+	case GT_CLANARENA:
+		UI_DrawProportionalString( 320, y, CG_GetStripEdString("SABERINGAME", "RULES_CLANARENA_1"),
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		y += iPropHeight;
+		UI_DrawProportionalString( 320, y, CG_GetStripEdString("SABERINGAME", "RULES_CLANARENA_2"),
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		y += iPropHeight;
+		break;
 	default:
 		break;
 	}

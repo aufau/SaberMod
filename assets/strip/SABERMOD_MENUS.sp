@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 20
+COUNT 21
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -181,4 +181,13 @@ INDEX 19
    TEXT_LANGUAGE3 "Begin vote to change game mode."
    TEXT_LANGUAGE6 "Begin vote to change game mode."
    TEXT_LANGUAGE8 "Begin vote to change game mode."
+}
+INDEX 20
+{
+   REFERENCE CLAN_ARENA
+   TEXT_LANGUAGE1 "Clan Arena"
+   TEXT_LANGUAGE2 "Clan Arena"
+   TEXT_LANGUAGE3 "Clan Arena"
+   TEXT_LANGUAGE6 "Clan Arena"
+   TEXT_LANGUAGE8 "Clan Arena"
 }

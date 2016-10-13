@@ -351,7 +351,7 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 	}
 	// Spectators only?
 	if ( ( self->spawnflags & 1 ) &&
-		other->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		other->client->sess.spectatorState == SPECTATOR_NOT ) {
 		return;
 	}
 
@@ -447,7 +447,7 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	if (self->damage == -1 && other && other->client && other->health < 1)
 	{
 		other->client->ps.fallingToDeath = 0;
-		respawn(other);
+		G_Respawn(other);
 		return;
 	}
 

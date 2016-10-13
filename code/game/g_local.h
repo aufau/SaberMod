@@ -633,6 +633,8 @@ void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
 void SaveRegisteredItems( void );
 
+qboolean	G_HoldableDisabled( holdable_t holdable );
+
 //
 // g_utils.c
 //
@@ -804,7 +806,7 @@ qboolean CheckGauntletAttack( gentity_t *ent );
 //
 // g_client.c
 //
-int TeamCount( int ignoreClientNum, int team );
+int TeamCount( int ignoreClientNum, int team, qboolean dead );
 int TeamLeader( int team );
 team_t PickTeam( int ignoreClientNum );
 void ResetClientState( gentity_t *self );
@@ -885,6 +887,7 @@ void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
 void ClientEndFrame			( gentity_t *ent );
 void G_RunClient			( gentity_t *ent );
+void G_Respawn				( gentity_t *ent );
 
 //
 // g_team.c
@@ -1105,8 +1108,11 @@ extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_damagePlums;
 extern  vmCvar_t	g_restrictChat;
+extern	vmCvar_t	g_spawnItems;
 extern  vmCvar_t	g_spawnShield;
+extern	vmCvar_t	g_spawnWeapons;
 extern  vmCvar_t	g_noKick;
+extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
 
 void	trap_Print( const char *fmt );

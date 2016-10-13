@@ -427,7 +427,7 @@ typedef struct {
 	int				defendCount;
 	int				assistCount;
 	int				captures;
-	qboolean	perfect;
+	qboolean		dead;
 	int				team;
 	int				kills;
 	int				deaths;
