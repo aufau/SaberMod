@@ -418,6 +418,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	gentity_t	*traceEnt, *tent;
 	float		/*dist, */shotRange = 8192;
 	int			ignore, traces;
+	qboolean	hit = qfalse;
 
 	memset(&tr, 0, sizeof(tr)); //to shut the compiler up
 
@@ -497,9 +498,11 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 			// Create a simple impact type mark that doesn't last long in the world
 //			G_PlayEffect( G_EffectIndex( "disruptor/flesh_impact" ), tr.endpos, tr.plane.normal );
 
-			if ( traceEnt->client && LogAccuracyHit( traceEnt, ent ))
+			if ( traceEnt->client )
 			{
-				ent->client->accuracy_hits++;
+				hit = qtrue;
+				if ( LogAccuracyHit( traceEnt, ent ) )
+					ent->client->accuracy_hits++;
 			}
 
 			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
@@ -518,6 +521,21 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 			tent->s.eventParm = DirToByte( tr.plane.normal );
 			tent->s.weapon = 1;
 		}
+	}
+
+	if ( hit ) {
+		ent->client->accurateCount++;
+
+		// reload time is only 600ms so make it harder than in q3a
+		if ( ent->client->accurateCount >= 3 ) {
+			ent->client->accurateCount = 0;
+			ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+			ent->client->ps.eFlags &= ~EF_AWARDS;
+			ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
+			ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		}
+	} else {
+		ent->client->accurateCount = 0;
 	}
 }
 
