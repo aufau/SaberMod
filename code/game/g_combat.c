@@ -541,7 +541,10 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( !ent->client ) {
 		return;
 	}
-	if (level.warmupTime || level.roundQueued || level.round == 0 ||
+	if (GT_Round(g_gametype.integer) && level.round == 0) {
+		return;
+	}
+	if (level.warmupTime || level.roundQueued ||
 		level.intermissionQueued || level.intermissiontime )
 	{
 		return;
@@ -3523,8 +3526,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// don't log damage stats
 	if (level.warmupTime || level.intermissiontime || level.intermissionQueued ||
-		level.roundQueued || level.round == 0 )
+		level.roundQueued )
 	{
+		return;
+	}
+	if (GT_Round(g_gametype.integer) && level.round == 0) {
 		return;
 	}
 

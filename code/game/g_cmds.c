@@ -1443,8 +1443,9 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 	}
 
 	if ( g_restrictChat.integer && mode == SAY_ALL && ent->client->sess.sessionTeam == TEAM_SPECTATOR )
-		if ( !level.warmupTime && !level.intermissiontime && level.round > 0 )
-			mode = SAY_TEAM;
+		if ( !level.warmupTime && !level.intermissiontime )
+			if ( !GT_Round(g_gametype.integer) || level.round > 0 )
+				mode = SAY_TEAM;
 
 	G_Say( ent, NULL, mode, p );
 }
@@ -1492,7 +1493,8 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	p = ConcatArgs( 2 );
 
 	if ( g_restrictChat.integer ) {
-		if ( !level.warmupTime && !level.intermissiontime && level.round > 0 &&
+		if ( !level.warmupTime && !level.intermissiontime &&
+			( !GT_Round(g_gametype.integer) || level.round > 0 ) &&
 			 ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
 			 target->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 			trap_SendServerCommand( ent-g_entities,
