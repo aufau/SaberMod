@@ -525,6 +525,9 @@ void ScorePlum( int clientNum, vec3_t origin, int score ) {
 	// only send this temp entity to a single client
 	plum->r.svFlags |= SVF_SINGLECLIENT;
 	plum->r.singleClient = clientNum;
+	// only send this temp entity to spectators following client
+	if (!g_damagePlums.integer)
+		mv_entities[plum->s.number].mvFlags |= MVF_SPECONLY;
 	//
 	plum->s.otherEntityNum = clientNum;
 	plum->s.time = score;
@@ -3546,7 +3549,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if (take == 0)
 			return;
 
-		if (g_damagePlums.integer)
+		if (g_damagePlums.integer || mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
 
 		if (GT_Round(g_gametype.integer) && level.round == 0)
