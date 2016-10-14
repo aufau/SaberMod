@@ -1745,6 +1745,12 @@ void FinishSpawningItem( gentity_t *ent ) {
 					return;
 				}
 			}
+		} else if (g_infiniteAmmo.integer) {
+			if (ent->item->giType == IT_AMMO)
+			{
+				G_FreeEntity( ent );
+				return;
+			}
 		}
 	}
 	else
