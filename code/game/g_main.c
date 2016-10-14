@@ -2100,7 +2100,8 @@ void CheckExitRules( void ) {
 				} else {
 					level.teamScores[winner]++;
 					trap_SendServerCommand( -1,
-						va("cp \"%s team wins the round\"", teamName[winner]));
+						va("cp \"%s%s" S_COLOR_WHITE " team wins the round\"",
+							teamColorString[winner], teamName[winner]));
 				}
 
 				LogRoundExit( "Timelimit hit." );
@@ -2122,15 +2123,17 @@ void CheckExitRules( void ) {
 				NextRound();
 			return;
 		} else {
+			// usually these centerprints get overwritten by orbituary
+			// or dead player scoreboard
 			if ( redCount == 0 ) {
 				level.teamScores[TEAM_BLUE]++;
-				trap_SendServerCommand( -1, "cp \"Red team eliminated\n\"");
+				trap_SendServerCommand( -1, "cp \"" S_COLOR_RED "Red" S_COLOR_WHITE " team eliminated\n\"" );
 				LogRoundExit( "Red team eliminated." );
 				return;
 			}
 			if ( blueCount == 0 ) {
 				level.teamScores[TEAM_RED]++;
-				trap_SendServerCommand( -1, "cp \"Blue team eliminated\n\"");
+				trap_SendServerCommand( -1, "cp \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " team eliminated\n\"" );
 				LogRoundExit( "Blue team eliminated." );
 				return;
 			}
@@ -2143,16 +2146,14 @@ void CheckExitRules( void ) {
 
 	if ( !GT_Flag(g_gametype.integer) && !GT_Round(g_gametype.integer) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " %s\n\"",
-					teamColorString[TEAM_RED], teamName[TEAM_RED],
+			trap_SendServerCommand( -1, va("print \"" S_COLOR_RED "Red" S_COLOR_WHITE " %s\n\"",
 					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " %s\n\"",
-					teamColorString[TEAM_BLUE], teamName[TEAM_BLUE],
+			trap_SendServerCommand( -1, va("print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " %s\n\"",
 					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
 			LogExit( "Kill limit hit." );
 			return;
@@ -2192,15 +2193,13 @@ void CheckExitRules( void ) {
 	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE "hit the capturelimit.\n\"",
-					teamColorString[TEAM_RED], teamName[TEAM_RED]) );
+			trap_SendServerCommand( -1, "print \"" S_COLOR_RED "Red" S_COLOR_WHITE " hit the capturelimit.\n\"");
 			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE "hit the capturelimit.\n\"",
-					teamColorString[TEAM_BLUE], teamName[TEAM_BLUE]) );
+			trap_SendServerCommand( -1, "print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " hit the capturelimit.\n\"");
 			LogExit( "Capturelimit hit." );
 			return;
 		}
