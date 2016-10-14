@@ -574,6 +574,10 @@ qboolean G_ParseSpawnVars( void ) {
 	return qtrue;
 }
 
+static int QDECL SortStrcmp( const void *a, const void *b )
+{
+	return strcmp(*(const char **)a, *(const char **) b);
+}
 
 static	char *defaultStyles[32][3] =
 {
@@ -864,6 +868,7 @@ void SP_worldspawn( void )
 	{
 		char	cs[MAX_INFO_STRING];
 		char	filelist[MAX_INFO_STRING * 3];
+		char	*modes[MAX_MODES] = { NULL };
 		char	*file = filelist;
 		int		numfiles;
 		int		len;
@@ -873,13 +878,21 @@ void SP_worldspawn( void )
 		numfiles = trap_FS_GetFileList( "modes", ".cfg", filelist, sizeof(filelist) );
 		// filelist looks like this: tffa.cfg\0ctf.cfg\0ca.cfg\0
 
+		if (numfiles > MAX_MODES)
+			numfiles = MAX_MODES;
+
 		for ( i = 0; i < numfiles; i++ ) {
 			len = strlen( file );
 			file[len - 4] = '\\'; // strip extension and use '\\' as separator
 			file[len - 3] = '\0';
-			Q_strcat( cs, sizeof( cs ), file );
+			modes[i] = file;
 			file += len + 1;
 		}
+
+		qsort( modes, numfiles, sizeof( modes[0] ), SortStrcmp );
+
+		for ( i = 0; i < numfiles; i++ )
+			Q_strcat( cs, sizeof( cs ), modes[i] );
 
 		if ( strlen( cs ) + 1 >= sizeof( cs ) )
 			Com_Printf( "WARNING: Too many modes. Delete some or use shorter names.\n" );
