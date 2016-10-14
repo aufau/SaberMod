@@ -108,6 +108,8 @@ Ghoul2 Insert End
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
 #endif
 
+#define MAX_MODES				128
+
 typedef enum {
 	G2_MODELPART_HEAD = 10,
 	G2_MODELPART_WAIST,
