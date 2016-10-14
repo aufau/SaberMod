@@ -383,6 +383,8 @@ typedef struct {
 	int			totalDamageTakenFromAllies;
 	int			totalDamageDealtToAllies;
 	qboolean	registered;
+
+	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
 
 
