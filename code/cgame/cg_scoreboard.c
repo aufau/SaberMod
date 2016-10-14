@@ -83,55 +83,24 @@ static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_M
 static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 
-sbColumnData_t CG_InitScoreboardColumn(const char *label, const char *maxValue, float scale)
+static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const char *maxValue, float scale)
 {
-	sbColumnData_t	column;
+	sbColumnData_t	*column = columnData + field;
 	int				labelW, fieldW;
 
-	column.scale = scale;
-	column.drop = CG_Text_Height(maxValue, 1.0f, FONT_SMALL)
+	column->scale = scale;
+	column->drop = CG_Text_Height(maxValue, 1.0f, FONT_SMALL)
 		- CG_Text_Height(maxValue, scale, FONT_SMALL);
 
 	labelW = CG_Text_Width(label, 1.0f, FONT_MEDIUM);
 	fieldW = CG_Text_Width(maxValue, scale, FONT_SMALL);
-	column.width[1] = MAX(labelW, fieldW);
+	column->width[1] = MAX(labelW, fieldW);
 
 	fieldW = CG_Text_Width(maxValue, SB_SCALE * scale, FONT_SMALL);
-	column.width[0] = MAX(labelW, fieldW);
-
-	return column;
+	column->width[0] = MAX(labelW, fieldW);
 }
 
-void CG_InitScoreboardColumns()
-{
-	const char *label;
-
-	label = CG_GetStripEdString("SABERINGAME", "SCORE");
-	columnData[SBC_SCORE] = CG_InitScoreboardColumn(label, "-999", SB_SCALE_LARGE);
-	label = "C";
-	columnData[SBC_CAP] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
-	label = "A";
-	columnData[SBC_AST] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
-	label = "D";
-	columnData[SBC_DEF] = CG_InitScoreboardColumn(label, "99", SB_SCALE);
-	label = CG_GetStripEdString("SABERINGAME", "TIME");
-	// Assumption: Time is last, there is enough space for 9999
-	columnData[SBC_TIME] = CG_InitScoreboardColumn(label, "9999", SB_SCALE_LARGE);
-	label = CG_GetStripEdString("SABERINGAME", "PING");
-	columnData[SBC_PING] = CG_InitScoreboardColumn(label, "999", SB_SCALE_LARGE);
-	label = CG_GetStripEdString("INGAMETEXT", "W_L");
-	// Assumption: W/L is always next to score column and "Score"
-	// label leaves some extra space to the right. Use it.
-	columnData[SBC_W_L] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE_LARGE);
-	columnData[SBC_W_L_SM] = CG_InitScoreboardColumn(label, "9/99", SB_SCALE);
-	label = "K/D";
-	// Assumption: K/D is always next to score column and "Score"
-	// label leaves some extra space to the right. Use it.
-	columnData[SBC_K_D] = CG_InitScoreboardColumn(label, "99/999", SB_SCALE);
-	label = "NetD";
-	columnData[SBC_NET_DMG] = CG_InitScoreboardColumn(label, "-99.9k", SB_SCALE);
-}
-
+// also initializes columnData for CG_DrawScoreboardField
 static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 {
 	const char	*label = NULL;
@@ -139,36 +108,52 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 	switch (field) {
 	case SBC_SCORE:
 		label = CG_GetStripEdString("MENUS3", "SCORE");
+		CG_InitScoreboardColumn(field, label, "-999", SB_SCALE_LARGE);
 		break;
 	case SBC_CAP:
 		label = "C";
+		CG_InitScoreboardColumn(field, label, "99", SB_SCALE);
 		break;
 	case SBC_AST:
 		label = "A";
+		CG_InitScoreboardColumn(field, label, "99", SB_SCALE);
 		break;
 	case SBC_DEF:
 		label = "D";
+		CG_InitScoreboardColumn(field, label, "99", SB_SCALE);
 		break;
 	case SBC_TIME:
 		label = CG_GetStripEdString("MENUS3", "TIME");
+		CG_InitScoreboardColumn(field, label, "9999", SB_SCALE_LARGE);
 		break;
 	case SBC_PING:
 		label = CG_GetStripEdString("MENUS0", "PING");
+		CG_InitScoreboardColumn(field, label, "999", SB_SCALE_LARGE);
 		break;
 	case SBC_W_L:
+		// Assumption: W/L is always next to score column and "Score"
+		// label leaves some extra space to the right. Use it.
+		label = CG_GetStripEdString("INGAMETEXT", "W_L");
+		CG_InitScoreboardColumn(field, label, "9/99", SB_SCALE_LARGE);
+		break;
 	case SBC_W_L_SM:
 		label = CG_GetStripEdString("INGAMETEXT", "W_L");
+		CG_InitScoreboardColumn(field, label, "9/99", SB_SCALE);
 		break;
 	case SBC_K_D:
+		// Assumption: K/D is always next to score column and "Score"
+		// label leaves some extra space to the right. Use it.
 		label = "K/D";
+		CG_InitScoreboardColumn(field, label, "99/999", SB_SCALE);
 		// Hack: doesn't scale and translate
 		x += CG_Text_Width("99", SB_SCALE, FONT_SMALL) - CG_Text_Width("K", 1.0f, FONT_MEDIUM);
 		break;
 	case SBC_NET_DMG:
 		label = "NetD";
+		CG_InitScoreboardColumn(field, label, "-99.9k", SB_SCALE);
 		break;
 	case SBC_MAX:
-		break;
+		return;
 	}
 
 	CG_Text_Paint ( x, y, 1.0f, colorWhite, label, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
