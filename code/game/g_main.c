@@ -408,7 +408,7 @@ MVAPI_AfterInit
 void MVAPI_AfterInit( int levelTime, int randomSeed, int restart )
 {
 	// disable jk2mv fixes
-	trap_MVAPI_ControlFixes( MVFIX_SPEEDHACK );
+	trap_MVAPI_ControlFixes( MVFIX_CHARGEJUMP | MVFIX_SPEEDHACK );
 
 	memset(mv_entities, 0, sizeof(mv_entities));
 
