@@ -2991,6 +2991,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			max;
 	int			subamt = 0;
 	int			oldHealth = targ->health;
+	int			oldArmor;
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
@@ -3070,6 +3071,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( client->noclip ) {
 			return;
 		}
+
+		oldArmor = client->ps.stats[STAT_ARMOR];
 	}
 
 	if ( !dir ) {
@@ -3525,50 +3528,50 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// don't log damage stats
-	if (level.warmupTime || level.intermissiontime || level.intermissionQueued ||
-		level.roundQueued )
-	{
+	if (level.warmupTime || level.intermissiontime || level.roundQueued )
 		return;
-	}
 
-	// Final health damage
-	take = MAX(0, oldHealth) - MAX(0, targ->health) + asave;
-
-	if (g_damagePlums.integer && take && client && attacker->client) {
-		ScorePlum(attacker->s.number, client->ps.origin, take);
-		//ScorePlum(attacker, targ->r.currentOrigin, take);
-	}
-
-	if (GT_Round(g_gametype.integer) && level.round == 0) {
-		return;
-	}
-
-	if (take && client)
+	if (client && attacker->client)
 	{
+		// all damage types must sum up to the total health of players!
+		if ( oldHealth <= 0 )
+			return; // we were dead to begin with
+		else if ( targ->health <= 0 )
+			take = oldHealth;
+		else
+			take = oldHealth - targ->health;
+
+		take += oldArmor - client->ps.stats[STAT_ARMOR];
+
+		if (take == 0)
+			return;
+
+		if (g_damagePlums.integer)
+			ScorePlum(attacker->s.number, client->ps.origin, take);
+
+		if (GT_Round(g_gametype.integer) && level.round == 0)
+			return;
+
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
-		if (attacker->client) {
+		if (client == attacker->client || OnSameTeam(targ, attacker)) {
+			client->pers.totalDamageTakenFromAllies += take;
+			attacker->client->pers.totalDamageDealtToAllies += take;
+		} else {
+			client->pers.totalDamageTakenFromEnemies += take;
 
-			if (client == attacker->client || OnSameTeam(targ, attacker)) {
-				client->pers.totalDamageTakenFromAllies += take;
-				attacker->client->pers.totalDamageDealtToAllies += take;
+			if (GT_Round(g_gametype.integer)) {
+				int	oldScore, newScore;
+
+				oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+				attacker->client->pers.totalDamageDealtToEnemies += take;
+				newScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+
+				if (newScore != oldScore)
+					AddScore(attacker, targ->r.currentOrigin, newScore - oldScore);
 			} else {
-				client->pers.totalDamageTakenFromEnemies += take;
-
-				if (GT_Round(g_gametype.integer)) {
-					int	oldScore, newScore;
-
-					oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
-					attacker->client->pers.totalDamageDealtToEnemies += take;
-					newScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
-
-					if (newScore != oldScore)
-						AddScore(attacker, targ->r.currentOrigin, newScore - oldScore);
-				} else {
-					attacker->client->pers.totalDamageDealtToEnemies += take;
-				}
+				attacker->client->pers.totalDamageDealtToEnemies += take;
 			}
-
 		}
 	}
 }
