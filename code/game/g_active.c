@@ -1934,10 +1934,15 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 			cl = &level.clients[ clientNum ];
 
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.spectatorState == SPECTATOR_NOT ) {
+				int persistant[MAX_PERSISTANT];
+
+				// don't erase scores when we're not in TEAM_SPECTATOR
+				memcpy(persistant, client->ps.persistant, sizeof(persistant));
 				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
+				memcpy(client->ps.persistant, persistant, sizeof(persistant));
 			} else {
 				StopFollowing(ent);
 			}
