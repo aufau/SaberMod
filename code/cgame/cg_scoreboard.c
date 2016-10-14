@@ -77,7 +77,7 @@ typedef struct {
 static sbColumnData_t columnData[SBC_MAX];
 
 static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
@@ -149,7 +149,7 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 		x += CG_Text_Width("99", SB_SCALE, FONT_SMALL) - CG_Text_Width("K", 1.0f, FONT_MEDIUM);
 		break;
 	case SBC_NET_DMG:
-		label = "NetD";
+		label = "Net";
 		CG_InitScoreboardColumn(field, label, "-99.9k", SB_SCALE);
 		break;
 	case SBC_MAX:
