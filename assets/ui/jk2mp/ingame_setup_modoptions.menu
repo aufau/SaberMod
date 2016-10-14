@@ -180,5 +180,375 @@
 		//
 		//----------------------------------------------------------------------------------------------
 
+		itemDef
+		{
+			name                    privateduel
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_PRIVATE_DUEL
+			cvar                    "cg_privateDuel"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 0 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_PRIVATE_DUEL_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight1
+			}
+			mouseexit
+			{
+				hide                    highlight1
+			}
+		}
+
+		itemDef
+		{
+			name                    duelglow
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DUEL_GLOW
+			cvar                    "cg_duelGlow"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 20 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_DUEL_GLOW_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight2
+			}
+			mouseexit
+			{
+				hide                    highlight2
+			}
+		}
+
+		//
+		// EMPTY
+		//
+
+		itemDef
+		{
+			name                    darkencorpses
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DARKEN_CORPSES
+			cvar                    "cg_darkenDeadBodies"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 60 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_DARKEN_CORPSES_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight4
+			}
+			mouseexit
+			{
+				hide                    highlight4
+			}
+		}
+
+		itemDef
+		{
+			name                    rewards
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_REWARDS
+			cvar                    "cg_drawRewards"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 80 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_REWARDS_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight5
+			}
+			mouseexit
+			{
+				hide                    highlight5
+			}
+		}
+
+		itemDef
+		{
+			name                    damageplums
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DAMAGE_PLUMS
+			cvar                    "cg_damagePlums"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 100 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_DAMAGE_PLUMS_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight6
+			}
+			mouseexit
+			{
+				hide                    highlight6
+			}
+		}
+
+		itemDef
+		{
+			name                    timer
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_TIMER
+			cvar                    "cg_drawTimer"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@SABERMENUS_COUNT_UP    1
+				@SABERMENUS_COUNT_DOWN  2
+			}
+			rect                    0 120 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_TIMER_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight7
+			}
+			mouseexit
+			{
+				hide                    highlight7
+			}
+		}
+
+		itemDef
+		{
+			name                    clock
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_CLOCK
+			cvar                    "cg_drawClock"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 140 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_CLOCK_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight8
+			}
+			mouseexit
+			{
+				hide                    highlight8
+			}
+		}
+
+		itemDef
+		{
+			name                    chatbeep
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_CHAT_BEEP
+			cvar                    "cg_chatBeep"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 160 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_CHAT_BEEP_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight9
+			}
+			mouseexit
+			{
+				hide                    highlight9
+			}
+		}
+
+		//
+		// EMPTY
+		//
+
+		itemDef
+		{
+			name                    followkiller
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_FOLLOW_KILLER
+			cvar                    "cg_followKiller"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 200 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_FOLLOW_KILLER_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight11
+			}
+			mouseexit
+			{
+				hide                    highlight11
+			}
+		}
+
+		itemDef
+		{
+			name                    followpowerup
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_FOLLOW_POWERUP
+			cvar                    "cg_followPowerup"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 220 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_FOLLOW_POWERUP_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight12
+			}
+			mouseexit
+			{
+				hide                    highlight12
+			}
+		}
+
+
 	}
 }

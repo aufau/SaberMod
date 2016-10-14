@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 21
+COUNT 39
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -190,4 +190,166 @@ INDEX 20
    TEXT_LANGUAGE3 "Clan Arena"
    TEXT_LANGUAGE6 "Clan Arena"
    TEXT_LANGUAGE8 "Clan Arena"
+}
+INDEX 21
+{
+   REFERENCE PRIVATE_DUEL
+   TEXT_LANGUAGE1 "Private Duel:"
+   TEXT_LANGUAGE2 "Private Duel:"
+   TEXT_LANGUAGE3 "Private Duel:"
+   TEXT_LANGUAGE6 "Private Duel:"
+   TEXT_LANGUAGE8 "Private Duel:"
+}
+INDEX 22
+{
+   REFERENCE PRIVATE_DUEL_DESC
+   TEXT_LANGUAGE1 "Hide other players when duelling."
+   TEXT_LANGUAGE2 "Hide other players when duelling."
+   TEXT_LANGUAGE3 "Hide other players when duelling."
+   TEXT_LANGUAGE6 "Hide other players when duelling."
+   TEXT_LANGUAGE8 "Hide other players when duelling."
+}
+INDEX 23
+{
+   REFERENCE DUEL_GLOW
+   TEXT_LANGUAGE1 "Duel Glow:"
+   TEXT_LANGUAGE2 "Duel Glow:"
+   TEXT_LANGUAGE3 "Duel Glow:"
+   TEXT_LANGUAGE6 "Duel Glow:"
+   TEXT_LANGUAGE8 "Duel Glow:"
+}
+INDEX 24
+{
+   REFERENCE DUEL_GLOW_DESC
+   TEXT_LANGUAGE1 "White glow around duelling players."
+   TEXT_LANGUAGE2 "White glow around duelling players."
+   TEXT_LANGUAGE3 "White glow around duelling players."
+   TEXT_LANGUAGE6 "White glow around duelling players."
+   TEXT_LANGUAGE8 "White glow around duelling players."
+}
+INDEX 25
+{
+   REFERENCE DARKEN_CORPSES
+   TEXT_LANGUAGE1 "Darken Corpses:"
+   TEXT_LANGUAGE2 "Darken Corpses:"
+   TEXT_LANGUAGE3 "Darken Corpses:"
+   TEXT_LANGUAGE6 "Darken Corpses:"
+   TEXT_LANGUAGE8 "Darken Corpses:"
+}
+INDEX 26
+{
+   REFERENCE DARKEN_CORPSES_DESC
+   TEXT_LANGUAGE1 "Turn corpses and dead players dark."
+   TEXT_LANGUAGE2 "Turn corpses and dead players dark."
+   TEXT_LANGUAGE3 "Turn corpses and dead players dark."
+   TEXT_LANGUAGE6 "Turn corpses and dead players dark."
+   TEXT_LANGUAGE8 "Turn corpses and dead players dark."
+}
+INDEX 27
+{
+   REFERENCE REWARDS
+   TEXT_LANGUAGE1 "Rewards:"
+   TEXT_LANGUAGE2 "Rewards:"
+   TEXT_LANGUAGE3 "Rewards:"
+   TEXT_LANGUAGE6 "Rewards:"
+   TEXT_LANGUAGE8 "Rewards:"
+}
+INDEX 28
+{
+   REFERENCE REWARDS_DESC
+   TEXT_LANGUAGE1 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE2 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE3 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE6 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE8 "Download "Jedi Knight Rewards 2" from jkhub.org."
+}
+INDEX 29
+{
+   REFERENCE DAMAGE_PLUMS
+   TEXT_LANGUAGE1 "Damage Plums:"
+   TEXT_LANGUAGE2 "Damage Plums:"
+   TEXT_LANGUAGE3 "Damage Plums:"
+   TEXT_LANGUAGE6 "Damage Plums:"
+   TEXT_LANGUAGE8 "Damage Plums:"
+}
+INDEX 30
+{
+   REFERENCE DAMAGE_PLUMS_DESC
+   TEXT_LANGUAGE1 "In-game damage indicators."
+   TEXT_LANGUAGE2 "In-game damage indicators."
+   TEXT_LANGUAGE3 "In-game damage indicators."
+   TEXT_LANGUAGE6 "In-game damage indicators."
+   TEXT_LANGUAGE8 "In-game damage indicators."
+}
+INDEX 31
+{
+   REFERENCE TIMER
+   TEXT_LANGUAGE1 "Game Timer:"
+   TEXT_LANGUAGE2 "Game Timer:"
+   TEXT_LANGUAGE3 "Game Timer:"
+   TEXT_LANGUAGE6 "Game Timer:"
+   TEXT_LANGUAGE8 "Game Timer:"
+}
+INDEX 32
+{
+   REFERENCE TIMER_DESC
+   TEXT_LANGUAGE1 "Draw game timer in the top-right corner."
+   TEXT_LANGUAGE2 "Draw game timer in the top-right corner."
+   TEXT_LANGUAGE3 "Draw game timer in the top-right corner."
+   TEXT_LANGUAGE6 "Draw game timer in the top-right corner."
+   TEXT_LANGUAGE8 "Draw game timer in the top-right corner."
+}
+INDEX 33
+{
+   REFERENCE COUNT_UP
+   TEXT_LANGUAGE1 "Count up"
+   TEXT_LANGUAGE2 "Count up"
+   TEXT_LANGUAGE3 "Count up"
+   TEXT_LANGUAGE6 "Count up"
+   TEXT_LANGUAGE8 "Count up"
+}
+INDEX 34
+{
+   REFERENCE COUNT_DOWN
+   TEXT_LANGUAGE1 "Count down"
+   TEXT_LANGUAGE2 "Count down"
+   TEXT_LANGUAGE3 "Count down"
+   TEXT_LANGUAGE6 "Count down"
+   TEXT_LANGUAGE8 "Count down"
+}
+INDEX 35
+{
+   REFERENCE CLOCK
+   TEXT_LANGUAGE1 "Real Time Clock:"
+   TEXT_LANGUAGE2 "Real Time Clock:"
+   TEXT_LANGUAGE3 "Real Time Clock:"
+   TEXT_LANGUAGE6 "Real Time Clock:"
+   TEXT_LANGUAGE8 "Real Time Clock:"
+}
+INDEX 36
+{
+   REFERENCE CLOCK_DESC
+   TEXT_LANGUAGE1 "Draw local time digital clock."
+   TEXT_LANGUAGE2 "Draw local time digital clock."
+   TEXT_LANGUAGE3 "Draw local time digital clock."
+   TEXT_LANGUAGE6 "Draw local time digital clock."
+   TEXT_LANGUAGE8 "Draw local time digital clock."
+}
+INDEX 37
+{
+   REFERENCE CHAT_BEEP
+   TEXT_LANGUAGE1 "Chat Beep:"
+   TEXT_LANGUAGE2 "Chat Beep:"
+   TEXT_LANGUAGE3 "Chat Beep:"
+   TEXT_LANGUAGE6 "Chat Beep:"
+   TEXT_LANGUAGE8 "Chat Beep:"
+}
+INDEX 38
+{
+   REFERENCE CHAT_BEEP_DESC
+   TEXT_LANGUAGE1 "Beep sound when someone sends a message."
+   TEXT_LANGUAGE2 "Beep sound when someone sends a message."
+   TEXT_LANGUAGE3 "Beep sound when someone sends a message."
+   TEXT_LANGUAGE6 "Beep sound when someone sends a message."
+   TEXT_LANGUAGE8 "Beep sound when someone sends a message."
 }
