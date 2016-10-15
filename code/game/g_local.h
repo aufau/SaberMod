@@ -81,6 +81,7 @@ typedef enum {
 	CV_KICK_MODE,
 	CV_MODE,
 	CV_MATCH,
+	CV_CAPTURELIMIT,
 	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;
 
