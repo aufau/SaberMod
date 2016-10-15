@@ -387,7 +387,7 @@ void G_AddRandomBot( int team ) {
 			if ( cl->pers.connected != CON_CONNECTED ) {
 				continue;
 			}
-			if ( !(g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT) ) {
+			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 				continue;
 			}
 			if ( team >= 0 && cl->sess.sessionTeam != team ) {
@@ -410,7 +410,7 @@ void G_AddRandomBot( int team ) {
 			if ( cl->pers.connected != CON_CONNECTED ) {
 				continue;
 			}
-			if ( !(g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT) ) {
+			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 				continue;
 			}
 			if ( team >= 0 && cl->sess.sessionTeam != team ) {
@@ -451,7 +451,7 @@ int G_RemoveRandomBot( int team ) {
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( !(g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT) ) {
+		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 			continue;
 		}
 		if ( team >= 0 && cl->sess.sessionTeam != team ) {
@@ -480,7 +480,7 @@ int G_CountHumanPlayers( int team ) {
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT ) {
+		if ( g_entities[i].r.svFlags & SVF_BOT ) {
 			continue;
 		}
 		if ( team >= 0 && cl->sess.sessionTeam != team ) {
@@ -506,7 +506,7 @@ int G_CountBotPlayers( int team ) {
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( !(g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT) ) {
+		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 			continue;
 		}
 		if ( team >= 0 && cl->sess.sessionTeam != team ) {
