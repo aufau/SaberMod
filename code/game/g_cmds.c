@@ -702,7 +702,7 @@ gentity_t *G_GetDuelWinner(gclient_t *client)
 		if (wCl && wCl != client && /*wCl->ps.clientNum != client->ps.clientNum &&*/
 			wCl->pers.connected == CON_CONNECTED && wCl->sess.sessionTeam != TEAM_SPECTATOR)
 		{
-			return &g_entities[wCl->ps.clientNum];
+			return &g_entities[i];
 		}
 	}
 
@@ -2148,7 +2148,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		char netname[MAX_NETNAME], leader[MAX_NETNAME];
 
 		if ( !arg2[0] ) {
-			i = ent->client->ps.clientNum;
+			i = ent->s.number;
 		}
 		else {
 			// numeric values are just slot numbers
