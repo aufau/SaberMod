@@ -154,6 +154,7 @@ g_allowVote 1
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode			32768 - Match Mode
+  65536 - Capturelimit
   =====================  =====================  =====================
 
 g_damagePlums
