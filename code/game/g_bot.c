@@ -609,8 +609,9 @@ void G_CheckMinimumPlayers( void ) {
 		}
 		break;
 	case GT_REDROVER:
-		if (minplayers >= g_maxclients.integer / 2) {
-			minplayers = (g_maxclients.integer / 2) -1;
+		minplayers *= 2;
+		if (minplayers >= g_maxclients.integer) {
+			minplayers = g_maxclients.integer-1;
 		}
 		humanplayers = G_CountHumanPlayers( TEAM_RED ) + G_CountHumanPlayers( TEAM_BLUE );
 		botplayers = G_CountBotPlayers( TEAM_RED ) + G_CountBotPlayers( TEAM_BLUE );

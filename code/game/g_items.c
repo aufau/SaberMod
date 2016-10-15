@@ -1727,7 +1727,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 	if (g_gametype.integer != GT_JEDIMASTER)
 	{
 		// never spawn items in round gametypes for now
-		if (GT_Round(g_gametype.integer) || HasSetSaberOnly())
+		if (GT_Round(g_gametype.integer) || HasSetSaberOnly() )
 		{
 			if (ent->item->giType == IT_AMMO)
 			{
