@@ -149,7 +149,7 @@ g_allowVote 1
   16 - Gametype          32 - Kick              64 - Client Kick
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
-  8192 - No Kicks        16384 - With Kicks     32768 - Mode
+  8192 - WK/NK           16384 - Mode
   =====================  =====================  =====================
 
 g_damagePlums

@@ -78,8 +78,7 @@ typedef enum {
 	CV_ROUNDLIMIT,
 	CV_TEAMSIZE,
 	CV_REMOVE,
-	CV_NOKICK,
-	CV_WITHKICK,
+	CV_KICK_MODE,
 	CV_MODE,
 	CV_MAX = 31 // WORD_BIT - 1
 } voteCommand_t;

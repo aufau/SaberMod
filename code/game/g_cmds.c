@@ -1857,8 +1857,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "roundlimit" ) ) voteCmd = CV_ROUNDLIMIT;
 	else if ( !Q_stricmp( arg1, "teamsize" ) )   voteCmd = CV_TEAMSIZE;
 	else if ( !Q_stricmp( arg1, "remove" ) )     voteCmd = CV_REMOVE;
-	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_NOKICK;
-	else if ( !Q_stricmp( arg1, "wk" ) )         voteCmd = CV_WITHKICK;
+	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_KICK_MODE;
+	else if ( !Q_stricmp( arg1, "wk" ) )         voteCmd = CV_KICK_MODE;
 	else if ( !Q_stricmp( arg1, "mode" ) )       voteCmd = CV_MODE;
 	else                                         voteCmd = CV_INVALID;
 
@@ -2007,25 +2007,29 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
 			"%s %s", arg1, g_entities[i].client->pers.netname );
 		break;
-	case CV_NOKICK:
-		i = atoi ( arg2 );
+	case CV_KICK_MODE:
+		if ( !Q_stricmp( arg1, "nk" ) )
+		{
+			i = atoi ( arg2 );
 
-		if ( i < 1 ) {
-			i = 3;
+			if ( i < 1 ) {
+				i = 3;
+			}
+			if ( i > 2 ) {
+				Com_sprintf( level.voteString, sizeof( level.voteString ),
+					"dmflags %d; g_friendlyFire 1; g_noKick 3; ", g_dmflags.integer | DF_NO_KICK );
+			} else {
+				Com_sprintf( level.voteString, sizeof( level.voteString ),
+					"dmflags %d; g_friendlyFire 1; g_noKick %d; ", i, g_dmflags.integer & ~DF_NO_KICK );
+			}
+			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick %d", i );
 		}
-		if ( i > 2 ) {
+		else
+		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"dmflags %d; g_friendlyFire 1; g_noKick 3; ", g_dmflags.integer | DF_NO_KICK );
-		} else {
-			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"dmflags %d; g_friendlyFire 1; g_noKick %d; ", i, g_dmflags.integer & ~DF_NO_KICK );
+				"dmflags %d; g_friendlyFire 0; g_noKick 0", g_dmflags.integer & ~DF_NO_KICK );
+			Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		}
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick %d", i );
-		break;
-	case CV_WITHKICK:
-		Com_sprintf( level.voteString, sizeof( level.voteString ),
-			"dmflags %d; g_friendlyFire 0; g_noKick 0", g_dmflags.integer & ~DF_NO_KICK );
-		Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		break;
 	case CV_MODE:
 	{
