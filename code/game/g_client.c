@@ -2156,6 +2156,7 @@ void ClientDisconnect( int clientNum ) {
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round
 	if ( (g_gametype.integer == GT_TOURNAMENT )
+		&& !level.intermissionQueued
 		&& !level.intermissiontime
 		&& !level.warmupTime ) {
 		if ( level.sortedClients[1] == clientNum ) {

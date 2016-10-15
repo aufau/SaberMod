@@ -1993,7 +1993,9 @@ void CheckExitRules( void ) {
 			}
 		}
 		return;
-	} else if ( level.roundQueued ) {
+	}
+
+	if ( level.roundQueued ) {
 		if ( level.time - level.roundQueued >= g_roundWarmup.integer ) {
 			level.roundQueued = 0;
 			BeginRound();
@@ -2151,6 +2153,20 @@ void CheckTournament( void ) {
 	}
 
 	if ( g_gametype.integer == GT_TOURNAMENT ) {
+
+		// pull in a spectator if needed
+		if ( level.numPlayingClients < 2 ) {
+			if ( !level.intermissionQueued && !level.intermissiontime )
+				AddTournamentPlayer();
+
+			if (level.numPlayingClients >= 2)
+			{
+				trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
+				gDuelist1 = level.sortedClients[0];
+				gDuelist2 = level.sortedClients[1];
+			}
+		}
+
 		if (level.numPlayingClients >= 2)
 		{
 			if (gDuelist1 == -1 ||
