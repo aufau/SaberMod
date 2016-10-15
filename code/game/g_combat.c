@@ -3003,7 +3003,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
-	qboolean	minorDamage;
 
 	if (targ && targ->damageRedirect)
 	{
@@ -3038,7 +3037,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	minorDamage = (mod == MOD_SABER && damage <= 1);
+	if (mod == MOD_SABER && damage <= 1)
+		return;
 
 	if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_RAGE)))
 	{
@@ -3205,7 +3205,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TRIGGER_HURT:
 				break;
 			default:
-				damage = minorDamage ? 0 : 9999;
+				damage = 9999;
 			}
 		}
 
