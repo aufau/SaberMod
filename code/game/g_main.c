@@ -290,7 +290,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_austrian, "g_austrian", "0", CVAR_ARCHIVE, 0, qfalse  },
 
-	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qfalse  },
+	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },

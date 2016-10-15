@@ -33,6 +33,10 @@ follow [first|second]
 Callvote
 ........
 
+match <0|1>
+  Enable/Disable match mode: set `g_restrictChat` to 1 and
+  `g_damagePlums` to 0.
+
 mode [mode]
   Switch to one of admin-defined game modes. To see a full list type
   `callvote mode`.
@@ -149,7 +153,7 @@ g_allowVote 1
   16 - Gametype          32 - Kick              64 - Client Kick
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
-  8192 - WK/NK           16384 - Mode
+  8192 - WK/NK           16384 - Mode			32768 - Match Mode
   =====================  =====================  =====================
 
 g_damagePlums
