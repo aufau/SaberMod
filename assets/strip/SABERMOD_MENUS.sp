@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 39
+COUNT 43
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -352,4 +352,40 @@ INDEX 38
    TEXT_LANGUAGE3 "Beep sound when someone sends a message."
    TEXT_LANGUAGE6 "Beep sound when someone sends a message."
    TEXT_LANGUAGE8 "Beep sound when someone sends a message."
+}
+INDEX 39
+{
+   REFERENCE MATCH
+   TEXT_LANGUAGE1 "Match"
+   TEXT_LANGUAGE2 "Match"
+   TEXT_LANGUAGE3 "Match"
+   TEXT_LANGUAGE6 "Match"
+   TEXT_LANGUAGE8 "Match"
+}
+INDEX 40
+{
+   REFERENCE MATCH_DESC
+   TEXT_LANGUAGE1 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE2 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE3 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE6 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE8 "Restrict spectator chat and disable damage plums."
+}
+INDEX 41
+{
+   REFERENCE PRACTICE
+   TEXT_LANGUAGE1 "Practice"
+   TEXT_LANGUAGE2 "Practice"
+   TEXT_LANGUAGE3 "Practice"
+   TEXT_LANGUAGE6 "Practice"
+   TEXT_LANGUAGE8 "Practice"
+}
+INDEX 42
+{
+   REFERENCE PRACTICE_DESC
+   TEXT_LANGUAGE1 "Disable match mode restrictions."
+   TEXT_LANGUAGE2 "Disable match mode restrictions."
+   TEXT_LANGUAGE3 "Disable match mode restrictions."
+   TEXT_LANGUAGE6 "Disable match mode restrictions."
+   TEXT_LANGUAGE8 "Disable match mode restrictions."
 }

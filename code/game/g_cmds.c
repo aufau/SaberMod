@@ -1860,11 +1860,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "nk" ) )         voteCmd = CV_KICK_MODE;
 	else if ( !Q_stricmp( arg1, "wk" ) )         voteCmd = CV_KICK_MODE;
 	else if ( !Q_stricmp( arg1, "mode" ) )       voteCmd = CV_MODE;
+	else if ( !Q_stricmp( arg1, "match" ) )      voteCmd = CV_MATCH;
 	else                                         voteCmd = CV_INVALID;
-
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>.\n\"" );
 		return;
 	}
 
@@ -2053,6 +2053,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Mode %s", arg2 );
 		break;
 	}
+	case CV_MATCH:
+		i = atoi( arg2 );
+
+		if ( i == 0 ) {
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "g_restrictChat 0; g_damagePlums 1" );
+			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Practice Mode" );
+		} else {
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "g_restrictChat 1; g_damagePlums 0" );
+			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Match Mode" );
+		}
+		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );

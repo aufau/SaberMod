@@ -411,6 +411,51 @@
 			}
 		}
 
+		itemDef
+		{
+			name                    misc
+			group                   grpCallVote
+			text                    @SABERMENUS_MATCH
+			descText                @SABERMENUS_MATCH_DESC
+			rect                    120 165 110 30
+			type                    1
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              110
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd callvote match 1" ;
+				uiScript                closeingame
+			}
+		}
+
+		itemDef
+		{
+			name                    misc
+			group                   grpCallVote
+			text                    @SABERMENUS_PRACTICE
+			descText                @SABERMENUS_PRACTICE_DESC
+			rect                    240 165 110 30
+			type                    1
+			textalign               ITEM_ALIGN_LEFT
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd callvote match 0" ;
+				uiScript                closeingame
+			}
+		}
+
 		//----------------------------------
 		// GAMETYPE VOTE PANEL
 		//----------------------------------
