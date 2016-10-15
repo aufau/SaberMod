@@ -544,9 +544,6 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( !ent->client ) {
 		return;
 	}
-	if (GT_Round(g_gametype.integer) && level.round == 0) {
-		return;
-	}
 	if (level.warmupTime || level.roundQueued ||
 		level.intermissionQueued || level.intermissiontime )
 	{
@@ -3556,9 +3553,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		if (g_damagePlums.integer || mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
-
-		if (GT_Round(g_gametype.integer) && level.round == 0)
-			return;
 
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
