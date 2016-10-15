@@ -576,15 +576,17 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 	int weapon = self->s.weapon;
 	int ammoSub;
 
-	if (weapon <= WP_BRYAR_PISTOL)
-	{ //can't have this
-		return;
-	}
-
-	if (weapon == WP_EMPLACED_GUN ||
-		weapon == WP_TURRET)
-	{
-		return;
+	// don't toss starting weapons
+	if (g_spawnWeapons.integer) {
+		if (weapon == WP_NONE)
+			return;
+		if ((1 << weapon) & g_spawnWeapons.integer & LEGAL_WEAPONS)
+			return;
+	} else {
+		if (weapon <= WP_BRYAR_PISTOL ||
+			weapon == WP_EMPLACED_GUN ||
+			weapon == WP_TURRET)
+			return;
 	}
 
 	// find the item type for this weapon
@@ -645,12 +647,17 @@ Toss the weapon and powerups for the killed player
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
 	int			weapon;
+	int			dontDrop;
 	float		angle;
 	int			i;
 	gentity_t	*drop;
 
-	if ( GT_Round(g_gametype.integer) )
-		return;
+	if (g_spawnWeapons.integer)
+		dontDrop = g_spawnWeapons.integer;
+	else
+		dontDrop = (1 << WP_BRYAR_PISTOL) | (1 << WP_SABER) | (1 << WP_STUN_BATON);
+
+	dontDrop |= (1 << WP_NONE) | ~LEGAL_WEAPONS;
 
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
@@ -659,7 +666,7 @@ void TossClientItems( gentity_t *self ) {
 	// weapon that isn't the mg or gauntlet.  Without this, a client
 	// can pick up a weapon, be killed, and not drop the weapon because
 	// their weapon change hasn't completed yet and they are still holding the MG.
-	if ( weapon == WP_BRYAR_PISTOL) {
+	if ( (1 << weapon) & dontDrop ) {
 		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
 			weapon = self->client->pers.cmd.weapon;
 		}
@@ -670,9 +677,7 @@ void TossClientItems( gentity_t *self ) {
 
 	self->s.bolt2 = weapon;
 
-	if ( weapon > WP_BRYAR_PISTOL &&
-		weapon != WP_EMPLACED_GUN &&
-		weapon != WP_TURRET &&
+	if ( (1 << weapon) & ~dontDrop &&
 		self->client->ps.ammo[ weaponData[weapon].ammoIndex ] ) {
 		gentity_t *te;
 
