@@ -3034,9 +3034,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	if (mod == MOD_SABER && damage <= 1)
-		return;
-
 	if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_RAGE)))
 	{
 		damage *= 0.5;
@@ -3200,6 +3197,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_SUICIDE:
 			case MOD_TARGET_LASER:
 			case MOD_TRIGGER_HURT:
+			case MOD_MELEE:
 				break;
 			default:
 				damage = 9999;

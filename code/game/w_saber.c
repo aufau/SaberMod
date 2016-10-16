@@ -1762,25 +1762,27 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				}
 			}
 
-			G_Damage(&g_entities[tr.entityNum], self, self, dir, tr.endpos, dmg, 0, MOD_SABER);
+			if (dmg > SABER_NONATTACK_DAMAGE || !g_instagib.integer) {
+				G_Damage(&g_entities[tr.entityNum], self, self, dir, tr.endpos, dmg, 0, MOD_SABER);
 
-			te = G_TempEntity( tr.endpos, EV_SABER_HIT, tr.entityNum );
+				te = G_TempEntity( tr.endpos, EV_SABER_HIT, tr.entityNum );
 
-			VectorCopy(tr.endpos, te->s.origin);
-			VectorCopy(tr.plane.normal, te->s.angles);
+				VectorCopy(tr.endpos, te->s.origin);
+				VectorCopy(tr.plane.normal, te->s.angles);
 
-			if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
-			{ //don't let it play with no direction
-				te->s.angles[1] = 1;
-			}
+				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
+				{ //don't let it play with no direction
+					te->s.angles[1] = 1;
+				}
 
-			if (g_entities[tr.entityNum].client)
-			{
-				te->s.eventParm = 1;
-			}
-			else
-			{
-				te->s.eventParm = 0;
+				if (g_entities[tr.entityNum].client)
+				{
+					te->s.eventParm = 1;
+				}
+				else
+				{
+					te->s.eventParm = 0;
+				}
 			}
 
 			self->client->ps.saberAttackWound = level.time + 100;
