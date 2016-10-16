@@ -1226,7 +1226,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		gentity_t	*target = G_CrosshairPlayer(ent, 8192);
 
 		if ( target ) {
-			SetTeamSpec(ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->client->ps.clientNum);
 			return;
 		}
 	}
