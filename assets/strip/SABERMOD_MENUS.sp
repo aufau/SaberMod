@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 43
+COUNT 45
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -388,4 +388,22 @@ INDEX 42
    TEXT_LANGUAGE3 "Disable match mode restrictions."
    TEXT_LANGUAGE6 "Disable match mode restrictions."
    TEXT_LANGUAGE8 "Disable match mode restrictions."
+}
+INDEX 43
+{
+   REFERENCE MOD_OPTIONS
+   TEXT_LANGUAGE1 "SaberMod"
+   TEXT_LANGUAGE2 "SaberMod"
+   TEXT_LANGUAGE3 "SaberMod"
+   TEXT_LANGUAGE6 "SaberMod"
+   TEXT_LANGUAGE8 "SaberMod"
+}
+INDEX 44
+{
+   REFERENCE MOD_OPTIONS_DESC
+   TEXT_LANGUAGE1 "Configure SaberMod options."
+   TEXT_LANGUAGE2 "Configure SaberMod options."
+   TEXT_LANGUAGE3 "Configure SaberMod options."
+   TEXT_LANGUAGE6 "Configure SaberMod options."
+   TEXT_LANGUAGE8 "Configure SaberMod options."
 }

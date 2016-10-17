@@ -28,6 +28,7 @@ vmCvar_t  ui_debug;
 vmCvar_t  ui_initialized;
 
 void _UI_Init( qboolean );
+void _UI_MVAPI_Init( int apilevel );
 void _UI_Shutdown( void );
 void _UI_KeyEvent( int key, qboolean down );
 void _UI_MouseEvent( int dx, int dy );
@@ -40,6 +41,8 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 
 	  case UI_INIT:
 		  _UI_Init(arg0);
+		   // not using MVAPI, just checking level
+		  _UI_MVAPI_Init(arg11);
 		  return 0;
 
 	  case UI_SHUTDOWN:
@@ -77,6 +80,18 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	}
 
 	return -1;
+}
+
+void _UI_MVAPI_Init( int apilevel )
+{
+	// ui_menulevel support happens to coincide with MVAPI 2 release
+	// AND mod options jk2mv submenu
+	// setting it to 0 just to load non-jk2mv menus for other clients
+	if ( apilevel >= 2 ) {
+		trap_Cvar_Set("ui_menulevel", "1");
+	} else {
+		trap_Cvar_Set("ui_menulevel", "0");
+	}
 }
 
 menuDef_t *Menus_FindByName(const char *p);
@@ -6615,8 +6630,6 @@ void _UI_Init( qboolean inGameLoad ) {
 	trap_Cvar_Register(NULL, "ui_hidelang",	"0", CVAR_INTERNAL );
 
 	trap_Cvar_Set("ui_actualNetGameType", va("%d", ui_netGameType.integer));
-
-	trap_Cvar_Set("ui_menulevel", "1");
 }
 
 

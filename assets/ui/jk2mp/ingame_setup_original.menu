@@ -6,7 +6,7 @@
 {
 	menuDef
 	{
-		name                    "ingame_setup"
+		name                    "ingame_setup_original"
 		visible                 0
 		fullscreen              0
 		outOfBoundsClick        // this closes the window if it gets a click out of the rectangle
@@ -33,6 +33,7 @@
 			hide                    options ;
 			hide                    mods ;
 			hide                    defaults ;
+			close                   ingame_setup_modoptions ;
 
 			setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 			setitemcolor            videomenubutton forecolor 1 1 1 1 ;
@@ -46,7 +47,8 @@
 			hide                    highlights ;
 			uiScript                update "ui_SetName" ;
 
-			close                   ingame_setup
+			close                   ingame_setup_modoptions ;
+			close                   ingame_setup_original ;
 		}
 
 		// Overall window backdrop
@@ -137,6 +139,7 @@
 				hide                    options ;
 				hide                    mods ;
 				hide                    defaults ;
+				close                   ingame_setup_modoptions ;
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            video1menubutton forecolor 1 1 1 1 ;
@@ -197,6 +200,7 @@
 				hide                    options ;
 				hide                    mods ;
 				hide                    defaults ;
+				close                   ingame_setup_modoptions ;
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            video2menubutton forecolor 1 1 1 1 ;
@@ -257,6 +261,7 @@
 				hide                    options ;
 				hide                    mods ;
 				hide                    defaults ;
+				close                   ingame_setup_modoptions ;
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            soundmenubutton forecolor 1 1 1 1 ;
@@ -318,16 +323,17 @@
 				hide                    langapply
 				hide                    mods ;
 				hide                    defaults ;
+				close                   ingame_setup_modoptions ;
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            gameoptionmenubutton forecolor 1 1 1 1 ;
 			}
 		}
 
-		// mods button
+		// mod options button
 		itemDef
 		{
-			name                    modsbutton_glow
+			name                    modoptionsbutton_glow
 			style                   WINDOW_STYLE_SHADER
 			rect                    20 163 170 30
 			background              "gfx/menus/menu_blendbox2" // Frame around button
@@ -337,12 +343,61 @@
 			decoration
 		}
 
+		itemDef
+		{
+			name                    modoptionsbutton
+			group                   setup_submenu
+			text                    @SABERMENUS_MOD_OPTIONS
+			type                    ITEM_TYPE_BUTTON
+			style                   WINDOW_STYLE_EMPTY
+			rect                    20 163 170 30
+			font                    3
+			textscale               0.9
+			textalignx              170
+			textaligny              5
+			textalign               ITEM_ALIGN_RIGHT
+			textstyle               3
+			forecolor               0.65 0.65 1 1
+			visible                 1
+			descText                @SABERMENUS_MOD_OPTIONS_DESC
+
+			mouseEnter
+			{
+				show                    modoptionsbutton_glow
+			}
+			mouseExit
+			{
+				hide                    modoptionsbutton_glow
+			}
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+
+				defer                   VideoSetup videowarningMenu ;
+
+				show                    setup_background ;
+				hide                    video ;
+				hide                    applyChanges ;
+				hide                    video2 ;
+				hide                    vidrestart ;
+				hide                    sound ;
+				hide                    options ;
+				hide                    langapply
+				hide                    mods ;
+				hide                    defaults ;
+				open                    ingame_setup_modoptions ;
+
+				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
+				setitemcolor            modoptionsbutton forecolor 1 1 1 1 ;
+			}
+		}
+
 		// gamedefaults button
 		itemDef
 		{
 			name                    gamedefaultsbutton_glow
 			style                   WINDOW_STYLE_SHADER
-			rect                    20 163 170 30
+			rect                    20 193 170 30
 			background              "gfx/menus/menu_blendbox2" // Frame around button
 			forecolor               1 1 1 1
 			visible                 0
@@ -357,7 +412,7 @@
 			text                    @MENUS1_DEFAULTS
 			type                    ITEM_TYPE_BUTTON
 			style                   WINDOW_STYLE_EMPTY
-			rect                    20 163 170 30
+			rect                    20 193 170 30
 			font                    3
 			textscale               0.9
 			textalignx              170
@@ -391,6 +446,7 @@
 				hide                    options ;
 				hide                    mods ;
 				show                    defaults ;
+				close                   ingame_setup_modoptions ;
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            gamedefaultsmenubutton forecolor 1 1 1 1 ;
@@ -2232,7 +2288,7 @@
 				close                   all ;
 				hide                    defaults ;
 				hide                    default_glow ;
-				open                    ingame_setup ;
+				open                    ingame_setup_original ;
 			}
 			mouseEnter
 			{
