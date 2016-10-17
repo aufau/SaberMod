@@ -71,7 +71,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_about
+				open                    ingame_about ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -119,7 +120,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_join
+				open                    ingame_join ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -167,7 +169,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_addbot
+				open                    ingame_addbot ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -210,7 +213,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_player
+				open                    ingame_player ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -253,7 +257,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_controls
+				open                    ingame_controls ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -296,7 +301,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_setup
+				open                    ingame_setup ;
 			}
 			mouseenter
 			{
@@ -344,7 +349,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_vote
+				open                    ingame_vote ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -393,7 +399,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_callvote
+				open                    ingame_callvote ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
@@ -436,7 +443,8 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				open                    ingame_leave
+				open                    ingame_leave ;
+				close					ingame_setup ;
 			}
 			mouseenter
 			{
