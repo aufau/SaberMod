@@ -89,6 +89,37 @@ void CG_LoadingClient( int clientNum ) {
 	CG_LoadingString( personality );
 }
 
+static qboolean CG_HasSetSaberOnly( void ) {
+	const char	*info;
+	int			wEnable;
+	int			gametype;
+
+	info = CG_ConfigString( CS_SERVERINFO );
+
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));
+
+	if ( gametype == GT_JEDIMASTER )
+	{ //set to 0
+		return qfalse;
+	}
+
+	if (gametype == GT_TOURNAMENT)
+	{
+		wEnable = ~atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+	}
+	else
+	{
+		wEnable = ~atoi(Info_ValueForKey(info, "g_weaponDisable"));
+	}
+
+	wEnable |= atoi(Info_ValueForKey(info, "g_spawnWeapons"));
+	wEnable &= LEGAL_WEAPONS;
+
+	if (wEnable & ~(1 << WP_NONE) & ~(1 << WP_SABER))
+		return qfalse;
+
+	return qtrue;
+}
 
 /*
 ====================
@@ -338,15 +369,7 @@ void CG_DrawInformation( void ) {
 		y += iPropHeight;
 	}
 
-	if (cgs.gametype == GT_TOURNAMENT)
-	{
-		value = atoi( Info_ValueForKey( info, "g_duelWeaponDisable" ) );
-	}
-	else
-	{
-		value = atoi( Info_ValueForKey( info, "g_weaponDisable" ) );
-	}
-	if ( cgs.gametype != GT_JEDIMASTER && value ) {
+	if ( CG_HasSetSaberOnly() ) {
 		UI_DrawProportionalString( 320, y, va( "%s", (char *)CG_GetStripEdString("INGAMETEXT", "SABERONLYSET") ),
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
