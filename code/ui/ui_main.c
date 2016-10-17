@@ -1331,8 +1331,6 @@ qboolean UI_HasSetSaberOnly( void )
 		return qfalse;
 	}
 
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
-
 	if (gametype == GT_TOURNAMENT)
 	{
 		wEnable = ~atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
