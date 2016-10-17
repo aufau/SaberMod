@@ -38,8 +38,7 @@ match <0|1>
   `g_damagePlums` to 0.
 
 mode [mode]
-  Switch to one of admin-defined game modes. To see a full list type
-  `callvote mode`.
+  Switch to one of admin-defined game modes.
 
 nk [mode]
   No Kick. `mode` can be 1 - no dmg, 2 - no knockback, 3 - no kicking
@@ -234,6 +233,27 @@ Red Rover (g_gametype 9)
 
 Clan Arena (g_gametype 10)
   Player who dies must spectate until the end of a round.
+
+Server Modes
+............
+
+Server administrator can configure a number of custom game "modes",
+players will be able to choose from. A mode is technically a config
+file in `modes/` directory that will be executed when players
+sucessfuly vote to use it. It can contain any commands altering server
+behaviour, but please take following guides into consideration.
+
+Switching to a mode from any other should always result in the same
+server state. To achieve this it's best to use a "reset" config,
+executed at the start of each mode config. It should contain a default
+value for every possible cvar your modes are changing. Examine
+included modes and `reset.cfg` as an example.
+
+Other type of modes can change a specific rule instead of loading full
+game config. For example one could create "Kicks On" mode that changes
+g_noKicks value to 0. In such scenario it's be best to also include a
+mode reverting to original state: "Kicks Off", or reset affected cvars
+in `reset.cfg`.
 
 Build
 =====
