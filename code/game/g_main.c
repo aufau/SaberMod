@@ -294,7 +294,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_austrian, "g_austrian", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
-	{ &g_mode, "g_mode", "", CVAR_ROM , 0, qfalse  },
 	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_modeDefault, "g_modeDefault", "", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
@@ -537,6 +536,10 @@ void G_RegisterCvars( void ) {
 		}
 	}
 
+	// initialize with g_defaultMode string. Main server config should
+	// always execute default mode cfg
+	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
+
 	if (remapped) {
 		G_RemapTeamShaders();
 	}
@@ -578,6 +581,8 @@ void G_UpdateCvars( void ) {
 			}
 		}
 	}
+
+	trap_Cvar_Update( &g_mode );
 
 	if (remapped) {
 		G_RemapTeamShaders();

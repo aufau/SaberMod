@@ -183,7 +183,8 @@ g_maxGameClients 0
   Removed. Use teamsize instead.
 
 g_modeDefault <mode>
-  Default server mode.
+  Default server mode. Read `Server Modes`_ section to learn how to
+  use it properly.
 
 g_modeIdleTime <minutes>
   Reset to default mode if server has been idle for this many minutes.
@@ -264,6 +265,16 @@ game config. For example one could create "Kicks On" mode that changes
 g_noKicks value to 0. In such scenario it's be best to also include a
 mode reverting to original state: "Kicks Off", or reset affected cvars
 in `reset.cfg`.
+
+Server can be configured to go back to a default mode after a period
+of inactivity. To do so last lines of the main server config should
+resemble following template::
+
+  set g_modeIdleTime "10"
+  set g_modeDefault "mymode"
+  exec "modes/mymode"
+
+Where `mymode` is the default mode.
 
 Build
 =====
