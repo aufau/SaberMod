@@ -2020,22 +2020,18 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_MODE:
 	{
 		fileHandle_t	f;
-		char			config[MAX_QPATH];
-
-		// add .cfg extension for comparing
-		Com_sprintf( config, sizeof(config), "modes/%s.cfg", arg2 );
 
 		if ( arg2[0] == '\0' ) {
 			trap_SendServerCommand( ent-g_entities, "print \"Usage: callvote mode <name>\n\"" );
 			return;
 		}
-		if ( trap_FS_FOpenFile( config, &f, FS_READ) < 0 ) {
+		if ( trap_FS_FOpenFile( va( "modes/%s.cfg", arg2 ), &f, FS_READ) < 0 ) {
 			trap_SendServerCommand( ent-g_entities, "print \"Unknown mode.\n\"" );
 			return;
 		}
 		trap_FS_FCloseFile( f );
 
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "exec \"%s\"", config );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "mode \"%s\"", arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Mode %s", arg2 );
 		break;
 	}

@@ -582,6 +582,7 @@ typedef struct {
 
 	qboolean	teamLock[TEAM_NUM_TEAMS];
 	int			round;
+	int			idleTime;
 } level_locals_t;
 
 
@@ -1136,6 +1137,9 @@ extern	vmCvar_t	g_saberDebugPrint;
 extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_damagePlums;
+extern	vmCvar_t	g_mode;
+extern	vmCvar_t	g_modeIdleTime;
+extern	vmCvar_t	g_modeDefault;
 extern  vmCvar_t	g_restrictChat;
 extern	vmCvar_t	g_spawnItems;
 extern  vmCvar_t	g_spawnShield;
