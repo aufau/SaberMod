@@ -671,16 +671,12 @@ qboolean CG_DrawOldScoreboard( void ) {
 			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
-			//maxClients -= n1;
-
 			n2 = CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
 			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 
-			//maxClients -= n2;
-
-			maxClients -= (team1MaxCl+team2MaxCl);
+			maxClients -= n1 + n2;
 		} else {
 			int team1MaxCl = CG_GetTeamCount(TEAM_BLUE, maxClients);
 			int team2MaxCl = CG_GetTeamCount(TEAM_RED, maxClients);
@@ -704,16 +700,12 @@ qboolean CG_DrawOldScoreboard( void ) {
 			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
-			//maxClients -= n1;
-
 			n2 = CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qtrue );
 			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
 			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 
-			//maxClients -= n2;
-
-			maxClients -= (team1MaxCl+team2MaxCl);
+			maxClients -= n1 + n2;
 		}
 		n1 = CG_TeamScoreboard( y, columns, TEAM_SPECTATOR, fade, maxClients, lineHeight, qfalse );
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
