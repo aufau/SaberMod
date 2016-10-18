@@ -1946,7 +1946,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 
-		Com_sprintf ( level.voteString, sizeof(level.voteString ), "%s %s", arg1, arg2 );
+		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "kick %s", g_entities[i].client->pers.netname );
 		break;
 	case CV_KICK:
