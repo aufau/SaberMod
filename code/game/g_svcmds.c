@@ -478,6 +478,51 @@ void	Svcmd_Announce_f( void )
 
 /*
 ===================
+Svcmd_Mode_f
+
+mode <mode|default>
+===================
+*/
+static void	Svcmd_Mode_f( void )
+{
+	const char		*mode;
+	fileHandle_t	f;
+
+	if ( trap_Argc() < 2 ) {
+		char	modes[MAX_INFO_STRING];
+		char	*ptr = modes;
+
+		G_Printf( "Usage: mode <mode|default>\n" );
+		G_Printf( "Available modes:\n" );
+		trap_GetConfigstring( CS_MODES, modes, sizeof( modes ) );
+
+		do {
+			if ( *ptr == '\\' )
+				*ptr = '\n';
+		} while ( *ptr++ );
+
+		trap_Print( modes );
+		return;
+	}
+
+	mode = ConcatArgs(1);
+
+	if ( !Q_stricmp(mode, "default") )
+		mode = g_modeDefault.string;
+
+	if ( trap_FS_FOpenFile( va( "modes/%s.cfg", mode), &f, FS_READ) < 0 ) {
+		G_Printf( "Invalid mode.\n" );
+		return;
+	}
+	trap_FS_FCloseFile( f );
+
+	trap_Cvar_Set( "g_mode", mode );
+	G_LogPrintf( LOG_GAME, "Mode: %s\n", mode );
+	trap_SendConsoleCommand( EXEC_APPEND, va("exec \"modes/%s\"\n", mode) );
+}
+
+/*
+===================
 Svcmd_Tell_f
 
 tell <player> [message]
@@ -581,6 +626,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "unlockteam") == 0) {
 		Svcmd_LockTeam_f( qfalse );
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "mode") == 0) {
+		Svcmd_Mode_f();
 		return qtrue;
 	}
 

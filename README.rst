@@ -122,6 +122,10 @@ announce <message>
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
+mode <mode|default>
+  Change to `mode` or list all available modes when executed without
+  arguments.
+
 remove <player> [time]
   Remove `player` to spectator team for at least `time` seconds.
 
@@ -177,6 +181,12 @@ g_logFilter[1-4] <mask>
 
 g_maxGameClients 0
   Removed. Use teamsize instead.
+
+g_modeDefault <mode>
+  Default server mode.
+
+g_modeIdleTime <minutes>
+  Reset to default mode if server has been idle for this many minutes.
 
 g_noKick [type]
   See callvote_ nk and wk. `type` can be 0, 1 or 2.

@@ -126,6 +126,9 @@ vmCvar_t	g_saberDebugPrint;
 vmCvar_t	g_austrian;
 
 vmCvar_t    g_damagePlums;
+vmCvar_t	g_mode;
+vmCvar_t	g_modeIdleTime;
+vmCvar_t	g_modeDefault;
 vmCvar_t	g_restrictChat;
 vmCvar_t	g_spawnItems;
 vmCvar_t	g_spawnShield;
@@ -291,6 +294,9 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_austrian, "g_austrian", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
+	{ &g_mode, "g_mode", "", CVAR_ROM , 0, qfalse  },
+	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },
+	{ &g_modeDefault, "g_modeDefault", "", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
@@ -606,6 +612,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
 	level.startTime = levelTime;
+	level.idleTime = levelTime;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
@@ -2216,6 +2223,31 @@ FUNCTIONS CALLED EVERY FRAME
 ========================================================================
 */
 
+static void CheckIdle( void ) {
+	qboolean	defaultMode;
+
+	defaultMode = (qboolean) !!strcmp(g_mode.string, g_modeDefault.string);
+
+	// reset to default mode if server is idle
+	if ( level.numVotingClients == 0 && g_modeIdleTime.integer > 0 && defaultMode ) {
+		if ( level.idleTime > 0 ) {
+			if ( level.idleTime + g_modeIdleTime.integer * 60000 < level.time + 15000 ) {
+				trap_SendServerCommand( -1, "print \"Server idle. Changing to default mode in 15 seconds...\n" );
+				level.idleTime = - level.idleTime; // change sign after annoncement
+			}
+		} else {
+			if ( - level.idleTime + g_modeIdleTime.integer * 60000 < level.time ) {
+				trap_SendConsoleCommand( EXEC_APPEND, "mode default\n" );
+				level.idleTime = level.time; // don't spam if it doesn't work
+			}
+		}
+	} else {
+		if ( level.idleTime < 0 ) // mode change has been announced already
+			trap_SendServerCommand( -1, "print \"Mode change aborted.\n" );
+		level.idleTime = level.time;
+	}
+}
+
 /*
 =============
 CheckTournament
@@ -2803,6 +2835,9 @@ start = trap_Milliseconds();
 		}
 	}
 end = trap_Milliseconds();
+
+	// see if server has been idle
+	CheckIdle();
 
 	// see if it is time to do a tournement restart
 	CheckTournament();
