@@ -1044,6 +1044,12 @@ void G_Respawn( gentity_t *ent ) {
 		// currently this is the only entry point for spactating while
 		// not in TEAM_SPECTATOR. The exit is in NextRound.
 		CopyToBodyQue( ent );
+		if ( client->sess.spectatorState == SPECTATOR_NOT ) {
+			// save persistant to not forget score etc. notice this
+			// is before ClientSpawn so PERS_SPAWN_COUNT won't be
+			// incremented twice
+			memcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
+		}
 		client->sess.spectatorState = SPECTATOR_FOLLOW;
 		trap_UnlinkEntity( ent );
 		ClientSpawn( ent );
@@ -1934,15 +1940,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 			cl = &level.clients[ clientNum ];
 
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.spectatorState == SPECTATOR_NOT ) {
-				int persistant[MAX_PERSISTANT];
-
-				// don't erase scores when we're not in TEAM_SPECTATOR
-				memcpy(persistant, client->ps.persistant, sizeof(persistant));
 				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
-				memcpy(client->ps.persistant, persistant, sizeof(persistant));
 			} else {
 				StopFollowing(ent);
 			}

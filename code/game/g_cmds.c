@@ -18,6 +18,7 @@ DeathmatchScoreboardMessage
 ==================
 */
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
+	const int	*persistant;
 	char		entry[1024];
 	char		string[1400];
 	int			stringlength;
@@ -42,6 +43,16 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 		cl = &level.clients[level.sortedClients[i]];
 
+		if (cl->sess.sessionTeam != TEAM_SPECTATOR &&
+			cl->sess.spectatorState != SPECTATOR_NOT)
+		{
+			persistant = cl->pers.saved;
+		}
+		else
+		{
+			persistant = cl->ps.persistant;
+		}
+
 		if ( cl->pers.connected == CON_CONNECTING ) {
 			ping = -1;
 		} else {
@@ -54,7 +65,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		else {
 			accuracy = 0;
 		}
-		// perfect = ( cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0 ) ? 1 : 0;
+		// perfect = ( persistant[PERS_RANK] == 0 && persistant[PERS_KILLED] == 0 ) ? 1 : 0;
 		dead = ( cl->sess.spectatorState != SPECTATOR_NOT || cl->ps.stats[STAT_HEALTH] <= 0 );
 
 		netDamage = cl->pers.totalDamageDealtToEnemies;
@@ -64,23 +75,23 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		Com_sprintf (entry, sizeof(entry),
 			" %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
 			level.sortedClients[i],
-			cl->ps.persistant[PERS_SCORE],
+			persistant[PERS_SCORE],
 			ping,
 			(level.time - cl->pers.enterTime)/60000,
 			scoreFlags,
 			g_entities[level.sortedClients[i]].s.powerups,
 			accuracy,
-			cl->ps.persistant[PERS_KILLED],
-			cl->ps.persistant[PERS_KILLS],
+			persistant[PERS_KILLED],
+			persistant[PERS_KILLS],
 			netDamage,
-//			cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
-//			cl->ps.persistant[PERS_EXCELLENT_COUNT],
-//			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
-			cl->ps.persistant[PERS_DEFEND_COUNT],
-			cl->ps.persistant[PERS_ASSIST_COUNT],
+//			persistant[PERS_IMPRESSIVE_COUNT],
+//			persistant[PERS_EXCELLENT_COUNT],
+//			persistant[PERS_GAUNTLET_FRAG_COUNT],
+			persistant[PERS_DEFEND_COUNT],
+			persistant[PERS_ASSIST_COUNT],
 			dead,
 //			perfect,
-			cl->ps.persistant[PERS_CAPTURES]);
+			persistant[PERS_CAPTURES]);
 		j = strlen(entry);
 		if (stringlength + j > 1022)
 			break;
@@ -964,6 +975,7 @@ void StopFollowing( gentity_t *ent ) {
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
 	client->sess.spectatorState = SPECTATOR_FREE;
+	memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
 	client->ps.persistant[ PERS_TEAM ] = client->sess.sessionTeam;
 	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;

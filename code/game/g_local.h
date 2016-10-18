@@ -395,6 +395,7 @@ typedef struct {
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
 	qboolean	privateDuel;		// matches player's cg_privateDuel
+	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
 
 
