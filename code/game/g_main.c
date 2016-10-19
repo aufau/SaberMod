@@ -111,8 +111,6 @@ vmCvar_t	g_listEntity;
 vmCvar_t	g_redteam;
 vmCvar_t	g_blueteam;
 vmCvar_t	g_singlePlayer;
-vmCvar_t	g_enableDust;
-vmCvar_t	g_enableBreath;
 vmCvar_t	g_dismember;
 vmCvar_t	g_forceDodge;
 vmCvar_t	g_timeouttospec;
@@ -122,8 +120,6 @@ vmCvar_t	g_saberDmgDelay_Idle;
 vmCvar_t	g_saberDmgDelay_Wound;
 
 vmCvar_t	g_saberDebugPrint;
-
-vmCvar_t	g_austrian;
 
 vmCvar_t    g_damagePlums;
 vmCvar_t	g_mode;
@@ -274,8 +270,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_blueteam, "g_blueteam", "Rebellion", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue  },
 	{ &g_singlePlayer, "ui_singlePlayerActive", "", 0, 0, qfalse, qfalse  },
 
-	{ &g_enableDust, "g_enableDust", "0", 0, 0, qtrue, qfalse },
-	{ &g_enableBreath, "g_enableBreath", "0", 0, 0, qtrue, qfalse },
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
 	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
 	{ &pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
@@ -290,8 +284,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_saberDmgDelay_Wound, "g_saberDmgDelay_Wound", "0", CVAR_ARCHIVE, 0, qtrue  },
 
 	{ &g_saberDebugPrint, "g_saberDebugPrint", "0", CVAR_CHEAT, 0, qfalse  },
-
-	{ &g_austrian, "g_austrian", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
 	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },
@@ -1465,15 +1457,6 @@ static void Shuffle( void )
 		ent = g_entities + clientNum;
 		newTeam = Parity(i) ? TEAM_RED : TEAM_BLUE;
 
-		if (ent->client->sess.sessionTeam != newTeam) {
-			G_LogPrintf ( LOG_TEAM_SWITCH, "Shuffle: %i %s %s: %s joined the %s team\n",
-				clientNum,
-				teamNameUpperCase[ent->client->sess.sessionTeam],
-				teamNameUpperCase[newTeam],
-				ent->client->pers.netname, teamNameLowerCase[newTeam]);
-			ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
-		}
-
 		ent->client->sess.sessionTeam = newTeam;
 		ent->client->sess.teamLeader = qfalse;
 	}
@@ -1786,21 +1769,19 @@ void CheckIntermissionExit( void ) {
 	{
 		gDidDuelStuff = qtrue;
 
-		if ( g_austrian.integer )
-		{
-			G_LogPrintf( LOG_AUSTRIAN, "Duel Results:\n");
-			//G_LogPrintf( LOG_AUSTRIAN, "Duel Time: %d\n", level.time );
-			G_LogPrintf( LOG_AUSTRIAN, "winner: %s, score: %d, wins/losses: %d/%d\n",
-				level.clients[level.sortedClients[0]].pers.netname,
-				level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE],
-				level.clients[level.sortedClients[0]].sess.wins,
-				level.clients[level.sortedClients[0]].sess.losses );
-			G_LogPrintf( LOG_AUSTRIAN, "loser: %s, score: %d, wins/losses: %d/%d\n",
-				level.clients[level.sortedClients[1]].pers.netname,
-				level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE],
-				level.clients[level.sortedClients[1]].sess.wins,
-				level.clients[level.sortedClients[1]].sess.losses );
-		}
+		G_LogPrintf( LOG_AUSTRIAN, "Duel Results:\n");
+		//G_LogPrintf( LOG_AUSTRIAN, "Duel Time: %d\n", level.time );
+		G_LogPrintf( LOG_AUSTRIAN, "winner: %s, score: %d, wins/losses: %d/%d\n",
+			level.clients[level.sortedClients[0]].pers.netname,
+			level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE],
+			level.clients[level.sortedClients[0]].sess.wins,
+			level.clients[level.sortedClients[0]].sess.losses );
+		G_LogPrintf( LOG_AUSTRIAN, "loser: %s, score: %d, wins/losses: %d/%d\n",
+			level.clients[level.sortedClients[1]].pers.netname,
+			level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE],
+			level.clients[level.sortedClients[1]].sess.wins,
+			level.clients[level.sortedClients[1]].sess.losses );
+
 		// if we are running a tournement map, kick the loser to spectator status,
 		// which will automatically grab the next spectator and restart
 		if (!DuelLimitHit())
@@ -1819,17 +1800,14 @@ void CheckIntermissionExit( void ) {
 
 			AddTournamentPlayer();
 
-			if ( g_austrian.integer )
-			{
-				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
-					level.clients[level.sortedClients[0]].pers.netname,
-					level.clients[level.sortedClients[0]].sess.wins,
-					level.clients[level.sortedClients[0]].sess.losses,
-					level.clients[level.sortedClients[1]].pers.netname,
-					level.clients[level.sortedClients[1]].sess.wins,
-					level.clients[level.sortedClients[1]].sess.losses,
-					g_fraglimit.integer );
-			}
+			G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+				level.clients[level.sortedClients[0]].pers.netname,
+				level.clients[level.sortedClients[0]].sess.wins,
+				level.clients[level.sortedClients[0]].sess.losses,
+				level.clients[level.sortedClients[1]].pers.netname,
+				level.clients[level.sortedClients[1]].sess.wins,
+				level.clients[level.sortedClients[1]].sess.losses,
+				g_fraglimit.integer );
 
 			if (level.numPlayingClients >= 2)
 			{
@@ -1843,13 +1821,11 @@ void CheckIntermissionExit( void ) {
 			return;
 		}
 
-		if ( g_austrian.integer )
-		{
-			G_LogPrintf( LOG_AUSTRIAN, "Duel Tournament Winner: %s wins/losses: %d/%d\n",
-				level.clients[level.sortedClients[0]].pers.netname,
-				level.clients[level.sortedClients[0]].sess.wins,
-				level.clients[level.sortedClients[0]].sess.losses );
-		}
+		G_LogPrintf( LOG_AUSTRIAN, "Duel Tournament Winner: %s wins/losses: %d/%d\n",
+			level.clients[level.sortedClients[0]].pers.netname,
+			level.clients[level.sortedClients[0]].sess.wins,
+			level.clients[level.sortedClients[0]].sess.losses );
+
 		//this means we hit the duel limit so reset the wins/losses
 		//but still push the loser to the back of the line, and retain the order for
 		//the map change
@@ -2276,17 +2252,16 @@ void CheckTournament( void ) {
 				trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
 				gDuelist1 = level.sortedClients[0];
 				gDuelist2 = level.sortedClients[1];
-				if ( g_austrian.integer )
-				{
-					G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
-						level.clients[level.sortedClients[0]].pers.netname,
-						level.clients[level.sortedClients[0]].sess.wins,
-						level.clients[level.sortedClients[0]].sess.losses,
-						level.clients[level.sortedClients[1]].pers.netname,
-						level.clients[level.sortedClients[1]].sess.wins,
-						level.clients[level.sortedClients[1]].sess.losses,
-						g_fraglimit.integer );
-				}
+
+				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
+					level.clients[level.sortedClients[0]].pers.netname,
+					level.clients[level.sortedClients[0]].sess.wins,
+					level.clients[level.sortedClients[0]].sess.losses,
+					level.clients[level.sortedClients[1]].pers.netname,
+					level.clients[level.sortedClients[1]].sess.wins,
+					level.clients[level.sortedClients[1]].sess.losses,
+					g_fraglimit.integer );
+
 				//trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 				//FIXME: This seems to cause problems. But we'd like to reset things whenever a new opponent is set.
 			}

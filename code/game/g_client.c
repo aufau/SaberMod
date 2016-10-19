@@ -1226,6 +1226,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	char	redTeam[MAX_TEAMNAME];
 	char	blueTeam[MAX_TEAMNAME];
 	char	userinfo[MAX_INFO_STRING];
+	char	oldUserinfo[MAX_INFO_STRING];
 
 	ent = g_entities + clientNum;
 	client = ent->client;
@@ -1368,9 +1369,13 @@ void ClientUserinfoChanged( int clientNum ) {
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
 	}
 
+	trap_GetConfigstring( CS_PLAYERS+clientNum, oldUserinfo, sizeof( oldUserinfo ) );
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
-	G_LogPrintf( LOG_USERINFO, "ClientUserInfoChanged: %i %s\n", clientNum, s );
+	if ( strcmp( oldUserinfo, s ) )
+		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i %s\n", clientNum, s );
+	else
+		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i <no change>\n", clientNum );
 }
 
 
@@ -1641,6 +1646,15 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		}
 	}
 
+	if ( ent->r.svFlags & SVF_BOT )
+		gameversion = "BOT";
+	else if ( gameversion[0] == '\0' )
+		gameversion = "UNKNOWN";
+
+	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s %s: %s joined the %s team\n",
+		clientNum, teamNameUpperCase[client->sess.sessionTeam], gameversion,
+		client->pers.netname, teamName[client->sess.sessionTeam] );
+
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
@@ -1653,8 +1667,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
-	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s: %s entered the game\n",
-		clientNum, Info_ValueForKey(userinfo, GAMEVERSION), client->pers.netname );
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
@@ -2111,6 +2123,12 @@ void ClientSpawn(gentity_t *ent) {
 	// set default animations
 	client->ps.torsoAnim = WeaponReadyAnim[client->ps.weapon];
 	client->ps.legsAnim = WeaponReadyAnim[client->ps.weapon];
+
+	G_LogPrintf( LOG_SPAWN, "ClientSpawn: %d %s %d: %s spawned in the %s team as %s\n",
+		index, teamNameUpperCase[client->sess.sessionTeam],
+		client->sess.spectatorState, client->pers.netname,
+		teamName[client->sess.sessionTeam],
+		(client->sess.spectatorState == SPECTATOR_NOT) ? "player" : "spectator" );
 
 	if ( level.intermissiontime ) {
 		MoveClientToIntermission( ent );

@@ -775,12 +775,6 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 			}
 		}
 	}
-
-	G_LogPrintf ( LOG_TEAM_SWITCH, "SetTeam: %i %s %s: %s joined the %s team\n",
-		client - &level.clients[0],
-		teamNameUpperCase[oldTeam],
-		teamNameUpperCase[client->sess.sessionTeam],
-		client->pers.netname, teamNameLowerCase[client->sess.sessionTeam]);
 }
 
 /*

@@ -40,7 +40,7 @@
 #define LOG_BEGIN			0x00000004
 #define LOG_USERINFO		0x00000008
 #define LOG_RENAME			0x00000010
-#define LOG_TEAM_SWITCH		0x00000020
+#define LOG_SPAWN			0x00000020
 #define LOG_PRIVATE_DUEL	0x00000040
 #define LOG_KILL			0x00000080
 #define LOG_SAY				0x00000100
@@ -53,12 +53,7 @@
 #define LOG_GAME_STATS		0x00008000
 #define LOG_AUSTRIAN		0x00010000
 
-//							0x0000a3f7
-#define LOG_DEFAULT			41975
-// LOG_GAME | LOG_CONNECT | LOG_BEGIN | LOG_RENAME |
-// LOG_TEAM_SWITCH | LOG_PRIVATE_DUEL | LOG_KILL |
-// LOG_SAY | LOG_SAY_TEAM | LOG_FLAG | LOG_GAME_STATS
-
+#define LOG_DEFAULT			41943
 
 #define MAX_LOGFILES		4
 
@@ -1121,8 +1116,6 @@ extern	vmCvar_t	g_blueteam;
 extern	vmCvar_t	g_smoothClients;
 extern	vmCvar_t	pmove_fixed;
 extern	vmCvar_t	pmove_msec;
-extern	vmCvar_t	g_enableDust;
-extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_dismember;
 extern	vmCvar_t	g_forceDodge;
@@ -1133,8 +1126,6 @@ extern	vmCvar_t	g_saberDmgDelay_Idle;
 extern	vmCvar_t	g_saberDmgDelay_Wound;
 
 extern	vmCvar_t	g_saberDebugPrint;
-
-extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_damagePlums;
 extern	vmCvar_t	g_mode;
