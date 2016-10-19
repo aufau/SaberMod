@@ -3,7 +3,7 @@ SaberMod
 ========
 
 This is a *Star Wars Jedi Knight II: Jedi Outcast* 1.04 mod targeting
-competitive community. It is developed by *SaberMod team* (see
+competitive communities. It is developed by *SaberMod team* (see
 Authors_) and draws inspiration from all id Tech 3 based games and
 mods, trying to improve on usability, stability and user experience
 with *no-gimmicks* approach. Our first goal is reimplementing and
@@ -24,24 +24,25 @@ Client-Side
 Console Commands
 ................
 
-players
+players [?]
   List players connected to server with some additional info.
 
 follow [first|second]
-  Follow first or second best player on the server.
+  Follow first or second best player on the server. Can be used to
+  stay on spectator team in Tournament gametype.
 
 Callvote
 ........
 
 match <0|1>
-  Enable/Disable match mode: set `g_restrictChat` to 1 and
-  `g_damagePlums` to 0.
+  Enable/Disable match mode - restrict spectator chat and disable
+  damage plums.
 
 mode [mode]
   Switch to one of admin-defined game modes.
 
 nk [mode]
-  No Kick. `mode` can be 1 - no dmg, 2 - no knockback, 3 - no kicking
+  No Kick. `mode` can be 1 - no dmg, 2 - no knockback, 3 - no kicking.
 
 wk
   With Kick - default JK2 rules.
@@ -53,8 +54,8 @@ teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
-Cvars
-.....
+CGame Cvars
+...........
 
 handicap <x>
   Lower your max health to x and damage to x%.
@@ -67,45 +68,46 @@ cg_camerafps <fps>
   overloaded server, local server, high velocity movement, demo
   playback. 0 restores original behaviour.
 
-cg_chatBeep 1
+cg_chatBeep <0|1>
   Turn on/off chat beep.
 
-cg_damagePlums 1
+cg_damagePlums <0|1>
   When you hit an enemy, draw a small damage plum coming out of his
   torso. Works only if server has `g_damagePlums` enabled.
 
-cg_darkenDeadBodies 0
+cg_darkenDeadBodies <0|1>
   Darken dead bodies outside of duel too.
 
-cg_drawRewards 1
+cg_drawRewards <0|1>
   Draw rewards for outstanding moves. Requires ent's "Jedi Knight
   Rewards 2" assets.
 
-cg_drawClock 0
+cg_drawClock <0|1>
   Draw clock showing your local time.
 
-cg_drawTimer 2
-  Count down by default. 1 reverts to original behaviour.
+cg_drawTimer <0|1|2>
+  Draw game timer. 1 - count up, 2 - count down.
 
-cg_duelGlow 1
+cg_duelGlow <0|1>
   Turn on/off duel glow.
 
-cg_followKiller 0
+cg_followKiller <0|1>
   When player you are following dies, switch to his killer.
 
-cg_followPowerup 0
+cg_followPowerup <0|1>
   Automatically follow flag and powerup carriers.
 
-cg_privateDuel 0
-  Hide all other players and entities when duelling.
+cg_privateDuel <0|1>
+  Hide all other players and entities when duelling. Available only
+  on server running JK2MV 1.2 or newer.
 
 Spectating
 ..........
 
-As spectator `+use` button makes you switch followed player using
-"smart cycle" mode. It will switch between duelling players you're
-currently following, search for next powerup player or cycle through a
-team you're following in scoreboard order.
+As spectator `+use` button makes you change followed player using
+"smart cycle" mode. It will switch between duelling players, search
+for a next powerup player or cycle through current team in a
+scoreboard order.
 
 As free floating spectator you can target a player with your crosshair
 and press `+attack` button to start following him.
@@ -119,25 +121,27 @@ Server Commands
 announce <message>
   Print `message` on everyone's screen.
 
+forceteam <player> <team>
+  Little known original command allowing admin to move players between
+  teams.
+
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
 mode <mode|default>
-  Change to `mode` or list all available modes when executed without
+  Change to `mode` or list all available modes when passed without
   arguments.
 
 remove <player> [time]
   Remove `player` to spectator team for at least `time` seconds.
 
-Cvars
-.....
+Game Cvars
+..........
 
-New and modified cvars with default values.
-
-teamsize
+teamsize <size>
   See callvote_ teamsize.
 
-dmflags 0
+dmflags <bitmask>
   Sum of values from the following list:
 
   =====================  =====================  =====================
@@ -145,8 +149,8 @@ dmflags 0
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================
 
-g_allowVote 1
-  0 / 1 - disable / enable all votes
+g_allowVote <0|1|bitmask>
+  0 / 1 - disable / enable all votes.
 
   Moreover you can decide what votes should be available by setting
   it to a sum of values from the following list:
@@ -160,13 +164,13 @@ g_allowVote 1
   65536 - Capturelimit
   =====================  =====================  =====================
 
-g_damagePlums
+g_damagePlums <0|1>
   Allow clients with `cg_damagePlums` enabled to see damage plums.
 
-g_infiniteAmmo 0
+g_infiniteAmmo <0|1>
   Players spawn with infinite ammo for all weapons.
 
-g_instagib 0
+g_instagib <0|1>
   Enable simple instagib mode for all weapons. Splash does no damage.
 
 g_log[1-4] <filename>
@@ -187,7 +191,7 @@ g_logFilter[1-4] <mask>
   32768 - Game Stats     65536 - Duel Stats
   =====================  =====================  =====================
 
-g_maxGameClients 0
+g_maxGameClients <limit>
   Removed. Use teamsize instead.
 
 g_modeDefault <mode>
@@ -197,61 +201,63 @@ g_modeDefault <mode>
 g_modeIdleTime <minutes>
   Reset to default mode if server has been idle for this many minutes.
 
-g_noKick [type]
-  See callvote_ nk and wk. `type` can be 0, 1 or 2.
+g_noKick <0|1|2>
+  See callvote_ nk and wk.
 
-g_restrictChat 0
+g_restrictChat <0|1>
   Prevent spectators from speaking to players and all clients from
   speaking to dueling players.
 
-g_roundWarmup 10
+g_roundWarmup <seconds>
   How many seconds players get to reposition themselves at the start
   of a round.
 
-g_spawnShield 25
+g_spawnShield <ammount>
   Ammount of shield player gets on spawn.
 
 g_teamForceBalance <number>
   Prevents players from joining the weaker team if difference
   is greater than `number`.
 
-g_teamsizeMin 2
-  Minimum votable teamsize
+g_teamsizeMin <size>
+  Minimum votable teamsize.
 
-g_spawnItems 0
+g_spawnItems <bitmask>
   What items will be given to players on spawn. Use following bitmask:
 
   ================  ================  ===============  ===============
   2 - Seeker Drone  4 - Forcefield    8 - Bacta        64 - Sentry
   ================  ================  ===============  ===============
 
-g_spawnWeapons 0
-  Controls weapons given to players on spawn using the same bitmask
-  as `g_weaponDisable`. The later cvar affects weapons and ammo
-  spawned on a map, and if a game is considered saber-only. Setting
-  this cvar to 0 restores original behaviour of `g_weaponDisable`.
+g_spawnWeapons <bitmask>
 
-roundlimit 0
+  Controls weapons given to players on spawn using the same bitmask
+  as `g_weaponDisable`. The later cvar affects only weapons and ammo
+  spawned on a map. Setting this cvar to 0 restores original behaviour
+  of `g_weaponDisable`.
+
+roundlimit <limit>
   Number of rounds in a round-based match.
 
-Round-based gametypes
+Round-Based Gametypes
 .....................
 
 In round-based gametypes players spawn with all available weapons and
-items (controlled by `g_spawnWeapons` and `disable_*` cvars), however
-there are no pickups on the map. Players gain one point for killing
-an enemy and one point for each 50 damage dealt to enemy team. A round
-lasts until either one team gets eliminated or a timelimit
+items (controlled by `g_spawnWeapons` and `g_spawnItems` cvars),
+however there are no pickups on the map. Players gain one point for
+killing an enemy and one point for each 50 damage dealt to the enemy
+team. A round lasts until either one team is eliminated or a timelimit
 is hit. Match ends when a roundlimit is hit.
 
 Red Rover (g_gametype 9)
-  It can be described as a FFA gametype with a twist. There are two
-  teams, player who gets killed respawns in the opposing team. Round
-  ends when one team gets eliminated, but the match winner is a person
-  who scores most points.
+  It can be described as FFA with a twist. There are two teams, player
+  who gets killed respawns in the opposing team. Round ends when one
+  team is eliminated, but the match winner is a person who scores most
+  points.
 
 Clan Arena (g_gametype 10)
-  Player who dies must spectate until the end of a round.
+  Also know as "Last Man Standing". Player who dies must spectate
+  until the end of a round.
 
 Server Modes
 ............
