@@ -173,11 +173,19 @@ g_log[1-4] <filename>
   You can use 4 separate log files now.
 
 g_consoleFilter <mask>
+
 g_logFilter[1-4] <mask>
   Filter events that should be printed in the dedicated server console
   or saved in the corresponding log file using following bit mask:
 
-  TODO RELEASE
+  =====================  =====================  =====================
+  1 - Game Status        2 - Client Connect     4 - Client Begin
+  8 - Userinfo Change    16 - Client Rename     32 - Client Spawn
+  64 - Private Duel      128 - Obituary         256 - Say
+  512 - Say Team         1024 - Tell            2048 - Voice Tell
+  4096 - Item Pickup     8192 - Flag            16384 - Weapon Stats
+  32768 - Game Stats     65536 - Duel Stats
+  =====================  =====================  =====================
 
 g_maxGameClients 0
   Removed. Use teamsize instead.

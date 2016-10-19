@@ -1934,9 +1934,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 				killer, self->s.number, meansOfDeath, killerName,
 				self->client->pers.netname, obit );
 
-	if ( g_austrian.integer
-		 && g_gametype.integer == GT_TOURNAMENT
-		 && level.numPlayingClients >= 2 )
+	if ( g_gametype.integer == GT_TOURNAMENT && level.numPlayingClients >= 2 )
 	{
 		int spawnTime = (level.clients[level.sortedClients[0]].respawnTime > level.clients[level.sortedClients[1]].respawnTime) ? level.clients[level.sortedClients[0]].respawnTime : level.clients[level.sortedClients[1]].respawnTime;
 		G_LogPrintf(LOG_AUSTRIAN, "Duel Kill Details:\n");
@@ -2926,8 +2924,7 @@ void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int death
 	if (ent->client)
 	{
 		G_GetDismemberBolt(ent, boltPoint, hitLocUse);
-		if ( g_austrian.integer
-			&& g_gametype.integer == GT_TOURNAMENT )
+		if ( g_gametype.integer == GT_TOURNAMENT )
 		{
 			G_LogPrintf(LOG_AUSTRIAN, "Duel Dismemberment: %s dismembered at %s\n",
 				ent->client->pers.netname, hitLocName[hitLoc] );
