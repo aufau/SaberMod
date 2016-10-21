@@ -2382,11 +2382,11 @@ void CheckVote( void ) {
 		level.voteExecuteTime = 0;
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
 
-		if (level.votingGametype)
+		if (level.voteCmd == CV_GAMETYPE)
 		{
-			if (trap_Cvar_VariableIntegerValue("g_gametype") != level.votingGametypeTo)
+			if (trap_Cvar_VariableIntegerValue("g_gametype") != level.voteArg)
 			{ //If we're voting to a different game type, be sure to refresh all the map stuff
-				const char *nextMap = G_RefreshNextMap(level.votingGametypeTo, qtrue);
+				const char *nextMap = G_RefreshNextMap(level.voteArg, qtrue);
 
 				if (nextMap && nextMap[0])
 				{
@@ -2396,7 +2396,7 @@ void CheckVote( void ) {
 			}
 			else
 			{ //otherwise, just leave the map until a restart
-				G_RefreshNextMap(level.votingGametypeTo, qfalse);
+				G_RefreshNextMap(level.voteArg, qfalse);
 			}
 
 			if (g_fraglimitVoteCorrection.integer)
@@ -2404,14 +2404,14 @@ void CheckVote( void ) {
 				int currentGT = trap_Cvar_VariableIntegerValue("g_gametype");
 				int currentFL = trap_Cvar_VariableIntegerValue("fraglimit");
 
-				if (level.votingGametypeTo == GT_TOURNAMENT && currentGT != GT_TOURNAMENT)
+				if (level.voteArg == GT_TOURNAMENT && currentGT != GT_TOURNAMENT)
 				{
 					if (currentFL > 3 || !currentFL)
 					{ //if voting to duel, and fraglimit is more than 3 (or unlimited), then set it down to 3
 						trap_SendConsoleCommand(EXEC_APPEND, "fraglimit 3\n");
 					}
 				}
-				else if (level.votingGametypeTo != GT_TOURNAMENT && currentGT == GT_TOURNAMENT)
+				else if (level.voteArg != GT_TOURNAMENT && currentGT == GT_TOURNAMENT)
 				{
 					if (currentFL && currentFL < 20)
 					{ //if voting from duel, an fraglimit is less than 20, then set it up to 20
@@ -2419,17 +2419,22 @@ void CheckVote( void ) {
 					}
 				}
 			}
-
-			level.votingGametype = qfalse;
-			level.votingGametypeTo = 0;
 		}
 	}
 	if ( !level.voteTime ) {
 		return;
 	}
-	if ( level.time - level.voteTime >= VOTE_TIME ) {
+
+	if (level.voteCmd == CV_KICK && level.clients[level.voteArg].pers.connected == CON_DISCONNECTED )
+	{
 		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-	} else {
+	}
+	else if ( level.time - level.voteTime >= VOTE_TIME )
+	{
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
+	}
+	else
+	{
 		if ( level.voteYes > level.numVotingClients/2 ) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );

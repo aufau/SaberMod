@@ -1806,7 +1806,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	if ( level.voteTime ) {
+	if ( level.voteTime || level.voteExecuteTime ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
 		return;
 	}
@@ -1860,12 +1860,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	// if there is still a vote to be executed
-	if ( level.voteExecuteTime ) {
-		level.voteExecuteTime = 0;
-		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
-	}
-
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
 		// special case for g_gametype, check for bad values
@@ -1900,8 +1894,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 
-		level.votingGametype = qtrue;
-		level.votingGametypeTo = i;
+		level.voteArg = i;
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_gametype %d", i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Gametype %s", gameNames[i] );
@@ -1935,6 +1928,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
 			return;
 		}
+
+		level.voteArg = i;
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "Kick %s", g_entities[i].client->pers.netname );
@@ -2036,6 +2031,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLCALLEDVOTE") ) );
 
 	// start the voting, the caller autoamtically votes yes
+	level.voteCmd = voteCmd;
 	level.voteTime = level.time;
 	level.voteYes = 1;
 	level.voteNo = 0;
