@@ -289,9 +289,7 @@ clientkilled:
 		if ( target == cg.snap->ps.clientNum ) {
 			Q_strncpyz( cg.killerName, attackerName, sizeof( cg.killerName ) );
 
-			if ( cg_followKiller.integer && (cg.snap->ps.pm_flags & PMF_FOLLOW) &&
-				cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
-			{
+			if ( cg_followKiller.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
 				trap_SendConsoleCommand(va("follow %i", attacker));
 			}
 		}
@@ -1299,7 +1297,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 			if ( item->giType == IT_POWERUP && cg_followPowerup.integer &&
 				cg.snap->ps.pm_flags & PMF_FOLLOW &&
-				cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
 				!cg.snap->ps.powerups[PW_REDFLAG] && !cg.snap->ps.powerups[PW_BLUEFLAG] )
 			{
 				trap_SendConsoleCommand(va("follow %i", es->number));
@@ -1328,8 +1325,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			if ( es->number == cg.snap->ps.clientNum ) {
 				CG_ItemPickup( index );
 			}
-			if ( cg_followPowerup.integer && cg.snap->ps.pm_flags & PMF_FOLLOW &&
-				cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+			if ( cg_followPowerup.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
 				trap_SendConsoleCommand(va("follow %i", es->number));
 			}
 		}
