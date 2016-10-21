@@ -287,6 +287,7 @@ resemble following template::
   set g_modeIdleTime "10"
   set g_modeDefault "mymode"
   exec "modes/mymode"
+  map ffa_bespin
 
 Where `mymode` is the default mode.
 

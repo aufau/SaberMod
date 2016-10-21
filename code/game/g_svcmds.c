@@ -516,9 +516,13 @@ static void	Svcmd_Mode_f( void )
 	}
 	trap_FS_FCloseFile( f );
 
-	trap_Cvar_Set( "g_mode", mode );
 	G_LogPrintf( LOG_GAME, "Mode: %s\n", mode );
+	trap_SendServerCommand( -1, va("print \"Changing mode to %s.\n\"", mode) );
+	trap_Cvar_Set( "g_mode", mode );
 	trap_SendConsoleCommand( EXEC_APPEND, va("exec \"modes/%s\"\n", mode) );
+	// we don't realy know what gametype it's going to be and admin
+	// can set nextmap in mode config.
+	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
 }
 
 /*

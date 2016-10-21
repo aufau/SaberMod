@@ -72,6 +72,7 @@ int weaponFromMOD[MOD_MAX] =
 	WP_NONE,				//MOD_SUICIDE,
 	WP_NONE,				//MOD_TARGET_LASER,
 	WP_NONE,				//MOD_TRIGGER_HURT,
+	WP_NONE,				//MOD_LEAVE,
 };
 
 char *weaponNameFromIndex[WP_NUM_WEAPONS] =

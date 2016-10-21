@@ -847,7 +847,8 @@ char	*modNames[] = {
 	"MOD_FALLING",
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",
-	"MOD_TRIGGER_HURT"
+	"MOD_TRIGGER_HURT",
+	"MOD_LEAVE",
 };
 
 
@@ -1975,7 +1976,7 @@ static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t m
 	// NOTENOTE No gib deaths right now, this is star wars.
 	/*
 	// never gib in a nodrop
-	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
+	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_LEAVE)
 	{
 		// gib death
 		GibEntity( self, killer );
