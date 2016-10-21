@@ -1105,6 +1105,13 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	char	arg[MAX_TOKEN_CHARS];
 	int		i;
 
+	// don't mess with following non-spectators for now
+	if (ent->client->sess.sessionTeam != TEAM_SPECTATOR &&
+		ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		return;
+	}
+
 	if ( trap_Argc() != 2 ) {
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
 			StopFollowing( ent );
