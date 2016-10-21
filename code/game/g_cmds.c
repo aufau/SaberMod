@@ -809,7 +809,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 		ent->flags &= ~FL_GODMODE;
 		client->ps.fd.forceDoInit = 1;
 		client->ps.stats[STAT_HEALTH] = ent->health = 0;
-		player_die (ent, ent, ent, 100000, MOD_SUICIDE);
+		player_die (ent, ent, ent, 100000, MOD_LEAVE);
 	}
 
 	// specClient < 0 is dedicated spectator; see SortRanks
