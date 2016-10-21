@@ -537,8 +537,8 @@ typedef struct {
 	int			voteNo;
 	int			numVotingClients;		// set by CalculateRanks
 
-	qboolean	votingGametype;
-	int			votingGametypeTo;
+	voteCommand_t	voteCmd;			// current vote
+	int			voteArg;				// vote argument for CheckVote
 
 	// team voting state
 	char		teamVoteString[2][MAX_STRING_CHARS];
