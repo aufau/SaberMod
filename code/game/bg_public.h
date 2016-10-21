@@ -737,7 +737,7 @@ typedef enum {
 	MOD_SUICIDE,
 	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
-	MOD_TEAM_CHANGE,
+	MOD_LEAVE,
 	MOD_MAX
 } meansOfDeath_t;
 

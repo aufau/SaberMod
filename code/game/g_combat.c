@@ -847,7 +847,8 @@ char	*modNames[] = {
 	"MOD_FALLING",
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",
-	"MOD_TRIGGER_HURT"
+	"MOD_TRIGGER_HURT",
+	"MOD_LEAVE",
 };
 
 
@@ -1887,7 +1888,7 @@ static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker, meansOfDeath_
 	}
 	else
 	{
-		if ( meansOfDeath != MOD_TEAM_CHANGE )
+		if ( meansOfDeath != MOD_LEAVE )
 			AddScore( attacker, self->r.currentOrigin, -1 );
 	}
 	if (g_gametype.integer == GT_JEDIMASTER)
@@ -1975,7 +1976,7 @@ static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t m
 	// NOTENOTE No gib deaths right now, this is star wars.
 	/*
 	// never gib in a nodrop
-	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE)
+	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_LEAVE)
 	{
 		// gib death
 		GibEntity( self, killer );
@@ -2132,7 +2133,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	Team_FragBonuses(self, inflictor, attacker);
 
 	// if I committed suicide, the flag does not fall, it returns.
-	if (meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_TEAM_CHANGE) {
+	if (meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_LEAVE) {
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
 			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
@@ -3193,7 +3194,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TELEFRAG:
 			case MOD_FALLING:
 			case MOD_SUICIDE:
-			case MOD_TEAM_CHANGE:
+			case MOD_LEAVE:
 			case MOD_TARGET_LASER:
 			case MOD_TRIGGER_HURT:
 			case MOD_MELEE:

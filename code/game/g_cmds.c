@@ -820,7 +820,7 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
 		client->ps.stats[STAT_HEALTH] = ent->health = 0;
-		player_die (ent, ent, ent, 100000, MOD_TEAM_CHANGE);
+		player_die (ent, ent, ent, 100000, MOD_LEAVE);
 
 	}
 
