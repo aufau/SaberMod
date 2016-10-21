@@ -118,6 +118,7 @@ static void CG_Obituary( entityState_t *ent ) {
 
 	switch( mod ) {
 	case MOD_SUICIDE:
+	case MOD_TEAM_CHANGE:
 	case MOD_FALLING:
 	case MOD_CRUSH:
 	case MOD_WATER:

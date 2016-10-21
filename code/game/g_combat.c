@@ -1860,7 +1860,7 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 	attacker->client->lastKillTime = level.time;
 }
 
-static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker )
+static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
 {
 	if (g_gametype.integer == GT_TOURNAMENT)
 	{ //in duel, if you kill yourself, the person you are dueling against gets a kill for it
@@ -1887,7 +1887,8 @@ static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker )
 	}
 	else
 	{
-		AddScore( attacker, self->r.currentOrigin, -1 );
+		if ( meansOfDeath != MOD_TEAM_CHANGE )
+			AddScore( attacker, self->r.currentOrigin, -1 );
 	}
 	if (g_gametype.integer == GT_JEDIMASTER)
 	{
@@ -2119,19 +2120,19 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		attacker->client->lastkilled_client = self->s.number;
 
 		if (attacker == self || OnSameTeam(self, attacker)) {
-			G_ScoreTeamKill( self, attacker );
+			G_ScoreTeamKill( self, attacker, meansOfDeath );
 		} else {
 			G_ScoreKill( self, attacker, meansOfDeath );
 		}
 	} else {
-		G_ScoreTeamKill( self, self );
+		G_ScoreTeamKill( self, self, meansOfDeath );
 	}
 
 	// Add team bonuses
 	Team_FragBonuses(self, inflictor, attacker);
 
 	// if I committed suicide, the flag does not fall, it returns.
-	if (meansOfDeath == MOD_SUICIDE) {
+	if (meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_TEAM_CHANGE) {
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
 			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
@@ -3192,6 +3193,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TELEFRAG:
 			case MOD_FALLING:
 			case MOD_SUICIDE:
+			case MOD_TEAM_CHANGE:
 			case MOD_TARGET_LASER:
 			case MOD_TRIGGER_HURT:
 			case MOD_MELEE:
