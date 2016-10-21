@@ -333,7 +333,7 @@ int G_ClientNumberFromString( const char *s, char **errorMsg ) {
 			return -1;
 		}
 		cl = &level.clients[idnum];
-		if ( cl->pers.connected != CON_CONNECTED ) {
+		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			*errorMsg = va("Client %i is not on the server\n", idnum);
 			return -1;
 		}
@@ -1829,7 +1829,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "g_gametype" ) )   voteCmd = CV_GAMETYPE;
 	else if ( !Q_stricmp( arg1, "gametype" ) )     voteCmd = CV_GAMETYPE;
 	else if ( !Q_stricmp( arg1, "kick" ) )         voteCmd = CV_KICK;
-	else if ( !Q_stricmp( arg1, "clientkick" ) )   voteCmd = CV_CLIENTKICK;
+	else if ( !Q_stricmp( arg1, "clientkick" ) )   voteCmd = CV_KICK;
 	else if ( !Q_stricmp( arg1, "g_doWarmup" ) )   voteCmd = CV_DOWARMUP;
 	else if ( !Q_stricmp( arg1, "timelimit" ) )    voteCmd = CV_TIMELIMIT;
 	else if ( !Q_stricmp( arg1, "fraglimit" ) )    voteCmd = CV_FRAGLIMIT;
@@ -1844,7 +1844,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else                                           voteCmd = CV_INVALID;
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player>, clientkick <clientnum>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>.\n\"" );
 		return;
 	}
 
@@ -1904,18 +1904,20 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		level.votingGametypeTo = i;
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_gametype %d", i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "gametype %s", gameNames[i] );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Gametype %s", gameNames[i] );
 		break;
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting
 		// this allows a player to change maps, but not upset the map rotation
 
+		/*
 		if (!G_DoesMapSupportGametype(arg2, trap_Cvar_VariableIntegerValue("g_gametype")))
 		{
 			//trap_SendServerCommand( ent-g_entities, "print \"You can't vote for this map, it isn't supported by the current gametype.\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE_MAPNOTSUPPORTEDBYGAME")) );
 			return;
 		}
+		*/
 
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
 		if (*s) {
@@ -1923,25 +1925,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		} else {
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %s", arg1, arg2 );
 		}
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
-		break;
-	case CV_CLIENTKICK:
-		i = atoi ( arg2 );
-
-		if ( i < 0 || i >= MAX_CLIENTS )
-		{
-			trap_SendServerCommand( ent-g_entities, va("print \"invalid client number %d.\n\"", i ) );
-			return;
-		}
-
-		if ( g_entities[i].client->pers.connected == CON_DISCONNECTED )
-		{
-			trap_SendServerCommand( ent-g_entities, va("print \"there is no client with the client number %d.\n\"", i ) );
-			return;
-		}
-
-		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
-		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "kick %s", g_entities[i].client->pers.netname );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map %s", arg2 );
 		break;
 	case CV_KICK:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
@@ -1953,7 +1937,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		}
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
-		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "kick %s", g_entities[i].client->pers.netname );
+		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "Kick %s", g_entities[i].client->pers.netname );
 		break;
 	case CV_NEXTMAP:
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
@@ -1962,7 +1946,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "vstr nextmap");
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Next Map" );
 		break;
 	case CV_TEAMSIZE:
 		i = atoi( arg2 );
@@ -2040,6 +2024,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Match Mode" );
 		}
 		break;
+	case CV_MAP_RESTART:
+		// no argument vote
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart" );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map Restart" );
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
