@@ -1179,9 +1179,12 @@ void CG_DrawHUD(centity_t	*cent)
 	}
 	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
 
-	if (GT_Round(cgs.gametype) && cgs.round) {
+	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.roundlimit) {
-			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+			if (cgs.gametype == GT_REDROVER)
+				scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+			else
+				scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit * 2 - 1);
 		} else {
 			scoreStr = va("Round: %i", cgs.round);
 		}
