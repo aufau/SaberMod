@@ -77,6 +77,7 @@ typedef struct {
 static sbColumnData_t columnData[SBC_MAX];
 
 static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static sbColumn_t iffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
@@ -590,6 +591,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 	default:
 		columns = ffaColumns;
 	}
+
+	if ( cgs.instagib && columns == ffaColumns )
+		columns = iffaColumns;
 
 	// header
 
