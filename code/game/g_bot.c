@@ -384,7 +384,7 @@ void G_AddRandomBot( int team ) {
 		//
 		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
 			cl = level.clients + i;
-			if ( cl->pers.connected != CON_CONNECTED ) {
+			if ( cl->pers.connected == CON_DISCONNECTED ) {
 				continue;
 			}
 			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
@@ -407,7 +407,7 @@ void G_AddRandomBot( int team ) {
 		//
 		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
 			cl = level.clients + i;
-			if ( cl->pers.connected != CON_CONNECTED ) {
+			if ( cl->pers.connected == CON_DISCONNECTED ) {
 				continue;
 			}
 			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
@@ -447,7 +447,7 @@ int G_RemoveRandomBot( int team ) {
 
 	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
 		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
+		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
 		}
 		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
@@ -474,7 +474,7 @@ int G_CountHumanPlayers( int team ) {
 	num = 0;
 	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
 		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
+		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
 		}
 		if ( g_entities[i].r.svFlags & SVF_BOT ) {
@@ -500,7 +500,7 @@ int G_CountBotPlayers( int team ) {
 	num = 0;
 	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
 		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
+		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
 		}
 		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
