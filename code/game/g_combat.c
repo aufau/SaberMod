@@ -706,6 +706,7 @@ void TossClientItems( gentity_t *self ) {
 					drop->count = 1;
 				}
 				angle += 45;
+				self->client->ps.powerups[ i ] = 0;
 			}
 		}
 	}
@@ -2153,17 +2154,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( !( contents & CONTENTS_NODROP ) && !self->client->ps.fallingToDeath) {
 		TossClientItems( self );
 	}
-	else {
-		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
-			Team_ReturnFlag( TEAM_FREE );
-		}
-		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
-			Team_ReturnFlag( TEAM_RED );
-		}
-		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
-			Team_ReturnFlag( TEAM_BLUE );
-		}
-	}
+
+	ResetClientState(self);
 
 	Cmd_Score_f( self );		// show scores
 	// send updated scores to any clients that are following this one,
@@ -2197,7 +2189,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// g_forcerespawn may force spawning at some later time
 	self->client->respawnTime = level.time + 1700;
 
-	ResetClientState(self);
 	G_PlayerDieHandleBody(self, damage, meansOfDeath, wasJediMaster);
 
 	trap_LinkEntity (self);
