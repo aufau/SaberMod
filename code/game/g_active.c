@@ -1938,9 +1938,12 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
-			} else {
+			} else if ( client->sess.spectatorClient >= 0 ) {
 				StopFollowing(ent);
 			}
+			// don't drop dedicated follow spectators if ranks weren't
+			// updated soon enough
+			// (eg in SetTeamSpec->ClientBegin->ClientSpawn->SpectatorClientEndFrame)
 		} else {
 			StopFollowing(ent);
 		}
