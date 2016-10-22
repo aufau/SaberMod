@@ -1130,9 +1130,11 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// spectators don't do much
 	if ( client->sess.spectatorState != SPECTATOR_NOT ) {
-		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
+		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD )
 			return;
-		}
+		if ( ent->r.svFlags & SVF_BOT )
+			return;
+
 		SpectatorThink( ent, ucmd );
 		return;
 	}
