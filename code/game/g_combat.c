@@ -3530,10 +3530,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	// don't log damage stats
-	if (level.warmupTime || level.intermissiontime || level.roundQueued )
-		return;
-
 	if (client && attacker->client)
 	{
 		// all damage types must sum up to the total health of players!
@@ -3551,6 +3547,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		if (g_damagePlums.integer || mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
+
+		// don't log damage stats
+		if (level.warmupTime || level.intermissiontime || level.roundQueued )
+			return;
 
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
