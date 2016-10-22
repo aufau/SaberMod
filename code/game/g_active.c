@@ -1038,21 +1038,13 @@ void G_Respawn( gentity_t *ent ) {
 			G_SwitchTeam(ent);
 		respawn( ent );
 	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
+		team_t	team = client->sess.sessionTeam;
 		// follow whatever. sess.spectatorClient will be fixed
 		// in SpectatorClientEndFrame
 
 		// currently this is the only entry point for spactating while
 		// not in TEAM_SPECTATOR. The exit is in NextRound.
-		CopyToBodyQue( ent );
-		if ( client->sess.spectatorState == SPECTATOR_NOT ) {
-			// save persistant to not forget score etc. notice this
-			// is before ClientSpawn so PERS_SPAWN_COUNT won't be
-			// incremented twice
-			memcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
-		}
-		client->sess.spectatorState = SPECTATOR_FOLLOW;
-		trap_UnlinkEntity( ent );
-		ClientSpawn( ent );
+		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, client->sess.spectatorClient );
 	} else {
 		respawn( ent );
 	}

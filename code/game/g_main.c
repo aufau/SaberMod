@@ -1500,17 +1500,13 @@ static void NextRound( void )
 			if ( !ent->inuse )
 				continue;
 
-			// add even connecting players so they can respawn later
-			if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-				if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
-					StopFollowing( ent );
-				ent->client->sess.spectatorState = SPECTATOR_NOT;
-				ent->client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
-				// not changing teams here, but settings may change
-			}
+			if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+				continue;
 
-			if ( ent->client->pers.connected == CON_CONNECTED )
+			if ( ent->client->sess.spectatorState == SPECTATOR_NOT )
 				respawn( ent );
+			else
+				SetTeam( ent, ent->client->sess.sessionTeam );
 		}
 
 		// clean up dead bodies

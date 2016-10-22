@@ -600,6 +600,7 @@ void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
 qboolean ValidateTeam( int ignoreClientNum, team_t team );
 qboolean SetTeam( gentity_t *ent, team_t team );
+qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient );
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void Cmd_SmartFollowCycle_f( gentity_t *ent );
 void Cmd_SaberAttackCycle_f(gentity_t *ent);

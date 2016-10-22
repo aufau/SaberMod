@@ -780,35 +780,61 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 /*
 =================
 SetTeamSpec
-
-Doesn't handle switching from/to SPECTATOR_NOT state without team
-change yet.
 =================
 */
-static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
+qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient )
 {
 	gclient_t	*client;
 	int			clientNum;
 	team_t		oldTeam;
 	int			teamLeader;
+	qboolean	oldSpec, newSpec;
 
 	client = ent->client;
 	clientNum = client - level.clients;
 	oldTeam = client->sess.sessionTeam;
+	oldSpec = ( client->sess.spectatorState != SPECTATOR_NOT );
+	newSpec = ( specState != SPECTATOR_NOT );
 
-	if ( client->sess.spectatorState == SPECTATOR_FOLLOW && specState != SPECTATOR_FOLLOW) {
-		StopFollowing( ent );
+	assert( !(team == TEAM_SPECTATOR && specState == SPECTATOR_NOT) );
+
+	if ( client->sess.spectatorState == SPECTATOR_NOT && specState != SPECTATOR_NOT ) {
+		// save persistant fields for following spectators
+		memcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
+
+		// if the player was dead leave the body
+		CopyToBodyQue(ent);
+
+		// Kill him (makes sure he loses flags, etc)
+		ent->flags &= ~FL_GODMODE;
+		client->ps.fd.forceDoInit = 1;
+		client->ps.stats[STAT_HEALTH] = ent->health = 0;
+		player_die (ent, ent, ent, 100000, MOD_LEAVE);
 	}
 
-	// new players must wait for next round
-	if ( team != TEAM_SPECTATOR )
-		if ( level.round > 0 && g_gametype.integer != GT_REDROVER )
-			specState = SPECTATOR_FREE;
+	// specClient < 0 is dedicated spectator; see SortRanks
+	if ( specState != SPECTATOR_FOLLOW && specClient < 0 )
+		specClient = 0;
 
-	// fast path for switching followed player
-	if ( team == oldTeam) {
-		client->sess.spectatorState = specState;
-		client->sess.spectatorClient = specClient;
+	client->sess.sessionTeam = team;
+	client->sess.spectatorState = specState;
+	client->sess.spectatorClient = specClient;
+
+	if ( team == oldTeam ) {
+		// handle switching from/to SPECTATOR_NOT without changing teams
+		if ( newSpec != oldSpec ) {
+			ClientSpawn( ent );
+
+			if ( !newSpec ) {
+				gentity_t	*tent;
+
+				tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
+				tent->s.clientNum = ent->s.number;
+
+				// restore persistant fields
+				memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
+			}
+		}
 		return qfalse;
 	}
 
@@ -816,18 +842,8 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 	// execute the team change
 	//
 
-	// if the player was dead leave the body
-	CopyToBodyQue(ent);
-
 	// he starts at 'base'
 	client->pers.teamState.state = TEAM_BEGIN;
-	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
-		// Kill him (makes sure he loses flags, etc)
-		ent->flags &= ~FL_GODMODE;
-		client->ps.stats[STAT_HEALTH] = ent->health = 0;
-		player_die (ent, ent, ent, 100000, MOD_LEAVE);
-
-	}
 
 	if ( team == TEAM_SPECTATOR ) {
 		// they go to the end of the line for tournaments
@@ -838,11 +854,8 @@ static qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specS
 		}
 	}
 
-	client->sess.sessionTeam = team;
-	client->sess.spectatorState = specState;
-	client->sess.spectatorClient = specClient;
-
-	client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
+	// every time we change teams make sure our force powers are set right
+	client->ps.fd.forceDoInit = 1;
 
 	client->sess.teamLeader = qfalse;
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
@@ -876,7 +889,7 @@ qboolean SetTeam( gentity_t *ent, team_t team )
 {
 	spectatorState_t state = (team == TEAM_SPECTATOR) ? SPECTATOR_FREE : SPECTATOR_NOT;
 
-	return SetTeamSpec( ent, team, state, 0 );
+	return SetTeamSpec( ent, team, state, ent->client->sess.spectatorClient );
 }
 
 /*
@@ -924,6 +937,11 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 				return;
 			}
 		}
+
+		// new players need to wait for next round
+		if ( level.round > 0 && g_gametype.integer != GT_REDROVER && !level.roundQueued ) {
+			specState = SPECTATOR_FOLLOW;
+		}
 	} else {
 		team = TEAM_FREE;
 		if ( !ValidateTeam(clientNum, TEAM_FREE) ) {
@@ -938,7 +956,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 		return;
 	}
 
-	if ( SetTeamSpec( ent, team, specState, 0 ) ) {
+	if ( SetTeamSpec( ent, team, specState, ent->client->sess.spectatorClient ) ) {
 		ent->client->switchTeamTime = level.time + 5000;
 	};
 }
@@ -957,12 +975,8 @@ void StopFollowing( gentity_t *ent ) {
 
 	// don't allow team player free floating. sess.spectatorClient
 	// shall be fixed in SpectatorClientEndFrame
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		// let NextRound call this
-		if ( !level.roundQueued ) {
-			return;
-		}
-	}
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR )
+		return;
 
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
@@ -1132,7 +1146,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		}
 	}
 
-	if ( SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i) ) {
+	if ( SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i ) ) {
 		ent->client->switchTeamTime = level.time + 5000;
 	};
 }
@@ -1155,7 +1169,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		gentity_t *target = G_CrosshairPlayer(ent, 8192);
 
 		if (target) {
-			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->client->ps.clientNum);
+			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->s.number);
 			return;
 		}
 	}
@@ -1176,13 +1190,8 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 
 	// can't make yourself a following non-spectator here
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		teamRestrict = qtrue;
-		team = client->sess.sessionTeam;
-	} else {
-		teamRestrict = qfalse;
-		team = TEAM_SPECTATOR;
-	}
+	team = client->sess.sessionTeam;
+	teamRestrict = ( client->sess.sessionTeam != TEAM_SPECTATOR );
 
 	original = clientnum;
 
@@ -1225,6 +1234,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 	qboolean	teamRestrict;
 	team_t		followTeam;
 	int			clientNum, clientRank;
+	int			player;
 	int			i;
 
 	clientNum = -1;
@@ -1237,8 +1247,8 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		gentity_t	*target = G_CrosshairPlayer(ent, 8192);
 
 		if ( target ) {
-			SetTeamSpec(ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, target->client->ps.clientNum);
-			return;
+			player = target->s.number;
+			goto followPlayer;
 		}
 	}
 
@@ -1273,12 +1283,10 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 
 	// Alternate between dueling players
 	if ( ci->ps.duelInProgress ) {
-		if ( !teamRestrict ||
-			level.clients[ci->ps.duelIndex].sess.sessionTeam == followTeam )
-		{
-			SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, ci->ps.duelIndex );
-		}
-		return;
+		player = ci->ps.duelIndex;
+
+		if ( !teamRestrict || level.clients[player].sess.sessionTeam == followTeam )
+			goto followPlayer;
 	}
 
 	i = 0;
@@ -1307,9 +1315,8 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		if (ci->ps.isJediMaster || ci->ps.powerups[PW_REDFLAG] ||
 			ci->ps.powerups[PW_BLUEFLAG] || ci->ps.powerups[PW_YSALAMIRI])
 		{
-			SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
-			// must return here, SetTeamSpec calls CalculateRanks!
-			return;
+			player = level.sortedClients[i];
+			goto followPlayer;
 		}
 	} while (i != clientRank);
 
@@ -1322,8 +1329,8 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 			ci = &level.clients[level.sortedClients[i]];
 
 			if (ci->sess.spectatorState == SPECTATOR_NOT && ci->sess.sessionTeam == followTeam) {
-				SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
-				return;
+				player = level.sortedClients[i];
+				goto followPlayer;
 			}
 		} while (i != clientRank);
 	} else {
@@ -1335,11 +1342,14 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 			ci = &level.clients[level.sortedClients[i]];
 
 			if (ci->sess.spectatorState == SPECTATOR_NOT) {
-				SetTeamSpec( ent, client->sess.sessionTeam, SPECTATOR_FOLLOW, level.sortedClients[i] );
-				return;
+				player = level.sortedClients[i];
+				goto followPlayer;
 			}
 		} while (i != clientRank);
 	}
+	return;
+followPlayer:
+	SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, player );
 }
 
 /*
