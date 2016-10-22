@@ -152,7 +152,8 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-	cgs.privateDuel = atoi( Info_ValueForKey( info, "g_privateDuel") );
+	cgs.privateDuel = atoi( Info_ValueForKey( info, "g_privateDuel" ) );
+	cgs.instagib = atoi( Info_ValueForKey( info, "g_instagib" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 
 

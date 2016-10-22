@@ -1333,6 +1333,7 @@ typedef struct {
 	int				wDisable;
 	int				fDisable;
 	qboolean		privateDuel;
+	qboolean		instagib;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
