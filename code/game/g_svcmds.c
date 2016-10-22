@@ -451,7 +451,11 @@ void	Svcmd_Remove_f( void )
 	}
 
 	ent = g_entities + clientNum;
-	SetTeam( ent, TEAM_SPECTATOR );
+	// make him dedicated spectator so he doesn't join the queue if inactive
+	if ( g_gametype.integer == GT_TOURNAMENT )
+		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, -1 );
+	else
+		SetTeam( ent, TEAM_SPECTATOR );
 	// overwrite "joined the spectators" message
 	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->pers.netname) );
 	ent->client->switchTeamTime = level.time + delay;
