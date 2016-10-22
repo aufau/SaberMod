@@ -292,7 +292,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_roundlimit, "roundlimit", "7", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_roundlimit, "roundlimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
@@ -1716,6 +1716,8 @@ void LogExit( const char *string ) {
 void LogRoundExit( const char *string )
 {
 	level.intermissionQueued = level.time;
+	// update CS_SCORES1 and CS_SCORES2
+	CalculateRanks(); // calls CheckExitRules!
 	G_LogPrintf( LOG_GAME, "Round Exit: %s\n", string );
 }
 
@@ -2009,16 +2011,32 @@ void CheckExitRules( void ) {
 			level.intermissionQueued = 0;
 			if (GT_Round(g_gametype.integer)) {
 				qboolean abort = qfalse;
+				qboolean roundlimitHit = qfalse;
 
 				if ( g_gametype.integer == GT_REDROVER ) {
 					if ( level.numPlayingClients < 2 )
 						abort = qtrue;
+					if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
+						roundlimitHit = qtrue;
+						trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
+					}
 				} else {
 					int	redCount = TeamCount( -1, TEAM_RED, qtrue );
 					int	blueCount = TeamCount( -1, TEAM_BLUE, qtrue );
 
 					if ( redCount == 0 || blueCount == 0 )
 						abort = qtrue;
+					if ( g_roundlimit.integer > 0 ) {
+						if ( level.teamScores[TEAM_RED] >= g_roundlimit.integer ) {
+							roundlimitHit = qtrue;
+							trap_SendServerCommand( -1,	"print \"" S_COLOR_RED "Red"
+								S_COLOR_WHITE " hit the round limit.\n\"" );
+						} else if ( level.teamScores[TEAM_BLUE] >= g_roundlimit.integer ) {
+							roundlimitHit = qtrue;
+							trap_SendServerCommand( -1,	"print \"" S_COLOR_BLUE "Blue"
+								S_COLOR_WHITE " hit the round limit.\n\"" );
+						}
+					}
 				}
 
 				if ( abort ) {
@@ -2026,8 +2044,8 @@ void CheckExitRules( void ) {
 					LogExit("Game aborted. Not enough players.");
 					G_PrintStats();
 					BeginIntermission();
-				} else if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
-					trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
+					return;
+				} else if ( roundlimitHit ) {
 					LogExit("Roundlimit hit.");
 					G_PrintStats();
 					BeginIntermission();
