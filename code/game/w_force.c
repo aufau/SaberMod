@@ -351,12 +351,18 @@ void WP_InitForcePowers( gentity_t *ent )
 			{
 				if (!GT_Team(g_gametype.integer) || !g_teamAutoJoin.integer)
 				{
+					team_t	team = ent->client->sess.sessionTeam;
+
 					//Make them a spectator so they can set their powerups up without being bothered.
 					ent->client->sess.sessionTeam = TEAM_SPECTATOR;
 					ent->client->sess.spectatorState = SPECTATOR_FREE;
 					ent->client->sess.spectatorClient = 0;
 
 					ent->client->pers.teamState.state = TEAM_BEGIN;
+
+					// Update CS_PLAYERS string
+					if ( team != TEAM_SPECTATOR )
+						ClientUserinfoChanged( ent->s.number );
 				}
 			}
 
