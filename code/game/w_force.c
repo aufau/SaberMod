@@ -172,6 +172,9 @@ void WP_InitForcePowers( gentity_t *ent )
 		return;
 	}
 
+	// reset
+	ent->client->ps.fd.forceDoInit = 0;
+
 	ent->client->ps.fd.saberAnimLevel = ent->client->sess.saberLevel;
 
 	if (ent->client->ps.fd.saberAnimLevel < FORCE_LEVEL_1 ||

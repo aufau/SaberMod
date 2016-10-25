@@ -1615,12 +1615,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		ent->bolt_Motion = trap_G2API_AddBolt(ent->client->ghoul2, 0, "Motion");
 	}
 
-	// set max health
-	client->pers.maxHealth = atoi( Info_ValueForKey( userinfo, "handicap" ) );
-	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-		client->pers.maxHealth = 100;
-	}
-
 	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
 	client->pers.registered = !strcmp(gameversion, GIT_VERSION);
 	if (!client->pers.registered) {
@@ -1733,7 +1727,6 @@ void ClientSpawn(gentity_t *ent) {
 	if (client->ps.fd.forceDoInit)
 	{ //force a reread of force powers
 		WP_InitForcePowers( ent );
-		client->ps.fd.forceDoInit = 0;
 	}
 	// find a spawn point
 	// do it before setting health back up, so farthest
