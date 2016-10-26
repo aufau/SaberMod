@@ -84,20 +84,23 @@ unsigned G_GetFreeDuelDimension(void)
 unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 {
 	unsigned common = ent1->dimension & ent2->dimension;
-
 #ifndef NDEBUG
-	qboolean collision;
+	qboolean	collision;
+	gclient_t	*client1 = ent1->client;
+	gclient_t	*client2 = ent2->client;
 
 	// cgame collision test has to follow the same logic
-	if (ent1->client && ent2->client) {
-		if (ent1->client->ps.duelInProgress) {
-			if (ent1->client->ps.duelIndex == ent2->s.number) {
+	if (client1 && client1->pers.connected == CON_CONNECTED &&
+		client2 && client2->pers.connected == CON_CONNECTED)
+	{
+		if (client1->ps.duelInProgress) {
+			if (client1->ps.duelIndex == ent2->s.number) {
 				collision = qtrue;
 			} else {
 				collision = qfalse;
 			}
 		} else {
-			if (ent2->client->ps.duelInProgress) {
+			if (client2->ps.duelInProgress) {
 				collision = qfalse;
 			} else {
 				collision = qtrue;
@@ -107,7 +110,6 @@ unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 		assert(!!common == collision);
 	}
 #endif
-
 	return common;
 }
 
