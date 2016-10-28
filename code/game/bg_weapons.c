@@ -288,8 +288,8 @@ ammoData_t ammoData[AMMO_MAX] =
 {
 	{	// AMMO_NONE
 //		"",				//	char	icon[32];	// Name of ammo icon file
-		0,				//	int		max;		// Max amount player can hold of ammo
-		0,				//	int		init;		// Amount of ammo players spawn with
+		INFINITE_AMMO,	//	int		max;		// Max amount player can hold of ammo
+		INFINITE_AMMO,	//	int		init;		// Amount of ammo players spawn with
 	},
 	{	// AMMO_FORCE
 //		"",				//	char	icon[32];	// Name of ammo icon file

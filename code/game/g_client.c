@@ -2005,7 +2005,7 @@ void ClientSpawn(gentity_t *ent) {
 	//
 
 	if (g_infiniteAmmo.integer) {
-		for (i = AMMO_NONE + 1; i < AMMO_MAX; i++)
+		for (i = AMMO_NONE; i < AMMO_MAX; i++)
 			client->ps.ammo[i] = INFINITE_AMMO;
 	} else {
 		// give ammo only for weapons owned by player
