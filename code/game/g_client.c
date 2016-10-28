@@ -2057,7 +2057,8 @@ void ClientSpawn(gentity_t *ent) {
 		client->ps.stats[STAT_WEAPONS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
-		client->ps.weapon = WP_NONE;
+		// for some reasone this causes bad animation after rejoining team
+		// client->ps.weapon = WP_NONE;
 	}
 
 	client->ps.rocketLockIndex = MAX_CLIENTS;
