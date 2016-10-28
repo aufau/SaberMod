@@ -1224,8 +1224,8 @@ void CalculateRanks( void ) {
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
 	if ( g_gametype.integer == GT_REDROVER ) {
-		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED, qfalse ) ) );
-		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE, qfalse ) ) );
+		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED, qtrue ) ) );
+		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE, qtrue ) ) );
 	} else if ( GT_Team(g_gametype.integer) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
@@ -2104,8 +2104,9 @@ void CheckExitRules( void ) {
 	}
 
 	if ( GT_Round(g_gametype.integer) ) {
-		int	redCount = TeamCount( -1, TEAM_RED, qfalse );
-		int	blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
+		qboolean	countDead = ( g_gametype.integer == GT_REDROVER && g_forcerespawn.integer <= 5 );
+		int			redCount = TeamCount( -1, TEAM_RED, countDead );
+		int			blueCount = TeamCount( -1, TEAM_BLUE, countDead );
 
 		// begin first round of the game
 		if ( level.round == 0 ) {
