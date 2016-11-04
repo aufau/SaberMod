@@ -86,6 +86,8 @@
 #define DEFAULT_REDTEAM_NAME		"Empire"
 #define DEFAULT_BLUETEAM_NAME		"Rebellion"
 
+#define CAMERA_MIN_FPS		15
+
 typedef enum {
 	FOOTSTEP_NORMAL,
 	FOOTSTEP_METAL,
@@ -663,6 +665,7 @@ typedef struct {
 //	snapshot_t	activeSnapshots[2];
 
 	float		frameInterpolation;	// (float)( cg.time - cg.frame->serverTime ) / (cg.nextFrame->serverTime - cg.frame->serverTime)
+	double		playerPhysicsTime;	// interpolated physics (command) time
 
 	qboolean	mMapChange;
 
@@ -1556,6 +1559,7 @@ extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
+extern	vmCvar_t		cg_camerafps;
 extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
 extern	vmCvar_t		cg_duelGlow;
