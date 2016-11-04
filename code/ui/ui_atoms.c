@@ -42,7 +42,7 @@ Q_NORETURN void QDECL Com_Error( int level, const char *error, ... ) {
 	vsprintf (text, error, argptr);
 	va_end (argptr);
 
-	trap_Error( va("%s", text) );
+	trap_Error( text );
 }
 
 void QDECL Com_Printf( const char *msg, ... ) {
@@ -53,7 +53,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	vsprintf (text, msg, argptr);
 	va_end (argptr);
 
-	trap_Print( va("%s", text) );
+	trap_Print( text );
 }
 
 #endif

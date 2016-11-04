@@ -158,7 +158,7 @@ void *UI_Alloc( int size ) {
 
 	if ( allocPoint + size > MEM_POOL_SIZE ) {
 		outOfMemory = qtrue;
-		DC->Error(ERR_DROP, "UI_Alloc: Failure. Out of memory!\n");
+		DC->Error(ERR_DROP, "UI_Alloc: Failure. Out of memory!");
 	}
 
 	p = &memoryPool[allocPoint];
@@ -5599,7 +5599,7 @@ qboolean ItemParse_flag( itemDef_t *item, int handle)
 
 	if (itemFlags[i].string == NULL)
 	{
-		Com_Printf(va( S_COLOR_YELLOW "Unknown item style value '%s'",tempStr));
+		Com_Printf(va( S_COLOR_YELLOW "Unknown item style value '%s'\n",tempStr));
 	}
 
 	return qtrue;
@@ -5615,7 +5615,7 @@ qboolean ItemParse_style( itemDef_t *item, int handle)
 {
 	if (!PC_Int_Parse(handle, &item->window.style))
 	{
-		Com_Printf(S_COLOR_YELLOW "Unknown item style value");
+		Com_Printf(S_COLOR_YELLOW "Unknown item style value\n");
 		return qfalse;
 	}
 
@@ -5807,7 +5807,7 @@ qboolean ItemParse_textalign( itemDef_t *item, int handle )
 {
 	if (!PC_Int_Parse(handle, &item->textalignment))
 	{
-		Com_Printf(S_COLOR_YELLOW "Unknown text alignment value");
+		Com_Printf(S_COLOR_YELLOW "Unknown text alignment value\n");
 
 		return qfalse;
 	}
@@ -6730,7 +6730,7 @@ qboolean MenuParse_style( itemDef_t *item, int handle)
 
 	if (!PC_Int_Parse(handle, &menu->window.style))
 	{
-		Com_Printf(S_COLOR_YELLOW "Unknown menu style value");
+		Com_Printf(S_COLOR_YELLOW "Unknown menu style value\n");
 		return qfalse;
 	}
 
@@ -6817,7 +6817,7 @@ qboolean MenuParse_descAlignment( itemDef_t *item, int handle )
 
 	if (!PC_Int_Parse(handle, &menu->descAlignment))
 	{
-		Com_Printf(S_COLOR_YELLOW "Unknown desc alignment value");
+		Com_Printf(S_COLOR_YELLOW "Unknown desc alignment value\n");
 		return qfalse;
 	}
 

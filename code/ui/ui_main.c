@@ -746,7 +746,7 @@ qboolean Asset_Parse(int handle) {
 		{
 			if (!PC_String_Parse(handle, &tempStr))
 			{
-				Com_Printf(S_COLOR_YELLOW,"Bad 1st parameter for keyword 'stripedFile'");
+				Com_Printf( S_COLOR_YELLOW "Bad 1st parameter for keyword 'stripedFile'\n" );
 				return qfalse;
 			}
 			Q_strncpyz( stripedFile, tempStr,  sizeof(stripedFile) );
@@ -758,7 +758,7 @@ qboolean Asset_Parse(int handle) {
 		{
 			if (!PC_String_Parse(handle, &uiInfo.uiDC.Assets.cursorStr))
 			{
-				Com_Printf(S_COLOR_YELLOW,"Bad 1st parameter for keyword 'cursor'");
+				Com_Printf( S_COLOR_YELLOW "Bad 1st parameter for keyword 'cursor'\n" );
 				return qfalse;
 			}
 			uiInfo.uiDC.Assets.cursor = trap_R_RegisterShaderNoMip( uiInfo.uiDC.Assets.cursorStr);
@@ -952,7 +952,7 @@ void UI_LoadMenus(const char *menuFile, qboolean reset) {
 		Com_Printf( S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile );
 		handle = trap_PC_LoadSource( "ui/jk2mpmenus.txt" );
 		if (!handle) {
-			trap_Error( va( S_COLOR_RED "default menu file not found: ui/menus.txt, unable to continue!\n", menuFile ) );
+			Com_Error( ERR_DROP, "default menu file not found: ui/menus.txt, unable to continue!" );
 		}
 	}
 
