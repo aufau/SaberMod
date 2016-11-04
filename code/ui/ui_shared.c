@@ -3,10 +3,19 @@
 
 #include "ui_shared.h"
 
-#define SCROLL_TIME_START					500
+#define SCROLLBAR_SIZE			16.0
+
+#define SLIDER_WIDTH			96.0
+#define SLIDER_HEIGHT			16.0
+#define SLIDER_THUMB_WIDTH		12.0
+#define SLIDER_THUMB_HEIGHT		20.0
+
+#define LISTBOX_HIGHLIGHT_DROP	2
+
+#define SCROLL_TIME_START					250
 #define SCROLL_TIME_ADJUST				150
-#define SCROLL_TIME_ADJUSTOFFSET	40
-#define SCROLL_TIME_FLOOR					20
+#define SCROLL_TIME_ADJUSTOFFSET	25
+#define SCROLL_TIME_FLOOR					30
 
 typedef struct scrollInfo_s {
 	int nextScrollTime;
@@ -16,7 +25,6 @@ typedef struct scrollInfo_s {
 	float xStart;
 	float yStart;
 	itemDef_t *item;
-	qboolean scrollDir;
 } scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
@@ -1813,15 +1821,15 @@ int Item_TextScroll_OverLB ( itemDef_t *item, float x, float y )
 	scrollPtr = (textScrollDef_t*)item->typeData;
 	count     = scrollPtr->iLineCount;
 
-	r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE;
-	r.y = item->window.rect.y;
+	r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
+	r.y = item->window.rect.y + 1;
 	r.h = r.w = SCROLLBAR_SIZE;
 	if (Rect_ContainsPoint(&r, x, y))
 	{
 		return WINDOW_LB_LEFTARROW;
 	}
 
-	r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE;
+	r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE - 1;
 	if (Rect_ContainsPoint(&r, x, y))
 	{
 		return WINDOW_LB_RIGHTARROW;
@@ -1834,7 +1842,7 @@ int Item_TextScroll_OverLB ( itemDef_t *item, float x, float y )
 		return WINDOW_LB_THUMB;
 	}
 
-	r.y = item->window.rect.y + SCROLLBAR_SIZE;
+	r.y = item->window.rect.y + 1 + SCROLLBAR_SIZE;
 	r.h = thumbstart - r.y;
 	if (Rect_ContainsPoint(&r, x, y))
 	{
@@ -1842,7 +1850,7 @@ int Item_TextScroll_OverLB ( itemDef_t *item, float x, float y )
 	}
 
 	r.y = thumbstart + SCROLLBAR_SIZE;
-	r.h = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE;
+	r.h = item->window.rect.y + item->window.rect.h - 1 - r.y;
 	if (Rect_ContainsPoint(&r, x, y))
 	{
 		return WINDOW_LB_PGDN;
@@ -1867,8 +1875,8 @@ qboolean Item_TextScroll_HandleKey ( itemDef_t *item, int key, qboolean down, qb
 	{
 		max = Item_TextScroll_MaxScroll(item);
 
-		viewmax = (item->window.rect.h / scrollPtr->lineHeight);
-		if ( key == A_CURSOR_UP || key == A_KP_8 )
+		viewmax = scrollPtr->endPos - scrollPtr->startPos + 1;
+		if ( key == A_CURSOR_UP || key == A_KP_8 || key == A_MWHEELUP )
 		{
 			scrollPtr->startPos--;
 			if (scrollPtr->startPos < 0)
@@ -1878,7 +1886,7 @@ qboolean Item_TextScroll_HandleKey ( itemDef_t *item, int key, qboolean down, qb
 			return qtrue;
 		}
 
-		if ( key == A_CURSOR_DOWN || key == A_KP_2 )
+		if ( key == A_CURSOR_DOWN || key == A_KP_2 || key == A_MWHEELDOWN )
 		{
 			scrollPtr->startPos++;
 			if (scrollPtr->startPos > max)
@@ -1977,11 +1985,12 @@ int Item_ListBox_MaxScroll(itemDef_t *item) {
 	int max;
 
 	if (item->window.flags & WINDOW_HORIZONTAL) {
-		max = count - (item->window.rect.w / listPtr->elementWidth) + 1;
+		max = count - (int)((item->window.rect.w - 2) / listPtr->elementWidth);
 	}
 	else {
-		max = count - (item->window.rect.h / listPtr->elementHeight) + 1;
+		max = count - (int)((item->window.rect.h - 2) / listPtr->elementHeight);
 	}
+
 	if (max < 0) {
 		return 0;
 	}
@@ -2015,10 +2024,11 @@ int Item_ListBox_ThumbPosition(itemDef_t *item) {
 	}
 }
 
+static void Scroll_ListBox_ThumbFunc(void *p);
 int Item_ListBox_ThumbDrawPosition(itemDef_t *item) {
 	int min, max;
 
-	if (itemCapture == item) {
+	if (itemCapture == item && captureFunc == &Scroll_ListBox_ThumbFunc) {
 		if (item->window.flags & WINDOW_HORIZONTAL) {
 			min = item->window.rect.x + SCROLLBAR_SIZE + 1;
 			max = item->window.rect.x + item->window.rect.w - 2*SCROLLBAR_SIZE - 1;
@@ -2102,14 +2112,14 @@ int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 	listPtr = (listBoxDef_t*)item->typeData;
 	if (item->window.flags & WINDOW_HORIZONTAL) {
 		// check if on left arrow
-		r.x = item->window.rect.x;
-		r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE;
+		r.x = item->window.rect.x + 1;
+		r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE - 1;
 		r.h = r.w = SCROLLBAR_SIZE;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_LEFTARROW;
 		}
 		// check if on right arrow
-		r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE;
+		r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_RIGHTARROW;
 		}
@@ -2119,24 +2129,24 @@ int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_THUMB;
 		}
-		r.x = item->window.rect.x + SCROLLBAR_SIZE;
+		r.x = item->window.rect.x + 1 + SCROLLBAR_SIZE;
 		r.w = thumbstart - r.x;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_PGUP;
 		}
 		r.x = thumbstart + SCROLLBAR_SIZE;
-		r.w = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE;
+		r.w = item->window.rect.x + item->window.rect.w - 1 - r.x;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_PGDN;
 		}
 	} else {
-		r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE;
-		r.y = item->window.rect.y;
+		r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
+		r.y = item->window.rect.y + 1;
 		r.h = r.w = SCROLLBAR_SIZE;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_LEFTARROW;
 		}
-		r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE;
+		r.y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE - 1;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_RIGHTARROW;
 		}
@@ -2145,13 +2155,13 @@ int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_THUMB;
 		}
-		r.y = item->window.rect.y + SCROLLBAR_SIZE;
+		r.y = item->window.rect.y + 1 + SCROLLBAR_SIZE;
 		r.h = thumbstart - r.y;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_PGUP;
 		}
 		r.y = thumbstart + SCROLLBAR_SIZE;
-		r.h = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE;
+		r.h = item->window.rect.y + item->window.rect.h - 1 - r.y;
 		if (Rect_ContainsPoint(&r, x, y)) {
 			return WINDOW_LB_PGDN;
 		}
@@ -2162,42 +2172,8 @@ int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 
 void Item_ListBox_MouseEnter(itemDef_t *item, float x, float y)
 {
-	rectDef_t r;
-	listBoxDef_t *listPtr = (listBoxDef_t*)item->typeData;
-
 	item->window.flags &= ~(WINDOW_LB_LEFTARROW | WINDOW_LB_RIGHTARROW | WINDOW_LB_THUMB | WINDOW_LB_PGUP | WINDOW_LB_PGDN);
 	item->window.flags |= Item_ListBox_OverLB(item, x, y);
-
-	if (item->window.flags & WINDOW_HORIZONTAL) {
-		if (!(item->window.flags & (WINDOW_LB_LEFTARROW | WINDOW_LB_RIGHTARROW | WINDOW_LB_THUMB | WINDOW_LB_PGUP | WINDOW_LB_PGDN))) {
-			// check for selection hit as we have exausted buttons and thumb
-			if (listPtr->elementStyle == LISTBOX_IMAGE) {
-				r.x = item->window.rect.x;
-				r.y = item->window.rect.y;
-				r.h = item->window.rect.h - SCROLLBAR_SIZE;
-				r.w = item->window.rect.w - listPtr->drawPadding;
-				if (Rect_ContainsPoint(&r, x, y)) {
-					listPtr->cursorPos =  (int)((x - r.x) / listPtr->elementWidth)  + listPtr->startPos;
-					if (listPtr->cursorPos >= listPtr->endPos) {
-						listPtr->cursorPos = listPtr->endPos;
-					}
-				}
-			} else {
-				// text hit..
-			}
-		}
-	} else if (!(item->window.flags & (WINDOW_LB_LEFTARROW | WINDOW_LB_RIGHTARROW | WINDOW_LB_THUMB | WINDOW_LB_PGUP | WINDOW_LB_PGDN))) {
-		r.x = item->window.rect.x;
-		r.y = item->window.rect.y;
-		r.w = item->window.rect.w - SCROLLBAR_SIZE;
-		r.h = item->window.rect.h - listPtr->drawPadding;
-		if (Rect_ContainsPoint(&r, x, y)) {
-			listPtr->cursorPos =  (int)((y - 2 - r.y) / listPtr->elementHeight)  + listPtr->startPos;
-			if (listPtr->cursorPos > listPtr->endPos) {
-				listPtr->cursorPos = listPtr->endPos;
-			}
-		}
-	}
 }
 
 void Item_MouseEnter(itemDef_t *item, float x, float y) {
@@ -2292,107 +2268,85 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 	listBoxDef_t *listPtr = (listBoxDef_t*)item->typeData;
 	int count = DC->feederCount(item->special);
 	int max, viewmax;
+	int step = 0;
+	int scroll = 0;
 
 	if (force || (Rect_ContainsPoint(&item->window.rect, DC->cursorx, DC->cursory) && item->window.flags & WINDOW_HASFOCUS)) {
 		max = Item_ListBox_MaxScroll(item);
+		viewmax = listPtr->endPos - listPtr->startPos + 1;
 		if (item->window.flags & WINDOW_HORIZONTAL) {
-			viewmax = (item->window.rect.w / listPtr->elementWidth);
 			if ( key == A_CURSOR_LEFT || key == A_KP_4 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos--;
-					if (listPtr->cursorPos < 0) {
-						listPtr->cursorPos = 0;
-					}
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos--;
-					if (listPtr->startPos < 0)
-						listPtr->startPos = 0;
-				}
-				return qtrue;
-			}
-			if ( key == A_CURSOR_RIGHT || key == A_KP_6 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos++;
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= count) {
-						listPtr->cursorPos = count-1;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos++;
-					if (listPtr->startPos >= count)
-						listPtr->startPos = count-1;
-				}
-				return qtrue;
-			}
-		}
-		else {
-			viewmax = (item->window.rect.h / listPtr->elementHeight);
+				step = -1;
+			else if ( key == A_CURSOR_RIGHT || key == A_KP_6 )
+				step = 1;
+			else if ( key == A_MWHEELUP )
+				scroll = 1;
+			else if ( key == A_MWHEELDOWN )
+				scroll = -1;
+		} else {
 			if ( key == A_CURSOR_UP || key == A_KP_8 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos--;
-					if (listPtr->cursorPos < 0) {
-						listPtr->cursorPos = 0;
-					}
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
-				}
-				else {
-					listPtr->startPos--;
-					if (listPtr->startPos < 0)
-						listPtr->startPos = 0;
-				}
-				return qtrue;
-			}
+				step = -1;
 			if ( key == A_CURSOR_DOWN || key == A_KP_2 )
-			{
-				if (!listPtr->notselectable) {
-					listPtr->cursorPos++;
-					if (listPtr->cursorPos < listPtr->startPos) {
-						listPtr->startPos = listPtr->cursorPos;
-					}
-					if (listPtr->cursorPos >= count) {
-						listPtr->cursorPos = count-1;
-					}
-					if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-						listPtr->startPos = listPtr->cursorPos - viewmax + 1;
-					}
-					item->cursorPos = listPtr->cursorPos;
-					DC->feederSelection(item->special, item->cursorPos);
+				step = 1;
+			else if ( key == A_MWHEELUP )
+				scroll = -1;
+			else if ( key == A_MWHEELDOWN )
+				scroll = 1;
+		}
+
+		if ( step == -1 ) {
+			if (!listPtr->notselectable) {
+				item->cursorPos--;
+				if (item->cursorPos < 0) {
+					item->cursorPos = 0;
 				}
-				else {
-					listPtr->startPos++;
-					if (listPtr->startPos > max)
-						listPtr->startPos = max;
+				if (item->cursorPos < listPtr->startPos) {
+					listPtr->startPos = item->cursorPos;
 				}
+				if (item->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = item->cursorPos - viewmax + 1;
+				}
+				DC->feederSelection(item->special, item->cursorPos);
 				return qtrue;
+			} else {
+				scroll = -1;
+			}
+
+		}
+
+		if ( step == 1 ) {
+			if (!listPtr->notselectable) {
+				item->cursorPos++;
+				if (item->cursorPos < listPtr->startPos) {
+					listPtr->startPos = item->cursorPos;
+				}
+				if (item->cursorPos >= count) {
+					item->cursorPos = count-1;
+				}
+				if (item->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = item->cursorPos - viewmax + 1;
+				}
+				DC->feederSelection(item->special, item->cursorPos);
+				return qtrue;
+			} else {
+				scroll = 1;
 			}
 		}
+
+		if ( scroll == -1 ) {
+			listPtr->startPos--;
+			if (listPtr->startPos < 0)
+				listPtr->startPos = 0;
+			return qtrue;
+		}
+
+		if (scroll == 1) {
+			listPtr->startPos++;
+			if (listPtr->startPos > max)
+				listPtr->startPos = max;
+			return qtrue;
+		}
+
 		// mouse hit
 		if (key == A_MOUSE1 || key == A_MOUSE2) {
 			if (item->window.flags & WINDOW_LB_LEFTARROW) {
@@ -2421,21 +2375,11 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 			} else if (item->window.flags & WINDOW_LB_THUMB) {
 				// Display_SetCaptureItem(item);
 			} else {
-				// select an item
+				// select an item3
 				if (DC->realTime < lastListBoxClickTime && listPtr->doubleClick) {
 					Item_RunScript(item, listPtr->doubleClick);
 				}
 				lastListBoxClickTime = DC->realTime + DOUBLE_CLICK_DELAY;
-				if (item->cursorPos != listPtr->cursorPos) {
-					int prePos = item->cursorPos;
-
-					item->cursorPos = listPtr->cursorPos;
-
-					if (!DC->feederSelection(item->special, item->cursorPos))
-					{
-						item->cursorPos = listPtr->cursorPos = prePos;
-					}
-				}
 			}
 			return qtrue;
 		}
@@ -2452,17 +2396,16 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 		if (key == A_PAGE_UP || key == A_KP_9 ) {
 			// page up
 			if (!listPtr->notselectable) {
-				listPtr->cursorPos -= viewmax;
-				if (listPtr->cursorPos < 0) {
-					listPtr->cursorPos = 0;
+				item->cursorPos -= viewmax;
+				if (item->cursorPos < 0) {
+					item->cursorPos = 0;
 				}
-				if (listPtr->cursorPos < listPtr->startPos) {
-					listPtr->startPos = listPtr->cursorPos;
+				if (item->cursorPos < listPtr->startPos) {
+					listPtr->startPos = item->cursorPos;
 				}
-				if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-					listPtr->startPos = listPtr->cursorPos - viewmax + 1;
+				if (item->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = item->cursorPos - viewmax + 1;
 				}
-				item->cursorPos = listPtr->cursorPos;
 				DC->feederSelection(item->special, item->cursorPos);
 			}
 			else {
@@ -2476,17 +2419,16 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 		if ( key == A_PAGE_DOWN || key == A_KP_3 ) {
 			// page down
 			if (!listPtr->notselectable) {
-				listPtr->cursorPos += viewmax;
-				if (listPtr->cursorPos < listPtr->startPos) {
-					listPtr->startPos = listPtr->cursorPos;
+				item->cursorPos += viewmax;
+				if (item->cursorPos < listPtr->startPos) {
+					listPtr->startPos = item->cursorPos;
 				}
-				if (listPtr->cursorPos >= count) {
-					listPtr->cursorPos = count-1;
+				if (item->cursorPos >= count) {
+					item->cursorPos = count-1;
 				}
-				if (listPtr->cursorPos >= listPtr->startPos + viewmax) {
-					listPtr->startPos = listPtr->cursorPos - viewmax + 1;
+				if (item->cursorPos >= listPtr->startPos + viewmax) {
+					listPtr->startPos = item->cursorPos - viewmax + 1;
 				}
-				item->cursorPos = listPtr->cursorPos;
 				DC->feederSelection(item->special, item->cursorPos);
 			}
 			else {
@@ -2796,7 +2738,7 @@ static void Scroll_TextScroll_ThumbFunc(void *p)
 		r.w = SCROLLBAR_SIZE;
 		max = Item_TextScroll_MaxScroll(si->item);
 		//
-		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE);
+		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE) + 0.5f;
 		if (pos < 0)
 		{
 			pos = 0;
@@ -2835,7 +2777,7 @@ static void Scroll_ListBox_AutoFunc(void *p) {
 		// need to scroll which is done by simulating a click to the item
 		// this is done a bit sideways as the autoscroll "knows" that the item is a listbox
 		// so it calls it directly
-		Item_ListBox_HandleKey(si->item, si->scrollKey, qtrue, qfalse);
+		Item_ListBox_HandleKey(si->item, si->scrollKey, qtrue, qtrue);
 		si->nextScrollTime = DC->realTime + si->adjustValue;
 	}
 
@@ -2857,13 +2799,14 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		if (DC->cursorx == si->xStart) {
 			return;
 		}
+		// window has 1px border
 		r.x = si->item->window.rect.x + SCROLLBAR_SIZE + 1;
 		r.y = si->item->window.rect.y + si->item->window.rect.h - SCROLLBAR_SIZE - 1;
 		r.h = SCROLLBAR_SIZE;
 		r.w = si->item->window.rect.w - (SCROLLBAR_SIZE*2) - 2;
 		max = Item_ListBox_MaxScroll(si->item);
 		//
-		pos = (DC->cursorx - r.x - SCROLLBAR_SIZE/2) * max / (r.w - SCROLLBAR_SIZE);
+		pos = (DC->cursorx - r.x - SCROLLBAR_SIZE/2) * max / (r.w - SCROLLBAR_SIZE) + 0.5f;
 		if (pos < 0) {
 			pos = 0;
 		}
@@ -2874,14 +2817,15 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		si->xStart = DC->cursorx;
 	}
 	else if (DC->cursory != si->yStart) {
-
+		// window has 1px border
 		r.x = si->item->window.rect.x + si->item->window.rect.w - SCROLLBAR_SIZE - 1;
 		r.y = si->item->window.rect.y + SCROLLBAR_SIZE + 1;
 		r.h = si->item->window.rect.h - (SCROLLBAR_SIZE*2) - 2;
 		r.w = SCROLLBAR_SIZE;
 		max = Item_ListBox_MaxScroll(si->item);
-		//
-		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE);
+		// should match Item_ListBox_ThumbPosition as closely as possible after rounding:
+		// cursory - r.y - SCROLLBAR_SIZE / 2 = pos * (r.h - SCROLLBAR_SIZE) / max
+		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE) + 0.5f;
 		if (pos < 0) {
 			pos = 0;
 		}
@@ -2906,6 +2850,68 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 			si->adjustValue -= SCROLL_TIME_ADJUSTOFFSET;
 		}
 	}
+}
+
+static void Scroll_ListBox_SelectFunc(void *p) {
+	scrollInfo_t *si = (scrollInfo_t *)p;
+	itemDef_t *item = si->item;
+	listBoxDef_t *listPtr = (listBoxDef_t *)si->item->typeData;
+	float x = DC->cursorx;
+	float y = DC->cursory;
+	rectDef_t r;
+	int pos = item->cursorPos;
+
+	if (listPtr->notselectable)
+		return;
+
+	si->scrollKey = A_NULL;
+
+	if (item->window.flags & WINDOW_HORIZONTAL) {
+		if (listPtr->elementStyle == LISTBOX_IMAGE) {
+			r.x = item->window.rect.x + 1;
+			r.y = item->window.rect.y + 1;
+			r.h = item->window.rect.h - 2 - SCROLLBAR_SIZE;
+			r.w = item->window.rect.w - 2 - listPtr->drawPadding;
+			if (Rect_ContainsPoint(&r, x, y)) {
+				pos = (x - r.x) / listPtr->elementWidth + listPtr->startPos;
+			} else if (x < r.x) {
+				si->scrollKey = A_CURSOR_LEFT;
+			} else if (x > r.x + r.w) {
+				si->scrollKey = A_CURSOR_RIGHT;
+			}
+		} else {
+			// text hit..
+		}
+	} else {
+		// 1px padding for border
+		r.x = item->window.rect.x + 1;
+		r.y = item->window.rect.y + 1;
+		r.w = item->window.rect.w - 2 - SCROLLBAR_SIZE;
+		r.h = item->window.rect.h - 2 - listPtr->drawPadding;
+		if (Rect_ContainsPoint(&r, x, y)) {
+			pos = (y - LISTBOX_HIGHLIGHT_DROP - r.y) / listPtr->elementHeight + listPtr->startPos;
+		} else if (y < r.y) {
+			si->scrollKey = A_CURSOR_UP;
+		} else if (y > r.y + r.h) {
+			si->scrollKey = A_CURSOR_DOWN;
+		}
+	}
+
+	if (si->scrollKey != A_NULL) {
+		Scroll_ListBox_AutoFunc( si );
+		return;
+	}
+
+	if (pos < listPtr->startPos)
+		pos = listPtr->startPos;
+	if (pos > listPtr->endPos)
+		pos = listPtr->endPos;
+
+	if (item->cursorPos != pos) {
+		item->cursorPos = pos;
+		DC->feederSelection(item->special, item->cursorPos);
+	}
+
 }
 
 static void Scroll_Slider_ThumbFunc(void *p) {
@@ -2948,7 +2954,6 @@ void Item_StartCapture(itemDef_t *item, int key)
 				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
 				scrollInfo.adjustValue = SCROLL_TIME_START;
 				scrollInfo.scrollKey = key;
-				scrollInfo.scrollDir = (flags & WINDOW_LB_LEFTARROW) ? qtrue : qfalse;
 				scrollInfo.item = item;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_ListBox_AutoFunc;
@@ -2960,6 +2965,14 @@ void Item_StartCapture(itemDef_t *item, int key)
 				scrollInfo.yStart = DC->cursory;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_ListBox_ThumbFunc;
+				itemCapture = item;
+			} else {
+				scrollInfo.nextScrollTime = DC->realTime + SCROLL_TIME_START;
+				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
+				scrollInfo.adjustValue = SCROLL_TIME_START;
+				scrollInfo.item = item;
+				captureData = &scrollInfo;
+				captureFunc = &Scroll_ListBox_SelectFunc;
 				itemCapture = item;
 			}
 			break;
@@ -2973,7 +2986,6 @@ void Item_StartCapture(itemDef_t *item, int key)
 				scrollInfo.nextAdjustTime = DC->realTime + SCROLL_TIME_ADJUST;
 				scrollInfo.adjustValue = SCROLL_TIME_START;
 				scrollInfo.scrollKey = key;
-				scrollInfo.scrollDir = (flags & WINDOW_LB_LEFTARROW) ? qtrue : qfalse;
 				scrollInfo.item = item;
 				captureData = &scrollInfo;
 				captureFunc = &Scroll_TextScroll_AutoFunc;
@@ -4440,20 +4452,16 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 	y = item->window.rect.y + 1;
 	DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowUp);
-	y += SCROLLBAR_SIZE - 1;
+	y += SCROLLBAR_SIZE;
 
 	scrollPtr->endPos = scrollPtr->startPos;
-	size = item->window.rect.h - (SCROLLBAR_SIZE * 2);
-	DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size+1, DC->Assets.scrollBar);
-	y += size - 1;
+	size = item->window.rect.h - (SCROLLBAR_SIZE * 2) - 2;
+	DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size, DC->Assets.scrollBar);
+	y += size;
 	DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowDown);
 
 	// thumb
 	thumb = Item_TextScroll_ThumbDrawPosition(item);
-	if (thumb > y - SCROLLBAR_SIZE - 1)
-	{
-		thumb = y - SCROLLBAR_SIZE - 1;
-	}
 	DC->drawHandlePic(x, thumb, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 
 	// adjust size for item painting
@@ -4461,7 +4469,7 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	x	 = item->window.rect.x + 1;
 	y	 = item->window.rect.y + 1;
 
-	for (i = scrollPtr->startPos; i < count; i++)
+	for (i = scrollPtr->startPos; i < count; i++, scrollPtr->endPos++)
 	{
 		const char *text;
 
@@ -4474,15 +4482,14 @@ void Item_TextScroll_Paint(itemDef_t *item)
 		DC->drawText(x + 4, y, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle, item->iMenuFont);
 
 		size -= scrollPtr->lineHeight;
-		if (size < scrollPtr->lineHeight)
-		{
-			scrollPtr->drawPadding = scrollPtr->lineHeight - size;
+		y += scrollPtr->lineHeight;
+
+		if (size < scrollPtr->lineHeight) {
 			break;
 		}
-
-		scrollPtr->endPos++;
-		y += scrollPtr->lineHeight;
 	}
+
+	scrollPtr->drawPadding = size;
 }
 
 void Item_ListBox_Paint(itemDef_t *item) {
@@ -4505,16 +4512,13 @@ void Item_ListBox_Paint(itemDef_t *item) {
 		x = item->window.rect.x + 1;
 		y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE - 1;
 		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowLeft);
-		x += SCROLLBAR_SIZE - 1;
-		size = item->window.rect.w - (SCROLLBAR_SIZE * 2);
-		DC->drawHandlePic(x, y, size+1, SCROLLBAR_SIZE, DC->Assets.scrollBar);
-		x += size - 1;
+		x += SCROLLBAR_SIZE;
+		size = item->window.rect.w - (SCROLLBAR_SIZE * 2) - 2;
+		DC->drawHandlePic(x, y, size, SCROLLBAR_SIZE, DC->Assets.scrollBar);
+		x += size;
 		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowRight);
 		// thumb
 		thumb = Item_ListBox_ThumbDrawPosition(item);//Item_ListBox_ThumbPosition(item);
-		if (thumb > x - SCROLLBAR_SIZE - 1) {
-			thumb = x - SCROLLBAR_SIZE - 1;
-		}
 		DC->drawHandlePic(thumb, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 		//
 		listPtr->endPos = listPtr->startPos;
@@ -4525,7 +4529,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
@@ -4538,14 +4542,14 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 
 				size -= listPtr->elementWidth;
+				x += listPtr->elementWidth;
+
 				if (size < listPtr->elementWidth) {
-					listPtr->drawPadding = size; //listPtr->elementWidth - size;
 					break;
 				}
-				x += listPtr->elementWidth;
-				listPtr->endPos++;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		} else {
 			//
 		}
@@ -4560,18 +4564,15 @@ void Item_ListBox_Paint(itemDef_t *item) {
 		x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 		y = item->window.rect.y + 1;
 		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowUp);
-		y += SCROLLBAR_SIZE - 1;
+		y += SCROLLBAR_SIZE;
 
 		listPtr->endPos = listPtr->startPos;
-		size = item->window.rect.h - (SCROLLBAR_SIZE * 2);
-		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size+1, DC->Assets.scrollBar);
-		y += size - 1;
+		size = item->window.rect.h - (SCROLLBAR_SIZE * 2) - 2;
+		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size, DC->Assets.scrollBar);
+		y += size;
 		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowDown);
 		// thumb
 		thumb = Item_ListBox_ThumbDrawPosition(item);//Item_ListBox_ThumbPosition(item);
-		if (thumb > y - SCROLLBAR_SIZE - 1) {
-			thumb = y - SCROLLBAR_SIZE - 1;
-		}
 		DC->drawHandlePic(x, thumb, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 
 		// adjust size for item painting
@@ -4580,7 +4581,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
@@ -4592,19 +4593,19 @@ void Item_ListBox_Paint(itemDef_t *item) {
 					DC->drawRect(x, y, listPtr->elementWidth - 1, listPtr->elementHeight - 1, item->window.borderSize, item->window.borderColor);
 				}
 
-				listPtr->endPos++;
 				size -= listPtr->elementWidth;
+				y += listPtr->elementHeight;
+
 				if (size < listPtr->elementHeight) {
-					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
-				y += listPtr->elementHeight;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		} else {
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++) {
+			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
 				const char *text;
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
@@ -4657,18 +4658,18 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 
 				if (i == item->cursorPos) {
-					DC->fillRect(x + 2, y + 2, item->window.rect.w - SCROLLBAR_SIZE - 4, listPtr->elementHeight, item->window.outlineColor);
+					DC->fillRect(x + 2, y + LISTBOX_HIGHLIGHT_DROP, item->window.rect.w - SCROLLBAR_SIZE - 4, listPtr->elementHeight, item->window.outlineColor);
 				}
 
 				size -= listPtr->elementHeight;
+				y += listPtr->elementHeight;
+
 				if (size < listPtr->elementHeight) {
-					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
-				listPtr->endPos++;
-				y += listPtr->elementHeight;
-				// fit++;
 			}
+
+			listPtr->drawPadding = size;
 		}
 	}
 }
@@ -5058,7 +5059,6 @@ void Menu_SetFeederSelection(menuDef_t *menu, int feeder, int index, const char 
 			if (menu->items[i]->special == feeder) {
 				if (index == 0) {
 					listBoxDef_t *listPtr = (listBoxDef_t*)menu->items[i]->typeData;
-					listPtr->cursorPos = 0;
 					listPtr->startPos = 0;
 				}
 				menu->items[i]->cursorPos = index;
@@ -6639,10 +6639,8 @@ void Item_InitControls(itemDef_t *item)
 			item->cursorPos = 0;
 			if (listPtr)
 			{
-				listPtr->cursorPos = 0;
 				listPtr->startPos = 0;
 				listPtr->endPos = 0;
-				listPtr->cursorPos = 0;
 			}
 
 			break;

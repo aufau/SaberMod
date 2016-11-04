@@ -76,6 +76,7 @@
 #define FEEDER_CINEMATICS					0x0f			// cinematics
 
 #define FEEDER_FORCECFG						0x10			// force config list
+#define FEEDER_MODES						0x11			// server modes
 
 // display flags
 #define CG_SHOW_BLUE_TEAM_HAS_REDFLAG     0x00000001
@@ -300,6 +301,9 @@
 
 //extra, for patch
 #define UI_JEDI_NONJEDI 289
+
+#define UI_MODES_SELECTION 290
+#define UI_PLAYER_LIST_SELECTION 291
 
 #define VOICECHAT_GETFLAG			"getflag"				// command someone to get the flag
 #define VOICECHAT_OFFENSE			"offense"				// command someone to go on offense
