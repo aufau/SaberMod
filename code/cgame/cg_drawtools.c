@@ -1,4 +1,30 @@
 /*
+================================================================================
+This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
+
+Copyright (C) 1999-2000 Id Software, Inc.
+Copyright (C) 1999-2002 Activision
+Copyright (C) 2015-2016 Witold Pilat <witold.pilat@gmail.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+================================================================================
+*/
+
+// cg_drawtools.c -- helper functions called by cg_draw, cg_scoreboard, cg_info, etc
+
+/*
 // this line must stay at top so the whole PCH thing works...
 #include "cg_headers.h"
 
@@ -7,9 +33,6 @@
 #include "cg_text.h"
 */
 
-// Copyright (C) 1999-2000 Id Software, Inc.
-//
-// cg_drawtools.c -- helper functions called by cg_draw, cg_scoreboard, cg_info, etc
 #include "cg_local.h"
 #include "../game/q_shared.h"
 
