@@ -1181,6 +1181,12 @@ int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
 
 void Add_Ammo (gentity_t *ent, int weapon, int count)
 {
+	if (count == INFINITE_AMMO)
+		ent->client->ps.ammo[weapon] = INFINITE_AMMO;
+
+	if (ent->client->ps.ammo[weapon] == INFINITE_AMMO)
+		return;
+
 	ent->client->ps.ammo[weapon] += count;
 	if ( ent->client->ps.ammo[weapon] > ammoData[weapon].max ) {
 		ent->client->ps.ammo[weapon] = ammoData[weapon].max;
@@ -1218,7 +1224,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		}
 
 		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM && g_gametype.integer != GT_REDROVER ) {
+		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
 			// respawning rules
 
 			// New method:  If the player has less than half the minimum, give them the minimum, else add 1/2 the min.
@@ -1251,7 +1257,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	G_LogWeaponPickup(other->s.number, ent->item->giTag);
 
 	// team deathmatch has slow weapon respawns
-	if ( g_gametype.integer == GT_TEAM || g_gametype.integer == GT_REDROVER )
+	if ( g_gametype.integer == GT_TEAM )
 	{
 		return adjustRespawnTime(RESPAWN_TEAM_WEAPON, ent->item->giType, ent->item->giTag);
 	}
@@ -1720,7 +1726,8 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 	if (g_gametype.integer != GT_JEDIMASTER)
 	{
-		if (HasSetSaberOnly())
+		// never spawn items in round gametypes for now
+		if (GT_Round(g_gametype.integer) || HasSetSaberOnly())
 		{
 			if (ent->item->giType == IT_AMMO)
 			{
@@ -1737,6 +1744,12 @@ void FinishSpawningItem( gentity_t *ent ) {
 					G_FreeEntity( ent );
 					return;
 				}
+			}
+		} else if (g_infiniteAmmo.integer) {
+			if (ent->item->giType == IT_AMMO)
+			{
+				G_FreeEntity( ent );
+				return;
 			}
 		}
 	}
@@ -1918,13 +1931,37 @@ void G_CheckTeamItems( void ) {
 ClearRegisteredItems
 ==============
 */
+int G_ItemDisabled( gitem_t *item );
 void ClearRegisteredItems( void ) {
+	int	weapons;
+	int items;
+	int	i;
+
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
-	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_BRYAR_PISTOL ) );
-	RegisterItem( BG_FindItemForWeapon( WP_STUN_BATON ) );
-	RegisterItem( BG_FindItemForWeapon( WP_SABER ) );
+	// register weapons players get on spawn because they may be not
+	// registered when loading map entities
+	if ( g_spawnWeapons.integer )
+		weapons = g_spawnWeapons.integer & LEGAL_WEAPONS;
+	else
+		weapons = (1 << WP_BRYAR_PISTOL) | (1 << WP_STUN_BATON) |
+			(1 << WP_SABER) | (1 << WP_BOWCASTER);
+
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		if ( (1 << i) & weapons )
+			RegisterItem( BG_FindItemForWeapon( i ) );
+
+	// register holdable items players get on spawn
+	items = g_spawnItems.integer & LEGAL_ITEMS;
+	i = 0;
+
+	while ( items ) {
+		if ( items & 1 )
+			RegisterItem( BG_FindItemForHoldable( i ) );
+
+		items >>= 1;
+		i++;
+	}
 }
 
 /*

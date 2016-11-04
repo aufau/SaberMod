@@ -411,22 +411,10 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 		i++;
 	}
 
-	if (fpDisabled)
-	{ //If we specifically have attack or def disabled, force them up to level 3. It's the way
-	  //things work for the case of all powers disabled.
-	  //If jump is disabled, down-cap it to level 1. Otherwise don't do a thing.
-		if (fpDisabled & (1 << FP_LEVITATION))
-		{
-			final_Powers[FP_LEVITATION] = 1;
-		}
-		if (fpDisabled & (1 << FP_SABERATTACK))
-		{
-			final_Powers[FP_SABERATTACK] = 3;
-		}
-		if (fpDisabled & (1 << FP_SABERDEFEND))
-		{
-			final_Powers[FP_SABERDEFEND] = 3;
-		}
+	//If jump is disabled, down-cap it to level 1. Otherwise don't do a thing.
+	if (fpDisabled & (1 << FP_LEVITATION))
+	{
+		final_Powers[FP_LEVITATION] = 1;
 	}
 
 	if (final_Powers[FP_SABERATTACK] < 1)

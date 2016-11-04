@@ -71,7 +71,7 @@ void SaberUpdateSelf(gentity_t *ent)
 	if (!owner->inuse ||
 		!owner->client ||
 		owner->client->ps.saberEntityNum != ent->s.number ||
-		owner->client->sess.sessionTeam == TEAM_SPECTATOR)
+		owner->client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;
@@ -2169,7 +2169,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 
 	if (ent->client)
 	{ //hit a client
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		if ( ent->client->sess.spectatorState != SPECTATOR_NOT ||
 			ent->client->pers.connected != CON_CONNECTED)
 		{
 			return qfalse;
@@ -2514,7 +2514,7 @@ void saberBackToOwner(gentity_t *saberent)
 
 	if (!saberOwner->inuse ||
 		!saberOwner->client ||
-		saberOwner->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwner->client->sess.spectatorState != SPECTATOR_NOT ||
 		saberOwner->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
@@ -2661,7 +2661,7 @@ void saberFirstThrown(gentity_t *saberent)
 
 	if (!saberOwn->inuse ||
 		!saberOwn->client ||
-		saberOwn->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		saberOwn->client->sess.spectatorState != SPECTATOR_NOT ||
 		saberOwn->client->ps.saberEntityNum != saberent->s.number)
 	{
 		MakeDeadSaber(saberent);
@@ -3729,8 +3729,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolea
 
 qboolean HasSetSaberOnly(void)
 {
-	int i = 0;
-	int wDisable = 0;
+	int wEnable;
 
 	if (g_gametype.integer == GT_JEDIMASTER)
 	{ //set to 0
@@ -3739,23 +3738,18 @@ qboolean HasSetSaberOnly(void)
 
 	if (g_gametype.integer == GT_TOURNAMENT)
 	{
-		wDisable = g_duelWeaponDisable.integer;
+		wEnable = ~g_duelWeaponDisable.integer;
 	}
 	else
 	{
-		wDisable = g_weaponDisable.integer;
+		wEnable = ~g_weaponDisable.integer;
 	}
 
-	while (i < WP_NUM_WEAPONS)
-	{
-		if (!(wDisable & (1 << i)) &&
-			i != WP_SABER && i != WP_NONE)
-		{
-			return qfalse;
-		}
+	wEnable |= g_spawnWeapons.integer;
+	wEnable &= LEGAL_WEAPONS;
 
-		i++;
-	}
+	if (wEnable & ~(1 << WP_NONE) & ~(1 << WP_SABER))
+		return qfalse;
 
 	return qtrue;
 }

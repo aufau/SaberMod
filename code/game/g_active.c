@@ -464,7 +464,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		}
 
 		// ignore most entities if a spectator
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+		if ( ent->client->sess.spectatorState != SPECTATOR_NOT ) {
 			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
 				// this is ugly but adding a new ET_? type will
 				// most likely cause network incompatibilities
@@ -1006,6 +1006,7 @@ static void G_SwitchTeam( gentity_t *ent ) {
 	}
 
 	client->sess.sessionTeam = team;
+	client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
 	client->sess.teamLeader = qfalse;
 	teamLeader = TeamLeader( team );
 	// if there is no team leader or the team leader is a bot and this client is not a bot
@@ -1018,6 +1019,36 @@ static void G_SwitchTeam( gentity_t *ent ) {
 	// get and distribute relevent paramters
 	CalculateRanks();
 	ClientUserinfoChanged( clientNum );
+}
+
+/*
+==============
+G_Respawn
+
+Handle manual respawn
+==============
+*/
+void G_Respawn( gentity_t *ent ) {
+	gclient_t	*client = ent->client;
+
+	if ( level.intermissionQueued )
+		return;
+
+	if ( g_gametype.integer == GT_REDROVER ) {
+		if ( !level.roundQueued )
+			G_SwitchTeam(ent);
+		respawn( ent );
+	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
+		team_t	team = client->sess.sessionTeam;
+		// follow whatever. sess.spectatorClient will be fixed
+		// in SpectatorClientEndFrame
+
+		// currently this is the only entry point for spactating while
+		// not in TEAM_SPECTATOR. The exit is in NextRound.
+		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, client->sess.spectatorClient );
+	} else {
+		respawn( ent );
+	}
 }
 
 /*
@@ -1090,10 +1121,12 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	// spectators don't do much
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
+	if ( client->sess.spectatorState != SPECTATOR_NOT ) {
+		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD )
 			return;
-		}
+		if ( ent->r.svFlags & SVF_BOT )
+			return;
+
 		SpectatorThink( ent, ucmd );
 		return;
 	}
@@ -1313,10 +1346,7 @@ void ClientThink_real( gentity_t *ent ) {
 		(level.time - FALL_FADE_TIME) > ent->client->ps.fallingToDeath)
 	{ //die!
 		player_die(ent, ent, ent, 100000, MOD_FALLING);
-		if ( g_gametype.integer == GT_REDROVER ) {
-			G_SwitchTeam(ent);
-		}
-		respawn(ent);
+		G_Respawn(ent);
 		ent->client->ps.fallingToDeath = 0;
 
 		G_MuteSound(ent->s.number, CHAN_VOICE); //stop screaming, because you are dead!
@@ -1721,19 +1751,13 @@ void ClientThink_real( gentity_t *ent ) {
 			// forcerespawn is to prevent users from waiting out powerups
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
-				if ( g_gametype.integer == GT_REDROVER ) {
-					G_SwitchTeam(ent);
-				}
-				respawn( ent );
+				G_Respawn( ent );
 				return;
 			}
 
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
-				if ( g_gametype.integer == GT_REDROVER ) {
-					G_SwitchTeam(ent);
-				}
-				respawn( ent );
+				G_Respawn( ent );
 			}
 		}
 		else if (gDoSlowMoDuel)
@@ -1817,26 +1841,69 @@ SpectatorClientEndFrame
 ==================
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
-	// if we are doing a chase cam or a remote view, grab the latest info
-	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
-		int		clientNum, flags;
+	gclient_t	*client = ent->client;
+	gclient_t	*cl;
+	int			clientNum;
 
-		clientNum = ent->client->sess.spectatorClient;
+	clientNum = client->sess.spectatorClient;
 
-		// team follow1 and team follow2 go to the score leader and runner up
-		if ( clientNum == -1 ) {
-			clientNum = level.follow1;
-		} else if ( clientNum == -2 ) {
-			clientNum = level.follow2;
+	// team follow1 and team follow2 go to the score leader and runner up
+	if ( clientNum == -1 ) {
+		clientNum = level.follow1;
+	} else if ( clientNum == -2 ) {
+		clientNum = level.follow2;
+	}
+
+	// currently spectators outside of TEAM_SPECTATOR can only follow
+	// their teammates
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		qboolean	found = qfalse;
+		team_t		team = client->sess.sessionTeam;
+		int			original;
+
+		if ( clientNum < 0 || clientNum >= level.maxclients ) {
+			clientNum = 0;
 		}
-		if ( clientNum >= 0 ) {
-			gclient_t *cl = &level.clients[ clientNum ];
 
-			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
-				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
-				ent->client->ps = cl->ps;
-				ent->client->ps.pm_flags |= PMF_FOLLOW;
-				ent->client->ps.eFlags = flags;
+		original = clientNum;
+
+		do {
+			cl = level.clients + clientNum;
+
+			if (cl->pers.connected == CON_CONNECTED &&
+				cl->sess.spectatorState == SPECTATOR_NOT &&
+				cl->sess.sessionTeam == team )
+			{
+				found = qtrue;
+				break;
+			}
+
+			clientNum++;
+			if ( clientNum >= level.maxclients )
+				clientNum = 0;
+
+		} while (clientNum != original);
+
+		if ( found ) {
+			client->sess.spectatorState = SPECTATOR_FOLLOW;
+			client->sess.spectatorClient = clientNum;
+		} else {
+			// wait until the next round in whatever state we are
+		}
+	}
+
+	// if we are doing a chase cam or a remote view, grab the latest info
+	if ( client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+		int		flags;
+
+		if ( clientNum >= 0 && clientNum < level.maxclients ) {
+			cl = &level.clients[ clientNum ];
+
+			if ( cl->pers.connected == CON_CONNECTED && cl->sess.spectatorState == SPECTATOR_NOT ) {
+				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
+				client->ps = cl->ps;
+				client->ps.pm_flags |= PMF_FOLLOW;
+				client->ps.eFlags = flags;
 			} else {
 				StopFollowing(ent);
 			}
@@ -1846,10 +1913,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		return;
 	}
 
-	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
-		ent->client->ps.pm_flags |= PMF_SCOREBOARD;
+	if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
+		client->ps.pm_flags |= PMF_SCOREBOARD;
 	} else {
-		ent->client->ps.pm_flags &= ~PMF_SCOREBOARD;
+		client->ps.pm_flags &= ~PMF_SCOREBOARD;
 	}
 }
 
@@ -1866,7 +1933,7 @@ void ClientEndFrame( gentity_t *ent ) {
 	int			i;
 	clientPersistant_t	*pers;
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( ent->client->sess.spectatorState != SPECTATOR_NOT ) {
 		SpectatorClientEndFrame( ent );
 		return;
 	}

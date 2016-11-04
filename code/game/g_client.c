@@ -645,8 +645,15 @@ void CopyToBodyQue( gentity_t *ent ) {
 	gentity_t		*body;
 	int			contents;
 
-	if (level.intermissiontime)
-	{
+	if (level.intermissiontime) {
+		return;
+	}
+
+	if (ent->r.contents != CONTENTS_CORPSE) {
+		return;
+	}
+
+	if (ent->client->sess.spectatorState != SPECTATOR_NOT) {
 		return;
 	}
 
@@ -802,9 +809,7 @@ respawn
 void respawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	if (ent->health <= 0) {
-		CopyToBodyQue (ent);
-	}
+	CopyToBodyQue (ent);
 
 	if (gEscaping)
 	{
@@ -830,7 +835,7 @@ TeamCount
 Returns number of players on a team
 ================
 */
-int TeamCount( int ignoreClientNum, int team ) {
+int TeamCount( int ignoreClientNum, int team, qboolean dead ) {
 	int		i;
 	int		count = 0;
 
@@ -840,6 +845,12 @@ int TeamCount( int ignoreClientNum, int team ) {
 		}
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
 			continue;
+		}
+		if ( !dead ) {
+			if (level.clients[i].sess.spectatorState != SPECTATOR_NOT ||
+				level.clients[i].ps.stats[STAT_HEALTH] <= 0) {
+				continue;
+			}
 		}
 		if ( level.clients[i].sess.sessionTeam == team ) {
 			count++;
@@ -886,7 +897,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 
 	// Works in FFA and counts CON_CONNECTING clients unlike
 	// level.numNonSpectatorClients
-	count = TeamCount( ignoreClientNum, team );
+	count = TeamCount( ignoreClientNum, team, qtrue );
 
 	if ( g_gametype.integer == GT_TOURNAMENT && count >= 2 ) {
 		return qfalse;
@@ -897,7 +908,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
 		if ( g_teamForceBalance.integer && !g_trueJedi.integer ) {
 			otherCount = TeamCount( ignoreClientNum,
-				team == TEAM_RED ? TEAM_BLUE : TEAM_RED );
+				team == TEAM_RED ? TEAM_BLUE : TEAM_RED, qtrue );
 
 			if ( count - otherCount > g_teamForceBalance.integer ) {
 				return qfalse;
@@ -916,26 +927,38 @@ TEAM_SPECTATOR.
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
-	int		counts[TEAM_NUM_TEAMS];
+	int			counts[TEAM_NUM_TEAMS];
+	qboolean	locked[TEAM_NUM_TEAMS];
 
-	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
-	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
+	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE, qtrue );
+	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED, qtrue );
+	// team can be locked by team lock and teamsize
+	locked[TEAM_RED] = level.teamLock[TEAM_RED];
+	locked[TEAM_BLUE] = level.teamLock[TEAM_BLUE];
 
-	if ( g_teamsize.integer > 0
-		&& MIN(counts[TEAM_BLUE], counts[TEAM_RED]) >= g_teamsize.integer ) {
-		return TEAM_SPECTATOR;
+	if ( g_teamsize.integer > 0 ) {
+		if ( counts[TEAM_BLUE] >= g_teamsize.integer )
+			locked[TEAM_BLUE] = qtrue;
+		if ( counts[TEAM_RED] >= g_teamsize.integer )
+			locked[TEAM_RED] = qtrue;
 	}
-	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
-		return TEAM_RED;
-	}
-	if ( counts[TEAM_RED] > counts[TEAM_BLUE] ) {
+	// pick team
+	if ( !locked[TEAM_BLUE] && !locked[TEAM_RED] ) {
+		if ( counts[TEAM_RED] > counts[TEAM_BLUE] )
+			return TEAM_BLUE;
+		if ( counts[TEAM_BLUE] > counts[TEAM_RED] )
+			return TEAM_RED;
+		if ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] )
+			return TEAM_RED;
 		return TEAM_BLUE;
 	}
-	// equal team count, so join the team with the lowest score
-	if ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] ) {
+	// at least one is locked
+	if ( !locked[TEAM_BLUE] )
+		return TEAM_BLUE;
+	if ( !locked[TEAM_RED] )
 		return TEAM_RED;
-	}
-	return TEAM_BLUE;
+
+	return TEAM_SPECTATOR;
 }
 
 /*
@@ -1557,9 +1580,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	//first-time force power initialization
 	WP_InitForcePowers( ent );
 
-	//init saber ent
-	WP_SaberInitBladeData( ent );
-
 	// First time model setup for that player.
 	trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
 	modelname = Info_ValueForKey (userinfo, "model");
@@ -1608,7 +1628,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
 		// send event
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 		tent->s.clientNum = ent->s.clientNum;
@@ -1679,6 +1699,7 @@ void ClientSpawn(gentity_t *ent) {
 	void		*ghoul2save;
 	int		saveSaberNum = ENTITYNUM_NONE;
 	int		wDisable = 0;
+	int		wSpawn = 0;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1691,7 +1712,7 @@ void ClientSpawn(gentity_t *ent) {
 	// find a spawn point
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( client->sess.spectatorState != SPECTATOR_NOT ) {
 		spawnPoint = SelectSpectatorSpawnPoint (
 						spawn_origin, spawn_angles);
 	} else if ( GT_Flag(g_gametype.integer) ) {
@@ -1807,8 +1828,10 @@ void ClientSpawn(gentity_t *ent) {
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
-	//give default weapons
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_NONE );
+
+	//
+	// give default weapons
+	//
 
 	if (g_gametype.integer == GT_TOURNAMENT)
 	{
@@ -1819,7 +1842,8 @@ void ClientSpawn(gentity_t *ent) {
 		wDisable = g_weaponDisable.integer;
 	}
 
-
+	// g_spawnWeapons 0 means original behaviour, we're checking it later
+	wSpawn = g_spawnWeapons.integer & LEGAL_WEAPONS;
 
 	if ( g_gametype.integer != GT_HOLOCRON
 		&& g_gametype.integer != GT_JEDIMASTER
@@ -1878,101 +1902,144 @@ void ClientSpawn(gentity_t *ent) {
 		{//no force powers set
 			client->ps.trueNonJedi = qtrue;
 			client->ps.trueJedi = qfalse;
-			if (!wDisable || !(wDisable & (1 << WP_BRYAR_PISTOL)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
+			// no saber for you, even with g_spawnWeapons
+			wSpawn &= ~(1 << WP_SABER);
+
+			if (!g_spawnWeapons.integer) {
+				wSpawn = (1 << WP_BRYAR_PISTOL) | (1 << WP_BLASTER) | (1 << WP_BOWCASTER);
+				wSpawn &= ~wDisable;
+				wSpawn |= (1 << WP_STUN_BATON);
 			}
-			if (!wDisable || !(wDisable & (1 << WP_BLASTER)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BLASTER );
-			}
-			if (!wDisable || !(wDisable & (1 << WP_BOWCASTER)))
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BOWCASTER );
-			}
-			client->ps.stats[STAT_WEAPONS] &= ~(1 << WP_SABER);
-			client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-			client->ps.ammo[AMMO_POWERCELL] = ammoData[AMMO_POWERCELL].max;
-			client->ps.weapon = WP_BRYAR_PISTOL;
 		}
 	}
 	else
 	{//jediVmerc is incompatible with this gametype, turn it off!
 		trap_Cvar_Set( "g_jediVmerc", "0" );
-		if (g_gametype.integer == GT_HOLOCRON)
-		{
-			//always get free saber level 1 in holocron
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SABER );	//these are precached in g_items, ClearRegisteredItems()
-		}
-		else
-		{
-			if (client->ps.fd.forcePowerLevel[FP_SABERATTACK])
-			{
-				client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SABER );	//these are precached in g_items, ClearRegisteredItems()
-			}
+
+		if (!g_spawnWeapons.integer) {
+			// these few lines reproduce original logic suprisingly
+			// give base weapon
+			if (g_gametype.integer == GT_HOLOCRON)
+				wSpawn = 1 << WP_SABER;
+			else if (g_gametype.integer == GT_JEDIMASTER)
+				wSpawn = 1 << WP_STUN_BATON;
+			else if (client->ps.fd.forcePowerLevel[FP_SABERATTACK])
+				wSpawn = 1 << WP_SABER;
 			else
-			{ //if you don't have saber attack rank then you don't get a saber
-				client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-			}
-		}
+				wSpawn = 1 << WP_STUN_BATON;
 
-		if (!wDisable || !(wDisable & (1 << WP_BRYAR_PISTOL)))
-		{
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
-		}
-		else if (g_gametype.integer == GT_JEDIMASTER)
-		{
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BRYAR_PISTOL );
-		}
-
-		if (g_gametype.integer == GT_JEDIMASTER)
-		{
-			client->ps.stats[STAT_WEAPONS] &= ~(1 << WP_SABER);
-			client->ps.stats[STAT_WEAPONS] |= (1 << WP_STUN_BATON);
-		}
-
-		if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL))
-		{
-			client->ps.weapon = WP_BRYAR_PISTOL;
-		}
-		else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
-		{
-			client->ps.weapon = WP_SABER;
-		}
-		else
-		{
-			client->ps.weapon = WP_STUN_BATON;
+			// give bryar conditionally
+			if (!(wDisable & (1 << WP_BRYAR_PISTOL)) || g_gametype.integer == GT_JEDIMASTER)
+				wSpawn |= 1 << WP_BRYAR_PISTOL;
 		}
 	}
 
-	/*
-	client->ps.stats[STAT_HOLDABLE_ITEMS] |= ( 1 << HI_BINOCULARS );
-	client->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_BINOCULARS, IT_HOLDABLE);
-	*/
+	// few sane restriction to match original behaviour without
+	// introducing more cvars
 
-	client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
-	client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
+	// WP_NONE is not usable yet, give saber or baton
+	if (!(wSpawn & ~(1 << WP_NONE)))
+		wSpawn = (1 << WP_STUN_BATON) | (1 << WP_SABER);
 
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR )
+	// disable saber if player has no force attack
+	if (!client->ps.fd.forcePowerLevel[FP_SABERATTACK])
+		wSpawn &= ~(1 << WP_SABER);
+
+	// disable stun baton if player has saber already
+	if (wSpawn & (1 << WP_SABER))
+		wSpawn &= ~(1 << WP_STUN_BATON);
+
+	// weapons given on spawn need to be precached in ClearRegisteredItems()
+	client->ps.stats[STAT_WEAPONS] = wSpawn | (1 << WP_NONE);
+
+	//
+	// initial weapon selection
+	//
+
+	if ((wSpawn & client->ps.weapon) &&
+		client->ps.weapon != WP_NONE)
+	{
+		// spawn player with last selected weapon if it's available
+	}
+	else
+	{
+		// if not try 1. bryar 2. saber 3. highest available
+		// this is consisten with original behaviour
+		if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL)) {
+			client->ps.weapon = WP_BRYAR_PISTOL;
+		} else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER)) {
+			client->ps.weapon = WP_SABER;
+		} else {
+			client->ps.weapon = WP_NONE;
+			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+					client->ps.weapon = i;
+					break;
+				}
+			}
+		}
+	}
+
+	//
+	// ammo distribution
+	//
+
+	if (g_infiniteAmmo.integer) {
+		for (i = AMMO_NONE + 1; i < AMMO_MAX; i++)
+			client->ps.ammo[i] = INFINITE_AMMO;
+	} else {
+		// give ammo only for weapons owned by player
+		for (i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++) {
+			if (wSpawn & (1 << i)) {
+				// gitem_t	*it = BG_FindItemForWeapon(i);
+				ammo_t	ammo = weaponData[i].ammoIndex;
+
+				// GT_Round check is here because it determines
+				// spawning weapons too
+				if (GT_Round(g_gametype.integer)) {
+					client->ps.ammo[ammo] = ammoData[ammo].max;
+				} else {
+					// give weapon pickup ammo quantity
+					// client->ps.ammo[ammo] = item->quantity;
+					client->ps.ammo[ammo] = ammoData[ammo].init;
+				}
+			}
+		}
+	}
+
+	//
+	// give default holdable items
+	//
+
+	{
+		int iSpawn = g_spawnItems.integer & LEGAL_ITEMS;
+		int item = 0;
+
+		// items given on spawn need to be precached in ClearRegisteredItems()
+		client->ps.stats[STAT_HOLDABLE_ITEMS] = iSpawn;
+
+		if ( iSpawn ) {
+			while ( !(iSpawn & 1) ) {
+				item++;
+				iSpawn >>= 1;
+			}
+		}
+
+		client->ps.stats[STAT_HOLDABLE_ITEM] = item;
+	}
+
+	//
+	// all the hard work we've done is wasted on spectators :-(
+	//
+
+	if ( client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		client->ps.stats[STAT_WEAPONS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
+		client->ps.weapon = WP_NONE;
 	}
 
-	client->ps.ammo[AMMO_BLASTER] = 100; //ammoData[AMMO_BLASTER].max; //100 seems fair.
-//	client->ps.ammo[AMMO_POWERCELL] = ammoData[AMMO_POWERCELL].max;
-//	client->ps.ammo[AMMO_FORCE] = ammoData[AMMO_FORCE].max;
-//	client->ps.ammo[AMMO_METAL_BOLTS] = ammoData[AMMO_METAL_BOLTS].max;
-//	client->ps.ammo[AMMO_ROCKETS] = ammoData[AMMO_ROCKETS].max;
-/*
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_BRYAR_PISTOL);
-	if ( g_gametype.integer == GT_TEAM ) {
-		client->ps.ammo[WP_BRYAR_PISTOL] = 50;
-	} else {
-		client->ps.ammo[WP_BRYAR_PISTOL] = 100;
-	}
-*/
 	client->ps.rocketLockIndex = MAX_CLIENTS;
 	client->ps.rocketLockTime = 0;
 
@@ -2009,16 +2076,12 @@ void ClientSpawn(gentity_t *ent) {
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	SetClientViewAngle( ent, spawn_angles );
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-
-	} else {
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		G_KillBox( ent );
 		trap_LinkEntity (ent);
 
 		// force the base weapon up
-		client->ps.weapon = WP_BRYAR_PISTOL;
-		client->ps.weaponstate = FIRST_WEAPON;
-
+		client->ps.weaponstate = WEAPON_READY;
 	}
 
 	// don't allow full run speed for a bit
@@ -2036,16 +2099,22 @@ void ClientSpawn(gentity_t *ent) {
 	if ( level.intermissiontime ) {
 		MoveClientToIntermission( ent );
 	} else {
+		int spawnWeapons = client->ps.stats[STAT_WEAPONS];
 		// fire the targets of the spawn point
 		G_UseTargets( spawnPoint, ent );
 
-		// select the highest weapon number available, after any
-		// spawn given items have fired
-		client->ps.weapon = 1;
-		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
-			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-				client->ps.weapon = i;
-				break;
+		// fau - this respects new weapon selection rules earlier
+		// while maintaining compatibility with maps giving weapons
+		// on spawn.
+		if ( client->ps.stats[STAT_WEAPONS] != spawnWeapons ) {
+			// select the highest weapon number available, after any
+			// spawn given items have fired
+			client->ps.weapon = WP_NONE;
+			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+					client->ps.weapon = i;
+					break;
+				}
 			}
 		}
 	}
@@ -2057,10 +2126,13 @@ void ClientSpawn(gentity_t *ent) {
 	ClientThink( ent-g_entities );
 
 	// positively link the client, even if the command times are weird
-	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
+
+		//init saber ent
+		WP_SaberInitBladeData( ent );
 	}
 
 	if (g_spawnInvulnerability.integer)
@@ -2071,9 +2143,6 @@ void ClientSpawn(gentity_t *ent) {
 
 	// run the presend to set anything else
 	ClientEndFrame( ent );
-
-	// clear entity state values
-	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 }
 
 
@@ -2128,8 +2197,7 @@ void ClientDisconnect( int clientNum ) {
 
 	// stop any following clients
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR
-			&& level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
+		if (level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
 			&& level.clients[i].sess.spectatorClient == clientNum ) {
 			StopFollowing( &g_entities[i] );
 		}
@@ -2137,7 +2205,7 @@ void ClientDisconnect( int clientNum ) {
 
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED
-		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		&& ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
 

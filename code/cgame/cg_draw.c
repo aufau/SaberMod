@@ -962,7 +962,10 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 	numColor_i = CT_HUD_ORANGE;
 
 	trap_R_SetColor( colorTable[numColor_i] );
-	CG_DrawNumField (x + 30, y + 26, 3, value, 6, 12, NUM_FONT_SMALL,qfalse);
+	if (value == INFINITE_AMMO)
+		CG_DrawRotatePic2(x + 42, y + 33, 8, 16, -90, cgs.media.smallnumberShaders[8] );
+	else
+		CG_DrawNumField (x + 30, y + 26, 3, value, 6, 12, NUM_FONT_SMALL,qfalse);
 
 
 //cg.snap->ps.ammo[weaponData[cg.snap->ps.weapon].ammoIndex]
@@ -1091,7 +1094,10 @@ void CG_DrawHUD(centity_t	*cent)
 		}
 		else
 		{
-			Com_sprintf(ammoString, sizeof(ammoString), "%i", cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex]);
+			if (cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex] != INFINITE_AMMO)
+				Com_sprintf(ammoString, sizeof(ammoString), "%i", cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex]);
+			else
+				Com_sprintf(ammoString, sizeof(ammoString), "INF");
 		}
 
 		UI_DrawProportionalString( SCREEN_WIDTH-(weapX+16+32), y+40, va( "%s", ammoString ),
@@ -1173,9 +1179,12 @@ void CG_DrawHUD(centity_t	*cent)
 	}
 	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
 
-	if (GT_Round(cgs.gametype) && cgs.round) {
+	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.roundlimit) {
-			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+			if (cgs.gametype == GT_REDROVER)
+				scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+			else
+				scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit * 2 - 1);
 		} else {
 			scoreStr = va("Round: %i", cgs.round);
 		}
@@ -3743,15 +3752,18 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_CTY ) {
 			s = "Capture the Ysalamiri";
-		} else if ( GT_Round(cgs.gametype) ) {
-			if ( cgs.round == 0 ) {
-				s = "Red Rover";
-			} else {
-				s = va("Round %i", cgs.round);
-			}
+		} else if ( cgs.gametype == GT_REDROVER ) {
+			s = "Red Rover";
+		} else if ( cgs.gametype == GT_CLANARENA ) {
+			s = "Clan Arena";
 		} else {
 			s = "";
 		}
+
+		if ( GT_Round(cgs.gametype) && cgs.round > 0 ) {
+			s = va("Round %i", cgs.round);
+		}
+
 		w = CG_Text_Width(s, 1.5f, FONT_MEDIUM);
 		CG_Text_Paint(320 - w / 2, 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}

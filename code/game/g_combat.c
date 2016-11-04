@@ -541,8 +541,9 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( !ent->client ) {
 		return;
 	}
-	// no scoring during pre-match warmup
-	if ( level.warmupTime ) {
+	if (level.warmupTime || level.roundQueued ||
+		level.intermissionQueued || level.intermissiontime )
+	{
 		return;
 	}
 	// show score plum
@@ -569,15 +570,17 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 	int weapon = self->s.weapon;
 	int ammoSub;
 
-	if (weapon <= WP_BRYAR_PISTOL)
-	{ //can't have this
-		return;
-	}
-
-	if (weapon == WP_EMPLACED_GUN ||
-		weapon == WP_TURRET)
-	{
-		return;
+	// don't toss starting weapons
+	if (g_spawnWeapons.integer) {
+		if (weapon == WP_NONE)
+			return;
+		if ((1 << weapon) & g_spawnWeapons.integer & LEGAL_WEAPONS)
+			return;
+	} else {
+		if (weapon <= WP_BRYAR_PISTOL ||
+			weapon == WP_EMPLACED_GUN ||
+			weapon == WP_TURRET)
+			return;
 	}
 
 	// find the item type for this weapon
@@ -607,7 +610,8 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 
 	launched->count = bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
 
-	self->client->ps.ammo[weaponData[weapon].ammoIndex] -= bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
+	if (self->client->ps.ammo[weaponData[weapon].ammoIndex] != INFINITE_AMMO)
+		self->client->ps.ammo[weaponData[weapon].ammoIndex] -= bg_itemlist[BG_GetItemIndexByTag(weapon, IT_WEAPON)].quantity;
 
 	if (self->client->ps.ammo[weaponData[weapon].ammoIndex] < 0)
 	{
@@ -637,9 +641,17 @@ Toss the weapon and powerups for the killed player
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
 	int			weapon;
+	int			dontDrop;
 	float		angle;
 	int			i;
 	gentity_t	*drop;
+
+	if (g_spawnWeapons.integer)
+		dontDrop = g_spawnWeapons.integer;
+	else
+		dontDrop = (1 << WP_BRYAR_PISTOL) | (1 << WP_SABER) | (1 << WP_STUN_BATON);
+
+	dontDrop |= (1 << WP_NONE) | ~LEGAL_WEAPONS;
 
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
@@ -648,7 +660,7 @@ void TossClientItems( gentity_t *self ) {
 	// weapon that isn't the mg or gauntlet.  Without this, a client
 	// can pick up a weapon, be killed, and not drop the weapon because
 	// their weapon change hasn't completed yet and they are still holding the MG.
-	if ( weapon == WP_BRYAR_PISTOL) {
+	if ( (1 << weapon) & dontDrop ) {
 		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
 			weapon = self->client->pers.cmd.weapon;
 		}
@@ -659,9 +671,7 @@ void TossClientItems( gentity_t *self ) {
 
 	self->s.bolt2 = weapon;
 
-	if ( weapon > WP_BRYAR_PISTOL &&
-		weapon != WP_EMPLACED_GUN &&
-		weapon != WP_TURRET &&
+	if ( (1 << weapon) & ~dontDrop &&
 		self->client->ps.ammo[ weaponData[weapon].ammoIndex ] ) {
 		gentity_t *te;
 
@@ -2162,7 +2172,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( client->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 			continue;
 		}
 		if ( client->sess.spectatorClient == self->s.number ) {
@@ -3027,7 +3037,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
-	if ( level.intermissionQueued || level.roundQueued ) {
+	if ( level.intermissionQueued ) {
 		return;
 	}
 	if ( !inflictor ) {
@@ -3162,6 +3172,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
+		if ( level.roundQueued ) {
+			return;
+		}
+
 		if ( g_instagib.integer ) {
 			if (dflags & DAMAGE_RADIUS)
 				return;
@@ -3510,9 +3524,18 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	// don't log damage stats
+	if (level.warmupTime || level.intermissiontime || level.intermissionQueued ||
+		level.roundQueued )
+	{
+		return;
+	}
+
 	// Final health damage
 	take = MAX(0, oldHealth) - MAX(0, targ->health) + asave;
-	if (take && client) {
+
+	if (take && client)
+	{
 		G_LogWeaponDamage(attacker->s.number, mod, take);
 
 		if (attacker->client) {
@@ -3521,7 +3544,19 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				attacker->client->pers.totalDamageDealtToAllies += take;
 			} else {
 				client->pers.totalDamageTakenFromEnemies += take;
-				attacker->client->pers.totalDamageDealtToEnemies += take;
+
+				if (GT_Round(g_gametype.integer)) {
+					int	oldScore, newScore;
+
+					oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+					newScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;
+
+					if (newScore != oldScore)
+						AddScore(attacker, targ->r.currentOrigin, newScore - oldScore);
+				} else {
+					attacker->client->pers.totalDamageDealtToEnemies += take;
+				}
 			}
 
 			if (g_damagePlums.integer) {

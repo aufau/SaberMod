@@ -619,7 +619,7 @@ qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower )
 	{ //specs can't use powers through people
 		return qfalse;
 	}
-	if (self->client->sess.sessionTeam == TEAM_SPECTATOR)
+	if (self->client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		return qfalse;
 	}
@@ -2265,7 +2265,7 @@ void ForceTelepathy(gentity_t *self)
 			g_entities[tr.entityNum].inuse &&
 			g_entities[tr.entityNum].client &&
 			g_entities[tr.entityNum].client->pers.connected &&
-			g_entities[tr.entityNum].client->sess.sessionTeam != TEAM_SPECTATOR)
+			g_entities[tr.entityNum].client->sess.spectatorState == SPECTATOR_NOT)
 		{
 			WP_AddAsMindtricked(&self->client->ps.fd, tr.entityNum);
 			WP_ForcePowerStart( self, FP_TELEPATHY, 0 );
@@ -2321,7 +2321,7 @@ void ForceTelepathy(gentity_t *self)
 					continue;
 				}
 
-				if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+				if (ent->client->sess.spectatorState != SPECTATOR_NOT)
 				{
 					continue;
 				}
@@ -4381,7 +4381,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	{ //not a "real" game client, it's a spectator following someone
 		return;
 	}
-	if (self->client->sess.sessionTeam == TEAM_SPECTATOR)
+	if (self->client->sess.spectatorState != SPECTATOR_NOT)
 	{
 		return;
 	}

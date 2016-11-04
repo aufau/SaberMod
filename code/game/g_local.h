@@ -386,6 +386,8 @@ typedef struct {
 	qboolean	registered;
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
+
+	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
 
 
@@ -594,6 +596,7 @@ void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
 qboolean ValidateTeam( int ignoreClientNum, team_t team );
 qboolean SetTeam( gentity_t *ent, team_t team );
+qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, int specClient );
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void Cmd_SmartFollowCycle_f( gentity_t *ent );
 void Cmd_SaberAttackCycle_f(gentity_t *ent);
@@ -632,6 +635,8 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace);
 void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
 void SaveRegisteredItems( void );
+
+qboolean	G_HoldableDisabled( holdable_t holdable );
 
 //
 // g_utils.c
@@ -804,7 +809,7 @@ qboolean CheckGauntletAttack( gentity_t *ent );
 //
 // g_client.c
 //
-int TeamCount( int ignoreClientNum, int team );
+int TeamCount( int ignoreClientNum, int team, qboolean dead );
 int TeamLeader( int team );
 team_t PickTeam( int ignoreClientNum );
 void ResetClientState( gentity_t *self );
@@ -885,6 +890,7 @@ void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
 void ClientEndFrame			( gentity_t *ent );
 void G_RunClient			( gentity_t *ent );
+void G_Respawn				( gentity_t *ent );
 
 //
 // g_team.c
@@ -1105,8 +1111,11 @@ extern	vmCvar_t	g_austrian;
 
 extern  vmCvar_t	g_damagePlums;
 extern  vmCvar_t	g_restrictChat;
+extern	vmCvar_t	g_spawnItems;
 extern  vmCvar_t	g_spawnShield;
+extern	vmCvar_t	g_spawnWeapons;
 extern  vmCvar_t	g_noKick;
+extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
 
 void	trap_Print( const char *fmt );

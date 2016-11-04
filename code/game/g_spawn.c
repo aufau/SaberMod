@@ -312,6 +312,8 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	// check item spawn functions
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
+			if ( GT_Round(g_gametype.integer) )
+				return qfalse;
 			G_SpawnItem( ent, item );
 			return qtrue;
 		}

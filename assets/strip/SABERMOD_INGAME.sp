@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 8
+COUNT 11
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -24,11 +24,11 @@ INDEX 1
 INDEX 2
 {
    REFERENCE RULES_REDROVER_1
-   TEXT_LANGUAGE1 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE2 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE3 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE6 "Kill enemy players to make them reinforce your team."
-   TEXT_LANGUAGE8 "Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE1 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE2 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE3 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE6 "Rules:  Kill enemy players to make them reinforce your team."
+   TEXT_LANGUAGE8 "Rules:  Kill enemy players to make them reinforce your team."
 }
 INDEX 3
 {
@@ -74,6 +74,33 @@ INDEX 7
    TEXT_LANGUAGE3 "Ping"
    TEXT_LANGUAGE6 "Ping"
    TEXT_LANGUAGE8 "Ping"
+}
+INDEX 8
+{
+   REFERENCE RULES_CLANARENA_1
+   TEXT_LANGUAGE1 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE2 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE3 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE6 "Rules:  Join with your teammates to defeat players on the other team."
+   TEXT_LANGUAGE8 "Rules:  Join with your teammates to defeat players on the other team."
+}
+INDEX 9
+{
+   REFERENCE RULES_CLANARENA_2
+   TEXT_LANGUAGE1 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE2 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE3 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE6 "When one team succeeds a new round begins with all players rejuvenated."
+   TEXT_LANGUAGE8 "When one team succeeds a new round begins with all players rejuvenated."
+}
+INDEX 10
+{
+   REFERENCE DEAD
+   TEXT_LANGUAGE1 "DEAD"
+   TEXT_LANGUAGE2 "DEAD"
+   TEXT_LANGUAGE3 "DEAD"
+   TEXT_LANGUAGE6 "DEAD"
+   TEXT_LANGUAGE8 "DEAD"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

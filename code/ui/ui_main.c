@@ -1304,9 +1304,8 @@ static void UI_DrawForceSide(rectDef_t *rect, float scale, vec4_t color, int tex
 qboolean UI_HasSetSaberOnly( void )
 {
 	char	info[MAX_INFO_STRING];
-	int i = 0;
-	int wDisable = 0;
-	int	gametype = 0;
+	int		wEnable;
+	int		gametype;
 
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 
@@ -1321,23 +1320,18 @@ qboolean UI_HasSetSaberOnly( void )
 
 	if (gametype == GT_TOURNAMENT)
 	{
-		wDisable = atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+		wEnable = ~atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
 	}
 	else
 	{
-		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
+		wEnable = ~atoi(Info_ValueForKey(info, "g_weaponDisable"));
 	}
 
-	while (i < WP_NUM_WEAPONS)
-	{
-		if (!(wDisable & (1 << i)) &&
-			i != WP_SABER && i != WP_NONE)
-		{
-			return qfalse;
-		}
+	wEnable |= atoi(Info_ValueForKey(info, "g_spawnWeapons"));
+	wEnable &= LEGAL_WEAPONS;
 
-		i++;
-	}
+	if (wEnable & ~(1 << WP_NONE) & ~(1 << WP_SABER))
+		return qfalse;
 
 	return qtrue;
 }
@@ -4743,6 +4737,7 @@ static int UI_MapCountByGameType(qboolean singlePlayer) {
 	case GT_JEDIMASTER:
 	case GT_TEAM:
 	case GT_REDROVER:
+	case GT_CLANARENA:
 		game = GT_FFA;
 	}
 

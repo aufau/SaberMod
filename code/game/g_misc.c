@@ -69,7 +69,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( player->client->sess.spectatorState == SPECTATOR_NOT ) {
 		tent = G_TempEntity( player->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = player->s.clientNum;
 
@@ -96,7 +96,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	SetClientViewAngle( player, angles );
 
 	// kill anything at the destination
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( player->client->sess.spectatorState == SPECTATOR_NOT ) {
 		G_KillBox (player);
 	}
 
@@ -106,7 +106,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
 
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( player->client->sess.spectatorState == SPECTATOR_NOT ) {
 		trap_LinkEntity (player);
 	}
 }
@@ -981,9 +981,9 @@ void ammo_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *act
 				add = self->count;
 			}
 
-			activator->client->ps.ammo[AMMO_BLASTER] += add;
-			activator->client->ps.ammo[AMMO_POWERCELL] += add;
-			activator->client->ps.ammo[AMMO_METAL_BOLTS] += add;
+			Add_Ammo(activator, AMMO_BLASTER, add);
+			Add_Ammo(activator, AMMO_POWERCELL, add);
+			Add_Ammo(activator, AMMO_METAL_BOLTS, add);
 
 			self->count -= add;
 			stop = 0;
@@ -2329,7 +2329,7 @@ void ExampleAnimEntEnemyHandling(gentity_t *self, float enDist)
 	{
 		while (i < MAX_CLIENTS)
 		{
-			if (g_entities[i].inuse && g_entities[i].client && !(g_entities[i].r.svFlags & SVF_BOT) && g_entities[i].health > 0 && !(g_entities[i].s.eFlags & EF_DEAD) && g_entities[i].client->sess.sessionTeam != TEAM_SPECTATOR)
+			if (g_entities[i].inuse && g_entities[i].client && !(g_entities[i].r.svFlags & SVF_BOT) && g_entities[i].health > 0 && !(g_entities[i].s.eFlags & EF_DEAD) && g_entities[i].client->sess.spectatorState == SPECTATOR_NOT)
 			{
 				vec3_t checkLen;
 				float fCheckLen;
@@ -2458,7 +2458,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 				g_entities[self->bolt_Motion].inuse &&
 				g_entities[self->bolt_Motion].client)
 			{
-				if (g_entities[self->bolt_Motion].client->sess.sessionTeam == TEAM_SPECTATOR)
+				if (g_entities[self->bolt_Motion].client->sess.spectatorState != SPECTATOR_NOT)
 				{
 					self->bolt_Motion = ENTITYNUM_NONE;
 				}
@@ -3228,8 +3228,7 @@ void Use_Target_Escapetrig( gentity_t *ent, gentity_t *other, gentity_t *activat
 		while (i < MAX_CLIENTS)
 		{ //all of the survivors get 100 points!
 			if (g_entities[i].inuse && g_entities[i].client && g_entities[i].health > 0 &&
-				g_entities[i].client->sess.sessionTeam != TEAM_SPECTATOR &&
-				!(g_entities[i].client->ps.pm_flags & PMF_FOLLOW))
+				g_entities[i].client->sess.spectatorState == SPECTATOR_NOT)
 			{
 				AddScore(&g_entities[i], g_entities[i].client->ps.origin, 100);
 			}
