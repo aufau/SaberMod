@@ -95,7 +95,7 @@ CG_ClipMoveToEntities
 ====================
 */
 static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-							int skipNumber, int mask, trace_t *tr ) {
+	int skipNumber, int mask, trace_t *tr, qboolean duelTest ) {
 	int			i;
 	trace_t		trace;
 	entityState_t	*ent;
@@ -109,6 +109,21 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 
 		if ( ent->number == skipNumber ) {
 			continue;
+		}
+
+		if (duelTest && ent->number < MAX_CLIENTS && cg.snap) {
+			// keep this in sync with G_EntitiesCollide
+			// logic. Perfectly it should be part of bg_pmove
+			// or bg_misc.
+			if (cg.snap->ps.duelInProgress) {
+				if (ent->number != cg.snap->ps.duelIndex) {
+					continue;
+				}
+			} else {
+				if (ent->bolt1) {	// ent duel in progress
+					continue;
+				}
+			}
 		}
 
 		if (ent->number > MAX_CLIENTS && cg.snap && ent->genericenemyindex && (ent->genericenemyindex-1024) == cg.snap->ps.clientNum)
@@ -154,7 +169,26 @@ void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 	trap_CM_BoxTrace ( &t, start, end, mins, maxs, 0, mask);
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t);
+	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t, qfalse);
+
+	*result = t;
+}
+
+/*
+================
+CG_DuelTrace
+
+Transparent duel trace
+================
+*/
+void	CG_DuelTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+					 int skipNumber, int mask ) {
+	trace_t	t;
+
+	trap_CM_BoxTrace ( &t, start, end, mins, maxs, 0, mask);
+	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+	// check all other solid models
+	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t, qtrue);
 
 	*result = t;
 }
@@ -621,7 +655,7 @@ void CG_PredictPlayerState( void ) {
 
 	// prepare for pmove
 	cg_pmove.ps = &cg.predictedPlayerState;
-	cg_pmove.trace = CG_Trace;
+	cg_pmove.trace = CG_DuelTrace;
 	cg_pmove.pointcontents = CG_PointContents;
 	if ( cg_pmove.ps->pm_type == PM_DEAD ) {
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;

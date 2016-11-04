@@ -405,12 +405,14 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	VectorClear( angles );
 }
 
-void G_InitGentity( gentity_t *e ) {
+void G_InitGentity( gentity_t *e, int blameEntityNum ) {
 	e->inuse = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;
 	e->s.modelGhoul2 = 0; //assume not
+
+	G_BlameForEntity( blameEntityNum, e);
 }
 
 /*
@@ -428,7 +430,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_Spawn( void ) {
+gentity_t *G_Spawn( int blameEntityNum ) {
 	int			i, force;
 	gentity_t	*e;
 
@@ -450,7 +452,7 @@ gentity_t *G_Spawn( void ) {
 			}
 
 			// reuse this slot
-			G_InitGentity( e );
+			G_InitGentity( e, blameEntityNum );
 			return e;
 		}
 		if ( i != MAX_GENTITIES ) {
@@ -471,7 +473,7 @@ gentity_t *G_Spawn( void ) {
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
 
-	G_InitGentity( e );
+	G_InitGentity( e, blameEntityNum );
 	return e;
 }
 
@@ -622,11 +624,11 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( vec3_t origin, int event ) {
+gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
-	e = G_Spawn();
+	e = G_Spawn( blameEntityNum );
 	e->s.eType = ET_EVENTS + event;
 
 	e->classname = "tempEntity";
@@ -642,8 +644,6 @@ gentity_t *G_TempEntity( vec3_t origin, int event ) {
 
 	return e;
 }
-
-
 
 gentity_t *GetTrackerEnt(int channel)
 {
@@ -672,11 +672,11 @@ G_SoundTempEntity
 Special event entity that keeps sound trackers in mind
 =================
 */
-gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel ) {
+gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
-	e = G_Spawn();
+	e = G_Spawn( blameEntityNum );
 
 	e->s.eType = ET_EVENTS + event;
 	e->inuse = qtrue;
@@ -710,7 +710,7 @@ Kill box
 G_KillBox
 
 Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
+of ent.
 =================
 */
 void G_KillBox (gentity_t *ent) {
@@ -724,8 +724,14 @@ void G_KillBox (gentity_t *ent) {
 	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
 	for (i=0 ; i<num ; i++) {
+		if (ent->s.number == touch[i]) {
+			continue;
+		}
 		hit = &g_entities[touch[i]];
 		if ( !hit->client ) {
+			continue;
+		}
+		if ( !G_CommonDimension(ent, hit) ) {
 			continue;
 		}
 
@@ -791,11 +797,11 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 G_PlayEffect
 =============
 */
-gentity_t *G_PlayEffect(int fxID, vec3_t org, vec3_t ang)
+gentity_t *G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum)
 {
 	gentity_t	*te;
 
-	te = G_TempEntity( org, EV_PLAY_EFFECT );
+	te = G_TempEntity( org, EV_PLAY_EFFECT, blameEntityNum );
 	VectorCopy(ang, te->s.angles);
 	VectorCopy(org, te->s.origin);
 	te->s.eventParm = fxID;
@@ -812,7 +818,7 @@ gentity_t *G_ScreenShake(vec3_t org, gentity_t *target, float intensity, int dur
 {
 	gentity_t	*te;
 
-	te = G_TempEntity( org, EV_SCREENSHAKE );
+	te = G_TempEntity( org, EV_SCREENSHAKE, target ? target->s.number : ENTITYNUM_WORLD );
 	VectorCopy(org, te->s.origin);
 	te->s.angles[0] = intensity;
 	te->s.time = duration;
@@ -843,7 +849,7 @@ void G_MuteSound( int entnum, int channel )
 {
 	gentity_t	*te, *e;
 
-	te = G_TempEntity( vec3_origin, EV_MUTE_SOUND );
+	te = G_TempEntity( vec3_origin, EV_MUTE_SOUND, entnum );
 	te->r.svFlags = SVF_BROADCAST;
 	te->s.trickedentindex2 = entnum;
 	te->s.trickedentindex = channel;
@@ -865,7 +871,7 @@ G_Sound
 void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 	gentity_t	*te;
 
-	te = G_SoundTempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND, channel );
+	te = G_SoundTempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND, channel, ent->s.number );
 	te->s.eventParm = soundIndex;
 
 	if (ent && ent->client && channel > TRACK_CHANNEL_NONE)
@@ -895,10 +901,10 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 G_SoundAtLoc
 =============
 */
-void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex ) {
+void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum ) {
 	gentity_t	*te;
 
-	te = G_TempEntity( loc, EV_GENERAL_SOUND );
+	te = G_TempEntity( loc, EV_GENERAL_SOUND, blameEntityNum );
 	te->s.eventParm = soundIndex;
 }
 
@@ -910,7 +916,7 @@ G_EntitySound
 void G_EntitySound( gentity_t *ent, int channel, int soundIndex ) {
 	gentity_t	*te;
 
-	te = G_TempEntity( ent->r.currentOrigin, EV_ENTITY_SOUND );
+	te = G_TempEntity( ent->r.currentOrigin, EV_ENTITY_SOUND, ent->s.number );
 	te->s.eventParm = soundIndex;
 	te->s.weapon = ent->s.number;
 	te->s.trickedentindex = channel;
