@@ -2383,6 +2383,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
+	const char *s;
 	int i = 0;
 
 	trap_CG_RegisterSharedMemory(cg.sharedBuffer);
@@ -2556,6 +2557,12 @@ Ghoul2 Insert End
 
 	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
+
+	// check version
+	s = CG_ConfigString( CS_GAME_VERSION );
+	if ( strcmp( s, "basejk-1" ) ) {
+		CG_Error( "Client/Server game mismatch: %s/%s", "basejk-1", s );
+	}
 
 	// Update config strings
 	for ( i = 0; i < CS_MODELS; i++ ) {
