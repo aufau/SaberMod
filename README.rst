@@ -1,13 +1,13 @@
-========
-SaberMod
-========
+============
+SaberMod 1.0
+============
 
 This is a *Star Wars Jedi Knight II: Jedi Outcast* 1.04 mod targeting
-competitive communities. It is developed by *SaberMod team* (see
-Authors_) and draws inspiration from all id Tech 3 based games and
+all competitive communities. It is developed by *SaberMod team* (see
+Authors_) and draws inspiration from all great id Tech 3 games and
 mods, trying to improve on usability, stability and user experience
-with *no-gimmicks* approach. Our first goal is reimplementing and
-improving on the features of popular *league mod* by XycaleTh.
+with *no-gimmicks* approach. Main goal of the mod is to promote and
+improve competitive aspect of the game.
 
 Source code is hosted on GitHub_ and based on `JK2 SDK GPL`_ - an
 updated JK2 1.04 SDK.
@@ -15,8 +15,8 @@ updated JK2 1.04 SDK.
 Changes
 =======
 
-This is just a list of changes that need explanation. Refer to Git
-commit history for full changelog.
+This is just a list of changes that need explanation. Refer to
+CHANGELOG.rst and Git commit history for full log.
 
 Client-Side
 -----------
@@ -160,7 +160,7 @@ g_allowVote <0|1|bitmask>
   16 - Gametype          32 - Kick
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
-  8192 - WK/NK           16384 - Mode			32768 - Match Mode
+  8192 - WK/NK           16384 - Mode           32768 - Match Mode
   65536 - Capturelimit
   =====================  =====================  =====================
 
@@ -256,8 +256,9 @@ Red Rover (g_gametype 9)
   points.
 
 Clan Arena (g_gametype 10)
-  Also know as "Last Man Standing". Player who dies must spectate
-  until the end of a round.
+  Player who dies must spectate until the end of a round. When one
+  team is eliminated, round is over. Team who hits the round limit
+  first wins the match.
 
 Server Modes
 ............
