@@ -88,16 +88,23 @@ obj_game	:= $(srcs_game:%=out/mod/%.o)
 obj_cgame	:= $(srcs_cgame:%=out/mod/%.o)
 obj_ui		:= $(srcs_ui:%=out/mod/%.o)
 
-pk3name		:= SaberMod
-pk3			:= $(pk3name)-$(VERSION).pk3
-pk3doc		:= README.rst LICENSE.txt
-pk3assets := SOURCE.txt mv.info ui/jk2mpingame.txt ui/jk2mp/menudef.h	\
-ui/jk2mp/ingame_about.menu ui/jk2mp/ingame_join.menu					\
-ui/jk2mp/ingame_callvote.menu ui/jk2mp/createserver.menu				\
-ui/jk2mp/ingame_player.menu ui/jk2mp/ingame_setup_modoptions.menu		\
-ui/jk2mp/gameinfo.txt ui/jk2mp/setup.menu ui/jk2mp/ingame.menu			\
-ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp			\
+name		:= SaberMod
+
+cls_pk3		:= $(name)-$(VERSION).pk3
+cls_doc		:= README.rst LICENSE.txt
+cls_assets := SOURCE.txt mv.info ui/jk2mpingame.txt				\
+ui/jk2mp/menudef.h ui/jk2mp/ingame_about.menu					\
+ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu			\
+ui/jk2mp/createserver.menu ui/jk2mp/ingame_player.menu			\
+ui/jk2mp/ingame_setup_modoptions.menu ui/jk2mp/gameinfo.txt		\
+ui/jk2mp/setup.menu ui/jk2mp/ingame.menu						\
+ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp	\
 strip/SABERMOD_MENUS.sp
+
+svs_zip		:= $(name)-$(VERSION).zip
+svs_assets	:= server.cfg reset.cfg modes/
+svs_doc := README.rst LICENSE.txt CHANGELOG.rst cvar-calculator.html	\
+assets/SOURCE.txt
 
 # Targets
 
@@ -111,16 +118,28 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
-package : cgame ui | base/
-	set -e; pushd base; $(RM) $(pk3); zip -r $(pk3) vm/cgame.qvm	\
-	vm/ui.qvm; popd; zip base/$(pk3) $(pk3doc); pushd assets; zip	\
-	../base/$(pk3) $(pk3assets); popd
+clientside : cgame ui | base/
+	$(echo_cmd) "CREATE $(name).pk3"
+	$(Q)set -e; pushd base; $(RM) $(cls_pk3); zip $(cls_pk3)		\
+	vm/cgame.qvm vm/ui.qvm; popd; zip base/$(cls_pk3) $(cls_doc);	\
+	pushd assets; zip ../base/$(cls_pk3) $(cls_assets); popd
+serverside : clientside game | base/
+	$(echo_cmd) "CREATE $(name).zip"
+	$(eval tmp := $(shell mktemp -d))
+	$(eval svs := $(tmp)/$(name))
+	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc; cp		\
+	$(svs_doc) $(svs)/doc; cp base/$(cls_pk3) $(svs); mkdir			\
+	$(svs)/vm; cp base/vm/jk2mpgame.qvm $(svs)/vm; pushd assets; cp	\
+	-r $(svs_assets) $(svs); popd; pushd $(tmp); zip -r $(svs_zip)	\
+	$(name); popd; cp $(tmp)/$(svs_zip) base/; $(RM) -r $(tmp)
+
 help	:
 	@echo 'Targets:'
 	@echo '  all (default)  - Build all targets'
 	@echo '  vm             - Build QVM targets in base/vm/'
 	@echo '  shared         - Build shared libraries in base/'
-	@echo '  package        - Build clientside .pk3 package'
+	@echo '  clientside     - Create clientside .pk3 release'
+	@echo '  serverside     - Create serverside .zip release'
 	@echo '  game/cgame/ui  - Build game/cgame/ui QVM target'
 	@echo '  gameshared/..  - Build game/.. shared libraries'
 	@echo '  tools          - Build q3asm and q3lcc in bin/'
@@ -128,7 +147,6 @@ help	:
 	@echo '  clean          - Same as vmclean sharedclean'
 	@echo '  vmclean        - Remove QVM and intermediate files'
 	@echo '  sharedclean    - Remove shared libraries and intermediate files'
-	@echo '  packageclean   - Remove .pk3 packages'
 	@echo '  toolsclean     - Remove q3asm and q3lcc'
 	@echo '  depclean       - Remove generated dependency files'
 	@echo '  distclean      - Remove all generated files'
@@ -307,7 +325,7 @@ $(eval $(call obj_tools_template,lburg,$(q3lburgsrcdir)))
 
 .PHONY : clean vmclean asmclean objclean sharedclean toolsclean depclean
 
-clean : vmclean sharedclean packageclean
+clean : vmclean sharedclean
 
 vmclean : asmclean
 	$(Q)$(RM) base/vm/*.qvm base/vm/*.map
@@ -325,9 +343,6 @@ objclean :
 	$(Q)$(RM) $(obj_cgame)
 	$(Q)$(RM) $(obj_ui)
 	$(echo_cmd) "Removed .o files"
-packageclean :
-	$(Q)$(RM) base/$(pk3name)-*.pk3
-	$(echo_cmd) "Removed .pk3 files"
 toolsclean :
 	$(Q)$(RM) $(tools)
 	$(Q)$(RM) $(obj_asm) $(obj_lcc) $(obj_rcc) $(obj_cpp) $(obj_lburg)
