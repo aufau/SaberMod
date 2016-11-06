@@ -1102,8 +1102,6 @@ void ClientThink_real( gentity_t *ent ) {
 	int			msec;
 	int			i;
 	usercmd_t	*ucmd;
-	qboolean	restoreContents[MAX_CLIENTS];
-	int			savedContents[MAX_CLIENTS];
 
 	client = ent->client;
 
@@ -1333,16 +1331,17 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	// make players in other dimensions transparent
 	for (i = 0; i < level.maxclients; i++) {
 		gentity_t *other = g_entities + i;
 
+		if (!other->inuse) {
+			continue;
+		}
+		if (other->s.number == ent->s.number) {
+			continue;
+		}
 		if (!G_CommonDimension(ent, other)) {
-			restoreContents[i] = qtrue;
-			savedContents[i] = other->r.contents;
-			other->r.contents = 0;
-		} else {
-			restoreContents[i] = qfalse;
+			other->r.contents &= ~CONTENTS_BODY;
 		}
 	}
 
@@ -1808,10 +1807,23 @@ void ClientThink_real( gentity_t *ent ) {
 
 	G_UpdateClientBroadcasts ( ent );
 reset_contents:
+	// Reset CONTENTS_BODY flag. Unfortunately it's tied to pm_type now.
 	for (i = 0; i < level.maxclients; i++) {
-		if ( restoreContents[i] ) {
-			assert( g_entities[i].r.contents == 0 );
-			g_entities[i].r.contents = savedContents[i];
+		gentity_t *other = g_entities + i;
+
+		if (!other->inuse) {
+			continue;
+		}
+
+		switch (other->client->ps.pm_type) {
+		case PM_NORMAL:
+		case PM_FLOAT:
+		case PM_NOCLIP:
+		case PM_FREEZE:
+			other->r.contents |= CONTENTS_BODY;
+			break;
+		default:
+			break;
 		}
 	}
 }
