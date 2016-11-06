@@ -115,7 +115,10 @@ unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
 	if (client1 && client1->pers.connected == CON_CONNECTED &&
 		client2 && client2->pers.connected == CON_CONNECTED)
 	{
-		if (client1->ps.duelInProgress) {
+		if (client1 == client2) {
+			// what would happen with dimensionless client?
+			collision = qtrue;
+		} else if (client1->ps.duelInProgress) {
 			if (client1->ps.duelIndex == ent2->s.number) {
 				collision = qtrue;
 			} else {
