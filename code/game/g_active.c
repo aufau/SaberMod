@@ -1820,6 +1820,7 @@ reset_contents:
 		case PM_FLOAT:
 		case PM_NOCLIP:
 		case PM_FREEZE:
+		case PM_HARMLESS:
 			other->r.contents |= CONTENTS_BODY;
 			break;
 		default:
