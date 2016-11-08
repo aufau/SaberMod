@@ -97,7 +97,7 @@ int weaponFromMOD[MOD_MAX] =
 	WP_NONE,				//MOD_LEAVE,
 };
 
-char *weaponNameFromIndex[WP_NUM_WEAPONS] =
+static const char *weaponNameFromIndex[WP_NUM_WEAPONS] =
 {
 	"No Weapon",
 	"Stun Baton",
@@ -117,7 +117,7 @@ char *weaponNameFromIndex[WP_NUM_WEAPONS] =
 	"Turret"
 };
 
-extern char	*modNames[];
+extern const char	*modNames[];
 
 #endif //LOGGING_WEAPONS
 
@@ -264,7 +264,8 @@ void G_LogWeaponOutput(void)
 	int percharacter[WP_NUM_WEAPONS];
 	char info[MAX_INFO_STRING];
 	char mapname[MAX_QPATH];
-	char *nameptr, *unknownname="<Unknown>";
+	const char *nameptr;
+	const char *unknownname = "<Unknown>";
 
 	if (!g_statLog.integer)
 	{

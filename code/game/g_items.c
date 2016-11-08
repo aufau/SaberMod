@@ -141,7 +141,7 @@ void ShieldThink(gentity_t *self)
 
 
 // The shield was damaged to below zero health.
-void ShieldDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+static void ShieldDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 {
 	// Play damaging sound...
 	G_AddEvent(self, EV_GENERAL_SOUND, shieldDamageSound);
@@ -677,7 +677,7 @@ void pas_adjust_enemy( gentity_t *ent )
 #define TURRET_DEATH_DELAY 2000
 #define TURRET_LIFETIME 60000
 
-void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+static void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod);
 
 void sentryExpire(gentity_t *self)
 {
@@ -916,7 +916,7 @@ void pas_think( gentity_t *ent )
 }
 
 //------------------------------------------------------------------------------------------------------------
-void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+static void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 //------------------------------------------------------------------------------------------------------------
 {
 	// Turn off the thinking of the base & use it's targets

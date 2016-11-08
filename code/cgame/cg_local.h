@@ -900,11 +900,11 @@ Ghoul2 Insert End
 
 typedef struct forceTicPos_s
 {
-	int				x;
-	int				y;
-	int				width;
-	int				height;
-	char			*file;
+	const int		x;
+	const int		y;
+	const int		width;
+	const int		height;
+	const char		*file;
 	qhandle_t		tic;
 } forceTicPos_t;
 extern forceTicPos_t forceTicPos[];
@@ -1687,8 +1687,8 @@ void CG_TileClear( void );
 void CG_ColorForHealth( vec4_t hcolor );
 void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
 
-void UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color );
-void UI_DrawScaledProportionalString( int x, int y, const char* str, int style, vec4_t color, float scale);
+void UI_DrawProportionalString( int x, int y, const char* str, int style, const vec4_t color );
+void UI_DrawScaledProportionalString( int x, int y, const char* str, int style, const vec4_t color, float scale);
 void CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void CG_DrawSides(float x, float y, float w, float h, float size);
 void CG_DrawTopBottom(float x, float y, float w, float h, float size);
@@ -1711,7 +1711,7 @@ void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font);
-void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
+void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
 int CG_Text_Width(const char *text, float scale, int iMenuFont);
 int CG_Text_Height(const char *text, float scale, int iMenuFont);
 void CG_SelectPrevPlayer(void);
@@ -1778,9 +1778,9 @@ void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
 
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName );
+							qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName );
+							qhandle_t parentModel, const char *tagName );
 
 /*
 Ghoul2 Insert Start
@@ -2189,7 +2189,7 @@ void	CG_ParticleSparks (vec3_t org, vec3_t vel, int duration, float x, float y, 
 void	CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir);
 void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
-const char *CG_GetStripEdString(char *refSection, char *refName);
+const char *CG_GetStripEdString(const char *refSection, const char *refName);
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
 

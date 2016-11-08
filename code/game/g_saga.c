@@ -39,8 +39,8 @@ int			imperial_attackers;
 
 void LogExit( const char *string );
 
-int GetValueGroup(char *buf, char *group, char *outbuf);
-int GetPairedValue(char *buf, char *key, char *outbuf);
+int GetValueGroup(char *buf, const char *group, char *outbuf);
+int GetPairedValue(char *buf, const char *key, char *outbuf);
 //Using the bot parsing functions on saga ini's, at least for now.
 
 void InitSagaMode(void)

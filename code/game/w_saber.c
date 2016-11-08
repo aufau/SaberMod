@@ -466,7 +466,7 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 
 qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLockMode_t lockMode )
 {
-	int		attAnim, defAnim = 0;
+	animNumber_t	attAnim, defAnim;
 	float	attStart = 0.5f;
 	float	idealDist = 48.0f;
 	vec3_t	attAngles, defAngles, defDir;
@@ -1374,8 +1374,8 @@ qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t lastValidEn
 			{
 				tr->fraction = 1.0f;
 				tr->entityNum = ENTITYNUM_NONE;
-				tr->startsolid = 0;
-				tr->allsolid = 0;
+				tr->startsolid = qfalse;
+				tr->allsolid = qfalse;
 				return qfalse;
 			}
 			else

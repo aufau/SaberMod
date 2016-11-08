@@ -718,7 +718,7 @@ CT_HUD_ORANGE,
 CT_MAX
 } ct_table_t;
 
-extern vec4_t colorTable[CT_MAX];
+extern const vec4_t colorTable[CT_MAX];
 
 extern	vec4_t		colorBlack;
 extern	vec4_t		colorRed;
@@ -1039,7 +1039,7 @@ typedef struct pc_token_s
 
 // data is an in/out parm, returns a parsed out token
 
-void	COM_MatchToken( const char**buf_p, char *match );
+void	COM_MatchToken( const char**buf_p, const char *match );
 
 void SkipBracedSection (const char **program);
 void SkipRestOfLine ( const char **data );
@@ -1130,7 +1130,7 @@ char	* QDECL va(const char *format, ...);
 //
 // key / value info strings
 //
-char *Info_ValueForKey( const char *s, const char *key );
+const char *Info_ValueForKey( const char *s, const char *key );
 void Info_RemoveKey( char *s, const char *key );
 void Info_RemoveKey_big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );
@@ -2108,9 +2108,9 @@ String ID Tables
 #define ENUM2STRING(arg)   {#arg,arg}
 typedef struct stringID_table_s
 {
-	char	*name;
-	int		id;
-} stringID_table_t;
+	const char	*name;
+	int			id;
+} const stringID_table_t;
 
 int GetIDForString ( stringID_table_t *table, const char *string );
 const char *GetStringForID( stringID_table_t *table, int id );

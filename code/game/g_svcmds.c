@@ -146,12 +146,12 @@ static void UpdateIPBans (void)
 G_FilterPacket
 =================
 */
-qboolean G_FilterPacket (char *from)
+qboolean G_FilterPacket (const char *from)
 {
 	int			i;
 	unsigned	mask = 0;
 	byte		*m = (byte *)&mask;
-	char		*p;
+	const char	*p;
 
 	i = 0;
 	p = from;
@@ -374,7 +374,7 @@ forceteam <player> <team>
 */
 void	Svcmd_ForceTeam_f( void ) {
 	char		str[MAX_TOKEN_CHARS];
-	char		*errorMsg;
+	const char	*errorMsg;
 	int			clientNum;
 	gentity_t	*ent;
 	team_t		team;
@@ -448,7 +448,7 @@ void	Svcmd_Remove_f( void )
 {
 	gentity_t	*ent;
 	char		str[MAX_TOKEN_CHARS];
-	char		*errorMsg;
+	const char	*errorMsg;
 	int			clientNum;
 	int			delay;
 
@@ -560,8 +560,8 @@ tell <player> [message]
 void	Svcmd_Tell_f( void )
 {
 	char		str[MAX_TOKEN_CHARS];
-	char		*message;
-	char		*errorMsg;
+	const char	*message;
+	const char	*errorMsg;
 	int			clientNum;
 
 	if ( trap_Argc() < 2 ) {

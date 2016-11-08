@@ -622,7 +622,7 @@ int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength
 	return syscall( CG_SP_GETSTRINGTEXTSTRING, text, buffer, bufferLength );
 }
 
-qboolean trap_SP_Register(char *file )
+qboolean trap_SP_Register(const char *file )
 {
 	return syscall( CG_SP_REGISTER,file );
 }

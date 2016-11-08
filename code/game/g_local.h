@@ -175,7 +175,7 @@ struct gentity_s {
 
 	qboolean	inuse;
 
-	char		*classname;			// set in QuakeEd
+	const char	*classname;			// set in QuakeEd
 	int			spawnflags;			// set in QuakeEd
 
 	int			teamnodmg;			// set in QuakeEd
@@ -200,8 +200,8 @@ struct gentity_s {
 
 	int			flags;				// FL_* variables
 
-	char		*model;
-	char		*model2;
+	const char	*model;
+	const char	*model2;
 	int			freetime;			// level.time when the object was freed
 
 	int			eventTime;			// events will be cleared EVENT_VALID_MSEC after set
@@ -252,7 +252,7 @@ struct gentity_s {
 	void		(*touch)(gentity_t *self, gentity_t *other, trace_t *trace);
 	void		(*use)(gentity_t *self, gentity_t *other, gentity_t *activator);
 	void		(*pain)(gentity_t *self, gentity_t *attacker, int damage);
-	void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+	void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod);
 
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
@@ -267,8 +267,8 @@ struct gentity_s {
 	int			dflags;
 	int			splashDamage;	// quad will increase this without increasing radius
 	int			splashRadius;
-	int			methodOfDeath;
-	int			splashMethodOfDeath;
+	meansOfDeath_t	methodOfDeath;
+	meansOfDeath_t	splashMethodOfDeath;
 
 	int			count;
 	int			bounceCount;
@@ -632,7 +632,7 @@ void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
 
 gentity_t *G_GetDuelWinner(gclient_t *client);
-int G_ClientNumberFromString (const char *s, char **errorMsg);
+int G_ClientNumberFromString (const char *s, const char **errorMsg);
 
 //
 // g_items.c
@@ -668,9 +668,9 @@ qboolean	G_HoldableDisabled( holdable_t holdable );
 //
 // g_utils.c
 //
-int G_ModelIndex( char *name );
-int		G_SoundIndex( char *name );
-int		G_EffectIndex( char *name );
+int G_ModelIndex( const char *name );
+int		G_SoundIndex( const char *name );
+int		G_EffectIndex( const char *name );
 void	G_TeamCommand( team_t team, char *cmd );
 void	G_KillBox (gentity_t *ent);
 gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match);
@@ -716,7 +716,7 @@ const char *BuildShaderStateConfig(void);
 /*
 Ghoul2 Insert Start
 */
-int G_SkinIndex( char *name );
+int G_SkinIndex( const char *name );
 
 // CG specific API access
 void		trap_G2_ListModelSurfaces(void *ghlInfo);
@@ -757,9 +757,9 @@ Ghoul2 Insert End
 // g_combat.c
 //
 qboolean CanDamage (gentity_t *targ, vec3_t origin);
-void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
-qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
-void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
+void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, meansOfDeath_t mod);
+qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, meansOfDeath_t mod);
+void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath );
 void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
 void TossClientItems( gentity_t *self );
 void TossClientCubes( gentity_t *self );
@@ -825,8 +825,8 @@ void G_CreateExampleAnimEnt(gentity_t *ent);
 //
 // g_weapon.c
 //
-void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, int mod, gentity_t *ignore );
-void WP_FireGenericBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, int mod );
+void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, meansOfDeath_t mod, gentity_t *ignore );
+void WP_FireGenericBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, meansOfDeath_t mod );
 qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void SnapVectorTowards( vec3_t v, vec3_t to );
@@ -847,7 +847,7 @@ void respawn (gentity_t *ent);
 void BeginIntermission (void);
 void InitBodyQue (void);
 void ClientSpawn( gentity_t *ent );
-void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod);
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
@@ -859,7 +859,7 @@ extern gentity_t *gJMSaberEnt;
 //
 qboolean	ConsoleCommand( void );
 void G_ProcessIPBans(void);
-qboolean G_FilterPacket (char *from);
+qboolean G_FilterPacket (const char *from);
 
 //
 // g_weapon.c
@@ -899,12 +899,12 @@ void G_LogPrintf( int event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
-const char *G_GetStripEdString(char *refSection, char *refName);
+const char *G_GetStripEdString(const char *refSection, const char *refName);
 
 //
 // g_client.c
 //
-char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
+const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
 void ClientUserinfoChanged( int clientNum );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum, qboolean allowTeamReset );
@@ -952,7 +952,7 @@ void UpdateTournamentInfo( void );
 //
 // g_bot.c
 //
-void G_InitBots( qboolean restart );
+void G_InitBots( int restart );
 char *G_GetBotInfoByNumber( int num );
 char *G_GetBotInfoByName( const char *name );
 void G_CheckBotSpawn( void );
@@ -1048,7 +1048,7 @@ int BotAISetup( int restart );
 int BotAIShutdown( int restart );
 int BotAILoadMap( int restart );
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart);
-int BotAIShutdownClient( int client, qboolean restart );
+int BotAIShutdownClient( int client, int restart );
 int BotAIStartFrame( int time );
 
 #include "g_team.h" // teamplay specific stuff
@@ -1261,9 +1261,9 @@ int		trap_AAS_Swimming(vec3_t origin);
 int		trap_AAS_PredictClientMovement(void /* aas_clientmove_s */ *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, int visualize);
 
 
-void	trap_EA_Say(int client, char *str);
-void	trap_EA_SayTeam(int client, char *str);
-void	trap_EA_Command(int client, char *command);
+void	trap_EA_Say(int client, const char *str);
+void	trap_EA_SayTeam(int client, const char *str);
+void	trap_EA_Command(int client, const char *command);
 
 void	trap_EA_Action(int client, int action);
 void	trap_EA_Gesture(int client);
@@ -1375,7 +1375,6 @@ int		trap_RealTime( qtime_t *qtime );
 void	trap_SnapVector( float *v );
 
 qboolean trap_SP_RegisterServer( const char *package );
-qboolean trap_SP_Register(char *file );
 int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength);
 
 qboolean	trap_ROFF_Clean( void );

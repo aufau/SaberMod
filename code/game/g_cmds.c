@@ -338,7 +338,7 @@ Returns a player number for either a number or name string
 When invalid returns -1 and sets *errorMsg to error string.
 ==================
 */
-int G_ClientNumberFromString( const char *s, char **errorMsg ) {
+int G_ClientNumberFromString( const char *s, const char **errorMsg ) {
 	gclient_t	*cl;
 	int			idnum;
 
@@ -410,7 +410,7 @@ Give items to a client
 void Cmd_Give_f (gentity_t *ent)
 {
 	char		name[MAX_TOKEN_CHARS];
-	gitem_t		*it;
+	gitem_t	*it;
 	int			i;
 	qboolean	give_all;
 	gentity_t		*it_ent;
@@ -573,7 +573,7 @@ argv(0) god
 */
 void Cmd_God_f (gentity_t *ent)
 {
-	char	*msg;
+	const char	*msg;
 
 	if ( !CheatsOk( ent ) ) {
 		return;
@@ -599,7 +599,7 @@ argv(0) notarget
 ==================
 */
 void Cmd_Notarget_f( gentity_t *ent ) {
-	char	*msg;
+	const char	*msg;
 
 	if ( !CheatsOk( ent ) ) {
 		return;
@@ -623,7 +623,7 @@ argv(0) noclip
 ==================
 */
 void Cmd_Noclip_f( gentity_t *ent ) {
-	char	*msg;
+	const char	*msg;
 
 	if ( !CheatsOk( ent ) ) {
 		return;
@@ -920,7 +920,7 @@ SetTeamFromString
 =================
 */
 static void SetTeamFromString( gentity_t *ent, char *s ) {
-	int					team;
+	team_t				team;
 	int					clientNum;
 	spectatorState_t	specState;
 
@@ -1131,7 +1131,7 @@ Cmd_Follow_f
 =================
 */
 void Cmd_Follow_f( gentity_t *ent ) {
-	char	*errorMsg;
+	const char	*errorMsg;
 	char	arg[MAX_TOKEN_CHARS];
 	int		i;
 
@@ -1510,7 +1510,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	int			targetNum;
 	gentity_t	*target;
 	char		*p;
-	char		*errorMsg;
+	const char	*errorMsg;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc () < 2 ) {
@@ -1573,7 +1573,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 
 static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *id, qboolean voiceonly ) {
 	int color;
-	char *cmd;
+	const char *cmd;
 
 	if (!other) {
 		return;
@@ -1666,7 +1666,7 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 	int			targetNum;
 	gentity_t	*target;
 	char		*id;
-	char		*errorMsg;
+	const char	*errorMsg;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc () < 2 ) {
@@ -1772,7 +1772,7 @@ static void Cmd_VoiceTaunt_f( gentity_t *ent ) {
 
 
 
-static char	*gc_orders[] = {
+static const char	*gc_orders[] = {
 	"hold your position",
 	"hold this position",
 	"come here",
@@ -1795,7 +1795,7 @@ void Cmd_GameCommand_f( gentity_t *ent ) {
 	if ( player < 0 || player >= MAX_CLIENTS ) {
 		return;
 	}
-	if ( order < 0 || order > sizeof(gc_orders)/sizeof(char *) ) {
+	if ( order < 0 || order > ARRAY_LEN(gc_orders) ) {
 		return;
 	}
 	G_Say( ent, &g_entities[player], SAY_TELL, gc_orders[order] );
@@ -1835,7 +1835,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
 	const char		*arg2;
-	char			*errorMsg;
+	const char		*errorMsg;
 	char			s[MAX_STRING_CHARS];
 
 	if ( !g_allowVote.integer ) {

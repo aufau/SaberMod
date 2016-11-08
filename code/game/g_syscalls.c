@@ -401,15 +401,15 @@ int trap_AAS_PredictClientMovement(void /* struct aas_clientmove_s */ *move, int
 	return syscall( BOTLIB_AAS_PREDICT_CLIENT_MOVEMENT, move, entnum, origin, presencetype, onground, velocity, cmdmove, cmdframes, maxframes, PASSFLOAT(frametime), stopevent, stopareanum, visualize );
 }
 
-void trap_EA_Say(int client, char *str) {
+void trap_EA_Say(int client, const char *str) {
 	syscall( BOTLIB_EA_SAY, client, str );
 }
 
-void trap_EA_SayTeam(int client, char *str) {
+void trap_EA_SayTeam(int client, const char *str) {
 	syscall( BOTLIB_EA_SAY_TEAM, client, str );
 }
 
-void trap_EA_Command(int client, char *command) {
+void trap_EA_Command(int client, const char *command) {
 	syscall( BOTLIB_EA_COMMAND, client, command );
 }
 

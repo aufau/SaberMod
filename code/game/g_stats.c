@@ -155,7 +155,7 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *b
 	char		*p = line;
 	const char	*e = line + sizeof(line);
 	int			stats[STAT_MAX];
-	int			pad;
+	size_t		pad;
 	int			i;
 
 	GetStats(stats, cl);

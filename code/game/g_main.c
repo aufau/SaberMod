@@ -30,8 +30,8 @@ qboolean		mvapi;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
-	char		*cvarName;
-	char		*defaultString;
+	const char	*cvarName;
+	const char	*defaultString;
 	int			cvarFlags;
 	int			modificationCount;  // for tracking changes
 	qboolean	trackChange;	    // track this variable, and announce if changed
@@ -161,7 +161,7 @@ int gDuelist1 = -1;
 int gDuelist2 = -1;
 
 // bk001129 - made static to avoid aliasing
-static cvarTable_t		gameCvarTable[] = {
+static cvarTable_t	gameCvarTable[] = {
 	// don't override the cheat state set by the system
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
@@ -321,7 +321,7 @@ static cvarTable_t		gameCvarTable[] = {
 };
 
 // bk001129 - made static to avoid aliasing
-static int gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] );
+static int gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -1042,7 +1042,7 @@ it doesn't change the order of records with equal keys. Use for small
 or nearly sorted data.
 ============
 */
-static void isort( int *a, size_t n, icmp_t cmp )
+static void isort( int *a, int n, icmp_t cmp )
 {
 	int		i, j;
 	int		temp;
@@ -1472,7 +1472,7 @@ static void Shuffle( void )
 {
 	gentity_t	*ent;
 	int			clientNum;
-	int			newTeam;
+	team_t		newTeam;
 	int			i;
 
 	for ( i = 0 ; i < level.numNonSpectatorClients ; i++ ) {
@@ -2885,14 +2885,14 @@ end = trap_Milliseconds();
 			SendScoreboardMessageToAllClients();
 
 			gQueueScoreMessageTime = 0;
-			gQueueScoreMessage = 0;
+			gQueueScoreMessage = qfalse;
 		}
 	}
 
 	g_LastFrameTime = level.time;
 }
 
-const char *G_GetStripEdString(char *refSection, char *refName)
+const char *G_GetStripEdString(const char *refSection, const char *refName)
 {
 	/*
 	static char text[1024]={0};

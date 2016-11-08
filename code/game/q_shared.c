@@ -686,7 +686,7 @@ qboolean COM_ParseVec4( const char **buffer, vec4_t *c)
 COM_MatchToken
 ==================
 */
-void COM_MatchToken( const char **buf_p, char *match ) {
+void COM_MatchToken( const char **buf_p, const char *match ) {
 	char	*token;
 
 	token = COM_Parse( buf_p );
@@ -1065,7 +1065,7 @@ qboolean Q_IsInteger( const char * s ) {
 }
 
 int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
-	int		len;
+	size_t		len;
 	va_list		argptr;
 	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
 
@@ -1127,7 +1127,7 @@ key and returns the associated value, or an empty string.
 FIXME: overflow check?
 ===============
 */
-char *Info_ValueForKey( const char *s, const char *key ) {
+const char *Info_ValueForKey( const char *s, const char *key ) {
 	char	pkey[BIG_INFO_KEY];
 	static	char value[2][BIG_INFO_VALUE];	// use two buffers so compares
 											// work without stomping on each other

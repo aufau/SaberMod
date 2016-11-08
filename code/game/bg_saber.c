@@ -109,7 +109,7 @@ void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overri
 #define AFLAG_WAIT (SETANIM_FLAG_HOLD | SETANIM_FLAG_HOLDLESS)
 #define AFLAG_FINISH (SETANIM_FLAG_HOLD)
 
-saberMoveData_t	saberMoveData[LS_MOVE_MAX] = {//							NB:randomized
+const saberMoveData_t	saberMoveData[LS_MOVE_MAX] = {//							NB:randomized
 	// name			anim				startQ	endQ	setanimflag		blend,	blocking	chain_idle		chain_attack	trailLen
 	{"None",		BOTH_STAND1,		Q_R,	Q_R,	AFLAG_IDLE,		350,	BLK_NO,		LS_NONE,		LS_NONE,		0	},	// LS_NONE		= 0,
 

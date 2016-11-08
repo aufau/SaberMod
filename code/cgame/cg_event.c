@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern int g_saberFlashTime;
 extern vec3_t g_saberFlashPos;
-extern char *showPowersName[];
+extern const char *showPowersName[];
 
 /*
 ===================
@@ -46,7 +46,7 @@ Also called by scoreboard drawing
 */
 const char	*CG_PlaceString( int rank ) {
 	static char	str[64];
-	char	*s, *t;
+	const char	*s, *t;
 	// number extenstions, eg 1st, 2nd, 3rd, 4th etc.
 	// note that the rules are different for french, but by changing the required strip strings they seem to work
 	char sST[10];
@@ -105,7 +105,7 @@ CG_Obituary
 static void CG_Obituary( entityState_t *ent ) {
 	int			mod;
 	int			target, attacker;
-	char		*message;
+	const char	*message;
 	const char	*targetInfo;
 	const char	*attackerInfo;
 	char		targetName[MAX_NETNAME + 2];
@@ -622,7 +622,7 @@ Also called by playerstate transition
 ================
 */
 void CG_PainEvent( centity_t *cent, int health ) {
-	char	*snd;
+	const char	*snd;
 
 	// don't do more than two pain sounds a second
 	if ( cg.time - cent->pe.painTime < 500 ) {
@@ -648,8 +648,8 @@ void CG_PainEvent( centity_t *cent, int health ) {
 
 void CG_ReattachLimb(centity_t *source)
 {
-	char *limbName;
-	char *stubCapName;
+	const char *limbName;
+	const char *stubCapName;
 
 	switch (source->torsoBolt)
 	{
@@ -806,7 +806,7 @@ const char *CG_TeamName(int team)
 void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, int ctfMessage)
 {
 	char printMsg[1024];
-	char *refName = NULL;
+	const char *refName = NULL;
 	const char *stripEdString = NULL;
 
 	switch (ctfMessage)
@@ -1064,7 +1064,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cl_ent->ghoul2weapon = NULL;
 			cl_ent->weapon = WP_NONE;
 			cl_ent->teamPowerEffectTime = 0;
-			cl_ent->teamPowerType = 0;
+			cl_ent->teamPowerType = TFP_REGEN;
 		}
 		break;
 

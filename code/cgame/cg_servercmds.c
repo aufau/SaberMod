@@ -156,7 +156,7 @@ and whenever the server updates any serverinfo flagged cvars
 ================
 */
 static void CG_ParseServerinfo( const char *info ) {
-	char		*mapname;
+	const char	*mapname;
 	int			val;
 
 	info = CG_ConfigString( CS_SERVERINFO );
@@ -225,7 +225,7 @@ static void CG_ShaderStateChanged( const char *o ) {
 	char originalShader[MAX_QPATH];
 	char newShader[MAX_QPATH];
 	char timeOffset[16];
-	char *n,*t;
+	const char *n,*t;
 
 	o = CG_ConfigString( CS_SHADERSTATE );
 	while (o && *o) {
@@ -559,7 +559,7 @@ void CG_KillCEntityInstances()
 		VectorClear(cg_entities[i].turAngles);
 		cg_entities[i].weapon = 0;
 		cg_entities[i].teamPowerEffectTime = 0;
-		cg_entities[i].teamPowerType = 0;
+		cg_entities[i].teamPowerType = TFP_REGEN;
 
 		i++;
 	}

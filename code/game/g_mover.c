@@ -32,7 +32,7 @@ PUSHMOVE
 ===============================================================================
 */
 
-void MatchTeam( gentity_t *teamLeader, int moverState, int time );
+void MatchTeam( gentity_t *teamLeader, moverState_t moverState, int time );
 
 typedef struct {
 	gentity_t	*ent;
@@ -484,7 +484,7 @@ All entities in a mover team will move from pos1 to pos2
 in the same amount of time
 ================
 */
-void MatchTeam( gentity_t *teamLeader, int moverState, int time ) {
+void MatchTeam( gentity_t *teamLeader, moverState_t moverState, int time ) {
 	gentity_t		*slave;
 
 	for ( slave = teamLeader ; slave ; slave = slave->teamchain ) {
@@ -1684,7 +1684,7 @@ BREAKABLE BRUSH
 
 int gExplSound;
 
-void BreakableBrushDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void BreakableBrushDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 {
 	gentity_t *te;
 	vec3_t dif, u;
@@ -1893,7 +1893,7 @@ GLASS
 
 ===============================================================================
 */
-void GlassDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void GlassDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 {
 	gentity_t *te;
 	vec3_t dif;
@@ -2117,7 +2117,7 @@ void func_usable_pain(gentity_t *self, gentity_t *attacker, int damage)
 	self->use(self, attacker, attacker);
 }
 
-void func_usable_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void func_usable_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 {
 	self->takedamage = qfalse;
 	self->use(self, inflictor, attacker);

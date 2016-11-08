@@ -238,6 +238,8 @@ typedef struct textScrollDef_s
 #define CVAR_SHOW			0x00000004
 #define CVAR_HIDE			0x00000008
 
+typedef struct menuDef_s menuDef_t;
+
 typedef struct itemDef_s {
 	Window		window;						// common positional, border, style, layout info
 	Rectangle	textRect;					// rectangle the text ( if any ) consumes
@@ -252,7 +254,7 @@ typedef struct itemDef_s {
 	const char	*text2;						// display text, 2nd line
 	float		text2alignx;				// ( optional ) text2 alignment x coord
 	float		text2aligny;				// ( optional ) text2 alignment y coord
-	void		*parent;					// menu owner
+	menuDef_t	*parent;					// menu owner
 	qhandle_t	asset;						// handle to asset
 	const char	*mouseEnterText;			// mouse enter script
 	const char	*mouseExitText;				// mouse exit script
@@ -276,7 +278,7 @@ typedef struct itemDef_s {
 	int			iMenuFont;					// FONT_SMALL,FONT_MEDIUM,FONT_LARGE	// changed from 'font' so I could see what didn't compile, and differentiate between font handles returned from RegisterFont -ste
 } itemDef_t;
 
-typedef struct {
+struct menuDef_s {
 	Window window;
 	const char  *font;						// font
 	qboolean fullScreen;					// covers entire screen
@@ -302,7 +304,7 @@ typedef struct {
 	float		appearanceTime;				//	when next item should appear
 	int			appearanceCnt;				//	current item displayed
 	float		appearanceIncrement;		//
-} menuDef_t;
+};
 
 typedef struct {
   const char *fontStr;
@@ -355,7 +357,7 @@ typedef struct {
   void (*setColor) (const vec4_t v);
   void (*drawHandlePic) (float x, float y, float w, float h, qhandle_t asset);
   void (*drawStretchPic) (float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
-  void (*drawText) (float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
+  void (*drawText) (float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
   int (*textWidth) (const char *text, float scale, int iMenuFont);
   int (*textHeight) (const char *text, float scale, int iMenuFont);
   qhandle_t (*registerModel) (const char *p);
@@ -385,7 +387,7 @@ typedef struct {
   void (*getCVarString)(const char *cvar, char *buffer, int bufsize);
   float (*getCVarValue)(const char *cvar);
   void (*setCVar)(const char *cvar, const char *value);
-  void (*drawTextWithCursor)(float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iFontIndex);
+  void (*drawTextWithCursor)(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iFontIndex);
   void (*setOverstrikeMode)(qboolean b);
   qboolean (*getOverstrikeMode)();
   void (*startLocalSound)( sfxHandle_t sfx, int channelNum );
@@ -501,6 +503,6 @@ qboolean	trap_Language_UsesSpaces(void);
 unsigned int trap_AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation );
 
 qboolean	trap_SP_RegisterServer( const char *package );
-qboolean	trap_SP_Register(char *file );
+qboolean	trap_SP_Register( const char *file );
 int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength);
 #endif

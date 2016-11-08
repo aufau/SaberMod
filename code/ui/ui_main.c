@@ -178,7 +178,7 @@ static int const numTeamArenaGameTypes = sizeof(teamArenaGameTypes) / sizeof(con
 
 
 
-static char* netnames[] = {
+static const char *netnames[] = {
 	"???",
 	"UDP",
 	"IPX",
@@ -341,7 +341,7 @@ int Text_Height(const char *text, float scale, int iMenuFont)
 	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
 
-void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
+void Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
 {
 	int iStyleOR = 0;
 
@@ -371,7 +371,7 @@ void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, f
 }
 
 
-void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont)
+void Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont)
 {
 	Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 
@@ -988,7 +988,7 @@ void UI_LoadMenus(const char *menuFile, qboolean reset) {
 }
 
 void UI_Load() {
-	char *menuSet;
+	const char *menuSet;
 	char lastName[MAX_TOKENLENGTH];
 	menuDef_t *menu = Menu_GetFocused();
 
@@ -4879,7 +4879,7 @@ UI_HeadCountByColor
 */
 static int UI_HeadCountByColor() {
 	int i, c;
-	char *teamname;
+	const char *teamname;
 
 	c = 0;
 
@@ -5105,10 +5105,10 @@ static void UI_BuildServerDisplayList(int force) {
 
 typedef struct
 {
-	char *name, *altName;
+	const char *name, *altName;
 } serverStatusCvar_t;
 
-serverStatusCvar_t serverStatusCvars[] = {
+static const serverStatusCvar_t serverStatusCvars[] = {
 	{"sv_hostname", "Name"},
 	{"Address", ""},
 	{"gamename", "Game name"},
@@ -5129,7 +5129,7 @@ UI_SortServerStatusInfo
 */
 static void UI_SortServerStatusInfo( serverStatusInfo_t *info ) {
 	int i, j, index;
-	char *tmp1, *tmp2;
+	const char *tmp1, *tmp2;
 
 	// FIXME: if "gamename" == "base" or "missionpack" then
 	// replace the gametype number by FFA, CTF etc.
@@ -5560,7 +5560,7 @@ UI_HeadCountByColor
 ==================
 */
 static const char *UI_SelectedTeamHead(int index, int *actual) {
-	char *teamname;
+	const char *teamname;
 	int i,c=0;
 	*actual = 0;
 	switch(uiSkinColor)
@@ -7072,8 +7072,8 @@ cvars
 
 typedef struct {
 	vmCvar_t	*vmCvar;
-	char		*cvarName;
-	char		*defaultString;
+	const char	*cvarName;
+	const char	*defaultString;
 	int			cvarFlags;
 } cvarTable_t;
 
@@ -7334,7 +7334,7 @@ static cvarTable_t		cvarTable[] = {
 };
 
 // bk001129 - made static to avoid aliasing
-static int		cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);
+static int		cvarTableSize = ARRAY_LEN(cvarTable);
 
 
 /*

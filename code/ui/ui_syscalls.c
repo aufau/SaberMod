@@ -442,7 +442,7 @@ void	trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	syscall( UI_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
-qboolean trap_SP_Register(char *file )
+qboolean trap_SP_Register( const char *file )
 {
 	return syscall( UI_SP_REGISTER,file );
 }

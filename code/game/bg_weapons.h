@@ -80,7 +80,7 @@ typedef struct weaponData_s
 {
 //	char	classname[32];		// Spawning name
 
-	int		ammoIndex;			// Index to proper ammo slot
+	ammo_t	ammoIndex;			// Index to proper ammo slot
 	int		ammoLow;			// Count when ammo is low
 
 	int		energyPerShot;		// Amount of energy used per shot

@@ -2031,11 +2031,10 @@ int SavePathData(const char *filename)
 	char *routePath;
 	vec3_t a;
 	float flLen;
-	int i, s, n;
+	int i, n;
 
 	fileString = NULL;
 	i = 0;
-	s = 0;
 
 	if (!gWPNum)
 	{

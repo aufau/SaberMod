@@ -97,16 +97,16 @@ static int		allocPoint, outOfMemory;
 
 
 typedef struct  itemFlagsDef_s {
-	char *string;
+	const char *string;
 	int value;
 }	itemFlagsDef_t;
 
-itemFlagsDef_t itemFlags [] = {
+static const itemFlagsDef_t itemFlags [] = {
 	{ "WINDOW_INACTIVE",	WINDOW_INACTIVE },
 	{ NULL,					0 }
 };
 
-char *styles [] = {
+static const char *styles [] = {
 "WINDOW_STYLE_EMPTY",
 "WINDOW_STYLE_FILLED",
 "WINDOW_STYLE_GRADIENT",
@@ -116,14 +116,17 @@ char *styles [] = {
 NULL
 };
 
-char *alignment [] = {
+/*
+static const char *alignment [] = {
 "ITEM_ALIGN_LEFT",
 "ITEM_ALIGN_CENTER",
 "ITEM_ALIGN_RIGHT",
 NULL
 };
+*/
 
-char *types [] = {
+/*
+static const char *types [] = {
 "ITEM_TYPE_TEXT",
 "ITEM_TYPE_BUTTON",
 "ITEM_TYPE_RADIOBUTTON",
@@ -141,7 +144,7 @@ char *types [] = {
 "ITEM_TYPE_TEXTSCROLL",
 NULL
 };
-
+*/
 
 extern int MenuFontToHandle(int iMenuFont);
 
@@ -333,7 +336,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 PC_SourceError
 =================
 */
-void PC_SourceError(int handle, char *format, ...) {
+static void PC_SourceError(int handle, const char *format, ...) {
 	int line;
 	char filename[128];
 	va_list argptr;
@@ -551,7 +554,7 @@ PC_String_Parse
 */
 qboolean PC_String_Parse(int handle, const char **out)
 {
-	static char*	squiggy = "}";
+	static const char *squiggy = "}";
 	pc_token_t		token;
 
 	if (!trap_PC_ReadToken(handle, &token))
@@ -1721,7 +1724,7 @@ qboolean Item_SetFocus(itemDef_t *item, float x, float y) {
 	}
 
 	// bk001206 - this can be NULL.
-	parent = (menuDef_t*)item->parent;
+	parent = item->parent;
 
 	// items can be enabled and disabled based on cvars
 	if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
@@ -2080,7 +2083,7 @@ int Item_ListBox_ThumbDrawPosition(itemDef_t *item) {
 
 float Item_Slider_ThumbPosition(itemDef_t *item) {
 	float value, range, x;
-	editFieldDef_t *editDef = item->typeData;
+	editFieldDef_t *editDef = (editFieldDef_t *)item->typeData;
 
 	if (item->text) {
 		x = item->textRect.x + item->textRect.w + 8;
@@ -2940,7 +2943,7 @@ static void Scroll_ListBox_SelectFunc(void *p) {
 static void Scroll_Slider_ThumbFunc(void *p) {
 	float x, value, cursorx;
 	scrollInfo_t *si = (scrollInfo_t*)p;
-	editFieldDef_t *editDef = si->item->typeData;
+	editFieldDef_t *editDef = (editFieldDef_t *)si->item->typeData;
 
 	if (si->item->text) {
 		x = si->item->textRect.x + si->item->textRect.w + 8;
@@ -3053,7 +3056,7 @@ qboolean Item_Slider_HandleKey(itemDef_t *item, int key, qboolean down) {
 	//DC->Print("slider handle key\n");
 	if (item->window.flags & WINDOW_HASFOCUS && item->cvar && Rect_ContainsPoint(&item->window.rect, DC->cursorx, DC->cursory)) {
 		if (key == A_MOUSE1 || key == A_ENTER || key == A_MOUSE2 || key == A_MOUSE3) {
-			editFieldDef_t *editDef = item->typeData;
+			editFieldDef_t *editDef = (editFieldDef_t *)item->typeData;
 			if (editDef) {
 				rectDef_t testRect;
 				width = SLIDER_WIDTH;
@@ -3546,7 +3549,7 @@ void Item_SetTextExtents(itemDef_t *item, int *width, int *height, const char *t
 
 void Item_TextColor(itemDef_t *item, vec4_t *newColor) {
 	vec4_t lowLight;
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t *parent = item->parent;
 
 	Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
 
@@ -3791,7 +3794,7 @@ void Item_TextField_Paint(itemDef_t *item) {
 		DC->getCVarString(item->cvar, buff, sizeof(buff));
 	}
 
-	parent = (menuDef_t*)item->parent;
+	parent = item->parent;
 
 	if (item->window.flags & WINDOW_HASFOCUS) {
 		lowLight[0] = 0.8 * parent->focusColor[0];
@@ -3818,7 +3821,7 @@ void Item_YesNo_Paint(itemDef_t *item) {
 	char	sNO[20];
 	vec4_t newColor, lowLight;
 	float value;
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t *parent = item->parent;
 
 	value = (item->cvar) ? DC->getCVarValue(item->cvar) : 0;
 
@@ -3849,7 +3852,7 @@ void Item_YesNo_Paint(itemDef_t *item) {
 void Item_Multi_Paint(itemDef_t *item) {
 	vec4_t newColor, lowLight;
 	const char *text = "";
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t *parent = item->parent;
 
 	if (item->window.flags & WINDOW_HASFOCUS) {
 		lowLight[0] = 0.8 * parent->focusColor[0];
@@ -3875,17 +3878,17 @@ void Item_Multi_Paint(itemDef_t *item) {
 
 
 typedef struct {
-	char	*command;
-	int		id;
-	int		defaultbind1;
-	int		defaultbind2;
+	const char	*command;
+	const int		id;
+	const int		defaultbind1;
+	const int		defaultbind2;
 	int		bind1;
 	int		bind2;
 } bind_t;
 
 typedef struct
 {
-	char*	name;
+	const char*	name;
 	float	defaultvalue;
 	float	value;
 } configcvar_t;
@@ -3997,7 +4000,7 @@ static const int g_bindCount = sizeof(g_bindings) / sizeof(bind_t);
 Controls_GetKeyAssignment
 =================
 */
-static void Controls_GetKeyAssignment (char *command, int *twokeys)
+static void Controls_GetKeyAssignment (const char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -4141,7 +4144,7 @@ void BindingFromName(const char *cvar) {
 void Item_Slider_Paint(itemDef_t *item) {
 	vec4_t newColor, lowLight;
 	float x, y, value;
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t *parent = item->parent;
 
 	value = (item->cvar) ? DC->getCVarValue(item->cvar) : 0;
 
@@ -4179,7 +4182,7 @@ void Item_Bind_Paint(itemDef_t *item)
 	int		textHeight,yAdj,startingXPos;
 
 
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t *parent = item->parent;
 	editFieldDef_t *editPtr = (editFieldDef_t*)item->typeData;
 	if (editPtr)
 	{
@@ -4700,16 +4703,16 @@ void Item_ListBox_Paint(itemDef_t *item) {
 
 
 void Item_OwnerDraw_Paint(itemDef_t *item) {
-  menuDef_t *parent;
+	menuDef_t *parent;
 
 	if (item == NULL) {
 		return;
 	}
-  parent = (menuDef_t*)item->parent;
+
+	parent = item->parent;
 
 	if (DC->ownerDrawItem) {
 		vec4_t color, lowLight;
-		menuDef_t *parent = (menuDef_t*)item->parent;
 		Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
 		memcpy(&color, &item->window.foreColor, sizeof(color));
 		if (item->numColors > 0 && DC->getValue) {
@@ -4760,7 +4763,7 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 void Item_Paint(itemDef_t *item)
 {
 	vec4_t		red;
-	menuDef_t *parent = (menuDef_t*)item->parent;
+	menuDef_t	*parent = item->parent;
 	int			xPos,textWidth;
 	vec4_t		color = {1, 1, 1, 1};
 
@@ -5321,12 +5324,12 @@ Keyword Hash
 
 typedef struct keywordHash_s
 {
-	char *keyword;
-	qboolean (*func)(itemDef_t *item, int handle);
+	const char *keyword;
+	qboolean (* const func)(itemDef_t *item, int handle);
 	struct keywordHash_s *next;
 } keywordHash_t;
 
-int KeywordHash_Key(char *keyword) {
+int KeywordHash_Key(const char *keyword) {
 	int register hash, i;
 
 	hash = 0;
@@ -6312,7 +6315,7 @@ qboolean ItemParse_Appearance_slot( itemDef_t *item, int handle )
 }
 
 
-keywordHash_t itemParseKeywords[] = {
+static keywordHash_t itemParseKeywords[] = {
 	{"action",			ItemParse_action,			NULL	},
 	{"addColorRange",	ItemParse_addColorRange,	NULL	},
 	{"align",			ItemParse_align,			NULL	},
@@ -7237,10 +7240,10 @@ void *Display_CaptureItem(int x, int y) {
 // FIXME:
 qboolean Display_MouseMove(void *p, int x, int y) {
 	int i;
-	menuDef_t *menu = p;
+	menuDef_t *menu = (menuDef_t *)p;
 
 	if (menu == NULL) {
-    menu = Menu_GetFocused();
+		menu = Menu_GetFocused();
 		if (menu) {
 			if (menu->window.flags & WINDOW_POPUP) {
 				Menu_HandleMouseMove(menu, x, y);

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //rww - not putting @ in front of these because
 //we don't need them in a cgame striped lookup.
 //Let me know if this causes problems, pat.
-char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS] =
+const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS] =
 {
 	"MASTERY0",	//"Uninitiated",	// FORCE_MASTERY_UNINITIATED,
 	"MASTERY1",	//"Initiate",		// FORCE_MASTERY_INITIATE,
@@ -186,7 +186,6 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	char powerBuf[128];
 	char readBuf[128];
 	qboolean maintainsValidity = qtrue;
-	int powerLen = strlen(powerOut);
 	int i = 0;
 	int c = 0;
 	int allowedPoints = 0;
@@ -196,7 +195,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int final_Side;
 	int final_Powers[NUM_FORCE_POWERS] = { 0 };
 
-	if (powerLen >= sizeof(powerBuf))
+	if (strlen(powerOut) >= sizeof(powerBuf))
 	{ //This should not happen. If it does, this is obviously a bogus string.
 		//They can have this string. Because I said so.
 		strcpy(powerBuf, "7-1-032330000000001333");
@@ -1251,7 +1250,7 @@ Only in One Flag CTF games
 	{NULL}
 };
 
-int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
+const int	bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
 
 float vectoyaw( const vec3_t vec ) {
 	float	yaw;
@@ -1817,7 +1816,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	}
 }
 
-char *eventnames[] = {
+const char *eventnames[] = {
 	"EV_NONE",
 
 	"EV_CLIENTJOIN",

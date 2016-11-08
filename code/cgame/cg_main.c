@@ -42,7 +42,7 @@ void CG_InitItems(void);
 Ghoul2 Insert End
 */
 
-vec4_t colorTable[CT_MAX] =
+const vec4_t colorTable[CT_MAX] =
 {
 {0, 0, 0, 0},			// CT_NONE
 {0, 0, 0, 1},			// CT_BLACK
@@ -126,7 +126,7 @@ vec4_t colorTable[CT_MAX] =
 
 };
 
-char *HolocronIcons[] = {
+static const char *HolocronIcons[] = {
 	"gfx/mp/f_icon_lt_heal",		//FP_HEAL,
 	"gfx/mp/f_icon_levitation",		//FP_LEVITATION,
 	"gfx/mp/f_icon_speed",			//FP_SPEED,
@@ -571,8 +571,8 @@ vmCvar_t	cg_param2;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
-	char		*cvarName;
-	char		*defaultString;
+	const char	*cvarName;
+	const char	*defaultString;
 	int			cvarFlags;
 } cvarTable_t;
 
@@ -738,7 +738,7 @@ Ghoul2 Insert End
 	{ &cg_param2, "cg_param2", "0", CVAR_TEMP},
 };
 
-static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
+static int  cvarTableSize = ARRAY_LEN( cvarTable );
 
 /*
 =================
@@ -930,7 +930,7 @@ The server says this item is used on this level
 static void CG_RegisterItemSounds( int itemNum ) {
 	gitem_t			*item;
 	char			data[MAX_QPATH];
-	char			*s, *start;
+	const char		*s, *start;
 	int				len;
 
 	item = &bg_itemlist[ itemNum ];
@@ -1274,7 +1274,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void ) {
 	int			i;
 	char		items[MAX_ITEMS+1];
-	static char		*sb_nums[11] = {
+	const char * const sb_nums[11] = {
 		"gfx/2d/numbers/zero",
 		"gfx/2d/numbers/one",
 		"gfx/2d/numbers/two",
@@ -1288,7 +1288,7 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/minus",
 	};
 
-	static char		*sb_t_nums[11] = {
+	const char * const sb_t_nums[11] = {
 		"gfx/2d/numbers/t_zero",
 		"gfx/2d/numbers/t_one",
 		"gfx/2d/numbers/t_two",
@@ -1302,7 +1302,7 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/t_minus",
 	};
 
-	static char		*sb_c_nums[11] = {
+	const char * const sb_c_nums[11] = {
 		"gfx/2d/numbers/c_zero",
 		"gfx/2d/numbers/c_one",
 		"gfx/2d/numbers/c_two",
@@ -1633,7 +1633,7 @@ Ghoul2 Insert End
 }
 
 
-const char *CG_GetStripEdString(char *refSection, char *refName)
+const char *CG_GetStripEdString(const char *refSection, const char *refName)
 {
 	static char text[2][1024]={{0}};	//just incase it's nested
 	static int		index = 0;
@@ -2169,7 +2169,7 @@ static float CG_Cvar_Get(const char *cvar) {
 	return atof(buff);
 }
 
-void CG_Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont) {
+void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont) {
 	CG_Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 }
 

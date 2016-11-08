@@ -124,7 +124,7 @@ int G_ParseInfos( char *buf, int max, char *infos[] ) {
 G_LoadArenasFromFile
 ===============
 */
-static void G_LoadArenasFromFile( char *filename ) {
+static void G_LoadArenasFromFile( const char *filename ) {
 	int				len;
 	fileHandle_t	f;
 	char			buf[MAX_ARENAS_TEXT];
@@ -147,7 +147,7 @@ static void G_LoadArenasFromFile( char *filename ) {
 	g_numArenas += G_ParseInfos( buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas] );
 }
 
-int G_GetMapTypeBits(char *type)
+static int G_GetMapTypeBits(const char *type)
 {
 	int typeBits = 0;
 
@@ -188,7 +188,7 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 	int			typeBits = 0;
 	int			thisLevel = -1;
 	int			n = 0;
-	char		*type = NULL;
+	const char	*type;
 
 	if (!g_arenaInfos[0])
 	{
@@ -234,7 +234,7 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 	int			thisLevel = 0;
 	int			desiredMap = 0;
 	int			n = 0;
-	char		*type = NULL;
+	const char		*type;
 	qboolean	loopingUp = qfalse;
 	vmCvar_t	mapname;
 
@@ -397,7 +397,9 @@ G_AddRandomBot
 void G_AddRandomBot( int team ) {
 	int		i, n, num;
 	float	skill;
-	char	*value, netname[MAX_NETNAME], *teamstr;
+	const char	*value;
+	const char	*teamstr;
+	char		netname[MAX_NETNAME];
 	gclient_t	*cl;
 
 	num = 0;
@@ -746,13 +748,13 @@ G_AddBot
 */
 static void G_AddBot( const char *name, float skill, const char *team, int delay, char *altname) {
 	int				clientNum;
-	char			*botinfo;
+	const char		*botinfo;
 	gentity_t		*bot;
-	char			*key;
-	char			*s;
-	char			*botname;
-	char			*model;
-//	char			*headmodel;
+	const char		*key;
+	const char		*s;
+	const char		*botname;
+	const char		*model;
+//	const char		*headmodel;
 	char			userinfo[MAX_INFO_STRING];
 
 	// get the botinfo from bots.txt
@@ -1035,7 +1037,7 @@ static void G_SpawnBots( char *botList, int baseDelay ) {
 G_LoadBotsFromFile
 ===============
 */
-static void G_LoadBotsFromFile( char *filename ) {
+static void G_LoadBotsFromFile( const char *filename ) {
 	int				len;
 	fileHandle_t	f;
 	char			buf[MAX_BOTS_TEXT];
@@ -1121,8 +1123,8 @@ G_GetBotInfoByName
 ===============
 */
 char *G_GetBotInfoByName( const char *name ) {
-	int		n;
-	char	*value;
+	int			n;
+	const char	*value;
 
 	for ( n = 0; n < g_numBots ; n++ ) {
 		value = Info_ValueForKey( g_botInfos[n], "name" );
@@ -1143,7 +1145,7 @@ void LoadPath_ThisLevel(void);
 G_InitBots
 ===============
 */
-void G_InitBots( qboolean restart ) {
+void G_InitBots( int restart ) {
 	G_LoadBots();
 	G_LoadArenas();
 

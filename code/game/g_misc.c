@@ -1233,7 +1233,7 @@ killMe:
 	self->nextthink = level.time;
 }
 
-void DmgBoxAbsorb_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void DmgBoxAbsorb_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod )
 {
 	self->health = 1;
 }
@@ -1618,7 +1618,7 @@ typedef struct animentCustomInfo_s
 	int							aeWeapon;
 	char						*modelPath;
 	char						*soundPath;
-	void						*next;
+	struct animentCustomInfo_s	*next;
 } animentCustomInfo_t;
 
 animentCustomInfo_t *animEntRoot = NULL;
@@ -1851,7 +1851,7 @@ void ExampleAnimEntAlertOthers(gentity_t *self)
 	}
 }
 
-void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod )
 {
 	self->s.torsoAnim = G_PickDeathAnim(self, self->pos1, damage, mod, HL_NONE);
 

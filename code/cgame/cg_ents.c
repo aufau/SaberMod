@@ -45,7 +45,7 @@ tag location
 ======================
 */
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName ) {
+							qhandle_t parentModel, const char *tagName ) {
 	int				i;
 	orientation_t	lerped;
 
@@ -74,7 +74,7 @@ tag location
 ======================
 */
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName ) {
+							qhandle_t parentModel, const char *tagName ) {
 	int				i;
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
@@ -235,7 +235,6 @@ void FX_DrawPortableShield(centity_t *cent)
 
 	int				xaxis, height, posWidth, negWidth, team;
 	vec3_t			start, end, normal;
-	localEntity_t	*le;
 	qhandle_t		shader;
 	char			buf[1024];
 
@@ -304,7 +303,7 @@ void FX_DrawPortableShield(centity_t *cent)
 		}
 	}
 
-	le = FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
+	FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
 }
 
 /*
@@ -481,7 +480,7 @@ void ScaleModelAxis(refEntity_t	*ent)
 Ghoul2 Insert End
 */
 
-char *forceHolocronModels[] = {
+const char *forceHolocronModels[] = {
 	"models/map_objects/mp/lt_heal.md3",		//FP_HEAL,
 	"models/map_objects/mp/force_jump.md3",		//FP_LEVITATION,
 	"models/map_objects/mp/force_speed.md3",	//FP_SPEED,
@@ -563,11 +562,11 @@ static void CG_General( centity_t *cent ) {
 		{
 			const char *limbBone;
 			const char *rotateBone;
-			char *limbName;
-			char *limbCapName;
-			char *stubCapName;
-			char *limbTagName;
-			char *stubTagName;
+			const char *limbName;
+			const char *limbCapName;
+			const char *stubCapName;
+			const char *limbTagName;
+			const char *stubTagName;
 			int limb_anim;
 			int newBolt;
 

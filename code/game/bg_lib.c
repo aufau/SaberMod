@@ -301,12 +301,17 @@ int toupper( int c ) {
 //#ifndef _MSC_VER
 
 void *memmove( void *dest, const void *src, size_t count ) {
-	int		i;
+	size_t	i;
+
+	if ( count == 0 )
+		return dest;
 
 	if ( dest > src ) {
-		for ( i = count-1 ; i >= 0 ; i-- ) {
+		i = count;
+		do {
+			i--;
 			((char *)dest)[i] = ((char *)src)[i];
-		}
+		} while ( i > 0 );
 	} else {
 		for ( i = 0 ; i < count ; i++ ) {
 			((char *)dest)[i] = ((char *)src)[i];
@@ -1357,7 +1362,7 @@ just to keep it simpler.  For example, the '*' and '$' are not
 currently supported.  I've tried to make it so that it will just
 parse and ignore formats we don't support.
 */
-int vsprintf( char *buffer, const char *fmt, va_list argptr ) {
+size_t vsprintf( char *buffer, const char *fmt, va_list argptr ) {
 	int		*arg;
 	char	*buf_p;
 	char	ch;

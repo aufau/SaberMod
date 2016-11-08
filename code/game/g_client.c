@@ -1099,7 +1099,7 @@ is used for determining where the lightsaber should be, and for per-poly collisi
 ===========
 */
 void *g2SaberInstance = NULL;
-void SetupGameGhoul2Model(gclient_t *client, char *modelname)
+void SetupGameGhoul2Model(gclient_t *client, const char *modelname)
 {
 	int handle;
 	char		afilename[MAX_QPATH];
@@ -1235,8 +1235,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	gentity_t	*ent;
 	gclient_t	*client;
 	qboolean	privateDuel;
+	const char	*s;
 	int		teamTask, teamLeader, team, health;
-	char	*s;
 	char	model[MAX_QPATH];
 	//char	headModel[MAX_QPATH];
 	char	forcePowers[MAX_QPATH];
@@ -1419,8 +1419,8 @@ to the server machine, but qfalse on map changes and tournement
 restarts.
 ============
 */
-char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
-	char		*value;
+const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
+	const char	*value;
 //	char		*areabits;
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
@@ -1525,8 +1525,9 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gclient_t	*client;
 	gentity_t	*tent;
 	int			flags, i;
-	char		userinfo[MAX_INFO_VALUE], *modelname;
-	char		*gameversion;
+	char		userinfo[MAX_INFO_VALUE];
+	const char	*modelname;
+	const char	*gameversion;
 
 	ent = g_entities + clientNum;
 
@@ -1535,7 +1536,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		if (allowTeamReset)
 		{
 			const char *team;
-			int preSess;
+			team_t preSess;
 
 			//SetTeam(ent, "");
 			ent->client->sess.sessionTeam = PickTeam(clientNum);
@@ -1638,7 +1639,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	}
 
 	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
-	client->pers.registered = !strcmp(gameversion, GIT_VERSION);
+	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 ? qtrue : qfalse;
 	if (!client->pers.registered) {
 		if (gameversion[0] == '\0') {
 			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " clientside.\"");
@@ -1898,7 +1899,8 @@ void ClientSpawn(gentity_t *ent) {
 		{//In Team games, force one side to be merc and other to be jedi
 			if ( level.numPlayingClients > 0 )
 			{//already someone in the game
-				int		i, forceTeam = TEAM_SPECTATOR;
+				team_t	forceTeam = TEAM_SPECTATOR;
+
 				for ( i = 0 ; i < level.maxclients ; i++ )
 				{
 					if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
@@ -2301,7 +2303,7 @@ void ClientDisconnect( int clientNum ) {
 	CalculateRanks();
 
 	if ( ent->r.svFlags & SVF_BOT ) {
-		BotAIShutdownClient( clientNum, qfalse );
+		BotAIShutdownClient( clientNum, 0 );
 	}
 
 	G_ClearClientLog(clientNum);

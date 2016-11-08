@@ -38,15 +38,12 @@ int			cg_saga_valid;
 int CGSagaGetValueGroup(char *buf, char *group, char *outbuf)
 {
 	char *place, *placesecond;
-	int iplace;
 	int failure;
 	int i;
 	int startpoint, startletter;
 	int subg = 0;
 
 	i = 0;
-
-	iplace = 0;
 
 	place = strstr(buf, group);
 
@@ -111,7 +108,7 @@ int CGSagaGetValueGroup(char *buf, char *group, char *outbuf)
 	return 1;
 }
 
-int CGSagaGetPairedValue(char *buf, char *key, char *outbuf, int inquotes)
+int CGSagaGetPairedValue(char *buf, const char *key, char *outbuf, int inquotes)
 {
 	char *place, *placesecond;
 	int startpoint, startletter;

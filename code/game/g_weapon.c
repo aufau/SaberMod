@@ -256,7 +256,7 @@ GENERIC
 */
 
 //---------------------------------------------------------
-void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, int mod, gentity_t *ignore )
+void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, meansOfDeath_t mod, gentity_t *ignore )
 //---------------------------------------------------------
 {
 	gentity_t *missile;
@@ -284,7 +284,7 @@ void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean al
 //Currently only the seeker drone uses this, but it might be useful for other things as well.
 
 //---------------------------------------------------------
-void WP_FireGenericBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, int mod )
+void WP_FireGenericBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire, int damage, int velocity, meansOfDeath_t mod )
 //---------------------------------------------------------
 {
 	gentity_t *missile;
@@ -1945,7 +1945,7 @@ void laserTrapExplode( gentity_t *self )
 	self->nextthink = level.time;
 }
 
-void laserTrapDelayedExplode( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+void laserTrapDelayedExplode( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath )
 {
 	self->enemy = attacker;
 	self->think = laserTrapExplode;
@@ -2362,7 +2362,7 @@ void DetPackPain(gentity_t *self, gentity_t *attacker, int damage)
 	self->takedamage = qfalse;
 }
 
-void DetPackDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void DetPackDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)
 {
 	self->think = DetPackBlow;
 	self->nextthink = level.time + Q_irand(50, 100);
@@ -3367,7 +3367,7 @@ void emplaced_gun_update(gentity_t *self)
 }
 
 //----------------------------------------------------------
-void emplaced_gun_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void emplaced_gun_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod )
 {
 	if (self->boltpoint4)
 	{

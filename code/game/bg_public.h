@@ -250,7 +250,7 @@ enum {
 	FORCE_MASTERY_JEDI_MASTER,
 	NUM_FORCE_MASTERY_LEVELS
 };
-extern char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
+extern const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
 extern int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
 
 extern int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS];
@@ -784,12 +784,12 @@ typedef enum {
 #define MAX_ITEM_MODELS 4
 
 typedef struct gitem_s {
-	char		*classname;	// spawning name
-	char		*pickup_sound;
-	char		*world_model[MAX_ITEM_MODELS];
-	char		*view_model;
+	const char	*classname;	// spawning name
+	const char	*pickup_sound;
+	const char	*world_model[MAX_ITEM_MODELS];
+	const char	*view_model;
 
-	char		*icon;
+	const char	*icon;
 //	char		*pickup_name;	// for printing on pickup
 
 	int			quantity;		// for ammo how much, or duration of powerup
@@ -797,13 +797,13 @@ typedef struct gitem_s {
 
 	int			giTag;
 
-	char		*precaches;		// string of all models and images this item will use
-	char		*sounds;		// string of all sounds this item will use
-} gitem_t;
+	const char	*precaches;		// string of all models and images this item will use
+	const char	*sounds;		// string of all sounds this item will use
+} const gitem_t;
 
 // included in both the game dll and the client
 extern	gitem_t	bg_itemlist[];
-extern	int		bg_numItems;
+extern	const int		bg_numItems;
 
 float vectoyaw( const vec3_t vec );
 
@@ -1037,7 +1037,7 @@ typedef enum {
 
 typedef struct
 {
-	char *name;
+	const char *name;
 	animNumber_t animToUse;
 	saberQuadrant_t	startQuad;
 	saberQuadrant_t	endQuad;
@@ -1046,10 +1046,10 @@ typedef struct
 	int blocking;
 	saberMoveName_t chain_idle;			// What move to call if the attack button is not pressed at the end of this anim
 	saberMoveName_t chain_attack;		// What move to call if the attack button (and nothing else) is pressed
-	qboolean trailLength;
+	int trailLength;
 } saberMoveData_t;
 
-extern saberMoveData_t	saberMoveData[LS_MOVE_MAX];
+extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 
 qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, int gametype, int fpDisabled);
 
@@ -1065,7 +1065,7 @@ qboolean BG_SpinningSaberAnim( int anim );
 qboolean BG_SaberInSpecialAttack( int anim );
 saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
 saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
-saberMoveName_t BG_KnockawayForParry( saberMoveName_t move );
+saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move );
 qboolean BG_InRoll( playerState_t *ps, int anim );
 qboolean BG_InDeathAnim( int anim );
 

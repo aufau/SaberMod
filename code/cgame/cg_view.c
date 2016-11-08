@@ -280,12 +280,12 @@ CG_CalcTargetThirdPersonViewLocation
 */
 static void CG_CalcIdealThirdPersonViewTarget(void)
 {
-	float thirdPersonVertOffset = cg_thirdPersonVertOffset.value;
-
+	/*
 	if (cg.snap && cg.snap->ps.usingATST)
 	{
 		thirdPersonVertOffset = 200;
 	}
+	*/
 
 	// Initialize IdealTarget
 	if (gCGHasFallVector)
@@ -1610,16 +1610,16 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	{
 		if (cg_fpls.integer && cg.predictedPlayerState.weapon == WP_SABER)
 		{ //force to first person for fpls
-			cg.renderingThirdPerson = 0;
+			cg.renderingThirdPerson = qfalse;
 		}
 		else
 		{
-			cg.renderingThirdPerson = 1;
+			cg.renderingThirdPerson = qtrue;
 		}
 	}
 	else if (cg.snap->ps.zoomMode)
 	{ //always force first person when zoomed
-		cg.renderingThirdPerson = 0;
+		cg.renderingThirdPerson = qfalse;
 	}
 
 	// build cg.refdef

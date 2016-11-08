@@ -175,7 +175,7 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 	vec3_t			point, point_dir;
 	vec3_t			forward, right, up;
 	vec3_t			tangles, tcenter;
-	float			tradius;
+//	float			tradius;
 	float			udot, fdot, rdot;
 	int				Vertical, Forward, Lateral;
 	int				HitLoc;
@@ -194,7 +194,7 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 	VectorScale(tcenter, 0.5, tcenter);
 
 	// Get radius width of target.
-	tradius = (fabs(target->r.maxs[0]) + fabs(target->r.maxs[1]) + fabs(target->r.mins[0]) + fabs(target->r.mins[1]))/4;
+	// tradius = (fabs(target->r.maxs[0]) + fabs(target->r.maxs[1]) + fabs(target->r.mins[0]) + fabs(target->r.mins[1]))/4;
 
 	// Get impact point.
 	if(ppoint && !VectorCompare(ppoint, vec3_origin))
@@ -592,7 +592,7 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 	vec3_t vel;
 	gitem_t *item;
 	gentity_t *launched;
-	int weapon = self->s.weapon;
+	weapon_t weapon = self->s.weapon;
 	int ammoSub;
 
 	// don't toss starting weapons
@@ -783,7 +783,7 @@ void BodyRid(gentity_t *ent)
 body_die
 ==================
 */
-void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
+void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath ) {
 	// NOTENOTE No gibbing right now, this is star wars.
 	qboolean doDisint = qfalse;
 
@@ -832,7 +832,7 @@ void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 
 
 // these are just for logging, the client prints its own messages
-char	*modNames[] = {
+const char	*modNames[] = {
 	"MOD_UNKNOWN",
 	"MOD_STUN_BATON",
 	"MOD_MELEE",
@@ -1930,7 +1930,7 @@ extern stringID_table_t animTable[MAX_ANIMATIONS+1];
 static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
 {
 	int			killer;
-	char		*killerName, *obit;
+	const char	*killerName, *obit;
 
 	if ( attacker ) {
 		killer = attacker->s.number;
@@ -1949,7 +1949,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		killerName = "<world>";
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
+	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) ) {
 		obit = "<bad obituary>";
 	} else {
 		obit = modNames[ meansOfDeath ];
@@ -2075,7 +2075,7 @@ static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t m
 player_die
 ==================
 */
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
+void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath ) {
 	gentity_t	*ent;
 	int			contents;
 	int			killer;
@@ -2395,7 +2395,7 @@ void LimbThink( gentity_t *ent )
 }
 
 
-char *hitLocName[HL_MAX] =
+static const char *hitLocName[HL_MAX] =
 {
 	"none",	//HL_NONE = 0,
 	"right foot",	//HL_FOOT_RT,
@@ -2994,7 +2994,7 @@ dflags		these flags are used to control how T_Damage works
 */
 
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
-			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
+			   vec3_t dir, vec3_t point, int damage, int dflags, meansOfDeath_t mod ) {
 	gclient_t	*client;
 	int			take;
 	int			save;
@@ -3003,7 +3003,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			max;
 	int			subamt = 0;
 	int			oldHealth = targ->health;
-	int			oldArmor;
+	int			oldArmor = 0;
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
@@ -3167,6 +3167,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TIMED_MINE_SPLASH:
 			case MOD_DET_PACK_SPLASH:
 				damage *= 0.75;
+				break;
+			default:
 				break;
 			}
 		}
@@ -3649,7 +3651,7 @@ G_RadiusDamage
 ============
 */
 qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
-					 gentity_t *ignore, int mod) {
+					 gentity_t *ignore, meansOfDeath_t mod) {
 	float		points, dist;
 	gentity_t	*ent;
 	int			entityList[MAX_GENTITIES];

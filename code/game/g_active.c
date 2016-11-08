@@ -735,7 +735,7 @@ void ClientIntermissionThink( gclient_t *client ) {
 	client->buttons = client->pers.cmd.buttons;
 	if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
 		// this used to be an ^1 but once a player says ready, it should stick
-		client->readyToExit = 1;
+		client->readyToExit = qtrue;
 	}
 }
 
@@ -1009,7 +1009,7 @@ void G_UpdateClientBroadcasts ( gentity_t *self )
 
 static void G_SwitchTeam( gentity_t *ent ) {
 	gclient_t	*client;
-	int			team, oldTeam;
+	team_t		team, oldTeam;
 	int			teamLeader;
 	int			clientNum;
 

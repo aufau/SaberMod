@@ -319,7 +319,7 @@ saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move )
 	}
 }
 
-saberMoveName_t BG_KnockawayForParry( saberMoveName_t move )
+saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move )
 {
 	//FIXME: need actual anims for this
 	//FIXME: need to know which side of the saber was hit!  For now, we presume the saber gets knocked away from the center

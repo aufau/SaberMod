@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 
-char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
+static const char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 	"*death1.wav",
 	"*death2.wav",
 	"*death3.wav",
@@ -1006,7 +1006,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	clientInfo_t newInfo;
 	const char	*configstring;
 	const char	*v;
-	char		*slash;
+	const char	*slash;
 	void *oldGhoul2;
 	int i = 0;
 	qboolean wasATST = qfalse;
@@ -1091,12 +1091,11 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		} else {
 			trap_Cvar_VariableStringBuffer( "model", modelStr, sizeof( modelStr ) );
 			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
-				skin = "default";
+				Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 			} else {
-				*skin++ = 0;
+				Q_strncpyz( newInfo.skinName, skin + 1, sizeof( newInfo.skinName ) );
 			}
 
-			Q_strncpyz( newInfo.skinName, skin, sizeof( newInfo.skinName ) );
 			Q_strncpyz( newInfo.modelName, modelStr, sizeof( newInfo.modelName ) );
 		}
 
@@ -1117,7 +1116,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		} else {
 			Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
 			// truncate modelName
-			*slash = 0;
+			// *slash = 0;
 		}
 	}
 
@@ -3757,7 +3756,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 	return qtrue;
 }
 
-void CG_DoSaber( vec3_t origin, vec3_t dir, float length, saber_colors_t color, int rfx )
+void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 {
 	vec3_t		mid, rgb={1,1,1};
 	qhandle_t	blade = 0, glow = 0;
@@ -4093,8 +4092,8 @@ qboolean CG_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t lastValidE
 			{
 				tr->fraction = 1.0f;
 				tr->entityNum = ENTITYNUM_NONE;
-				tr->startsolid = 0;
-				tr->allsolid = 0;
+				tr->startsolid = qfalse;
+				tr->allsolid = qfalse;
 				return qfalse;
 			}
 			else
@@ -4787,7 +4786,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 	CG_AddLightningBeam(inOrg, outOrg);
 }
 
-extern char *forceHolocronModels[];
+extern const char *forceHolocronModels[];
 
 //rww - here begins the majority of my g2animent stuff.
 void CG_FootStepGeneric(centity_t *cent, int anim)
@@ -6471,8 +6470,8 @@ doEssentialTwo:
 			//Render a scaled version of the model's hand with a n337 looking shader
 			{
 				const char *rotateBone;
-				char *limbName;
-				char *limbCapName;
+				const char *limbName;
+				const char *limbCapName;
 				vec3_t armAng;
 				float wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
 

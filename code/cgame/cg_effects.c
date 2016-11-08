@@ -944,8 +944,9 @@ void CG_ExplosionEffects( vec3_t origin, float intensity, int radius)
 	//FIXME: When exactly is the vieworg calculated in relation to the rest of the frame?s
 
 	vec3_t	dir;
-	float	dist, intensityScale;
-	float	realIntensity;
+	float	dist;
+	// float	intensityScale;
+	// float	realIntensity;
 
 	VectorSubtract( cg.refdef.vieworg, origin, dir );
 	dist = VectorNormalize( dir );
@@ -955,8 +956,8 @@ void CG_ExplosionEffects( vec3_t origin, float intensity, int radius)
 	if ( dist > radius )
 		return;
 
-	intensityScale = 1 - ( dist / (float) radius );
-	realIntensity = intensity * intensityScale;
+	// intensityScale = 1 - ( dist / (float) radius );
+	// realIntensity = intensity * intensityScale;
 
 //	CGCam_Shake( realIntensity, 750 ); // 500 seemed a bit too quick
 }
@@ -1056,18 +1057,17 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	vec3_t			direction, new_org;
 	vec3_t			velocity		= { 0, 0, 0 };
 	vec3_t			temp_org, temp_vel;
-	float			scale, dscale;
-	int				i, numSparks;
+	int				i;
 
+	/*
 	//Sparks
-	numSparks = 16 + (random() * 16.0f);
+	int numSparks = 16 + (random() * 16.0f);
 
 	for ( i = 0; i < numSparks; i++ )
 	{
-		scale = 0.25f + (random() * 2.0f);
-		dscale = -scale*0.5;
+		float scale = 0.25f + (random() * 2.0f);
 
-/*		particle = FX_AddTrail( origin,
+		particle = FX_AddTrail( origin,
 								NULL,
 								NULL,
 								32.0f,
@@ -1083,8 +1083,9 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 		if ( particle == NULL )
 			return;
 
-		FXE_Spray( normal, 500, 150, 1.0f, 768 + (rand() & 255), (FXPrimitive *) particle );*/
+		FXE_Spray( normal, 500, 150, 1.0f, 768 + (rand() & 255), (FXPrimitive *) particle );
 	}
+	*/
 
 	//Smoke
 	//Move this out a little from the impact surface

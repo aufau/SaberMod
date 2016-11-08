@@ -173,7 +173,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 
 	// get the fragments
 	VectorScale( dir, -20, projection );
-	numFragments = trap_CM_MarkFragments( 4, (void *)originalPoints,
+	numFragments = trap_CM_MarkFragments( 4, (const float (*)[3])originalPoints,
 					projection, MAX_MARK_POINTS, markPoints[0],
 					MAX_MARK_FRAGMENTS, markFragments );
 
@@ -375,7 +375,7 @@ typedef enum
 #define	MAX_SHADER_ANIMS		32
 #define	MAX_SHADER_ANIM_FRAMES	64
 
-static char *shaderAnimNames[MAX_SHADER_ANIMS] = {
+static const char *shaderAnimNames[MAX_SHADER_ANIMS] = {
 	"explode1",
 	NULL
 };
@@ -1096,9 +1096,7 @@ void CG_AddParticles (void)
 	float			alpha;
 	float			time, time2;
 	vec3_t			org;
-	int				color;
 	cparticle_t		*active, *tail;
-	int				type;
 	vec3_t			rotate_ang;
 
 	if (!initparticles)
@@ -1203,15 +1201,11 @@ void CG_AddParticles (void)
 		if (alpha > 1.0)
 			alpha = 1;
 
-		color = p->color;
-
 		time2 = time*time;
 
 		org[0] = p->org[0] + p->vel[0]*time + p->accel[0]*time2;
 		org[1] = p->org[1] + p->vel[1]*time + p->accel[1]*time2;
 		org[2] = p->org[2] + p->vel[2]*time + p->accel[2]*time2;
-
-		type = p->type;
 
 		CG_AddParticleToScene (p, org, alpha);
 	}
