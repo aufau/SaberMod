@@ -1516,7 +1516,6 @@ void ClientThink_real( gentity_t *ent ) {
 			{
 				vec3_t attDir;
 				VectorSubtract(ent->client->ps.origin, clientLost->client->ps.origin, attDir);
-				VectorNormalize(attDir);
 
 				VectorClear(clientLost->client->ps.velocity);
 				clientLost->client->ps.forceHandExtend = HANDEXTEND_NONE;

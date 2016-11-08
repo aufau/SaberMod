@@ -2994,7 +2994,8 @@ dflags		these flags are used to control how T_Damage works
 */
 
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
-			   vec3_t dir, vec3_t point, int damage, int dflags, meansOfDeath_t mod ) {
+	const vec3_t direction, const vec3_t point, int damage, int dflags, meansOfDeath_t mod )
+{
 	gclient_t	*client;
 	int			take;
 	int			save;
@@ -3007,6 +3008,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	float		famt = 0;
 	float		hamt = 0;
 	float		shieldAbsorbed = 0;
+	vec3_t		dir;
 
 	if (targ && targ->damageRedirect)
 	{
@@ -3084,9 +3086,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		oldArmor = client->ps.stats[STAT_ARMOR];
 	}
 
-	if ( !dir ) {
+	if ( !direction ) {
 		dflags |= DAMAGE_NO_KNOCKBACK;
 	} else {
+		VectorCopy(direction, dir);
 		VectorNormalize(dir);
 	}
 
@@ -3350,7 +3353,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		client->damage_armor += asave;
 		client->damage_blood += take;
 		client->damage_knockback += knockback;
-		if ( dir ) {
+		if ( direction ) {
 			VectorCopy ( dir, client->damage_from );
 			client->damage_fromWorld = qfalse;
 		} else {

@@ -757,7 +757,7 @@ Ghoul2 Insert End
 // g_combat.c
 //
 qboolean CanDamage (gentity_t *targ, vec3_t origin);
-void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, meansOfDeath_t mod);
+void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const vec3_t directio, const vec3_t point, int damage, int dflags, meansOfDeath_t mod);
 qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, meansOfDeath_t mod);
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath );
 void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
