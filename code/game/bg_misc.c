@@ -42,7 +42,7 @@ const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS] =
 	"MASTERY7",	//"Jedi Master"		// FORCE_MASTERY_JEDI_MASTER,
 };
 
-int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS] =
+const int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS] =
 {
 	0,		// FORCE_MASTERY_UNINITIATED,
 	5,		// FORCE_MASTERY_INITIATE,
@@ -77,7 +77,7 @@ int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	//NUM_FORCE_POWERS
 };
 
-int forcePowerSorted[NUM_FORCE_POWERS] =
+const int forcePowerSorted[NUM_FORCE_POWERS] =
 { //rww - always use this order when drawing force powers for any reason
 	FP_TELEPATHY,
 	FP_HEAL,
@@ -99,7 +99,7 @@ int forcePowerSorted[NUM_FORCE_POWERS] =
 	FP_SABERTHROW
 };
 
-int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
+const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 { //nothing should be usable at rank 0..
 	FORCE_LIGHTSIDE,//FP_HEAL,//instant
 	0,//FP_LEVITATION,//hold/duration
@@ -122,7 +122,7 @@ int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 		//NUM_FORCE_POWERS
 };
 
-int WeaponReadyAnim[WP_NUM_WEAPONS] =
+const int WeaponReadyAnim[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
@@ -145,7 +145,7 @@ int WeaponReadyAnim[WP_NUM_WEAPONS] =
 	TORSO_WEAPONREADY1//WP_TURRET,
 };
 
-int WeaponAttackAnim[WP_NUM_WEAPONS] =
+const int WeaponAttackAnim[WP_NUM_WEAPONS] =
 {
 	BOTH_ATTACK1,//WP_NONE, //(shouldn't happen)
 

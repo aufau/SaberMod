@@ -646,7 +646,7 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( vec3_t origin, int event, int blameEntityNum ) {
+gentity_t *G_TempEntity( const vec3_t origin, int event, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
@@ -836,7 +836,7 @@ gentity_t *G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum)
 G_ScreenShake
 =============
 */
-gentity_t *G_ScreenShake(vec3_t org, gentity_t *target, float intensity, int duration, qboolean global)
+gentity_t *G_ScreenShake(const vec3_t org, gentity_t *target, float intensity, int duration, qboolean global)
 {
 	gentity_t	*te;
 
@@ -1046,7 +1046,7 @@ qboolean G_PointInBounds( vec3_t point, vec3_t mins, vec3_t maxs )
 	return qtrue;
 }
 
-qboolean G_BoxInBounds( vec3_t point, vec3_t mins, vec3_t maxs, vec3_t boundsMins, vec3_t boundsMaxs )
+qboolean G_BoxInBounds( const vec3_t point, const vec3_t mins, const vec3_t maxs, const vec3_t boundsMins, const vec3_t boundsMaxs )
 {
 	vec3_t boxMins;
 	vec3_t boxMaxs;

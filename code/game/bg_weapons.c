@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "bg_local.h"
 
 // Muzzle point table...
-vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
+const vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
 {//	Fwd,	right,	up.
 	{0,		0,		0	},	// WP_NONE,
 	{0	,	8,		0	},	// WP_STUN_BATON,
@@ -47,7 +47,7 @@ vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
 	{12,	0,		-4	},	// WP_DET_PACK,
 };
 
-weaponData_t weaponData[WP_NUM_WEAPONS] =
+const weaponData_t weaponData[WP_NUM_WEAPONS] =
 {
 	{	// WP_NONE
 //		"No Weapon",			//	char	classname[32];		// Spawning name
@@ -306,7 +306,7 @@ weaponData_t weaponData[WP_NUM_WEAPONS] =
 	}
 };
 
-ammoData_t ammoData[AMMO_MAX] =
+const ammoData_t ammoData[AMMO_MAX] =
 {
 	{	// AMMO_NONE
 //		"",				//	char	icon[32];	// Name of ammo icon file

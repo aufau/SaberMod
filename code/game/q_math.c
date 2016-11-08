@@ -27,26 +27,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "q_shared.h"
 
 
-vec3_t	vec3_origin = {0,0,0};
-vec3_t	axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+const vec3_t	vec3_origin = {0,0,0};
+const vec3_t	axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
 
-vec4_t		colorBlack	= {0, 0, 0, 1};
-vec4_t		colorRed	= {1, 0, 0, 1};
-vec4_t		colorGreen	= {0, 1, 0, 1};
-vec4_t		colorBlue	= {0, 0, 1, 1};
-vec4_t		colorYellow	= {1, 1, 0, 1};
-vec4_t		colorMagenta= {1, 0, 1, 1};
-vec4_t		colorCyan	= {0, 1, 1, 1};
-vec4_t		colorWhite	= {1, 1, 1, 1};
-vec4_t		colorLtGrey	= {0.75, 0.75, 0.75, 1};
-vec4_t		colorMdGrey	= {0.5, 0.5, 0.5, 1};
-vec4_t		colorDkGrey	= {0.25, 0.25, 0.25, 1};
+const vec4_t		colorBlack	= {0, 0, 0, 1};
+const vec4_t		colorRed	= {1, 0, 0, 1};
+const vec4_t		colorGreen	= {0, 1, 0, 1};
+const vec4_t		colorBlue	= {0, 0, 1, 1};
+const vec4_t		colorYellow	= {1, 1, 0, 1};
+const vec4_t		colorMagenta= {1, 0, 1, 1};
+const vec4_t		colorCyan	= {0, 1, 1, 1};
+const vec4_t		colorWhite	= {1, 1, 1, 1};
+const vec4_t		colorLtGrey	= {0.75, 0.75, 0.75, 1};
+const vec4_t		colorMdGrey	= {0.5, 0.5, 0.5, 1};
+const vec4_t		colorDkGrey	= {0.25, 0.25, 0.25, 1};
 
-vec4_t		colorLtBlue	= {0.367f, 0.261f, 0.722f, 1};
-vec4_t		colorDkBlue	= {0.199f, 0.0f,   0.398f, 1};
+const vec4_t		colorLtBlue	= {0.367f, 0.261f, 0.722f, 1};
+const vec4_t		colorDkBlue	= {0.199f, 0.0f,   0.398f, 1};
 
-vec4_t	g_color_table[8] =
+const vec4_t	g_color_table[8] =
 	{
 	{0.0, 0.0, 0.0, 1.0},
 	{1.0, 0.0, 0.0, 1.0},
@@ -59,7 +59,7 @@ vec4_t	g_color_table[8] =
 	};
 
 
-vec3_t	bytedirs[NUMVERTEXNORMALS] =
+const vec3_t	bytedirs[NUMVERTEXNORMALS] =
 {
 {-0.525731f, 0.000000f, 0.850651f}, {-0.442863f, 0.238856f, 0.864188f},
 {-0.295242f, 0.000000f, 0.955423f}, {-0.309017f, 0.500000f, 0.809017f},
@@ -489,7 +489,8 @@ void AxisClear( vec3_t axis[3] ) {
 	axis[2][2] = 1;
 }
 
-void AxisCopy( vec3_t in[3], vec3_t out[3] ) {
+// LCC has problem with this const qualifier, needs cast to (const vec3_t *)
+void AxisCopy( const vec3_t in[3], vec3_t out[3] ) {
 	VectorCopy( in[0], out[0] );
 	VectorCopy( in[1], out[1] );
 	VectorCopy( in[2], out[2] );

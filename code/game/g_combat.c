@@ -2503,6 +2503,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 	vec3_t legAxis[3];
 	mdxaBone_t	boltMatrix;
 	float fVSpeed = 0;
+	vec3_t scale;
 
 	switch (limbType)
 	{
@@ -2577,13 +2578,16 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 	AnglesToAxis( properAngles, legAxis );
 	G_G2PlayerAngles( self, legAxis, properAngles );
 
-	trap_G2API_GetBoltMatrix(self->client->ghoul2, 0, useBolt, &boltMatrix, properAngles, properOrigin, level.time, NULL, vec3_origin);
+	// trap_G2API_GetBoltMatrix lacks const qualifier on scale argument
+	VectorCopy( vec3_origin, scale );
+
+	trap_G2API_GetBoltMatrix(self->client->ghoul2, 0, useBolt, &boltMatrix, properAngles, properOrigin, level.time, NULL, scale);
 
 	boltPoint[0] = boltMatrix.matrix[0][3];
 	boltPoint[1] = boltMatrix.matrix[1][3];
 	boltPoint[2] = boltMatrix.matrix[2][3];
 
-	trap_G2API_GetBoltMatrix(self->client->ghoul2, 1, 0, &boltMatrix, properAngles, properOrigin, level.time, NULL, vec3_origin);
+	trap_G2API_GetBoltMatrix(self->client->ghoul2, 1, 0, &boltMatrix, properAngles, properOrigin, level.time, NULL, scale);
 
 	if (self->client && limbType == G2_MODELPART_RHAND)
 	{ //Make some saber hit sparks over the severed wrist area

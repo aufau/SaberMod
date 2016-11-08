@@ -1079,7 +1079,7 @@ Ghoul2 Insert End
 
 		//Rotate them
 		VectorCopy( cg.autoAngles, cent->lerpAngles );
-		AxisCopy( cg.autoAxis, ent.axis );
+		AxisCopy( (const vec3_t *)cg.autoAxis, ent.axis );
 	}
 	else if (!doNotSetModel)
 	{
@@ -1598,7 +1598,7 @@ Ghoul2 Insert End
 	{ //only weapons and powerups rotate now
 		// autorotate at one of two speeds
 		VectorCopy( cg.autoAngles, cent->lerpAngles );
-		AxisCopy( cg.autoAxis, ent.axis );
+		AxisCopy( (const vec3_t *)cg.autoAxis, ent.axis );
 	}
 	else
 	{

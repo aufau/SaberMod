@@ -118,7 +118,7 @@ static	vec3_t	muzzle;
 #define STUN_BATON_RANGE			8
 
 
-extern qboolean G_BoxInBounds( vec3_t point, vec3_t mins, vec3_t maxs, vec3_t boundsMins, vec3_t boundsMaxs );
+extern qboolean G_BoxInBounds( const vec3_t point, const vec3_t mins, const vec3_t maxs, const vec3_t boundsMins, const vec3_t boundsMaxs );
 
 static void WP_FireEmplaced( gentity_t *ent, qboolean altFire );
 
@@ -1393,7 +1393,7 @@ void prox_mine_think( gentity_t *ent )
 }
 
 //-----------------------------------------------------------------------------
-static void WP_TraceSetStart( gentity_t *ent, vec3_t start, vec3_t mins, vec3_t maxs )
+static void WP_TraceSetStart( gentity_t *ent, vec3_t start, const vec3_t mins, const vec3_t maxs )
 //-----------------------------------------------------------------------------
 {
 	//make sure our start point isn't on the other side of a wall

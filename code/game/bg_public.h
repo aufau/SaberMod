@@ -182,9 +182,9 @@ typedef enum {
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
-extern vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
+extern const vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
 
-extern int forcePowerSorted[NUM_FORCE_POWERS];
+extern const int forcePowerSorted[NUM_FORCE_POWERS];
 
 /*
 ===================================================================================
@@ -251,7 +251,7 @@ enum {
 	NUM_FORCE_MASTERY_LEVELS
 };
 extern const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
-extern int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
+extern const int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
 
 extern int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS];
 
@@ -1099,10 +1099,10 @@ void BG_TempFree( int size );
 char *BG_StringAlloc ( const char *source );
 qboolean BG_OutOfMemory ( void );
 
-extern int WeaponReadyAnim[WP_NUM_WEAPONS];
-extern int WeaponAttackAnim[WP_NUM_WEAPONS];
+extern const int WeaponReadyAnim[WP_NUM_WEAPONS];
+extern const int WeaponAttackAnim[WP_NUM_WEAPONS];
 
-extern int forcePowerDarkLight[NUM_FORCE_POWERS];
+extern const int forcePowerDarkLight[NUM_FORCE_POWERS];
 
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024

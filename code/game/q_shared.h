@@ -614,7 +614,7 @@ typedef	int	fixed16_t;
 #endif
 
 #define NUMVERTEXNORMALS	162
-extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
+extern	const vec3_t	bytedirs[NUMVERTEXNORMALS];
 
 // all drawing is done to a 640*480 virtual screen size
 // and will be automatically scaled to the real resolution
@@ -720,19 +720,19 @@ CT_MAX
 
 extern const vec4_t colorTable[CT_MAX];
 
-extern	vec4_t		colorBlack;
-extern	vec4_t		colorRed;
-extern	vec4_t		colorGreen;
-extern	vec4_t		colorBlue;
-extern	vec4_t		colorYellow;
-extern	vec4_t		colorMagenta;
-extern	vec4_t		colorCyan;
-extern	vec4_t		colorWhite;
-extern	vec4_t		colorLtGrey;
-extern	vec4_t		colorMdGrey;
-extern	vec4_t		colorDkGrey;
-extern	vec4_t		colorLtBlue;
-extern	vec4_t		colorDkBlue;
+extern const vec4_t		colorBlack;
+extern const vec4_t		colorRed;
+extern const vec4_t		colorGreen;
+extern const vec4_t		colorBlue;
+extern const vec4_t		colorYellow;
+extern const vec4_t		colorMagenta;
+extern const vec4_t		colorCyan;
+extern const vec4_t		colorWhite;
+extern const vec4_t		colorLtGrey;
+extern const vec4_t		colorMdGrey;
+extern const vec4_t		colorDkGrey;
+extern const vec4_t		colorLtBlue;
+extern const vec4_t		colorDkBlue;
 
 #define Q_COLOR_ESCAPE	'^'
 // you MUST have the last bit on here about colour strings being less than 7 or taiwanese strings register as colour!!!!
@@ -762,7 +762,7 @@ extern	vec4_t		colorDkBlue;
 #define S_COLOR_BRAND	"^2"
 #define S_LINE_PREFIX	S_COLOR_BRAND "> "
 
-extern vec4_t	g_color_table[8];
+extern const vec4_t	g_color_table[8];
 
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
 #define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
@@ -772,8 +772,8 @@ extern vec4_t	g_color_table[8];
 
 struct cplane_s;
 
-extern	vec3_t	vec3_origin;
-extern	vec3_t	axisDefault[3];
+extern	const vec3_t	vec3_origin;
+extern	const vec3_t	axisDefault[3];
 
 #define	nanmask (255<<23)
 
@@ -967,7 +967,7 @@ void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
 
 void AxisClear( vec3_t axis[3] );
-void AxisCopy( vec3_t in[3], vec3_t out[3] );
+void AxisCopy( const vec3_t in[3], vec3_t out[3] );
 
 void SetPlaneSignbits( struct cplane_s *out );
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);

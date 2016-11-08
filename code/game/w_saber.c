@@ -211,8 +211,9 @@ void G_G2ClientSpineAngles( gentity_t *ent, vec3_t viewAngles, const vec3_t angl
 		vec3_t		motionFwd, motionAngles;
 		vec3_t		motionRt, tempAng;
 		int			ang;
+		vec3_t		scale = { 0.0f, 0.0f, 0.0f };
 
-		trap_G2API_GetBoltMatrix_NoRecNoRot( ent->client->ghoul2, 0, ent->bolt_Motion, &boltMatrix, vec3_origin, ent->client->ps.origin, level.time, /*cgs.gameModels*/0, vec3_origin);
+		trap_G2API_GetBoltMatrix_NoRecNoRot( ent->client->ghoul2, 0, ent->bolt_Motion, &boltMatrix, vec3_origin, ent->client->ps.origin, level.time, /*cgs.gameModels*/0, scale);
 		//trap_G2API_GiveMeVectorFromMatrix( &boltMatrix, NEGATIVE_Y, motionFwd );
 		motionFwd[0] = -boltMatrix.matrix[0][1];
 		motionFwd[1] = -boltMatrix.matrix[1][1];
@@ -2945,7 +2946,10 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		goto finalUpdate;
 	}
 
-	trap_G2API_GetBoltMatrix(self->client->ghoul2, 1, 0, &boltMatrix, properAngles, properOrigin, level.time, NULL, vec3_origin);
+	{
+		vec3_t scale = { 0.0f, 0.0f, 0.0f };
+		trap_G2API_GetBoltMatrix(self->client->ghoul2, 1, 0, &boltMatrix, properAngles, properOrigin, level.time, NULL, scale);
+	}
 
 	boltOrigin[0] = boltMatrix.matrix[0][3];
 	boltOrigin[1] = boltMatrix.matrix[1][3];

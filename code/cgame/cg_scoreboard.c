@@ -249,7 +249,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 CG_DrawScoreboard
 =================
 */
-static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score, float *color, float fade, qboolean largeFormat )
+static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score, const float *color, float fade, qboolean largeFormat )
 {
 	//vec3_t	headAngles;
 	clientInfo_t	*ci;
@@ -461,7 +461,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	qboolean			largeFormat;
 	int		x, y, w, i, n1, n2;
 	float	fade;
-	float	*fadeColor;
+	const float	*fadeColor;
 	char	*s;
 	int maxClients;
 	int lineHeight;
