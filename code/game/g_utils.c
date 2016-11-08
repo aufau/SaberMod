@@ -608,7 +608,7 @@ void G_FreeEntity( gentity_t *ed ) {
 		int i = 0;
 		gentity_t *ent;
 
-		while (i < MAX_CLIENTS)
+		while (i < level.maxclients)
 		{
 			ent = &g_entities[i];
 

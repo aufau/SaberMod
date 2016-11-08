@@ -3154,7 +3154,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 				}
 				else
 				{
-					while (sN < MAX_CLIENTS)
+					while (sN < level.maxclients)
 					{
 						if (g_entities[sN].inuse && g_entities[sN].client && g_entities[sN].r.linked && g_entities[sN].health > 0 && (g_entities[sN].r.contents & CONTENTS_BODY))
 						{ //Take this mask off before the saber trace, because we want to hit the saber first
@@ -3260,7 +3260,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 					if (!skipSaberTrace)
 					{
 						sN = 0;
-						while (sN < MAX_CLIENTS)
+						while (sN < level.maxclients)
 						{
 							if (clientUnlinked[sN])
 							{ //Make clients clip properly again.

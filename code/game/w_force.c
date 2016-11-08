@@ -1087,7 +1087,7 @@ void ForceTeamHeal( gentity_t *self )
 		radius *= 2;
 	}
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		ent = &g_entities[i];
 
@@ -1186,7 +1186,7 @@ void ForceTeamForceReplenish( gentity_t *self )
 		radius *= 2;
 	}
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		ent = &g_entities[i];
 
@@ -2320,7 +2320,7 @@ void ForceTelepathy(gentity_t *self)
 
 		e = 0;
 
-		while (e < MAX_CLIENTS)
+		while (e < level.maxclients)
 		{
 			ent = &g_entities[e];
 			e++;
@@ -3615,7 +3615,7 @@ static void WP_UpdateMindtrickEnts(gentity_t *self)
 {
 	int i = 0;
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		if (G_IsMindTricked(&self->client->ps.fd, i))
 		{
@@ -4027,7 +4027,7 @@ void FindGenericEnemyIndex(gentity_t *self)
 	float blen = 99999999;
 	vec3_t a;
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		ent = &g_entities[i];
 

@@ -1810,11 +1810,11 @@ gentity_t *G_GetJediMaster(void)
 	int i = 0;
 	gentity_t *ent;
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		ent = &g_entities[i];
 
-		if (ent && ent->inuse && ent->client && ent->client->ps.isJediMaster)
+		if (ent->inuse && ent->client && i == ent->client->ps.clientNum && ent->client->ps.isJediMaster)
 		{
 			return ent;
 		}
@@ -2956,11 +2956,11 @@ qboolean G_ThereIsAMaster(void)
 	int i = 0;
 	gentity_t *ent;
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		ent = &g_entities[i];
 
-		if (ent && ent->client && ent->client->ps.isJediMaster)
+		if (ent->inuse && ent->client && ent->client->ps.isJediMaster)
 		{
 			return qtrue;
 		}

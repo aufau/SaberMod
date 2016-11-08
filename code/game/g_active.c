@@ -1452,9 +1452,9 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	for ( i = 0 ; i < MAX_CLIENTS ; i++ )
+	for ( i = 0 ; i < level.maxclients ; i++ )
 	{
-		if (g_entities[i].inuse && g_entities[i].client)
+		if (g_entities[i].inuse)
 		{
 			pm.bgClients[i] = &g_entities[i].client->ps;
 		}

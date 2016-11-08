@@ -1750,7 +1750,7 @@ static void Cmd_VoiceTaunt_f( gentity_t *ent ) {
 
 	if (GT_Team(g_gametype.integer)) {
 		// praise a team mate who just got a reward
-		for(i = 0; i < MAX_CLIENTS; i++) {
+		for(i = 0; i < level.maxclients; i++) {
 			who = g_entities + i;
 			if (who->client && who != ent && who->client->sess.sessionTeam == ent->client->sess.sessionTeam) {
 				if (who->client->rewardTime > level.time) {

@@ -33,7 +33,7 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 {
 	assert(blame >= 0 && blame < MAX_GENTITIES);
 
-	if (blame >= MAX_CLIENTS && blame != ENTITYNUM_NONE && blame != ENTITYNUM_WORLD) {
+	if (blame >= MAX_CLIENTS && blame < ENTITYNUM_MAX_NORMAL) {
 		blame = g_entities[blame].blameEntityNum;
 		assert(blame < MAX_CLIENTS || blame == ENTITYNUM_NONE || blame == ENTITYNUM_WORLD);
 	}
