@@ -190,26 +190,6 @@ qboolean UI_OutOfMemory() {
 
 
 #define HASH_TABLE_SIZE 2048
-/*
-================
-return a hash value for the string
-================
-*/
-static long hashForString(const char *str) {
-	int		i;
-	long	hash;
-	char	letter;
-
-	hash = 0;
-	i = 0;
-	while (str[i] != '\0') {
-		letter = tolower(str[i]);
-		hash+=(long)(letter)*(i+119);
-		i++;
-	}
-	hash &= (HASH_TABLE_SIZE-1);
-	return hash;
-}
 
 typedef struct stringDef_s {
 	struct stringDef_s *next;
@@ -237,7 +217,7 @@ const char *String_Alloc(const char *p) {
 		return staticNULL;
 	}
 
-	hash = hashForString(p);
+	hash = COM_HashForString(p, HASH_TABLE_SIZE);
 
 	str = strHandle[hash];
 	while (str) {

@@ -999,6 +999,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 
 float Com_Clamp( float min, float max, float value );
 
+int		COM_HashForString(const char *str, int size);
 char	*COM_SkipPath( char *pathname );
 void	COM_StripExtension( const char *in, char *out, size_t destsize );
 void	COM_DefaultExtension( char *path, int maxSize, const char *extension );

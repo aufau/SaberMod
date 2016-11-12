@@ -699,8 +699,8 @@ void PM_DebugLegsAnim(int anim)
 	if (oldAnim < MAX_TOTALANIMATIONS && oldAnim >= BOTH_DEATH1 &&
 		newAnim < MAX_TOTALANIMATIONS && newAnim >= BOTH_DEATH1)
 	{
-		Com_Printf("OLD: %s\n", animTable[oldAnim]);
-		Com_Printf("NEW: %s\n", animTable[newAnim]);
+		Com_Printf("OLD: %s\n", animTable[oldAnim].name);
+		Com_Printf("NEW: %s\n", animTable[newAnim].name);
 	}
 }
 /*
@@ -750,6 +750,8 @@ void SpewDebugStuffToFile()
 }
 #endif
 
+#define HASH_TABLE_SIZE		4096
+
 qboolean BG_ParseAnimationFile(const char *filename)
 {
 	char		*text_p;
@@ -760,8 +762,11 @@ qboolean BG_ParseAnimationFile(const char *filename)
 	int			skip;
 
 	fileHandle_t	f;
+	// int because values correspond to animTable indexes, not ids
+	int			 	animHashTable[HASH_TABLE_SIZE];
+	int				hash;
+	int				index;
 	int				animNum;
-
 
 	// load the file
 	if (!BGPAFtextLoaded)
@@ -784,6 +789,22 @@ qboolean BG_ParseAnimationFile(const char *filename)
 	else
 	{
 		return qtrue;
+	}
+
+	// -1 marks empty slot
+	for ( i = 0; i < HASH_TABLE_SIZE; i++ ) {
+		animHashTable[i] = -1;
+	}
+
+	// fill the hash table
+	for ( i = 0; i < ARRAY_LEN(animTable) - 1; i++ ) {
+		hash = COM_HashForString( animTable[i].name, HASH_TABLE_SIZE );
+
+		// open addressing with linear probing
+		while ( animHashTable[hash] != -1 )
+			hash = (hash + 1) & (HASH_TABLE_SIZE - 1);
+
+		animHashTable[hash] = i;
 	}
 
 	// parse the text
@@ -812,8 +833,21 @@ qboolean BG_ParseAnimationFile(const char *filename)
 			break;
 		}
 
-		animNum = GetIDForString(animTable, token);
-		if(animNum == -1)
+		// find animNum in hash table
+		hash = COM_HashForString( token, HASH_TABLE_SIZE );
+		while ( 1 ) {
+			index = animHashTable[hash];
+
+			if ( index == -1 )
+				break;
+
+			if ( !Q_stricmp( token, animTable[index].name ) )
+				break;
+
+			hash = (hash + 1) & (HASH_TABLE_SIZE - 1);
+		}
+
+		if(index == -1)
 		{
 //#ifndef FINAL_BUILD
 #ifdef _DEBUG
@@ -821,6 +855,8 @@ qboolean BG_ParseAnimationFile(const char *filename)
 #endif
 			continue;
 		}
+
+		animNum = animTable[index].id;
 
 		token = COM_Parse( (const char **)(&text_p) );
 		if ( !token )
