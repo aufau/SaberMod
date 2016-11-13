@@ -252,7 +252,8 @@ static struct {
 	vec3_t		fwd;
 	vec3_t		focus;
 	float		lastYaw;
-	double		lastTime;
+	int			lastTime;
+	float		lastTimeFrac;
 } cam;
 
 /*
@@ -572,10 +573,11 @@ static void CG_OffsetThirdPersonView( void )
 
 	// The next thing to do is to see if we need to calculate a new camera target location.
 
-	dtime = cg.playerPhysicsTime - cam.lastTime;
+	dtime = cg.predictedPlayerState.commandTime - cam.lastTime;
+	dtime += cg.predictedTimeFrac - cam.lastTimeFrac;
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cam.lastTime == 0.0 || dtime < 0.0f || cg.thisFrameTeleport )
+	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport )
 	{
 		CG_ResetThirdPersonViewDamp();
 	}
@@ -642,7 +644,8 @@ static void CG_OffsetThirdPersonView( void )
 	// ...and of course we should copy the new view location to the proper spot too.
 	VectorCopy(location, cg.refdef.vieworg);
 
-	cam.lastTime = cg.playerPhysicsTime;
+	cam.lastTime = cg.predictedPlayerState.commandTime;
+	cam.lastTimeFrac = cg.predictedTimeFrac;
 	cam.lastYaw = focusAngles[YAW];
 }
 
