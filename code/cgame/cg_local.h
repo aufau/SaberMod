@@ -61,7 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ZOOM_IN_TIME		1500.0f
 #define ZOOM_OUT_TIME		100.0f
 #define ZOOM_START_PERCENT	0.3f
-#define MAX_FOV				135
+#define MAX_FOV				160
 
 #define	ITEM_BLOB_TIME		200
 #define	MUZZLE_FLASH_TIME	20
@@ -1497,7 +1497,6 @@ extern	vmCvar_t		cg_autoswitch;
 extern	vmCvar_t		cg_ignore;
 extern	vmCvar_t		cg_simpleItems;
 extern	vmCvar_t		cg_fov;
-extern	vmCvar_t		cg_zoomFov;
 
 extern	vmCvar_t		cg_swingAngles;
 

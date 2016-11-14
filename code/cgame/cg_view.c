@@ -974,16 +974,9 @@ static int CG_CalcFov( void ) {
 	float	fov_x, fov_y;
 	float	f;
 	int		inwater;
-	float	cgFov = cg_fov.value;
+	float	cgFov;
 
-	if (cgFov < 1)
-	{
-		cgFov = 1;
-	}
-	if (cgFov > MAX_FOV)
-	{
-		cgFov = MAX_FOV;
-	}
+	cgFov = CLAMP(1, MAX_FOV, cg_fov.value);
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		// if in intermission, use a fixed value
@@ -995,11 +988,6 @@ static int CG_CalcFov( void ) {
 			fov_x = 80;//90;
 		} else {
 			fov_x = cgFov;
-			if ( fov_x < 1 ) {
-				fov_x = 1;
-			} else if ( fov_x > 160 ) {
-				fov_x = 160;
-			}
 		}
 
 		if (cg.predictedPlayerState.zoomMode == 2)
@@ -1054,16 +1042,14 @@ static int CG_CalcFov( void ) {
 		}
 		else
 		{
-			zoomFov = 80;
+			f = ( cg.time - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
-			f = ( cg.time - cg.predictedPlayerState.zoomTime ) / ZOOM_OUT_TIME;
-			if ( f > 1.0 )
-			{
-				fov_x = fov_x;
-			}
-			else
-			{
-				fov_x = cg.predictedPlayerState.zoomFov + f * ( fov_x - cg.predictedPlayerState.zoomFov );
+			if ( f < 1.0 ) {
+				fov_x = zoomFov + f * (fov_x - zoomFov);
+				// original:
+				// fov_x = f * fov_x;
+			} else {
+				zoomFov = 80;
 			}
 		}
 	}

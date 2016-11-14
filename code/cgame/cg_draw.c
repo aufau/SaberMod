@@ -201,7 +201,7 @@ static void CG_DrawZoomMask( void )
 		float off;
 
 		// zoom level
-		level = (float)(80.0f - cg.predictedPlayerState.zoomFov) / 80.0f;
+		level = (float)(80.0f - zoomFov) / 80.0f;
 
 		// ...so we'll clamp it
 		if ( level < 0.0f )

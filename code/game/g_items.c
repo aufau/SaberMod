@@ -468,7 +468,6 @@ void ItemUse_Binoculars(gentity_t *ent)
 	{
 		ent->client->ps.zoomMode = 2;
 		ent->client->ps.zoomLocked = qfalse;
-		ent->client->ps.zoomFov = 40.0f;
 	}
 	else if (ent->client->ps.zoomMode == 2)
 	{

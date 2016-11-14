@@ -3542,7 +3542,6 @@ static void PM_Weapon( void )
 	if (pm->ps->weapon == WP_SABER)
 	{ //we can't toggle zoom while using saber (for obvious reasons) so make sure it's always off
 		pm->ps->zoomMode = 0;
-		pm->ps->zoomFov = 0;
 		pm->ps->zoomLocked = qfalse;
 		pm->ps->zoomLockTime = 0;
 	}
@@ -3954,7 +3953,6 @@ void PM_AdjustAttackStates( pmove_t *pm )
 				// not already zooming, so do it now
 				pm->ps->zoomMode = 1;
 				pm->ps->zoomLocked = qfalse;
-				pm->ps->zoomFov = 80.0f;//cg_fov.value;
 				pm->ps->zoomLockTime = pm->cmd.serverTime + 50;
 				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
 			}
@@ -3972,18 +3970,6 @@ void PM_AdjustAttackStates( pmove_t *pm )
 			// Not pressing zoom any more
 			if ( pm->ps->zoomMode )
 			{
-				if (pm->ps->zoomMode == 1 && !pm->ps->zoomLocked)
-				{ //approximate what level the client should be zoomed at based on how long zoom was held
-					pm->ps->zoomFov = ((pm->cmd.serverTime+50) - pm->ps->zoomLockTime) * 0.035f;
-					if (pm->ps->zoomFov > 50)
-					{
-						pm->ps->zoomFov = 50;
-					}
-					if (pm->ps->zoomFov < 1)
-					{
-						pm->ps->zoomFov = 1;
-					}
-				}
 				// were zooming in, so now lock the zoom
 				pm->ps->zoomLocked = qtrue;
 			}

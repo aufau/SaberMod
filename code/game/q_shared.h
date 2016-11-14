@@ -1686,7 +1686,7 @@ typedef struct playerState_s {
 	int			zoomMode;		// 0 - not zoomed, 1 - disruptor weapon
 	int			zoomTime;
 	qboolean	zoomLocked;
-	float		zoomFov;
+	int			zoomFov;		// unused, was float
 	int			zoomLockTime;
 
 	int			fallingToDeath;
