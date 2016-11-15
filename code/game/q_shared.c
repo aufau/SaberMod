@@ -881,6 +881,7 @@ void Q_strncpyz( char *dest, const char *src, size_t destsize ) {
 		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" );
 	}
 
+	assert( dest - src >= destsize || src - dest >= destsize );
 	strncpy( dest, src, destsize-1 );
   dest[destsize-1] = 0;
 }
