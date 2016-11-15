@@ -775,10 +775,6 @@ struct cplane_s;
 extern	const vec3_t	vec3_origin;
 extern	const vec3_t	axisDefault[3];
 
-#define	nanmask (255<<23)
-
-#define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
-
 #if idppc
 
 static inline float Q_rsqrt( float number ) {

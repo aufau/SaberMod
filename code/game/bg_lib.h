@@ -128,3 +128,8 @@ float frexpf( float x, int *exp );
 float expf( float x );
 float logf( float a );
 float powf( float x, float y );
+
+#define expmask (0xff << 23)
+#define mantissamask ((1 << 23) - 1)
+
+#define isnan(x) ((*(int *)&(x) & expmask) == expmask && (*(int *)&(x) & mantissamask) != 0)

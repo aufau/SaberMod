@@ -3816,6 +3816,11 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 
 	memset( &saber, 0, sizeof( refEntity_t ));
 
+	// makes renderer go into infinite loop
+	// nans can come from trap_G2API_GetBoltMatrix earlier
+	if ( isnan( length ) )
+		return;
+
 	// Saber glow is it's own ref type because it uses a ton of sprites, otherwise it would eat up too many
 	//	refEnts to do each glow blob individually
 	saber.saberLength = length;
@@ -4255,6 +4260,7 @@ Ghoul2 Insert Start
 		VectorMA( org_, saberLen, axis_[0], end );
 	}
 
+	// fau - notice how this can make saber up to 1 unit longer
 	VectorAdd( end, axis_[0], end );
 
 	if (cent->currentState.bolt2)
