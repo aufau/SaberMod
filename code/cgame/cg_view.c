@@ -370,6 +370,9 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 {
 	vec3_t idealDelta;
 
+	if ( dtime <= 0.0f )
+		return;
+
 	VectorSubtract(pos->ideal, pos->prevIdeal, idealDelta);
 
 	if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
@@ -593,7 +596,11 @@ static void CG_OffsetThirdPersonView( void )
 			deltayaw = fabs(deltayaw - 360.0f);
 		}
 		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
-			stiffFactor = deltayaw / dtime;
+			if ( dtime > 0.0f ) {
+				stiffFactor = deltayaw / dtime;
+			} else {
+				stiffFactor = 0.0f;
+			}
 		} else {
 			stiffFactor = deltayaw / (cg.time - cg.oldTime);
 		}
