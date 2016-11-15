@@ -1277,7 +1277,7 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	if ( cg.renderingThirdPerson && !cg.snap->ps.zoomMode) {
+	if ( cg.renderingThirdPerson ) {
 		// back away from character
 		CG_OffsetThirdPersonView();
 	} else {
@@ -1592,24 +1592,22 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_PredictPlayerState();
 
 	// decide on third person view
-	cg.renderingThirdPerson = cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0);
-
-	if (cg.snap->ps.stats[STAT_HEALTH] > 0 && (cg.predictedPlayerState.weapon == WP_SABER || cg.predictedPlayerState.usingATST ||
-		cg.predictedPlayerState.forceHandExtend == HANDEXTEND_KNOCKDOWN || cg.predictedPlayerState.fallingToDeath))
-	{
-		if (cg_fpls.integer && cg.predictedPlayerState.weapon == WP_SABER)
-		{ //force to first person for fpls
-			cg.renderingThirdPerson = qfalse;
-		}
-		else
-		{
-			cg.renderingThirdPerson = qtrue;
-		}
-	}
-	else if (cg.snap->ps.zoomMode)
-	{ //always force first person when zoomed
+	if (cg.predictedPlayerState.pm_type == PM_SPECTATOR)
 		cg.renderingThirdPerson = qfalse;
-	}
+	else if (cg.snap->ps.zoomMode)
+		cg.renderingThirdPerson = qfalse;
+	else if (cg.snap->ps.stats[STAT_HEALTH] <= 0)
+		cg.renderingThirdPerson = qtrue;
+	else if (cg.predictedPlayerState.usingATST)
+		cg.renderingThirdPerson = qtrue;
+	else if (cg.predictedPlayerState.forceHandExtend == HANDEXTEND_KNOCKDOWN)
+		cg.renderingThirdPerson = qtrue;
+	else if (cg.predictedPlayerState.fallingToDeath)
+		cg.renderingThirdPerson = qtrue;
+	else if (cg.predictedPlayerState.weapon == WP_SABER)
+		cg.renderingThirdPerson = (qboolean) !cg_fpls.integer;
+	else
+		cg.renderingThirdPerson = (qboolean) !!cg_thirdPerson.integer;
 
 	// build cg.refdef
 	inwater = CG_CalcViewValues();
