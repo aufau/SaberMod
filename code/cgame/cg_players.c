@@ -245,9 +245,11 @@ qboolean CG_ParseSurfsFile( const char *modelName, const char *skinName, char *s
 /*
 ==========================
 CG_RegisterClientModelname
+
+Set model, skin or team to NULL to use ci values
 ==========================
 */
-static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *teamName, int clientNum ) {
+static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *model, const char *skin, const char *team, int clientNum ) {
 	int handle;
 	char		afilename[MAX_QPATH];
 	char		/**GLAName,*/ *slash;
@@ -257,11 +259,15 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	qboolean retriedAlready = qfalse;
 	char	surfOff[MAX_SURF_LIST_SIZE];
 	char	surfOn[MAX_SURF_LIST_SIZE];
+	const char *modelName = model ? model : ci->modelName;
+	const char *skinName = skin ? skin : ci->skinName;
+	const char *teamName = team ? team : ci->teamName;
 
 retryModel:
 	if (ci->ATST && clientNum == -1)
 	{
-		Com_sprintf(ci->teamName, sizeof(ci->teamName), teamName);
+		if (team)
+			Com_sprintf(ci->teamName, sizeof(ci->teamName), teamName);
 		return qtrue;
 	}
 
@@ -537,7 +543,8 @@ retryModel:
 		cg_entities[clientNum].ghoul2weapon = NULL;
 	}
 
-	Q_strncpyz (ci->teamName, teamName, sizeof(ci->teamName));
+	if (team)
+		Q_strncpyz (ci->teamName, teamName, sizeof(ci->teamName));
 
 	// Model icon for drawing the portrait on screen
 	ci->modelIcon = trap_R_RegisterShaderNoMip ( va ( "models/players/%s/icon_%s", modelName, skinName ) );
@@ -638,7 +645,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 		Q_strcat( teamname, sizeof(teamname), "/" );
 	}
 	modelloaded = qtrue;
-	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, teamname, clientNum ) ) {
+	if ( !CG_RegisterClientModelname( ci, NULL, NULL, teamname, clientNum ) ) {
 		//CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname );
 		//rww - DO NOT error out here! Someone could just type in a nonsense model name and crash everyone's client.
 		//Give it a chance to load default model for this client instead.
@@ -651,7 +658,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 			} else {
 				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
 			}
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, teamname, -1 ) ) {
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, NULL, teamname, -1 ) ) {
 				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
 			}
 		} else {
@@ -5754,7 +5761,7 @@ void CG_ForceFPLSPlayerModel(centity_t *cent, clientInfo_t *ci)
 	}
 	else
 	{
-		CG_RegisterClientModelname(ci, ci->modelName, ci->skinName, ci->teamName, cent->currentState.number);
+		CG_RegisterClientModelname(ci, NULL, NULL, NULL, cent->currentState.number);
 	}
 
 	anim = &bgGlobalAnimations[ (cg_entities[clientNum].currentState.legsAnim & ~ANIM_TOGGLEBIT) ];
@@ -5909,8 +5916,8 @@ void CG_Player( centity_t *cent ) {
 		cg_entities[cent->currentState.number].currentState.teamowner = cent->currentState.teamowner;
 		cg_entities[cent->currentState.number].isATST = cent->isATST;
 
-		if (CG_RegisterClientModelname(&cgs.clientinfo[cent->currentState.number], cgs.clientinfo[cent->currentState.number].modelName, cgs.clientinfo[cent->currentState.number].skinName,
-			cgs.clientinfo[cent->currentState.number].teamName, cent->currentState.number))
+		if (CG_RegisterClientModelname(&cgs.clientinfo[cent->currentState.number], NULL, NULL,
+			NULL, cent->currentState.number))
 		{
 			cent->isATST = 1;
 			cg_entities[cent->currentState.number].isATST = cent->isATST;
@@ -5922,8 +5929,8 @@ void CG_Player( centity_t *cent ) {
 		cg_entities[cent->currentState.number].currentState.teamowner = cent->currentState.teamowner;
 		cg_entities[cent->currentState.number].isATST = cent->isATST;
 
-		if (CG_RegisterClientModelname(&cgs.clientinfo[cent->currentState.number], cgs.clientinfo[cent->currentState.number].modelName, cgs.clientinfo[cent->currentState.number].skinName,
-			cgs.clientinfo[cent->currentState.number].teamName, cent->currentState.number))
+		if (CG_RegisterClientModelname(&cgs.clientinfo[cent->currentState.number], NULL, NULL,
+			NULL, cent->currentState.number))
 		{
 			cent->isATST = 0;
 			cg_entities[cent->currentState.number].isATST = cent->isATST;

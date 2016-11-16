@@ -1022,7 +1022,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 	qboolean	free;
 
     p = cleanName;
-    end = cleanName + sizeof(cleanName);
+    end = cleanName + sizeof(cleanName) - 1;
     characters = 0;
     spaces = 0;
 
