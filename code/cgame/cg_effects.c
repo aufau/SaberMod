@@ -744,11 +744,6 @@ CG_CreateDebris
 Throws specified debris from within a given bounding box in the world
 ==================
 */
-#define DEBRIS_SPECIALCASE_ROCK			-1
-#define DEBRIS_SPECIALCASE_CHUNKS		-2
-#define DEBRIS_SPECIALCASE_WOOD			-3
-#define DEBRIS_SPECIALCASE_GLASS		-4
-
 #define NUM_DEBRIS_MODELS_GLASS				8
 #define NUM_DEBRIS_MODELS_WOOD				8
 #define NUM_DEBRIS_MODELS_CHUNKS			3

@@ -1111,4 +1111,11 @@ extern const int forcePowerDarkLight[NUM_FORCE_POWERS];
 #define MAX_BOTS			1024
 #define MAX_BOTS_TEXT		8192
 
+// sent over the net as uint16_t. Compatible with old negative values
+#define DEBRIS_SPECIALCASE_ROCK			0xffff // -1
+#define DEBRIS_SPECIALCASE_CHUNKS		0xfffe // -2
+#define DEBRIS_SPECIALCASE_WOOD			0xfffd // -3
+#define DEBRIS_SPECIALCASE_GLASS		0xfffc // -4
+#define DEBRIS_SPECIALCASE_MIN			0xfffc
+
 #endif //__BG_PUBLIC_H__

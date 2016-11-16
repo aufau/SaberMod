@@ -1677,11 +1677,6 @@ BREAKABLE BRUSH
 
 ===============================================================================
 */
-#define DEBRIS_SPECIALCASE_ROCK			-1
-#define DEBRIS_SPECIALCASE_CHUNKS		-2
-#define DEBRIS_SPECIALCASE_WOOD			-3
-#define DEBRIS_SPECIALCASE_GLASS		-4
-
 int gExplSound;
 
 void BreakableBrushDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod)

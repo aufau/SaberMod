@@ -2253,7 +2253,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			isnd = 0;
 		}
 
-		if (es->trickedentindex > 0)
+		if (es->trickedentindex < DEBRIS_SPECIALCASE_MIN)
 		{
 			if (cgs.gameModels[es->trickedentindex])
 			{
@@ -2261,7 +2261,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 			else
 			{ //default to "rock" type
-				CG_CreateDebris(es->number, es->pos.trBase, es->angles, es->origin, isnd, -1);
+				CG_CreateDebris(es->number, es->pos.trBase, es->angles, es->origin, isnd, DEBRIS_SPECIALCASE_ROCK);
 			}
 		}
 		else
