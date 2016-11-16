@@ -515,18 +515,18 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 	mxWidth = width*0.2;
 	timeDecay = ( timeDecay + TIME_DECAY_FAST ) * 0.5f;
 
-	if (stepWidth < 0.01f)
+	if (stepWidth < 0.05f)
 	{
-		stepWidth = 0.01f;
+		stepWidth = 0.05f;
 	}
 	if (mxWidth < 5)
 	{
 		mxWidth = 5;
 	}
 
-	for ( z = 0.0f, i = 0; z < 1.0f; z += stepHeight, i++ )
+	for ( z = 0.0f, i = 0; i < 19 && z < 1.0f; z += stepHeight, i++ )
 	{
-		for ( x = 0.0f, t = 0; x < 1.0f; x += stepWidth, t++ )
+		for ( x = 0.0f, t = 0; i < 19 && x < 1.0f; x += stepWidth, t++ )
 		{
 			// This is nasty..
 			if ( t > 0 && t < mxWidth )
