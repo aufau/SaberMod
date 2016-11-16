@@ -681,10 +681,11 @@ void CG_AddScorePlum( localEntity_t *le ) {
 
 	if (c < 0.25)
 		re->shaderRGBA[3] = 0xff * 4 * c;
-	else if (c > 0.75)
-		re->shaderRGBA[3] = 0xff - 0xff * 4 * c;
-	else
+	else if (c < 0.75)
 		re->shaderRGBA[3] = 0xff;
+	else
+		re->shaderRGBA[3] = (1.0f - c) * 0xff * 4;
+
 
 	minSize = cg_param1.value > 0 ? cg_param1.value : 4.0f;
 	scaling = cg_param2.value > 0 ? cg_param2.value : 10.0f;
