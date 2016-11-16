@@ -59,6 +59,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define STR(x) STR_H(x)
 #define STRLEN(x) (sizeof(x) - 1)
 #define CLAMP(min, max, x) ((x) > (max) ? (max) : (x) < (min) ? (min) : (x))
+#define PAD(base, alignment)	(((base)+(alignment)-1) & ~((alignment)-1))
+#define PADLEN(base, alignment)	(PAD((base), (alignment)) - (base))
+#define PADP(base, alignment)	((void *) PAD((intptr_t) (base), (alignment)))
 
 /**********************************************************************
   VM Considerations

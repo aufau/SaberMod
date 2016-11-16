@@ -2330,7 +2330,8 @@ static int		bg_poolTail = MAX_POOL_SIZE;
 
 void *BG_Alloc ( int size )
 {
-	bg_poolSize = ((bg_poolSize + 0x00000003) & 0xfffffffc);
+	// for 64bit pointers
+	bg_poolSize = PAD(bg_poolSize, sizeof(void *));
 
 	if (bg_poolSize + size > bg_poolTail)
 	{
@@ -2358,7 +2359,7 @@ void *BG_AllocUnaligned ( int size )
 
 void *BG_TempAlloc( int size )
 {
-	size = ((size + 0x00000003) & 0xfffffffc);
+	size = PAD(size, sizeof(void *));
 
 	if (bg_poolTail - size < bg_poolSize)
 	{
@@ -2373,7 +2374,7 @@ void *BG_TempAlloc( int size )
 
 void BG_TempFree( int size )
 {
-	size = ((size + 0x00000003) & 0xfffffffc);
+	size = PAD(size, sizeof(void *));
 
 	if (bg_poolTail+size > MAX_POOL_SIZE)
 	{
