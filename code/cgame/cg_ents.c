@@ -51,7 +51,7 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
-		1.0 - parent->backlerp, tagName );
+		1.0f - parent->backlerp, tagName );
 
 	// FIXME: allow origin offsets along tag?
 	VectorCopy( parent->origin, entity->origin );
@@ -82,7 +82,7 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 //AxisClear( entity->axis );
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
-		1.0 - parent->backlerp, tagName );
+		1.0f - parent->backlerp, tagName );
 
 	// FIXME: allow origin offsets along tag?
 	VectorCopy( parent->origin, entity->origin );
@@ -1295,8 +1295,8 @@ Ghoul2 Insert End
 		}
 		else if (cent->currentState.trickedentindex3 == 2)
 		{ //light
-			fxSArgs.sAlpha *= 1.5;
-			fxSArgs.eAlpha *= 1.5;
+			fxSArgs.sAlpha *= 1.5f;
+			fxSArgs.eAlpha *= 1.5f;
 			fxSArgs.shader = cgs.media.redSaberGlowShader;
 			trap_FX_AddSprite(&fxSArgs);
 			fxSArgs.shader = cgs.media.greenSaberGlowShader;
@@ -1310,15 +1310,15 @@ Ghoul2 Insert End
 				(s1->modelindex+128) == FP_SABERDEFEND ||
 				(s1->modelindex+128) == FP_SABERTHROW)
 			{ //saber power
-				fxSArgs.sAlpha *= 1.5;
-				fxSArgs.eAlpha *= 1.5;
+				fxSArgs.sAlpha *= 1.5f;
+				fxSArgs.eAlpha *= 1.5f;
 				fxSArgs.shader = cgs.media.greenSaberGlowShader;
 				trap_FX_AddSprite(&fxSArgs);
 			}
 			else
 			{
-				fxSArgs.sAlpha *= 0.5;
-				fxSArgs.eAlpha *= 0.5;
+				fxSArgs.sAlpha *= 0.5f;
+				fxSArgs.eAlpha *= 0.5f;
 				fxSArgs.shader = cgs.media.greenSaberGlowShader;
 				trap_FX_AddSprite(&fxSArgs);
 				fxSArgs.shader = cgs.media.blueSaberGlowShader;
@@ -1730,9 +1730,9 @@ Ghoul2 Insert End
 
 	// increase the size of the weapons when they are presented as items
 	if ( item->giType == IT_WEAPON ) {
-		VectorScale( ent.axis[0], 1.5, ent.axis[0] );
-		VectorScale( ent.axis[1], 1.5, ent.axis[1] );
-		VectorScale( ent.axis[2], 1.5, ent.axis[2] );
+		VectorScale( ent.axis[0], 1.5f, ent.axis[0] );
+		VectorScale( ent.axis[1], 1.5f, ent.axis[1] );
+		VectorScale( ent.axis[2], 1.5f, ent.axis[2] );
 		ent.nonNormalizedAxes = qtrue;
 		//trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.weaponHoverSound );
 	}
@@ -1749,7 +1749,7 @@ Ghoul2 Insert End
 		int a;
 
 		alpha = (float)msec / ITEM_SCALEUP_TIME;
-		a = alpha * 255.0;
+		a = alpha * 255;
 		if (a <= 0)
 			a=1;
 
@@ -1766,7 +1766,7 @@ Ghoul2 Insert End
 		// Alpha in over half the time, out over half.
 
 		//alpha = sin(M_PI*alpha);
-		a = alpha * 255.0;
+		a = alpha * 255;
 
 		a = 255 - a;
 

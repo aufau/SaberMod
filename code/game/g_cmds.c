@@ -2433,7 +2433,7 @@ int G_ItemUsable(playerState_t *ps, int forcedUse)
 		fwd[2] = 0;
 		VectorMA(ps->origin, 64, fwd, dest);
 		trap_Trace(&tr, ps->origin, mins, maxs, dest, ps->clientNum, MASK_SHOT );
-		if (tr.fraction > 0.9 && !tr.startsolid && !tr.allsolid)
+		if (tr.fraction > 0.9f && !tr.startsolid && !tr.allsolid)
 		{
 			VectorCopy(tr.endpos, pos);
 			VectorSet( dest, pos[0], pos[1], pos[2] - 4096 );

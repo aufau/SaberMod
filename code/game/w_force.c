@@ -1080,7 +1080,7 @@ void ForceTeamHeal( gentity_t *self )
 
 	if (self->client->ps.fd.forcePowerLevel[FP_TEAM_HEAL] == FORCE_LEVEL_2)
 	{
-		radius *= 1.5;
+		radius *= 1.5f;
 	}
 	if (self->client->ps.fd.forcePowerLevel[FP_TEAM_HEAL] == FORCE_LEVEL_3)
 	{
@@ -1179,7 +1179,7 @@ void ForceTeamForceReplenish( gentity_t *self )
 
 	if (self->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE] == FORCE_LEVEL_2)
 	{
-		radius *= 1.5;
+		radius *= 1.5f;
 	}
 	if (self->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE] == FORCE_LEVEL_3)
 	{
@@ -1288,7 +1288,7 @@ void ForceGrip( gentity_t *self )
 
 	trap_Trace(&tr, tfrom, NULL, NULL, tto, self->s.number, MASK_PLAYERSOLID);
 
-	if ( tr.fraction != 1.0 &&
+	if ( tr.fraction != 1.0f &&
 		tr.entityNum != ENTITYNUM_NONE &&
 		g_entities[tr.entityNum].client &&
 		!g_entities[tr.entityNum].client->ps.fd.forceGripCripple &&
@@ -1654,13 +1654,13 @@ void ForceShootLightning( gentity_t *self )
 			}
 
 			VectorSubtract( traceEnt->r.absmax, traceEnt->r.absmin, size );
-			VectorMA( traceEnt->r.absmin, 0.5, size, ent_org );
+			VectorMA( traceEnt->r.absmin, 0.5f, size, ent_org );
 
 			//see if they're in front of me
 			//must be within the forward cone
 			VectorSubtract( ent_org, center, dir );
 			VectorNormalize( dir );
-			if ( (dot = DotProduct( dir, forward )) < 0.5 )
+			if ( (dot = DotProduct( dir, forward )) < 0.5f )
 				continue;
 
 			//must be close enough
@@ -1692,7 +1692,7 @@ void ForceShootLightning( gentity_t *self )
 		VectorMA( self->client->ps.origin, 2048, forward, end );
 
 		trap_Trace( &tr, self->client->ps.origin, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT );
-		if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+		if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 		{
 			return;
 		}
@@ -1937,13 +1937,13 @@ int ForceShootDrain( gentity_t *self )
 			}
 
 			VectorSubtract( traceEnt->r.absmax, traceEnt->r.absmin, size );
-			VectorMA( traceEnt->r.absmin, 0.5, size, ent_org );
+			VectorMA( traceEnt->r.absmin, 0.5f, size, ent_org );
 
 			//see if they're in front of me
 			//must be within the forward cone
 			VectorSubtract( ent_org, center, dir );
 			VectorNormalize( dir );
-			if ( (dot = DotProduct( dir, forward )) < 0.5 )
+			if ( (dot = DotProduct( dir, forward )) < 0.5f )
 				continue;
 
 			//must be close enough
@@ -1976,7 +1976,7 @@ int ForceShootDrain( gentity_t *self )
 		VectorMA( self->client->ps.origin, 2048, forward, end );
 
 		trap_Trace( &tr, self->client->ps.origin, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT );
-		if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0 || tr.allsolid || tr.startsolid || !g_entities[tr.entityNum].client || !g_entities[tr.entityNum].inuse )
+		if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0f || tr.allsolid || tr.startsolid || !g_entities[tr.entityNum].client || !g_entities[tr.entityNum].inuse )
 		{
 			return 0;
 		}
@@ -2291,7 +2291,7 @@ void ForceTelepathy(gentity_t *self)
 
 		trap_Trace(&tr, tfrom, NULL, NULL, tto, self->s.number, MASK_PLAYERSOLID);
 
-		if (tr.fraction != 1.0 &&
+		if (tr.fraction != 1.0f &&
 			tr.entityNum != ENTITYNUM_NONE &&
 			g_entities[tr.entityNum].inuse &&
 			g_entities[tr.entityNum].client &&
@@ -2706,7 +2706,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 
 		trap_Trace(&tr, tfrom, NULL, NULL, tto, self->s.number, MASK_PLAYERSOLID);
 
-		if (tr.fraction != 1.0 &&
+		if (tr.fraction != 1.0f &&
 			tr.entityNum != ENTITYNUM_NONE)
 		{
 			if (!g_entities[tr.entityNum].client && g_entities[tr.entityNum].s.eType == ET_GRAPPLE)
@@ -2881,11 +2881,11 @@ void ForceThrow( gentity_t *self, qboolean pull )
 		}
 
 		VectorSubtract( ent->r.absmax, ent->r.absmin, size );
-		VectorMA( ent->r.absmin, 0.5, size, ent_org );
+		VectorMA( ent->r.absmin, 0.5f, size, ent_org );
 
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot1 = DotProduct( dir, forward )) < 0.6 )
+		if ( (dot1 = DotProduct( dir, forward )) < 0.6f )
 			continue;
 
 		dist = VectorLength( v );
@@ -3097,7 +3097,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 					push_list[x]->client->ps.otherKillerTime = level.time + 5000;
 					push_list[x]->client->ps.otherKillerDebounceTime = level.time + 100;
 
-					pushPowerMod -= (dirLen*0.7);
+					pushPowerMod -= dirLen * 0.7f;
 					if (pushPowerMod < 16)
 					{
 						pushPowerMod = 16;
@@ -3139,13 +3139,13 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				VectorNormalize( forward );
 				VectorMA( self->client->ps.origin, radius, forward, end );
 				trap_Trace( &tr, self->client->ps.origin, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT );
-				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 				{//must be pointing right at it
 					continue;
 				}
 
 				VectorSubtract( push_list[x]->r.absmax, push_list[x]->r.absmin, size );
-				VectorMA( push_list[x]->r.absmin, 0.5, size, center );
+				VectorMA( push_list[x]->r.absmin, 0.5f, size, center );
 				VectorAdd( center, push_list[x]->pos1, pos1 );
 				VectorAdd( center, push_list[x]->pos2, pos2 );
 
@@ -4085,7 +4085,7 @@ void SeekerDroneUpdate(gentity_t *self)
 		VectorCopy(self->client->ps.origin, elevated);
 		elevated[2] += 40;
 
-		angle = ((level.time / 12) & 255) * (M_PI * 2) / 255; //magical numbers make magic happen
+		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -4132,7 +4132,7 @@ void SeekerDroneUpdate(gentity_t *self)
 
 		elevated[2] -= 55-prefig;
 
-		angle = ((level.time / 12) & 255) * (M_PI * 2) / 255; //magical numbers make magic happen
+		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -4200,7 +4200,7 @@ void SeekerDroneUpdate(gentity_t *self)
 		VectorCopy(self->client->ps.origin, elevated);
 		elevated[2] += 40;
 
-		angle = ((level.time / 12) & 255) * (M_PI * 2) / 255; //magical numbers make magic happen
+		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;

@@ -161,7 +161,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	RotatePointAroundVector( axis[2], axis[0], axis[1], orientation );
 	CrossProduct( axis[0], axis[2], axis[1] );
 
-	texCoordScale = 0.5 * 1.0 / radius;
+	texCoordScale = 0.5f / radius;
 
 	// create the full polygon
 	for ( i = 0 ; i < 3 ; i++ ) {
@@ -198,8 +198,8 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 			VectorCopy( markPoints[mf->firstPoint + j], v->xyz );
 
 			VectorSubtract( v->xyz, origin, delta );
-			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * texCoordScale;
-			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * texCoordScale;
+			v->st[0] = 0.5f + DotProduct( delta, axis[1] ) * texCoordScale;
+			v->st[1] = 0.5f + DotProduct( delta, axis[2] ) * texCoordScale;
 			for (k = 0; k < 4; k++)
 				v->modulate[k] = colors[k];
 		}
@@ -687,14 +687,14 @@ void CG_AddParticleToScene (cparticle_t *p, vec3_t org, float alpha)
 				len = 1;
 
 			val = 4096/len;
-			greyit = 0.25 * val;
-			if (greyit > 0.5)
-				greyit = 0.5;
+			greyit = 0.25f * val;
+			if (greyit > 0.5f)
+				greyit = 0.5f;
 
 			VectorSet (color, greyit, greyit, greyit);
 		}
 		else
-			VectorSet (color, 1.0, 1.0, 1.0);
+			VectorSet (color, 1.0f, 1.0f, 1.0f);
 
 		time = cg.time - p->time;
 		time2 = p->endtime - p->time;
@@ -729,7 +729,7 @@ void CG_AddParticleToScene (cparticle_t *p, vec3_t org, float alpha)
 
 			vectoangles (rforward, temp);
 			p->accumroll += p->roll;
-			temp[ROLL] += p->accumroll * 0.1;
+			temp[ROLL] += p->accumroll * 0.1f;
 			AngleVectors ( temp, NULL, rright2, rup2);
 		}
 		else
@@ -999,7 +999,7 @@ void CG_AddParticleToScene (cparticle_t *p, vec3_t org, float alpha)
 		height = p->height + ( ratio * ( p->endheight - p->height) );
 
 		// if we are "inside" this sprite, don't draw
-		if (Distance( cg.snap->ps.origin, org ) < width/1.5) {
+		if (Distance( cg.snap->ps.origin, org ) < width / 1.5f) {
 			return;
 		}
 
@@ -1107,8 +1107,8 @@ void CG_AddParticles (void)
 	VectorCopy( cg.refdef.viewaxis[2], pvup );
 
 	vectoangles( cg.refdef.viewaxis[0], rotate_ang );
-	roll += ((cg.time - oldtime) * 0.1) ;
-	rotate_ang[ROLL] += (roll*0.9);
+	roll += ((cg.time - oldtime) * 0.1f) ;
+	rotate_ang[ROLL] += roll * 0.9f;
 	AngleVectors ( rotate_ang, rforward, rright, rup);
 
 	oldtime = cg.time;
@@ -1121,7 +1121,7 @@ void CG_AddParticles (void)
 
 		next = p->next;
 
-		time = (cg.time - p->time)*0.001;
+		time = (cg.time - p->time) * 0.001f;
 
 		alpha = p->alpha + time*p->alphavel;
 		if (alpha <= 0)
@@ -1198,7 +1198,7 @@ void CG_AddParticles (void)
 			tail = p;
 		}
 
-		if (alpha > 1.0)
+		if (alpha > 1.0f)
 			alpha = 1;
 
 		time2 = time*time;
@@ -1365,7 +1365,7 @@ void CG_ParticleBubble (qhandle_t pshader, vec3_t origin, vec3_t origin2, int tu
 	p->end = origin2[2];
 	p->pshader = pshader;
 
-	randsize = 1 + (crandom() * 0.5);
+	randsize = 1 + (crandom() * 0.5f);
 
 	p->height = randsize;
 	p->width = randsize;
@@ -1375,7 +1375,7 @@ void CG_ParticleBubble (qhandle_t pshader, vec3_t origin, vec3_t origin2, int tu
 	if (turb)
 	{
 		p->type = P_BUBBLE_TURBULENT;
-		p->vel[2] = 50 * 1.3;
+		p->vel[2] = 50 * 1.3f;
 	}
 	else
 	{
@@ -1860,7 +1860,7 @@ void CG_Particle_OilSlick (qhandle_t pshader, centity_t *cent)
 
 	VectorCopy(cent->currentState.origin, p->org );
 
-	p->org[2]+= 0.55 + (crandom() * 0.5);
+	p->org[2]+= 0.55f + (crandom() * 0.5f);
 
 	p->vel[0] = 0;
 	p->vel[1] = 0;
@@ -1905,7 +1905,7 @@ void CG_OilSlickRemove (centity_t *cent)
 
 qboolean ValidBloodPool (vec3_t start)
 {
-#define EXTRUDE_DIST	0.5
+#define EXTRUDE_DIST	0.5f
 
 	vec3_t	angles;
 	vec3_t	right, up;
@@ -1983,7 +1983,7 @@ void CG_BloodPool (localEntity_t *le, qhandle_t pshader, trace_t *tr)
 
 	p->pshader = pshader;
 
-	rndSize = 0.4 + random()*0.6;
+	rndSize = 0.4f + random()*0.6f;
 
 	p->width = 8*rndSize;
 	p->height = 8*rndSize;

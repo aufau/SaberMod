@@ -62,7 +62,7 @@ void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 //		if(trace_fraction>0.05&&forwhom.movetype==MOVETYPE_STEP)
 //			forwhom.flags(-)FL_ONGROUND;
 
-		if ( trace.fraction >= 1.0 )
+		if ( trace.fraction >= 1.0f )
 			return;
 
 		if ( VectorCompare( vec3_origin, trace.plane.normal ) )
@@ -142,10 +142,11 @@ void G_BounceObject( gentity_t *ent, trace_t *trace )
 	//FIXME: customized or material-based impact/bounce sounds
 	if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
-		VectorScale( ent->s.pos.trDelta, 0.5, ent->s.pos.trDelta );
+		VectorScale( ent->s.pos.trDelta, 0.5f, ent->s.pos.trDelta );
 
 		// check for stop
-		if ( ((trace->plane.normal[2] > 0.7&&g_gravity.value>0) || (trace->plane.normal[2]<-0.7&&g_gravity.value<0)) && ((ent->s.pos.trDelta[2]<40&&g_gravity.value>0)||(ent->s.pos.trDelta[2]>-40&&g_gravity.value<0)) ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
+		if (((trace->plane.normal[2] > 0.7f && g_gravity.value > 0) || (trace->plane.normal[2] < -0.7f && g_gravity.value < 0)) &&
+			((ent->s.pos.trDelta[2] < 40 && g_gravity.value > 0) || (ent->s.pos.trDelta[2] > -40 && g_gravity.value < 0))) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
 		{
 			//G_SetOrigin( ent, trace->endpos );
 			//ent->nextthink = level.time + 500;
@@ -260,7 +261,7 @@ void G_RunObject( gentity_t *ent )
 		{
 			float friction = 0.975f;
 			//friction -= ent->mass/1000.0f;
-			if ( friction < 0.1 )
+			if ( friction < 0.1f )
 			{
 				friction = 0.1f;
 			}
@@ -303,7 +304,7 @@ void G_RunObject( gentity_t *ent )
 	//do impact physics
 	if ( ent->s.pos.trType == TR_GRAVITY )//tr.fraction < 1.0 &&
 	{//FIXME: only do this if no trDelta
-		if ( g_gravity.value <= 0 || tr.plane.normal[2] < 0.7 )
+		if ( g_gravity.value <= 0 || tr.plane.normal[2] < 0.7f )
 		{
 			if ( ent->s.eFlags&(EF_BOUNCE|EF_BOUNCE_HALF) )
 			{

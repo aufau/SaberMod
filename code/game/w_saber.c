@@ -283,15 +283,15 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 		return;
 	}
 
-	torsoAngles[YAW] = headAngles[YAW] + 0.25 * movementOffsets[ dir ];
+	torsoAngles[YAW] = headAngles[YAW] + 0.25f * movementOffsets[ dir ];
 
 	// --------- pitch -------------
 
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[PITCH] > 180 ) {
-		dest = (-360 + headAngles[PITCH]) * 0.75;
+		dest = (-360 + headAngles[PITCH]) * 0.75f;
 	} else {
-		dest = headAngles[PITCH] * 0.75;
+		dest = headAngles[PITCH] * 0.75f;
 	}
 
 	torsoAngles[PITCH] = ent->client->ps.viewangles[PITCH];
@@ -307,7 +307,7 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 		vec3_t	axis[3];
 		float	side;
 
-		speed *= 0.05;
+		speed *= 0.05f;
 
 		AnglesToAxis( legsAngles, axis );
 		side = speed * DotProduct( velocity, axis[1] );
@@ -401,7 +401,7 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	}
 
 	viewAngles[YAW] = viewAngles[ROLL] = 0;
-	viewAngles[PITCH] *= 0.5;
+	viewAngles[PITCH] *= 0.5f;
 
 	VectorCopy(legsAngles, angles);
 
@@ -1498,7 +1498,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 			trDif++;
 
-			while (tr.fraction == 1.0 && traceTests < 4 && tr.entityNum >= ENTITYNUM_NONE)
+			while (tr.fraction == 1.0f && traceTests < 4 && tr.entityNum >= ENTITYNUM_NONE)
 			{
 				VectorCopy(self->client->lastSaberBase, oldSaberStart);
 				VectorCopy(self->client->lastSaberTip, oldSaberEnd);
@@ -2919,7 +2919,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		fVSpeed += self->client->ps.velocity[2];
 	}
 
-	fVSpeed *= 0.08;
+	fVSpeed *= 0.08f;
 
 	properOrigin[0] += addVel[0]*fVSpeed;
 	properOrigin[1] += addVel[1]*fVSpeed;
@@ -3209,9 +3209,9 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 								//Now that I have the angle, I'll just say the base for it is the difference between the two start
 								//points (even though that's quite possibly completely false)
 								VectorSubtract(boltOrigin, oldSaberStart, saberSubBase);
-								saberMidPoint[0] = boltOrigin[0] + (saberSubBase[0]*0.5);
-								saberMidPoint[1] = boltOrigin[1] + (saberSubBase[1]*0.5);
-								saberMidPoint[2] = boltOrigin[2] + (saberSubBase[2]*0.5);
+								saberMidPoint[0] = boltOrigin[0] + (saberSubBase[0]*0.5f);
+								saberMidPoint[1] = boltOrigin[1] + (saberSubBase[1]*0.5f);
+								saberMidPoint[2] = boltOrigin[2] + (saberSubBase[2]*0.5f);
 
 								AngleVectors(saberMidAngle, saberMidDir, 0, 0);
 								saberMidEnd[0] = saberMidPoint[0] + saberMidDir[0]*40; //40 == saber length
@@ -3447,11 +3447,11 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 
 	if ( zdiff > 0 )
 	{
-		if ( rightdot > 0.3 )
+		if ( rightdot > 0.3f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_RIGHT;
 		}
-		else if ( rightdot < -0.3 )
+		else if ( rightdot < -0.3f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_LEFT;
 		}
@@ -3466,11 +3466,11 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 		{//hmm, pretty low, but not low enough to use the low block, so we need to duck
 
 		}
-		if ( rightdot > 0.1 )
+		if ( rightdot > 0.1f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_RIGHT;
 		}
-		else if ( rightdot < -0.1 )
+		else if ( rightdot < -0.1f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_LEFT;
 		}
@@ -3527,7 +3527,7 @@ void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 	}
 	else if (zdiff > 13)
 	{	// The upper half has three viable blocks...
-		if (rightdot > 0.25)
+		if (rightdot > 0.25f)
 		{	// In the right quadrant...
 			if (Q_irand(0,1))
 			{

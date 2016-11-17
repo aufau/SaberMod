@@ -1567,7 +1567,7 @@ Ghoul2 Insert End
 		cgs.inlineDrawModel[i] = trap_R_RegisterModel( name );
 		trap_R_ModelBounds( cgs.inlineDrawModel[i], mins, maxs );
 		for ( j = 0 ; j < 3 ; j++ ) {
-			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5 * ( maxs[j] - mins[j] );
+			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5f * ( maxs[j] - mins[j] );
 		}
 	}
 

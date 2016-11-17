@@ -766,7 +766,7 @@ float atan2f( float y, float x ) {
 		}
 	}
 
-	return base + dir * i * ( M_PI/2048);
+	return base + dir * i * (float) (M_PI/2048);
 }
 
 
@@ -839,9 +839,9 @@ double atof( const char *string ) {
 
 	// check for decimal point
 	if ( c == '.' ) {
-		double fraction;
+		float fraction;
 
-		fraction = 0.1;
+		fraction = 0.1f;
 		do {
 			c = *string++;
 			if ( c < '0' || c > '9' ) {
@@ -849,7 +849,7 @@ double atof( const char *string ) {
 			}
 			c -= '0';
 			value += c * fraction;
-			fraction *= 0.1;
+			fraction *= 0.1f;
 		} while ( 1 );
 
 	}
@@ -906,9 +906,9 @@ double _atof( const char **stringPtr ) {
 
 	// check for decimal point
 	if ( c == '.' ) {
-		double fraction;
+		float fraction;
 
-		fraction = 0.1;
+		fraction = 0.1f;
 		do {
 			c = *string++;
 			if ( c < '0' || c > '9' ) {
@@ -916,7 +916,7 @@ double _atof( const char **stringPtr ) {
 			}
 			c -= '0';
 			value += c * fraction;
-			fraction *= 0.1;
+			fraction *= 0.1f;
 		} while ( 1 );
 
 	}
@@ -1439,7 +1439,7 @@ reswitch:
 			arg++;
 			break;
 		case 'f':
-			AddFloat( &buf_p, *(double *)arg, width, prec, flags );
+			AddFloat( &buf_p, *(float *)arg, width, prec, flags );
 #ifdef __LCC__
 			arg += 1;	// everything is 32 bit in my compiler
 #else

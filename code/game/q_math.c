@@ -152,11 +152,11 @@ int		Q_rand( int *seed ) {
 }
 
 float	Q_random( int *seed ) {
-	return ( Q_rand( seed ) & 0xffff ) / (float)0x10000;
+	return ( Q_rand( seed ) & 0xffff ) * ( 1.0f / 0x10000 );
 }
 
 float	Q_crandom( int *seed ) {
-	return 2.0 * ( Q_random( seed ) - 0.5 );
+	return 2.0f * ( Q_random( seed ) - 0.5f );
 }
 
 #ifdef __LCC__
@@ -639,7 +639,7 @@ void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 ) {
 
 
 float	AngleMod(float a) {
-	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
+	a = (360.0f/65536) * ((int)(a*(65536/360.0f)) & 65535);
 	return a;
 }
 
@@ -652,7 +652,7 @@ returns angle normalized to the range [0 <= angle < 360]
 =================
 */
 float AngleNormalize360 ( float angle ) {
-	return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535);
+	return (360.0f / 65536) * ((int)(angle * (65536 / 360.0f)) & 65535);
 }
 
 
@@ -665,8 +665,8 @@ returns angle normalized to the range [-180 < angle <= 180]
 */
 float AngleNormalize180 ( float angle ) {
 	angle = AngleNormalize360( angle );
-	if ( angle > 180.0 ) {
-		angle -= 360.0;
+	if ( angle > 180 ) {
+		angle -= 360;
 	}
 	return angle;
 }
@@ -1247,13 +1247,13 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	static float		sr, sp, sy, cr, cp, cy;
 	// static to help MS compiler fp bugs
 
-	angle = angles[YAW] * (M_PI*2 / 360);
+	angle = DEG2RAD(angles[YAW]);
 	sy = sinf(angle);
 	cy = cosf(angle);
-	angle = angles[PITCH] * (M_PI*2 / 360);
+	angle = DEG2RAD(angles[PITCH]);
 	sp = sinf(angle);
 	cp = cosf(angle);
-	angle = angles[ROLL] * (M_PI*2 / 360);
+	angle = DEG2RAD(angles[ROLL]);
 	sr = sinf(angle);
 	cr = cosf(angle);
 

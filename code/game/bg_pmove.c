@@ -311,7 +311,7 @@ static void PM_Friction( void ) {
 	{
 		if (pm->ps->pm_type == PM_FLOAT)
 		{ //almost no friction while floating
-			drop += speed*0.1*pml.frametime;
+			drop += speed*0.1f*pml.frametime;
 		}
 		else
 		{
@@ -409,7 +409,7 @@ static float PM_CmdScale( usercmd_t *cmd ) {
 
 	total = sqrtf( cmd->forwardmove * cmd->forwardmove
 		+ cmd->rightmove * cmd->rightmove + umove * umove );
-	scale = (float)pm->ps->speed * max / ( 127.0 * total );
+	scale = (float)pm->ps->speed * max / ( 127.0f * total );
 
 	return scale;
 }
@@ -645,7 +645,7 @@ void PM_SetForceJumpZStart(float value)
 	pm->ps->fd.forceJumpZStart = value;
 	if (!pm->ps->fd.forceJumpZStart)
 	{
-		pm->ps->fd.forceJumpZStart -= 0.1;
+		pm->ps->fd.forceJumpZStart -= 0.1f;
 	}
 }
 
@@ -1020,7 +1020,7 @@ static qboolean PM_CheckJump( void )
 				if ( !doTrace ||
 					( trace.fraction < 1.0f &&
 						!(didKick && (pm->ps->pm_type == PM_HARMLESS ||  pm->noKick) && trace.entityNum < MAX_CLIENTS) &&
-						( trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7) ) )
+						( trace.entityNum < MAX_CLIENTS || DotProduct(trace.plane.normal,idealNormal) > 0.7f) ) )
 				{//there is a wall there.. or hit a client
 					int parts;
 					//move me to side
@@ -1668,7 +1668,7 @@ static void PM_WalkMove( void ) {
 		float	waterScale;
 
 		waterScale = pm->waterlevel / 3.0;
-		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
+		waterScale = 1.0f - ( 1.0f - pm_swimScale ) * waterScale;
 		if ( wishspeed > pm->ps->speed * waterScale ) {
 			wishspeed = pm->ps->speed * waterScale;
 		}
@@ -1766,7 +1766,7 @@ static void PM_NoclipMove( void ) {
 	{
 		drop = 0;
 
-		friction = pm_friction*1.5;	// extra friction
+		friction = pm_friction*1.5f;	// extra friction
 		control = speed < pm_stopspeed ? pm_stopspeed : speed;
 		drop += control*friction*pml.frametime;
 
@@ -1921,7 +1921,7 @@ static void PM_CrashLand( void ) {
 	t = (-b - sqrtf( den ) ) / ( 2 * a );
 
 	delta = vel + t * acc;
-	delta = delta*delta * 0.0001;
+	delta = delta*delta * 0.0001f;
 
 	// ducking while falling doubles damage
 	if ( pm->ps->pm_flags & PMF_DUCKED ) {
@@ -1984,10 +1984,10 @@ static void PM_CrashLand( void ) {
 
 	// reduce falling damage if there is standing water
 	if ( pm->waterlevel == 2 ) {
-		delta *= 0.25;
+		delta *= 0.25f;
 	}
 	if ( pm->waterlevel == 1 ) {
-		delta *= 0.5;
+		delta *= 0.5f;
 	}
 
 	if ( delta < 1 ) {
@@ -2120,7 +2120,7 @@ static int PM_CorrectAllSolid( trace_t *trace ) {
 				if ( !trace->allsolid ) {
 					point[0] = pm->ps->origin[0];
 					point[1] = pm->ps->origin[1];
-					point[2] = pm->ps->origin[2] - 0.25;
+					point[2] = pm->ps->origin[2] - 0.25f;
 
 					pm->trace (trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
 					pml.groundTrace = *trace;
@@ -2173,7 +2173,7 @@ static void PM_GroundTraceMissed( void ) {
 		point[2] -= 64;
 
 		pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-		if ( trace.fraction == 1.0 || pm->ps->pm_type == PM_FLOAT ) {
+		if ( trace.fraction == 1.0f || pm->ps->pm_type == PM_FLOAT ) {
 			if ( pm->ps->velocity[2] <= 0 && !(pm->ps->pm_flags&PMF_JUMP_HELD))
 			{
 				PM_SetAnim(SETANIM_LEGS,BOTH_INAIR1,SETANIM_FLAG_OVERRIDE, 100);
@@ -2201,7 +2201,7 @@ static void PM_GroundTraceMissed( void ) {
 		point[2] -= 64;
 
 		pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-		if ( trace.fraction == 1.0 || pm->ps->pm_type == PM_FLOAT )
+		if ( trace.fraction == 1.0f || pm->ps->pm_type == PM_FLOAT )
 		{
 			pm->ps->inAirAnim = qtrue;
 		}
@@ -2231,7 +2231,7 @@ static void PM_GroundTrace( void ) {
 
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
-	point[2] = pm->ps->origin[2] - 0.25;
+	point[2] = pm->ps->origin[2] - 0.25f;
 
 	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
 	pml.groundTrace = trace;
@@ -2251,7 +2251,7 @@ static void PM_GroundTrace( void ) {
 	}
 
 	// if the trace didn't hit anything, we are in free fall
-	if ( trace.fraction == 1.0 ) {
+	if ( trace.fraction == 1.0f ) {
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
@@ -3203,7 +3203,7 @@ int PM_ItemUsable(playerState_t *ps, int forcedUse)
 		fwd[2] = 0;
 		VectorMA(ps->origin, 64, fwd, dest);
 		pm->trace(&tr, ps->origin, mins, maxs, dest, ps->clientNum, MASK_SHOT );
-		if (tr.fraction > 0.9 && !tr.startsolid && !tr.allsolid)
+		if (tr.fraction > 0.9f && !tr.startsolid && !tr.allsolid)
 		{
 			VectorCopy(tr.endpos, pos);
 			VectorSet( dest, pos[0], pos[1], pos[2] - 4096 );
@@ -4140,30 +4140,30 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	{
 		if ((svTime - ps->holdMoveTime) < 600)
 		{
-			ps->speed *= 0.4;
+			ps->speed *= 0.4f;
 		}
 		else if ((svTime - ps->holdMoveTime) < 1000)
 		{
-			ps->speed *= 0.5;
+			ps->speed *= 0.5f;
 		}
 		else if ((svTime - ps->holdMoveTime) < 1400)
 		{
-			ps->speed *= 0.6;
+			ps->speed *= 0.6f;
 		}
 		else if ((svTime - ps->holdMoveTime) < 1700)
 		{
-			ps->speed *= 0.7;
+			ps->speed *= 0.7f;
 		}
 		else if ((svTime - ps->holdMoveTime) < 1900)
 		{
-			ps->speed *= 0.8;
+			ps->speed *= 0.8f;
 		}
 
 		if (cmd->forwardmove < 0)
 		{
 			ps->torsoAnim = ( ( ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 				| BOTH_WALKBACK1;
-			ps->speed *= 0.6;
+			ps->speed *= 0.6f;
 		}
 		else
 		{
@@ -4173,19 +4173,19 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	}
 	else if ( cmd->forwardmove < 0 && !(cmd->buttons&BUTTON_WALKING) && pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{//running backwards is slower than running forwards (like SP)
-		ps->speed *= 0.75;
+		ps->speed *= 0.75f;
 	}
 
 	if (ps->fd.forcePowersActive & (1 << FP_GRIP))
 	{
-		ps->speed *= 0.4;
+		ps->speed *= 0.4f;
 	}
 
 	if (ps->fd.forcePowersActive & (1 << FP_SPEED))
 	{
-		if (ps->fd.forceSpeedSmash < 1.2)
+		if (ps->fd.forceSpeedSmash < 1.2f)
 		{
-			ps->fd.forceSpeedSmash = 1.2;
+			ps->fd.forceSpeedSmash = 1.2f;
 		}
 		if (ps->fd.forceSpeedSmash > forceSpeedLevels[ps->fd.forcePowerLevel[FP_SPEED]]) //2.8
 		{

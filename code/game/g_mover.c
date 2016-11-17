@@ -816,7 +816,7 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 	}
 	for (i = 0; i < 3; i++) {
 		if (i == axis) continue;
-		origin[i] = (ent->r.absmin[i] + ent->r.absmax[i]) * 0.5;
+		origin[i] = (ent->r.absmin[i] + ent->r.absmax[i]) * 0.5f;
 	}
 	vectoangles(dir, angles);
 	TeleportPlayer(other, origin, angles );
@@ -1096,11 +1096,11 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 	tmax[2] = ent->pos1[2] + ent->r.maxs[2] + 8;
 
 	if ( tmax[0] <= tmin[0] ) {
-		tmin[0] = ent->pos1[0] + (ent->r.mins[0] + ent->r.maxs[0]) *0.5;
+		tmin[0] = ent->pos1[0] + (ent->r.mins[0] + ent->r.maxs[0]) * 0.5f;
 		tmax[0] = tmin[0] + 1;
 	}
 	if ( tmax[1] <= tmin[1] ) {
-		tmin[1] = ent->pos1[1] + (ent->r.mins[1] + ent->r.maxs[1]) *0.5;
+		tmin[1] = ent->pos1[1] + (ent->r.mins[1] + ent->r.maxs[1]) * 0.5f;
 		tmax[1] = tmin[1] + 1;
 	}
 

@@ -77,21 +77,21 @@ int adjustRespawnTime(float preRespawnTime, int itemType, int itemTag)
 	{	// Start scaling the respawn times.
 		if (level.numPlayingClients > 32)
 		{	// 1/4 time minimum.
-			respawnTime *= 0.25;
+			respawnTime *= 0.25f;
 		}
 		else if (level.numPlayingClients > 12)
 		{	// From 12-32, scale from 0.5 to 0.25;
-			respawnTime *= 20.0 / (float)(level.numPlayingClients + 8);
+			respawnTime *= 20.0f / (level.numPlayingClients + 8);
 		}
 		else
 		{	// From 4-12, scale from 1.0 to 0.5;
-			respawnTime *= 8.0 / (float)(level.numPlayingClients + 4);
+			respawnTime *= 8.0f / (level.numPlayingClients + 4);
 		}
 	}
 
-	if (respawnTime < 1.0)
+	if (respawnTime < 1)
 	{	// No matter what, don't go lower than 1 second, or the pickups become very noisy!
-		respawnTime = 1.0;
+		respawnTime = 1;
 	}
 
 	return ((int)respawnTime);
@@ -382,7 +382,7 @@ qboolean PlaceShield(gentity_t *playerent)
 	fwd[2] = 0;
 	VectorMA(playerent->client->ps.origin, SHIELD_PLACEDIST, fwd, dest);
 	trap_Trace (&tr, playerent->client->ps.origin, mins, maxs, dest, playerent->s.number, MASK_SHOT );
-	if (tr.fraction > 0.9)
+	if (tr.fraction > 0.9f)
 	{//room in front
 		VectorCopy(tr.endpos, pos);
 		// drop to floor
@@ -590,7 +590,7 @@ static qboolean pas_find_enemies( gentity_t *self )
 
 		trap_Trace( &tr, org2, NULL, NULL, org, self->s.number, MASK_SHOT );
 
-		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0 || tr.entityNum == target->s.number ))
+		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0f || tr.entityNum == target->s.number ))
 		{
 			// Only acquire if have a clear shot, Is it in range and closer than our best?
 			VectorSubtract( target->r.currentOrigin, self->r.currentOrigin, enemyDir );
@@ -1168,13 +1168,13 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
 		// if not facing, no sound
 		AngleVectors( client->ps.viewangles, forward, NULL, NULL );
-		if ( DotProduct( delta, forward ) < 0.4 ) {
+		if ( DotProduct( delta, forward ) < 0.4f ) {
 			continue;
 		}
 
 		// if not line of sight, no sound
 		trap_Trace( &tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID );
-		if ( tr.fraction != 1.0 ) {
+		if ( tr.fraction != 1.0f ) {
 			continue;
 		}
 
@@ -1875,8 +1875,8 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 		//if it is directly even with the floor it will return startsolid, so raise up by 0.1
 		//and temporarily subtract 0.1 from the z maxs so that going up doesn't push into the ceiling
-		ent->s.origin[2] += 0.1;
-		ent->r.maxs[2] -= 0.1;
+		ent->s.origin[2] += 0.1f;
+		ent->r.maxs[2] -= 0.1f;
 
 		VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
 		trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
@@ -1887,7 +1887,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 
 		//add the 0.1 back after the trace
-		ent->r.maxs[2] += 0.1;
+		ent->r.maxs[2] += 0.1f;
 
 		// allow to ride movers
 		ent->s.groundEntityNum = tr.entityNum;
@@ -2127,7 +2127,7 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 
 	// check for stop
 	if ( trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40 ) {
-		trace->endpos[2] += 1.0;	// make sure it is off ground
+		trace->endpos[2] += 1.0f;	// make sure it is off ground
 		SnapVector( trace->endpos );
 		G_SetOrigin( ent, trace->endpos );
 		ent->s.groundEntityNum = trace->entityNum;

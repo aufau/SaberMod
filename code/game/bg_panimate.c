@@ -1064,11 +1064,11 @@ void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animS
 	{
 		if ( saberAnimLevel == FORCE_LEVEL_1 )
 		{
-			*animSpeed *= 1.5;
+			*animSpeed *= 1.5f;
 		}
 		else if ( saberAnimLevel == FORCE_LEVEL_3 )
 		{
-			*animSpeed *= 0.75;
+			*animSpeed *= 0.75f;
 		}
 	}
 }

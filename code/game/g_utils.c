@@ -1090,7 +1090,7 @@ qboolean G_ClearTrace( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int i
 
 	trap_Trace( &tr, start, mins, maxs, end, ignore, clipmask );
 
-	if ( tr.allsolid || tr.startsolid || tr.fraction < 1.0 )
+	if ( tr.allsolid || tr.startsolid || tr.fraction < 1.0f )
 	{
 		return qfalse;
 	}
@@ -1139,7 +1139,7 @@ int DebugLine(vec3_t start, vec3_t end, int color) {
 	VectorSubtract(end, start, dir);
 	VectorNormalize(dir);
 	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99) VectorSet(cross, 1, 0, 0);
+	if (dot > 0.99f || dot < -0.99f) VectorSet(cross, 1, 0, 0);
 	else CrossProduct(dir, up, cross);
 
 	VectorNormalize(cross);

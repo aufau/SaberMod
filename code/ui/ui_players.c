@@ -247,7 +247,7 @@ static void UI_LegsSequencing( playerInfo_t *pi ) {
 
 	if ( pi->legsAnimationTimer > 0 ) {
 		if ( currentAnim == BOTH_JUMP1 ) {
-			jumpHeight = JUMP_HEIGHT * sinf( M_PI * ( UI_TIMER_JUMP - pi->legsAnimationTimer ) / UI_TIMER_JUMP );
+			jumpHeight = JUMP_HEIGHT * sinf( (float) M_PI * ( UI_TIMER_JUMP - pi->legsAnimationTimer ) / UI_TIMER_JUMP );
 		}
 		return;
 	}

@@ -1559,14 +1559,14 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		if (cent->isATST)
 		{
-			if (animSpeed < 0.3)
+			if (animSpeed < 0.3f)
 			{
-				animSpeed = 0.3;
+				animSpeed = 0.3f;
 			}
 
 			if (newAnimation == BOTH_WALKBACK1)
 			{
-				animSpeed = 0.8;
+				animSpeed = 0.8f;
 			}
 
 			if (newAnimation != BOTH_DEATH1)
@@ -2038,7 +2038,7 @@ static void CG_RunLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf,
 	if ( lf->frameTime == lf->oldFrameTime ) {
 		lf->backlerp = 0;
 	} else {
-		lf->backlerp = 1.0 - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0f - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 }
 
@@ -2153,12 +2153,12 @@ static float CG_SwingAngles( float destination, float swingTolerance, float clam
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
 	scale = fabsf( swing );
-	if ( scale < swingTolerance * 0.5 ) {
-		scale = 0.5;
+	if ( scale < swingTolerance * 0.5f ) {
+		scale = 0.5f;
 	} else if ( scale < swingTolerance ) {
-		scale = 1.0;
+		scale = 1.0f;
 	} else {
-		scale = 2.0;
+		scale = 2.0f;
 	}
 
 	// swing towards the destination angle
@@ -2216,7 +2216,7 @@ static float CG_SwingAnglesATST( centity_t *cent, float destination, float swing
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
 	scale = fabsf( swing );
-	if ( scale < swingTolerance * 0.5 ) {
+	if ( scale < swingTolerance * 0.5f ) {
 		scale = 0.5;
 	} else if ( scale < swingTolerance ) {
 		scale = 1.0;
@@ -2277,7 +2277,7 @@ static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles ) {
 		return;
 	}
 
-	f = 1.0 - (float)t / PAIN_TWITCH_TIME;
+	f = 1.0f - (float)t / PAIN_TWITCH_TIME;
 
 	if ( cent->pe.painDirection ) {
 		torsoAngles[ROLL] += 20 * f;
@@ -2513,7 +2513,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 	}
 	if (!cent->isATST)
 	{
-		torsoAngles[YAW] = headAngles[YAW] + 0.25 * movementOffsets[ dir ];
+		torsoAngles[YAW] = headAngles[YAW] + 0.25f * movementOffsets[ dir ];
 	}
 	else
 	{
@@ -2539,9 +2539,9 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[PITCH] > 180 ) {
-		dest = (-360 + headAngles[PITCH]) * 0.75;
+		dest = (-360 + headAngles[PITCH]) * 0.75f;
 	} else {
-		dest = headAngles[PITCH] * 0.75;
+		dest = headAngles[PITCH] * 0.75f;
 	}
 	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
@@ -2576,7 +2576,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 		vec3_t	axis[3];
 		float	side;
 
-		speed *= 0.05;
+		speed *= 0.05f;
 
 		AnglesToAxis( legsAngles, axis );
 		side = speed * DotProduct( velocity, axis[1] );
@@ -2721,7 +2721,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 	VectorCopy( cent->lerpAngles, viewAngles );
 	viewAngles[YAW] = viewAngles[ROLL] = 0;
-	viewAngles[PITCH] *= 0.5;
+	viewAngles[PITCH] *= 0.5f;
 
 	VectorSet( angles, 0, legsAngles[1], 0 );
 
@@ -2849,7 +2849,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 					CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, cg_entities[duelClient].lerpOrigin, cent->currentState.number, MASK_PLAYERSOLID );
 
-					if (tr.fraction == 1.0 ||
+					if (tr.fraction == 1.0f ||
 						tr.entityNum == duelClient)
 					{
 						centity_t *duelCEnt = &cg_entities[duelClient];
@@ -2872,7 +2872,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 						VectorCopy( cent->lerpAngles, viewAngles );
 						viewAngles[YAW] = viewAngles[ROLL] = 0;
-						viewAngles[PITCH] *= 0.5;
+						viewAngles[PITCH] *= 0.5f;
 
 						headAngles[PITCH] = AngleSubtract(headSub[PITCH], viewAngles[PITCH]);
 						if (headAngles[PITCH] > 16)
@@ -3387,7 +3387,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID );
 
 	// no shadow if too high
-	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid ) {
+	if ( trace.fraction == 1.0f || trace.startsolid || trace.allsolid ) {
 		return qfalse;
 	}
 
@@ -3398,7 +3398,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	}
 
 	// fade the shadow out with height
-	alpha = 1.0 - trace.fraction;
+	alpha = 1.0f - trace.fraction;
 
 	// bk0101022 - hack / FPE - bogus planes?
 	//assert( DotProduct( trace.plane.normal, trace.plane.normal ) != 0.0f )
@@ -3451,7 +3451,7 @@ static void CG_PlayerSplash( centity_t *cent ) {
 	// trace down to find the surface
 	trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0, ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
 
-	if ( trace.fraction == 1.0 ) {
+	if ( trace.fraction == 1.0f ) {
 		return;
 	}
 
@@ -3623,8 +3623,8 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 	}
 }
 
-#define MAX_SHIELD_TIME	2000.0
-#define MIN_SHIELD_TIME	2000.0
+#define MAX_SHIELD_TIME	2000
+#define MIN_SHIELD_TIME	2000
 
 
 void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
@@ -3672,15 +3672,15 @@ void CG_DrawPlayerShield(centity_t *cent, vec3_t origin)
 	memset( &ent, 0, sizeof( ent ) );
 
 	VectorCopy( origin, ent.origin );
-	ent.origin[2] += 10.0;
+	ent.origin[2] += 10.0f;
 	AnglesToAxis( cent->damageAngles, ent.axis );
 
-	alpha = 255.0 * ((cent->damageTime - cg.time) / MIN_SHIELD_TIME) + random()*16;
+	alpha = 255.0f * (cent->damageTime - cg.time) / MIN_SHIELD_TIME + random() * 16;
 	if (alpha>255)
 		alpha=255;
 
 	// Make it bigger, but tighter if more solid
-	scale = 1.4 - ((float)alpha*(0.4/255.0));		// Range from 1.0 to 1.4
+	scale = 1.4f - alpha * (0.4f / 255.0f);		// Range from 1.0 to 1.4
 	VectorScale( ent.axis[0], scale, ent.axis[0] );
 	VectorScale( ent.axis[1], scale, ent.axis[1] );
 	VectorScale( ent.axis[2], scale, ent.axis[2] );
@@ -3836,15 +3836,15 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 	// It's not quite what I'd hoped tho.  If you have any ideas, go for it!  --Pat
 	if (length < SABER_LENGTH_MAX)
 	{
-		radiusmult = 1.0 + (2.0 / length);		// Note this creates a curve, and length cannot be < 0.5.
+		radiusmult = 1.0f + (2.0f / length);		// Note this creates a curve, and length cannot be < 0.5.
 	}
 	else
 	{
-		radiusmult = 1.0;
+		radiusmult = 1.0f;
 	}
 
 
-	saber.radius = (2.8 + crandom() * 0.2f)*radiusmult;
+	saber.radius = (2.8f + crandom() * 0.2f)*radiusmult;
 
 
 	VectorCopy( origin, saber.origin );
@@ -3864,7 +3864,7 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 //	CG_TestLine(saber.origin, saber.oldorigin, 50, 0x000000ff, 3);
 	saber.customShader = blade;
 	saber.reType = RT_LINE;
-	saber.radius = (1.0 + crandom() * 0.2f)*radiusmult;
+	saber.radius = (1.0f + crandom() * 0.2f)*radiusmult;
 
 	saber.shaderTexCoord[0] = saber.shaderTexCoord[1] = 1.0f;
 	saber.shaderRGBA[0] = saber.shaderRGBA[1] = saber.shaderRGBA[2] = saber.shaderRGBA[3] = 0xff;
@@ -3960,8 +3960,8 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 			VectorScale( mid, 0.5f, mid );
 			VectorSubtract( v->xyz, mid, delta );
 
-			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * (0.05f + random() * 0.03f);
-			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * (0.15f + random() * 0.05f);
+			v->st[0] = 0.5f + DotProduct( delta, axis[1] ) * (0.05f + random() * 0.03f);
+			v->st[1] = 0.5f + DotProduct( delta, axis[2] ) * (0.15f + random() * 0.05f);
 		}
 
 		if (cg_saberDynamicMarks.integer)
@@ -4200,7 +4200,7 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 
 		if (cent->saberLength < SABER_LENGTH_MAX)
 		{
-			cent->saberLength += (cg.time - cent->saberExtendTime)*0.05;
+			cent->saberLength += (cg.time - cent->saberExtendTime)*0.05f;
 		}
 
 		if (cent->saberLength > SABER_LENGTH_MAX)
@@ -4664,7 +4664,7 @@ void CG_DrawPlayerSphere(centity_t *cent, vec3_t origin, float scale, int shader
 	memset( &ent, 0, sizeof( ent ) );
 
 	VectorCopy( origin, ent.origin );
-	ent.origin[2] += 9.0;
+	ent.origin[2] += 9.0f;
 
 	VectorSubtract(cg.refdef.vieworg, ent.origin, ent.axis[0]);
 	if (VectorNormalize(ent.axis[0]) <= 0.1f)
@@ -4886,14 +4886,14 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 
 		if (cent->isATST)
 		{
-			if (animSpeed < 0.3)
+			if (animSpeed < 0.3f)
 			{
-				animSpeed = 0.3;
+				animSpeed = 0.3f;
 			}
 
 			if (newAnimation == BOTH_WALKBACK1)
 			{
-				animSpeed = 0.8;
+				animSpeed = 0.8f;
 			}
 
 			if (newAnimation != BOTH_DEATH1)
@@ -5162,7 +5162,7 @@ static void CG_G2EntRunLerpFrame( centity_t *cent, lerpFrame_t *lf, int newAnima
 	if ( lf->frameTime == lf->oldFrameTime ) {
 		lf->backlerp = 0;
 	} else {
-		lf->backlerp = 1.0 - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0f - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 }
 
@@ -5297,7 +5297,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 	dir = 0;
 	if (!cent->isATST)
 	{
-		torsoAngles[YAW] = headAngles[YAW] + 0.25 * movementOffsets[ dir ];
+		torsoAngles[YAW] = headAngles[YAW] + 0.25f * movementOffsets[ dir ];
 	}
 	else
 	{
@@ -5319,9 +5319,9 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[PITCH] > 180 ) {
-		dest = (-360 + headAngles[PITCH]) * 0.75;
+		dest = (-360 + headAngles[PITCH]) * 0.75f;
 	} else {
-		dest = headAngles[PITCH] * 0.75;
+		dest = headAngles[PITCH] * 0.75f;
 	}
 	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
@@ -5330,7 +5330,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 		vec3_t	axis[3];
 		float	side;
 
-		speed *= 0.05;
+		speed *= 0.05f;
 
 		AnglesToAxis( legsAngles, axis );
 		side = speed * DotProduct( velocity, axis[1] );
@@ -5455,24 +5455,24 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 
 	VectorCopy( cent->lerpAngles, viewAngles );
 	viewAngles[YAW] = viewAngles[ROLL] = 0;
-	viewAngles[PITCH] *= 0.5;
+	viewAngles[PITCH] *= 0.5f;
 
 	VectorCopy( cent->lerpAngles, angles );
 	angles[PITCH] = 0;
 
 	CG_G2AnimEntSpineAngles(cent, viewAngles, angles, thoracicAngles, ulAngles, llAngles);
 
-	ulAngles[YAW] += torsoAngles[YAW]*0.3;
-	llAngles[YAW] += torsoAngles[YAW]*0.3;
-	thoracicAngles[YAW] += torsoAngles[YAW]*0.4;
+	ulAngles[YAW] += torsoAngles[YAW]*0.3f;
+	llAngles[YAW] += torsoAngles[YAW]*0.3f;
+	thoracicAngles[YAW] += torsoAngles[YAW]*0.4f;
 
-	ulAngles[PITCH] = torsoAngles[PITCH]*0.3;
-	llAngles[PITCH] = torsoAngles[PITCH]*0.3;
-	thoracicAngles[PITCH] = torsoAngles[PITCH]*0.4;
+	ulAngles[PITCH] = torsoAngles[PITCH]*0.3f;
+	llAngles[PITCH] = torsoAngles[PITCH]*0.3f;
+	thoracicAngles[PITCH] = torsoAngles[PITCH]*0.4f;
 
-	ulAngles[ROLL] += torsoAngles[ROLL]*0.3;
-	llAngles[ROLL] += torsoAngles[ROLL]*0.3;
-	thoracicAngles[ROLL] += torsoAngles[ROLL]*0.4;
+	ulAngles[ROLL] += torsoAngles[ROLL]*0.3f;
+	llAngles[ROLL] += torsoAngles[ROLL]*0.3f;
+	thoracicAngles[ROLL] += torsoAngles[ROLL]*0.4f;
 
 	CG_G2SetBoneAngles(cent->ghoul2, 0, "upper_lumbar", ulAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.gameModels, 0, cg.time);
 	CG_G2SetBoneAngles(cent->ghoul2, 0, "lower_lumbar", llAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.gameModels, 0, cg.time);
@@ -5495,7 +5495,7 @@ void CG_DrawNoForceSphere(centity_t *cent, vec3_t origin, float scale, int shade
 	memset( &ent, 0, sizeof( ent ) );
 
 	VectorCopy( origin, ent.origin );
-	ent.origin[2] += 9.0;
+	ent.origin[2] += 9.0f;
 
 	VectorSubtract(cg.refdef.vieworg, ent.origin, ent.axis[0]);
 	if (VectorNormalize(ent.axis[0]) <= 0.1f)
@@ -6094,7 +6094,7 @@ void CG_Player( centity_t *cent ) {
 		seeker.renderfx = 0; //renderfx;
 							 //don't show in first person?
 
-		angle = ((cg.time / 12) & 255) * (M_PI * 2) / 255;
+		angle = ((cg.time / 12) & 255) * (float) (M_PI * 2 / 255);
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -6267,7 +6267,7 @@ doEssentialOne:
 
 	VectorCopy(cent->currentState.pos.trDelta, tDir);
 
-	distVelBase = SPEED_TRAIL_DISTANCE*(VectorNormalize(tDir)*0.004);
+	distVelBase = SPEED_TRAIL_DISTANCE*(VectorNormalize(tDir)*0.004f);
 
 	if (cent->frame_minus1.ghoul2 && cent->frame_minus1_refreshed)
 	{
@@ -6710,14 +6710,14 @@ doEssentialTwo:
 
 				if (renderedHolos == 0)
 				{
-					angle = ((cg.time / 8) & 255) * (M_PI * 2) / 255;
+					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255);
 					dir[0] = cosf(angle) * 20;
 					dir[1] = sinf(angle) * 20;
 					dir[2] = cosf(angle) * 20;
 					VectorAdd(elevated, dir, holoRef.origin);
 
 					angles[0] = sinf(angle) * 30;
-					angles[1] = (angle * 180 / M_PI) + 90;
+					angles[1] = RAD2DEG(angle) + 90;
 					if (angles[1] > 360)
 						angles[1] -= 360;
 					angles[2] = 0;
@@ -6725,16 +6725,16 @@ doEssentialTwo:
 				}
 				else if (renderedHolos == 1)
 				{
-					angle = ((cg.time / 8) & 255) * (M_PI * 2) / 255 + M_PI;
-					if (angle > M_PI * 2)
-						angle -= (float)M_PI * 2;
+					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
+					if (angle > (float) M_PI * 2)
+						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;
 					dir[1] = cosf(angle) * 20;
 					dir[2] = cosf(angle) * 20;
 					VectorAdd(elevated, dir, holoRef.origin);
 
 					angles[0] = cosf(angle - (float) M_PI_2) * 30;
-					angles[1] = 360 - (angle * 180 / M_PI);
+					angles[1] = 360 - RAD2DEG(angle);
 					if (angles[1] > 360)
 						angles[1] -= 360;
 					angles[2] = 0;
@@ -6742,9 +6742,9 @@ doEssentialTwo:
 				}
 				else
 				{
-					angle = ((cg.time / 6) & 255) * (M_PI * 2) / 255 + 0.5 * M_PI;
-					if (angle > M_PI * 2)
-						angle -= (float)M_PI * 2;
+					angle = ((cg.time / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
+					if (angle > (float) M_PI * 2)
+						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;
 					dir[1] = cosf(angle) * 20;
 					dir[2] = 0;
@@ -6794,8 +6794,8 @@ doEssentialTwo:
 					}
 					else if (forcePowerDarkLight[i] == FORCE_LIGHTSIDE)
 					{ //light
-						fxSArgs.sAlpha *= 1.5;
-						fxSArgs.eAlpha *= 1.5;
+						fxSArgs.sAlpha *= 1.5f;
+						fxSArgs.eAlpha *= 1.5f;
 						fxSArgs.shader = cgs.media.redSaberGlowShader;
 						trap_FX_AddSprite(&fxSArgs);
 						fxSArgs.shader = cgs.media.greenSaberGlowShader;
@@ -6809,15 +6809,15 @@ doEssentialTwo:
 							i == FP_SABERDEFEND ||
 							i == FP_SABERTHROW)
 						{ //saber power
-							fxSArgs.sAlpha *= 1.5;
-							fxSArgs.eAlpha *= 1.5;
+							fxSArgs.sAlpha *= 1.5f;
+							fxSArgs.eAlpha *= 1.5f;
 							fxSArgs.shader = cgs.media.greenSaberGlowShader;
 							trap_FX_AddSprite(&fxSArgs);
 						}
 						else
 						{
-							fxSArgs.sAlpha *= 0.5;
-							fxSArgs.eAlpha *= 0.5;
+							fxSArgs.sAlpha *= 0.5f;
+							fxSArgs.eAlpha *= 0.5f;
 							fxSArgs.shader = cgs.media.greenSaberGlowShader;
 							trap_FX_AddSprite(&fxSArgs);
 							fxSArgs.shader = cgs.media.blueSaberGlowShader;

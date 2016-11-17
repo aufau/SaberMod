@@ -343,7 +343,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 			hcolor[2] = 0.7f;
 		}
 
-		hcolor[3] = fade * 0.7;
+		hcolor[3] = fade * 0.7f;
 		CG_FillRect( SB_SCORELINE_X - 5, y + 2, 640 - SB_SCORELINE_X * 2 + 10, largeFormat?SB_NORMAL_HEIGHT:SB_INTER_HEIGHT, hcolor );
 	}
 

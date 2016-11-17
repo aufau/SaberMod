@@ -438,10 +438,10 @@ float AngleDifference(float ang1, float ang2) {
 
 	diff = ang1 - ang2;
 	if (ang1 > ang2) {
-		if (diff > 180.0) diff -= 360.0;
+		if (diff > 180) diff -= 360;
 	}
 	else {
-		if (diff < -180.0) diff += 360.0;
+		if (diff < -180) diff += 360;
 	}
 	return diff;
 }
@@ -459,10 +459,10 @@ float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
 	if (angle == ideal_angle) return angle;
 	move = ideal_angle - angle;
 	if (ideal_angle > angle) {
-		if (move > 180.0) move -= 360.0;
+		if (move > 180) move -= 360;
 	}
 	else {
-		if (move < -180.0) move += 360.0;
+		if (move < -180) move += 360;
 	}
 	if (move > 0) {
 		if (move > speed) move = speed;
@@ -497,7 +497,7 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 	{
 		factor = 1;
 	}
-	if (factor < 0.001)
+	if (factor < 0.001f)
 	{
 		factor = 0.001f;
 	}
@@ -519,7 +519,7 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 		if (anglespeed < -maxchange) anglespeed = -maxchange;
 		bs->viewangles[i] += anglespeed;
 		bs->viewangles[i] = AngleMod(bs->viewangles[i]);
-		bs->viewanglespeed[i] *= 0.45 * (1 - factor);
+		bs->viewanglespeed[i] *= 0.45f * (1 - factor);
 	}
 	if (bs->viewangles[PITCH] > 180) bs->viewangles[PITCH] -= 360;
 	trap_EA_View(bs->client, bs->viewangles);
@@ -659,7 +659,7 @@ BotAIRegularUpdate
 void BotAIRegularUpdate(void) {
 	if (regularupdate_time < FloatTime()) {
 		trap_BotUpdateEntityItems();
-		regularupdate_time = FloatTime() + 0.3;
+		regularupdate_time = FloatTime() + 0.3f;
 	}
 }
 
@@ -1962,28 +1962,28 @@ int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles)
 		diff = angles[i] - angle;
 		if (angles[i] > angle)
 		{
-			if (diff > 180.0)
+			if (diff > 180)
 			{
-				diff -= 360.0;
+				diff -= 360;
 			}
 		}
 		else
 		{
-			if (diff < -180.0)
+			if (diff < -180)
 			{
-				diff += 360.0;
+				diff += 360;
 			}
 		}
 		if (diff > 0)
 		{
-			if (diff > fov * 0.5)
+			if (diff > fov * 0.5f)
 			{
 				return 0;
 			}
 		}
 		else
 		{
-			if (diff < -fov * 0.5)
+			if (diff < -fov * 0.5f)
 			{
 				return 0;
 			}
@@ -4376,7 +4376,7 @@ void SaberCombatHandling(bot_state_t *bs)
 
 			trap_Trace(&tr, bs->goalPosition, NULL, NULL, groundcheck, bs->client, MASK_SOLID);
 
-			if (tr.fraction == 1.0)
+			if (tr.fraction == 1.0f)
 			{ //don't back off of a ledge
 				VectorCopy(usethisvec, bs->goalPosition);
 			}
@@ -4508,11 +4508,11 @@ void BotAimLeading(bot_state_t *bs, vec3_t headlevel, float leadAmount)
 
 	if (vtotal)
 	{
-		x = (bs->frame_Enemy_Len*0.9)*leadAmount*(vtotal*0.0012); //hardly calculated with an exact science, but it works
+		x = (bs->frame_Enemy_Len*0.9f)*leadAmount*(vtotal*0.0012f); //hardly calculated with an exact science, but it works
 	}
 	else
 	{
-		x = (bs->frame_Enemy_Len*0.9)*leadAmount; //hardly calculated with an exact science, but it works
+		x = (bs->frame_Enemy_Len*0.9f)*leadAmount; //hardly calculated with an exact science, but it works
 	}
 
 	predictedSpot[0] = headlevel[0] + (movementVector[0]*x);
@@ -4592,14 +4592,14 @@ void BotAimOffsetGoalAngles(bot_state_t *bs)
 		}
 		else
 		{
-			accVal += accVal*0.25; //if he's moving he's this much harder to hit
+			accVal += accVal*0.25f; //if he's moving he's this much harder to hit
 		}
 
 		if (g_entities[bs->client].s.pos.trDelta[0] ||
 			g_entities[bs->client].s.pos.trDelta[1] ||
 			g_entities[bs->client].s.pos.trDelta[2])
 		{
-			accVal += accVal*0.15; //make it somewhat harder to aim if we're moving also
+			accVal += accVal*0.15f; //make it somewhat harder to aim if we're moving also
 		}
 	}
 
@@ -6390,7 +6390,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		bs->doingFallback = qfalse;
 	}
 
-	if (bs->timeToReact < level.time && bs->currentEnemy && bs->enemySeenTime > level.time + (ENEMY_FORGET_MS - (ENEMY_FORGET_MS*0.2)))
+	if (bs->timeToReact < level.time && bs->currentEnemy && bs->enemySeenTime > level.time + (ENEMY_FORGET_MS - (ENEMY_FORGET_MS / 5)))
 	{
 		if (bs->frame_Enemy_Vis)
 		{

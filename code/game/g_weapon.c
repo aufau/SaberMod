@@ -214,17 +214,17 @@ static void WP_FireBryarPistol( gentity_t *ent, qboolean altFire )
 
 		if (count > 1)
 		{
-			damage *= (count*1.7);
+			damage *= (count*1.7f);
 		}
 		else
 		{
-			damage *= (count*1.5);
+			damage *= (count*1.5f);
 		}
 
 		missile->s.generic1 = count; // The missile will then render according to the charge level.
 //		missile->count = count;		// The single player stores the charge in count, which isn't accessible on the client
 
-		boxSize = BRYAR_ALT_SIZE*(count*0.5);
+		boxSize = BRYAR_ALT_SIZE*(count*0.5f);
 
 		VectorSet( missile->r.maxs, boxSize, boxSize, boxSize );
 		VectorSet( missile->r.mins, -boxSize, -boxSize, -boxSize );
@@ -1588,7 +1588,7 @@ void rocketThink( gentity_t *ent )
 			}
 
 			// Yeah we've adjusted horizontally, but let's split the difference vertically, so we kinda try to move towards it.
-			newdir[2] = ( targetdir[2] + ent->movedir[2] ) * 0.5;
+			newdir[2] = ( targetdir[2] + ent->movedir[2] ) * 0.5f;
 
 			// let's also slow down a lot
 			vel *= 0.5f;
@@ -2260,9 +2260,9 @@ void charge_stick (gentity_t *self, gentity_t *other, trace_t *trace)
 		VectorCopy(trace->plane.normal, vNor);
 		VectorNormalize(vNor);
 		VectorNPos(self->s.pos.trDelta, tN);
-		self->s.pos.trDelta[0] += vNor[0]*(tN[0]*(((float)Q_irand(1, 10))*0.1));
-		self->s.pos.trDelta[1] += vNor[1]*(tN[1]*(((float)Q_irand(1, 10))*0.1));
-		self->s.pos.trDelta[2] += vNor[1]*(tN[2]*(((float)Q_irand(1, 10))*0.1));
+		self->s.pos.trDelta[0] += vNor[0] * tN[0] * Q_irand(1, 10) * 0.1f;
+		self->s.pos.trDelta[1] += vNor[1] * tN[1] * Q_irand(1, 10) * 0.1f;
+		self->s.pos.trDelta[2] += vNor[1] * tN[2] * Q_irand(1, 10) * 0.1f;
 
 		vectoangles(vNor, self->s.angles);
 		vectoangles(vNor, self->s.apos.trBase);

@@ -67,7 +67,7 @@ qboolean	PM_SlideMove( qboolean gravity ) {
 	if ( gravity ) {
 		VectorCopy( pm->ps->velocity, endVelocity );
 		endVelocity[2] -= pm->ps->gravity * pml.frametime;
-		pm->ps->velocity[2] = ( pm->ps->velocity[2] + endVelocity[2] ) * 0.5;
+		pm->ps->velocity[2] = ( pm->ps->velocity[2] + endVelocity[2] ) * 0.5f;
 		primal_velocity[2] = endVelocity[2];
 		if ( pml.groundPlane ) {
 			// slide along the ground plane
@@ -130,7 +130,7 @@ qboolean	PM_SlideMove( qboolean gravity ) {
 		// non-axial planes
 		//
 		for ( i = 0 ; i < numplanes ; i++ ) {
-			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99 ) {
+			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99f ) {
 				VectorAdd( trace.plane.normal, pm->ps->velocity, pm->ps->velocity );
 				break;
 			}
@@ -148,7 +148,7 @@ qboolean	PM_SlideMove( qboolean gravity ) {
 		// find a plane that it enters
 		for ( i = 0 ; i < numplanes ; i++ ) {
 			into = DotProduct( pm->ps->velocity, planes[i] );
-			if ( into >= 0.1 ) {
+			if ( into >= 0.1f ) {
 				continue;		// move doesn't interact with the plane
 			}
 
@@ -168,7 +168,7 @@ qboolean	PM_SlideMove( qboolean gravity ) {
 				if ( j == i ) {
 					continue;
 				}
-				if ( DotProduct( clipVelocity, planes[j] ) >= 0.1 ) {
+				if ( DotProduct( clipVelocity, planes[j] ) >= 0.1f ) {
 					continue;		// move doesn't interact with the plane
 				}
 
@@ -197,7 +197,7 @@ qboolean	PM_SlideMove( qboolean gravity ) {
 					if ( k == i || k == j ) {
 						continue;
 					}
-					if ( DotProduct( clipVelocity, planes[k] ) >= 0.1 ) {
+					if ( DotProduct( clipVelocity, planes[k] ) >= 0.1f ) {
 						continue;		// move doesn't interact with the plane
 					}
 
@@ -267,9 +267,9 @@ void PM_StepSlideMove( qboolean gravity ) {
 	pm->trace (&trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask);
 	VectorSet(up, 0, 0, 1);
 	// never step up when you still have up velocity
-	if ( pm->ps->velocity[2] > 0 && (trace.fraction == 1.0 ||
-										DotProduct(trace.plane.normal, up) < 0.7)) {
-
+	if ( pm->ps->velocity[2] > 0 &&
+		(trace.fraction == 1.0f || DotProduct(trace.plane.normal, up) < 0.7f))
+	{
 		if (!usingspeed)
 		{
 			return;
@@ -319,7 +319,7 @@ void PM_StepSlideMove( qboolean gravity ) {
 
 	if (pre_z > 480 && (pre_z - pm->ps->velocity[2]) >= 480 && pm->ps->fd.forceJumpZStart)
 	{ //smashed head on the ceiling during a force jump
-		pm->ps->fd.forceSpeedDoDamage = (pre_z - pm->ps->velocity[2])*0.04;
+		pm->ps->fd.forceSpeedDoDamage = (pre_z - pm->ps->velocity[2])*0.04f;
 		if (pm->numtouch)
 		{ //do damage to the other player if we hit one
 			while (i < pm->numtouch)
@@ -339,7 +339,7 @@ void PM_StepSlideMove( qboolean gravity ) {
 
 	if (usingspeed)
 	{
-		if (pm->ps->fd.forceSpeedSmash > 1.3 && totalVel > 500)
+		if (pm->ps->fd.forceSpeedSmash > 1.3f && totalVel > 500)
 		{ //if we were going fast enough and hadn't hit a while in a while then smash into it hard
 		  //the difference between our velocity pre and post colide must also be greater than 600 to do damage
 			//Com_Printf("SMASH %f\n", pm->ps->fd.forceSpeedSmash);
@@ -348,8 +348,8 @@ void PM_StepSlideMove( qboolean gravity ) {
 			nvel[1] += start_o[1];
 			nvel[2] += start_o[2];
 			VectorSubtract(start_o, nvel, nvel);
-			pm->ps->velocity[0] = nvel[0]*0.1;
-			pm->ps->velocity[1] = nvel[1]*0.1;
+			pm->ps->velocity[0] = nvel[0]*0.1f;
+			pm->ps->velocity[1] = nvel[1]*0.1f;
 			pm->ps->velocity[2] = 64;
 			pm->ps->fd.forceSpeedDoDamage = pm->ps->fd.forceSpeedSmash*10; //do somewhere in the range of 15-25 damage, depending on speed
 			pm->ps->fd.forceSpeedSmash = 0;
@@ -370,7 +370,7 @@ void PM_StepSlideMove( qboolean gravity ) {
 			return;
 		}
 
-		pm->ps->fd.forceSpeedSmash -= 0.1;
+		pm->ps->fd.forceSpeedSmash -= 0.1f;
 		//we hit a wall so decrease speed
 
 		if (pm->ps->fd.forceSpeedSmash < 1)
@@ -386,7 +386,7 @@ void PM_StepSlideMove( qboolean gravity ) {
 	if ( !trace.allsolid ) {
 		VectorCopy (trace.endpos, pm->ps->origin);
 	}
-	if ( trace.fraction < 1.0 ) {
+	if ( trace.fraction < 1.0f ) {
 		PM_ClipVelocity( pm->ps->velocity, trace.plane.normal, pm->ps->velocity, OVERCLIP );
 	}
 

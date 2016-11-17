@@ -75,8 +75,8 @@ void P_DamageFeedback( gentity_t *player ) {
 		client->damage_fromWorld = qfalse;
 	} else {
 		vectoangles( client->damage_from, angles );
-		client->ps.damagePitch = angles[PITCH]/360.0 * 256;
-		client->ps.damageYaw = angles[YAW]/360.0 * 256;
+		client->ps.damagePitch = angles[PITCH] * (256 / 360.0f);
+		client->ps.damageYaw = angles[YAW] * (256 / 360.0f);
 	}
 
 	// play an apropriate pain sound
@@ -280,7 +280,7 @@ void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf )
 
 			dot = DotProduct( dir1, dir2 );
 
-			if ( dot >= 0.2 )
+			if ( dot >= 0.2f )
 			{
 				force = dot;
 			}

@@ -69,7 +69,7 @@ void G_ReflectMissile( gentity_t *ent, gentity_t *missile, vec3_t forward )
 	{ //in this case, actually push the missile away from me, and since we're giving boost to our own missile by pushing it, up the velocity
 		vec3_t missile_dir;
 
-		speed *= 1.5;
+		speed *= 1.5f;
 
 		VectorSubtract( missile->r.currentOrigin, ent->r.currentOrigin, missile_dir );
 		VectorCopy( missile->s.pos.trDelta, bounce_dir );
@@ -174,7 +174,7 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 		ent->s.pos.trType = TR_GRAVITY;
 
 		// check for stop
-		if ( trace->plane.normal[2] > 0.7 && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
+		if ( trace->plane.normal[2] > 0.7f && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
 		{
 			G_SetOrigin( ent, trace->endpos );
 			ent->nextthink = level.time + 100;
@@ -183,9 +183,9 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	}
 	else if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
-		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
+		VectorScale( ent->s.pos.trDelta, 0.65f, ent->s.pos.trDelta );
 		// check for stop
-		if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
+		if ( trace->plane.normal[2] > 0.2f && VectorLength( ent->s.pos.trDelta ) < 40 )
 		{
 			G_SetOrigin( ent, trace->endpos );
 			return;

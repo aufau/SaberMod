@@ -263,7 +263,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 
 	G_SpawnFloat( "roll", "0", &roll );
 
-	ent->s.clientNum = roll/360.0 * 256;
+	ent->s.clientNum = roll/360.0f * 256;
 }
 
 /*QUAKED misc_holocron (0 0 1) (-8 -8 -8) (8 8 8)
@@ -569,8 +569,8 @@ void SP_misc_holocron(gentity_t *ent)
 	VectorSet( ent->r.maxs, 8, 8, 8 );
 	VectorSet( ent->r.mins, -8, -8, -8 );
 
-	ent->s.origin[2] += 0.1;
-	ent->r.maxs[2] -= 0.1;
+	ent->s.origin[2] += 0.1f;
+	ent->r.maxs[2] -= 0.1f;
 
 	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
 	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
@@ -582,7 +582,7 @@ void SP_misc_holocron(gentity_t *ent)
 	}
 
 	//add the 0.1 back after the trace
-	ent->r.maxs[2] += 0.1;
+	ent->r.maxs[2] += 0.1f;
 
 	// allow to ride movers
 //	ent->s.groundEntityNum = tr.entityNum;
@@ -846,8 +846,8 @@ void SP_misc_shield_floor_unit( gentity_t *ent )
 	VectorSet( ent->r.mins, -16, -16, 0 );
 	VectorSet( ent->r.maxs, 16, 16, 40 );
 
-	ent->s.origin[2] += 0.1;
-	ent->r.maxs[2] -= 0.1;
+	ent->s.origin[2] += 0.1f;
+	ent->r.maxs[2] -= 0.1f;
 
 	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
 	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
@@ -859,7 +859,7 @@ void SP_misc_shield_floor_unit( gentity_t *ent )
 	}
 
 	//add the 0.1 back after the trace
-	ent->r.maxs[2] += 0.1;
+	ent->r.maxs[2] += 0.1f;
 
 	// allow to ride movers
 	ent->s.groundEntityNum = tr.entityNum;

@@ -245,16 +245,16 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 	}
 
 	// gun angles from bobbing
-	angles[ROLL] += scale * cg.bobfracsin * 0.005;
-	angles[YAW] += scale * cg.bobfracsin * 0.01;
-	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.005;
+	angles[ROLL] += scale * cg.bobfracsin * 0.005f;
+	angles[YAW] += scale * cg.bobfracsin * 0.01f;
+	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.005f;
 
 	// drop the weapon when landing
 	delta = cg.time - cg.landTime;
 	if ( delta < LAND_DEFLECT_TIME ) {
-		origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+		origin[2] += cg.landChange* 0.25f * delta / LAND_DEFLECT_TIME;
 	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		origin[2] += cg.landChange*0.25 *
+		origin[2] += cg.landChange* 0.25f *
 			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
 	}
 
@@ -264,16 +264,16 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 	if ( delta < STEP_TIME/2 ) {
 		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
 	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
+		origin[2] -= cg.stepChange * 0.25f * (STEP_TIME - delta) / (STEP_TIME/2);
 	}
 #endif
 
 	// idle drift
 	scale = cg.xyspeed + 40;
-	fracsin = sinf( cg.time * 0.001 );
-	angles[ROLL] += scale * fracsin * 0.01;
-	angles[YAW] += scale * fracsin * 0.01;
-	angles[PITCH] += scale * fracsin * 0.01;
+	fracsin = sinf( cg.time * 0.001f );
+	angles[ROLL] += scale * fracsin * 0.01f;
+	angles[YAW] += scale * fracsin * 0.01f;
+	angles[PITCH] += scale * fracsin * 0.01f;
 }
 
 
@@ -809,7 +809,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 	// drop gun lower at higher fov
 	if ( cgFov > 90 ) {
-		fovOffset = -0.2 * ( cgFov - 90 );
+		fovOffset = -0.2f * ( cgFov - 90 );
 	} else {
 		fovOffset = 0;
 	}
@@ -1652,9 +1652,9 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 			{
 				val = 3;
 			}
-			if (val < 0.2)
+			if (val < 0.2f)
 			{
-				val = 0.2;
+				val = 0.2f;
 			}
 
 			val *= 2;
@@ -2022,9 +2022,9 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 
 	trap_R_AddPolyToScene( cgs.media.tracerShader, 4, verts );
 
-	midpoint[0] = ( start[0] + finish[0] ) * 0.5;
-	midpoint[1] = ( start[1] + finish[1] ) * 0.5;
-	midpoint[2] = ( start[2] + finish[2] ) * 0.5;
+	midpoint[0] = ( start[0] + finish[0] ) * 0.5f;
+	midpoint[1] = ( start[1] + finish[1] ) * 0.5f;
+	midpoint[2] = ( start[2] + finish[2] ) * 0.5f;
 
 	// add the tracer sound
 	//trap_S_StartSound( midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound );

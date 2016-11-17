@@ -252,7 +252,7 @@ void AimAtTarget( gentity_t *self ) {
 	float		dist;
 
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
-	VectorScale ( origin, 0.5, origin );
+	VectorScale ( origin, 0.5f, origin );
 
 	ent = G_PickTarget( self->target );
 	if ( !ent ) {

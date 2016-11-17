@@ -1045,7 +1045,7 @@ static qboolean PM_CanBackstab(void)
 
 	pm->trace(&tr, pm->ps->origin, trmins, trmaxs, back, pm->ps->clientNum, MASK_PLAYERSOLID);
 
-	if (tr.fraction != 1.0 && tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS)
+	if (tr.fraction != 1.0f && tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS)
 	{ //We don't have real entity access here so we can't do an indepth check. But if it's a client and it's behind us, I guess that's reason enough to stab backward
 		return qtrue;
 	}
@@ -1128,7 +1128,7 @@ qboolean PM_SomeoneInFront(trace_t *tr)
 
 	pm->trace(tr, pm->ps->origin, trmins, trmaxs, back, pm->ps->clientNum, MASK_PLAYERSOLID);
 
-	if (tr->fraction != 1.0 && tr->entityNum >= 0 && tr->entityNum < MAX_CLIENTS)
+	if (tr->fraction != 1.0f && tr->entityNum >= 0 && tr->entityNum < MAX_CLIENTS)
 	{
 		return qtrue;
 	}

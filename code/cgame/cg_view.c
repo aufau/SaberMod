@@ -351,7 +351,7 @@ static void CG_ResetThirdPersonViewDamp(void)
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
 	CG_Trace(&trace, cam.focus, cameramins, cameramaxs, cam.target.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0)
+	if (trace.fraction <= 1.0f)
 	{
 		VectorSubtract(trace.endpos, cam.target.ideal, cam.target.damp);
 	}
@@ -360,7 +360,7 @@ static void CG_ResetThirdPersonViewDamp(void)
 
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
 	CG_Trace(&trace, target, cameramins, cameramaxs, cam.loc.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0)
+	if (trace.fraction <= 1.0f)
 	{
 		VectorSubtract(trace.endpos, cam.loc.ideal, cam.loc.damp);
 	}
@@ -430,13 +430,13 @@ static void CG_UpdateThirdPersonTargetDamp(float dtime)
 	CG_CalcIdealThirdPersonViewTarget();
 
 
-	if (cg_thirdPersonTargetDamp.value>=1.0)
+	if (cg_thirdPersonTargetDamp.value >= 1.0f)
 	{	// No damping.
 		VectorClear(cam.target.damp);
 	}
-	else if (cg_thirdPersonTargetDamp.value>=0.0)
+	else if (cg_thirdPersonTargetDamp.value >= 0)
 	{
-		dampfactor = 1.0-cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
+		dampfactor = 1.0f - cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
 
 		CG_DampPosition(&cam.target, dampfactor, dtime);
 	}
@@ -446,7 +446,7 @@ static void CG_UpdateThirdPersonTargetDamp(float dtime)
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
 	CG_Trace(&trace, cam.focus, cameramins, cameramaxs, target, cg.snap->ps.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction < 1.0)
+	if (trace.fraction < 1.0f)
 	{
 		VectorSubtract(trace.endpos, cam.target.ideal, cam.target.damp);
 	}
@@ -469,7 +469,7 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 
 	// First thing we do is calculate the appropriate damping factor for the camera.
 	dampfactor=0.0;
-	if (cg_thirdPersonCameraDamp.value != 0.0)
+	if (cg_thirdPersonCameraDamp.value != 0)
 	{
 		// Note that the camera pitch has already been capped off to 89.
 		// The higher the pitch, the larger the factor, so as you look up, it damps a lot less.
@@ -485,13 +485,13 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 		}
 	}
 
-	if (dampfactor>=1.0)
+	if (dampfactor >= 1.0f)
 	{	// No damping.
 		VectorClear(cam.loc.damp);
 	}
-	else if (dampfactor>=0.0)
+	else if (dampfactor >= 0)
 	{
-		dampfactor = 1.0-dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
+		dampfactor = 1.0f - dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
 
 		CG_DampPosition(&cam.loc, dampfactor, dtime);
 	}
@@ -502,7 +502,7 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
 	CG_Trace(&trace, target, cameramins, cameramaxs, location, cg.snap->ps.clientNum, MASK_CAMERACLIP);
 
-	if (trace.fraction < 1.0)
+	if (trace.fraction < 1.0f)
 	{
 		VectorSubtract( trace.endpos, cam.loc.ideal, cam.loc.damp );
 
@@ -563,13 +563,13 @@ static void CG_OffsetThirdPersonView( void )
 	}
 
 	// Cap the pitch within reasonable limits
-	if (focusAngles[PITCH] > 80.0)
+	if (focusAngles[PITCH] > 80.0f)
 	{
-		focusAngles[PITCH] = 80.0;
+		focusAngles[PITCH] = 80.0f;
 	}
-	else if (focusAngles[PITCH] < -80.0)
+	else if (focusAngles[PITCH] < -80.0f)
 	{
-		focusAngles[PITCH] = -80.0;
+		focusAngles[PITCH] = -80.0f;
 	}
 
 	AngleVectors(focusAngles, cam.fwd, NULL, NULL);
@@ -793,7 +793,7 @@ static void CG_OffsetFirstPersonView( void ) {
 			angles[PITCH] += ratio * cg.v_dmg_pitch;
 			angles[ROLL] += ratio * cg.v_dmg_roll;
 		} else {
-			ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
+			ratio = 1.0f - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
 			if ( ratio > 0 ) {
 				angles[PITCH] += ratio * cg.v_dmg_pitch;
 				angles[ROLL] += ratio * cg.v_dmg_roll;
@@ -862,7 +862,7 @@ static void CG_OffsetFirstPersonView( void ) {
 		cg.refdef.vieworg[2] += cg.landChange * f;
 	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
 		delta -= LAND_DEFLECT_TIME;
-		f = 1.0 - ( delta / LAND_RETURN_TIME );
+		f = 1.0f - ( delta / LAND_RETURN_TIME );
 		cg.refdef.vieworg[2] += cg.landChange * f;
 	}
 
@@ -1050,7 +1050,7 @@ static int CG_CalcFov( void ) {
 		{
 			f = ( cg.time - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
-			if ( f < 1.0 ) {
+			if ( f < 1.0f ) {
 				fov_x = zoomFov + f * (fov_x - zoomFov);
 				// original:
 				// fov_x = f * fov_x;
@@ -1066,7 +1066,7 @@ static int CG_CalcFov( void ) {
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
-		phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
+		phase = cg.time / (float) (1000.0 * WAVE_FREQUENCY * M_PI * 2);
 		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
@@ -1088,7 +1088,7 @@ static int CG_CalcFov( void ) {
 	else if ( !cg.zoomed ) {
 		cg.zoomSensitivity = 1;
 	} else {
-		cg.zoomSensitivity = cg.refdef.fov_y / 75.0;
+		cg.zoomSensitivity = cg.refdef.fov_y / 75.0f;
 	}
 
 	return inwater;
@@ -1125,30 +1125,30 @@ static void CG_DamageBlendBlob( void )
 	VectorMA( ent.origin, cg.damageX * -8, cg.refdef.viewaxis[1], ent.origin );
 	VectorMA( ent.origin, cg.damageY * 8, cg.refdef.viewaxis[2], ent.origin );
 
-	ent.radius = cg.damageValue * 3 * ( 1.0 - ((float)t / maxTime) );
+	ent.radius = cg.damageValue * 3 * ( 1.0f - ((float)t / maxTime) );
 
 	if (cg.snap->ps.damageType == 0)
 	{ //pure health
 		ent.customShader = cgs.media.viewPainShader;
-		ent.shaderRGBA[0] = 180 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[1] = 50 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[2] = 50 * ( 1.0 - ((float)t / maxTime) );
+		ent.shaderRGBA[0] = 180 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[1] = 50 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[2] = 50 * ( 1.0f - ((float)t / maxTime) );
 		ent.shaderRGBA[3] = 255;
 	}
 	else if (cg.snap->ps.damageType == 1)
 	{ //pure shields
 		ent.customShader = cgs.media.viewPainShader_Shields;
-		ent.shaderRGBA[0] = 50 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[1] = 180 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[2] = 50 * ( 1.0 - ((float)t / maxTime) );
+		ent.shaderRGBA[0] = 50 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[1] = 180 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[2] = 50 * ( 1.0f - ((float)t / maxTime) );
 		ent.shaderRGBA[3] = 255;
 	}
 	else
 	{ //shields and health
 		ent.customShader = cgs.media.viewPainShader_ShieldsAndHealth;
-		ent.shaderRGBA[0] = 180 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[1] = 180 * ( 1.0 - ((float)t / maxTime) );
-		ent.shaderRGBA[2] = 50 * ( 1.0 - ((float)t / maxTime) );
+		ent.shaderRGBA[0] = 180 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[1] = 180 * ( 1.0f - ((float)t / maxTime) );
+		ent.shaderRGBA[2] = 50 * ( 1.0f - ((float)t / maxTime) );
 		ent.shaderRGBA[3] = 255;
 	}
 	trap_R_AddRefEntityToScene( &ent );
@@ -1250,7 +1250,7 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabsf( sinf( ( ps->bobCycle & 127 ) * ( (float) M_PI / 127 ) ) );
+	cg.bobfracsin = fabsf( sinf( ( ps->bobCycle & 127 ) * (float) ( M_PI / 127 ) ) );
 	cg.xyspeed = sqrtf( ps->velocity[0] * ps->velocity[0] +
 		ps->velocity[1] * ps->velocity[1] );
 
@@ -1435,28 +1435,28 @@ void CG_SE_UpdateShake( vec3_t origin, vec3_t angles )
 
 void CG_SE_UpdateMusic(void)
 {
-	if (cgScreenEffects.music_volume_multiplier < 0.1)
+	if (cgScreenEffects.music_volume_multiplier < 0.1f)
 	{
-		cgScreenEffects.music_volume_multiplier = 1.0;
+		cgScreenEffects.music_volume_multiplier = 1.0f;
 		return;
 	}
 
 	if (cgScreenEffects.music_volume_time < cg.time)
 	{
-		if (cgScreenEffects.music_volume_multiplier != 1.0 || cgScreenEffects.music_volume_set)
+		if (cgScreenEffects.music_volume_multiplier != 1.0f || cgScreenEffects.music_volume_set)
 		{
 			char musMultStr[512];
 
-			cgScreenEffects.music_volume_multiplier += 0.1;
-			if (cgScreenEffects.music_volume_multiplier > 1.0)
+			cgScreenEffects.music_volume_multiplier += 0.1f;
+			if (cgScreenEffects.music_volume_multiplier > 1.0f)
 			{
-				cgScreenEffects.music_volume_multiplier = 1.0;
+				cgScreenEffects.music_volume_multiplier = 1.0f;
 			}
 
 			Com_sprintf(musMultStr, sizeof(musMultStr), "%f", cgScreenEffects.music_volume_multiplier);
 			trap_Cvar_Set("s_musicMult", musMultStr);
 
-			if (cgScreenEffects.music_volume_multiplier == 1.0)
+			if (cgScreenEffects.music_volume_multiplier == 1.0f)
 			{
 				cgScreenEffects.music_volume_set = qfalse;
 			}

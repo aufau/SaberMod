@@ -2688,14 +2688,14 @@ void SlowMoDuelTimescale() {
 		}
 		else if (timeDif < 1150)
 		{
-			useDif = (timeDif/1000); //scale from 0.1 up to 1
-			if (useDif < 0.1)
+			useDif = timeDif * 0.001f; //scale from 0.1 up to 1
+			if (useDif < 0.1f)
 			{
-				useDif = 0.1;
+				useDif = 0.1f;
 			}
-			if (useDif > 1.0)
+			if (useDif > 1.0f)
 			{
-				useDif = 1.0;
+				useDif = 1.0f;
 			}
 			trap_Cvar_Set("timescale", va("%f", useDif));
 		}

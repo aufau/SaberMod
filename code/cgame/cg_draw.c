@@ -503,13 +503,13 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 		// offset the origin y and z to center the flag
 		trap_R_ModelBounds( cm, mins, maxs );
 
-		origin[2] = -0.5 * ( mins[2] + maxs[2] );
-		origin[1] = 0.5 * ( mins[1] + maxs[1] );
+		origin[2] = -0.5f * ( mins[2] + maxs[2] );
+		origin[1] = 0.5f * ( mins[1] + maxs[1] );
 
 		// calculate distance so the flag nearly fills the box
 		// assume heads are taller than wide
-		len = 0.5 * ( maxs[2] - mins[2] );
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
+		len = 0.5f * ( maxs[2] - mins[2] );
+		origin[0] = len * (1 / 0.268f);	// len / tan( fov/2 )
 
 		angles[YAW] = 60 * sinf( cg.time * 0.0005f );
 
@@ -645,7 +645,7 @@ void DrawHealthArmor(int x,int y)
 	if (ps->stats[STAT_ARMOR])	// Is there armor? Draw the HUD Armor TIC
 	{
 		// Make tic flash if inner armor is at 50% (25% of full armor)
-		if (armorPercent<.5)		// Do whatever the flash timer says
+		if (armorPercent < 0.5f)		// Do whatever the flash timer says
 		{
 			if (cg.HUDTickFlashTime < cg.time)			// Flip at the same time
 			{
@@ -679,7 +679,7 @@ void DrawHealthArmor(int x,int y)
 	CG_DrawPic(   x, y, 80, 80, cgs.media.HUDHealth );
 
 	// Make tic flash if health is at 20% of full
-	if (healthPercent>.20)
+	if (healthPercent > 0.2f)
 	{
 		cg.HUDHealthFlag=qtrue;
 	}
@@ -689,7 +689,7 @@ void DrawHealthArmor(int x,int y)
 		{
 			cg.HUDTickFlashTime = cg.time + 100;
 
-			if ((armorPercent>0) && (armorPercent<.5))		// Keep the tics in sync if flashing
+			if (armorPercent > 0 && armorPercent < 0.5f)		// Keep the tics in sync if flashing
 			{
 				cg.HUDHealthFlag=cg.HUDArmorFlag;
 			}
@@ -832,7 +832,7 @@ void CG_DrawArmor(int x,int y)
 	if (ps->stats[STAT_ARMOR])	// Is there armor? Draw the HUD Armor TIC
 	{
 		// Make tic flash if inner armor is at 50% (25% of full armor)
-		if (armorPercent<.5)		// Do whatever the flash timer says
+		if (armorPercent < 0.5f)		// Do whatever the flash timer says
 		{
 			if (cg.HUDTickFlashTime < cg.time)			// Flip at the same time
 			{
@@ -1497,7 +1497,7 @@ void CG_DrawInvenSelect( void )
 	// Work backwards from current icon
 	holdX = x - ((bigIconSize/2) + pad + smallIconSize);
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = smallIconSize * 0.75f;
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
@@ -1534,7 +1534,7 @@ void CG_DrawInvenSelect( void )
 		int itemNdex;
 		trap_R_SetColor(NULL);
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons[cg.itemSelect] );
-		addX = (float) bigIconSize * .75;
+		addX = bigIconSize * 0.75f;
 		trap_R_SetColor(colorTable[CT_ICON_BLUE]);
 		/*CG_DrawNumField ((x-(bigIconSize/2)) + addX, y, 2, cg.snap->ps.inventory[cg.inventorySelect], 6, 12,
 			NUM_FONT_SMALL,qfalse);*/
@@ -1566,7 +1566,7 @@ void CG_DrawInvenSelect( void )
 	// Work forwards from current icon
 	holdX = x + (bigIconSize/2) + pad;
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = smallIconSize * 0.75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
 		if (i> HI_NUM_HOLDABLE-1)
@@ -2813,8 +2813,8 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 	hShader = cgs.media.crosshairShader[ cg_drawCrosshair.integer % NUM_CROSSHAIRS ];
 
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (640 - w),
-		y + cg.refdef.y + 0.5 * (480 - h),
+	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5f * (640 - w),
+		y + cg.refdef.y + 0.5f * (480 - h),
 		w, h, 0, 0, 1, 1, hShader );
 }
 
@@ -2845,13 +2845,13 @@ qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y)
 	transformed[2] = DotProduct(local,vfwd);
 
 	// Make sure Z is not negative.
-	if(transformed[2] < 0.01)
+	if(transformed[2] < 0.01f)
 	{
 		return qfalse;
 	}
 
-	xzi = xcenter / transformed[2] * (90.0/cg.refdef.fov_x);
-	yzi = ycenter / transformed[2] * (90.0/cg.refdef.fov_y);
+	xzi = xcenter / transformed[2] * (90.0f / cg.refdef.fov_x);
+	yzi = ycenter / transformed[2] * (90.0f / cg.refdef.fov_y);
 
 	*x = xcenter + xzi * transformed[0];
 	*y = ycenter - yzi * transformed[1];
@@ -2898,7 +2898,7 @@ void CG_SaberClashFlare( void )
 	// Don't do clashes for things that are behind us
 	VectorSubtract( g_saberFlashPos, cg.refdef.vieworg, dif );
 
-	if ( DotProduct( dif, cg.refdef.viewaxis[0] ) < 0.2 )
+	if ( DotProduct( dif, cg.refdef.viewaxis[0] ) < 0.2f )
 	{
 		return;
 	}
@@ -3998,19 +3998,19 @@ static void CG_Draw2D( void ) {
 
 			rageTime = (float)(cg.time - cgRageTime);
 
-			rageTime /= 9000;
+			rageTime /= 9000.0f;
 
 			if (rageTime < 0)
 			{
 				rageTime = 0;
 			}
-			if (rageTime > 0.15)
+			if (rageTime > 0.15f)
 			{
-				rageTime = 0.15;
+				rageTime = 0.15f;
 			}
 
 			hcolor[3] = rageTime;
-			hcolor[0] = 0.7;
+			hcolor[0] = 0.7f;
 			hcolor[1] = 0;
 			hcolor[2] = 0;
 
@@ -4027,44 +4027,44 @@ static void CG_Draw2D( void ) {
 			if (!cgRageFadeTime)
 			{
 				cgRageFadeTime = cg.time;
-				cgRageFadeVal = 0.15;
+				cgRageFadeVal = 0.15f;
 			}
 
 			rageTime = cgRageFadeVal;
 
-			cgRageFadeVal -= (cg.time - cgRageFadeTime)*0.000005;
+			cgRageFadeVal -= (cg.time - cgRageFadeTime)*0.000005f;
 
 			if (rageTime < 0)
 			{
 				rageTime = 0;
 			}
-			if (rageTime > 0.15)
+			if (rageTime > 0.15f)
 			{
-				rageTime = 0.15;
+				rageTime = 0.15f;
 			}
 
 			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
 			{
 				float checkRageRecTime = rageTime;
 
-				if (checkRageRecTime < 0.15)
+				if (checkRageRecTime < 0.15f)
 				{
-					checkRageRecTime = 0.15;
+					checkRageRecTime = 0.15f;
 				}
 
 				hcolor[3] = checkRageRecTime;
 				hcolor[0] = rageTime*4;
-				if (hcolor[0] < 0.2)
+				if (hcolor[0] < 0.2f)
 				{
-					hcolor[0] = 0.2;
+					hcolor[0] = 0.2f;
 				}
-				hcolor[1] = 0.2;
-				hcolor[2] = 0.2;
+				hcolor[1] = 0.2f;
+				hcolor[2] = 0.2f;
 			}
 			else
 			{
 				hcolor[3] = rageTime;
-				hcolor[0] = 0.7;
+				hcolor[0] = 0.7f;
 				hcolor[1] = 0;
 				hcolor[2] = 0;
 			}
@@ -4077,9 +4077,9 @@ static void CG_Draw2D( void ) {
 			{
 				if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
 				{
-					hcolor[3] = 0.15;
-					hcolor[0] = 0.2;
-					hcolor[1] = 0.2;
+					hcolor[3] = 0.15f;
+					hcolor[0] = 0.2f;
+					hcolor[1] = 0.2f;
 					hcolor[2] = 0.2;
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
@@ -4097,19 +4097,19 @@ static void CG_Draw2D( void ) {
 
 			rageRecTime /= 9000;
 
-			if (rageRecTime < 0.15)//0)
+			if (rageRecTime < 0.15f)//0)
 			{
-				rageRecTime = 0.15;//0;
+				rageRecTime = 0.15f;//0;
 			}
-			if (rageRecTime > 0.15)
+			if (rageRecTime > 0.15f)
 			{
-				rageRecTime = 0.15;
+				rageRecTime = 0.15f;
 			}
 
 			hcolor[3] = rageRecTime;
-			hcolor[0] = 0.2;
-			hcolor[1] = 0.2;
-			hcolor[2] = 0.2;
+			hcolor[0] = 0.2f;
+			hcolor[1] = 0.2f;
+			hcolor[2] = 0.2f;
 
 			if (!cg.renderingThirdPerson)
 			{
@@ -4124,26 +4124,26 @@ static void CG_Draw2D( void ) {
 			if (!cgRageRecFadeTime)
 			{
 				cgRageRecFadeTime = cg.time;
-				cgRageRecFadeVal = 0.15;
+				cgRageRecFadeVal = 0.15f;
 			}
 
 			rageRecTime = cgRageRecFadeVal;
 
-			cgRageRecFadeVal -= (cg.time - cgRageRecFadeTime)*0.000005;
+			cgRageRecFadeVal -= (cg.time - cgRageRecFadeTime)*0.000005f;
 
 			if (rageRecTime < 0)
 			{
 				rageRecTime = 0;
 			}
-			if (rageRecTime > 0.15)
+			if (rageRecTime > 0.15f)
 			{
-				rageRecTime = 0.15;
+				rageRecTime = 0.15f;
 			}
 
 			hcolor[3] = rageRecTime;
-			hcolor[0] = 0.2;
-			hcolor[1] = 0.2;
-			hcolor[2] = 0.2;
+			hcolor[0] = 0.2f;
+			hcolor[1] = 0.2f;
+			hcolor[2] = 0.2f;
 
 			if (!cg.renderingThirdPerson && rageRecTime)
 			{
@@ -4170,15 +4170,15 @@ static void CG_Draw2D( void ) {
 			{
 				absorbTime = 0;
 			}
-			if (absorbTime > 0.15)
+			if (absorbTime > 0.15f)
 			{
-				absorbTime = 0.15;
+				absorbTime = 0.15f;
 			}
 
-			hcolor[3] = absorbTime/2;
+			hcolor[3] = absorbTime * 0.5f;
 			hcolor[0] = 0;
 			hcolor[1] = 0;
-			hcolor[2] = 0.7;
+			hcolor[2] = 0.7f;
 
 			if (!cg.renderingThirdPerson)
 			{
@@ -4193,26 +4193,26 @@ static void CG_Draw2D( void ) {
 			if (!cgAbsorbFadeTime)
 			{
 				cgAbsorbFadeTime = cg.time;
-				cgAbsorbFadeVal = 0.15;
+				cgAbsorbFadeVal = 0.15f;
 			}
 
 			absorbTime = cgAbsorbFadeVal;
 
-			cgAbsorbFadeVal -= (cg.time - cgAbsorbFadeTime)*0.000005;
+			cgAbsorbFadeVal -= (cg.time - cgAbsorbFadeTime)*0.000005f;
 
 			if (absorbTime < 0)
 			{
 				absorbTime = 0;
 			}
-			if (absorbTime > 0.15)
+			if (absorbTime > 0.15f)
 			{
-				absorbTime = 0.15;
+				absorbTime = 0.15f;
 			}
 
-			hcolor[3] = absorbTime/2;
+			hcolor[3] = absorbTime * 0.5f;
 			hcolor[0] = 0;
 			hcolor[1] = 0;
-			hcolor[2] = 0.7;
+			hcolor[2] = 0.7f;
 
 			if (!cg.renderingThirdPerson && absorbTime)
 			{
@@ -4233,20 +4233,20 @@ static void CG_Draw2D( void ) {
 
 			protectTime = (float)(cg.time - cgProtectTime);
 
-			protectTime /= 9000;
+			protectTime /= 9000.0f;
 
 			if (protectTime < 0)
 			{
 				protectTime = 0;
 			}
-			if (protectTime > 0.15)
+			if (protectTime > 0.15f)
 			{
-				protectTime = 0.15;
+				protectTime = 0.15f;
 			}
 
-			hcolor[3] = protectTime/2;
+			hcolor[3] = protectTime * 0.5f;
 			hcolor[0] = 0;
-			hcolor[1] = 0.7;
+			hcolor[1] = 0.7f;
 			hcolor[2] = 0;
 
 			if (!cg.renderingThirdPerson)
@@ -4262,25 +4262,25 @@ static void CG_Draw2D( void ) {
 			if (!cgProtectFadeTime)
 			{
 				cgProtectFadeTime = cg.time;
-				cgProtectFadeVal = 0.15;
+				cgProtectFadeVal = 0.15f;
 			}
 
 			protectTime = cgProtectFadeVal;
 
-			cgProtectFadeVal -= (cg.time - cgProtectFadeTime)*0.000005;
+			cgProtectFadeVal -= (cg.time - cgProtectFadeTime)*0.000005f;
 
 			if (protectTime < 0)
 			{
 				protectTime = 0;
 			}
-			if (protectTime > 0.15)
+			if (protectTime > 0.15f)
 			{
-				protectTime = 0.15;
+				protectTime = 0.15f;
 			}
 
-			hcolor[3] = protectTime/2;
+			hcolor[3] = protectTime * 0.5f;
 			hcolor[0] = 0;
-			hcolor[1] = 0.7;
+			hcolor[1] = 0.7f;
 			hcolor[2] = 0;
 
 			if (!cg.renderingThirdPerson && protectTime)
@@ -4307,20 +4307,20 @@ static void CG_Draw2D( void ) {
 
 			ysalTime = (float)(cg.time - cgYsalTime);
 
-			ysalTime /= 9000;
+			ysalTime /= 9000.0f;
 
 			if (ysalTime < 0)
 			{
 				ysalTime = 0;
 			}
-			if (ysalTime > 0.15)
+			if (ysalTime > 0.15f)
 			{
-				ysalTime = 0.15;
+				ysalTime = 0.15f;
 			}
 
-			hcolor[3] = ysalTime/2;
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
+			hcolor[3] = ysalTime * 0.5f;
+			hcolor[0] = 0.7f;
+			hcolor[1] = 0.7f;
 			hcolor[2] = 0;
 
 			if (!cg.renderingThirdPerson)
@@ -4336,25 +4336,25 @@ static void CG_Draw2D( void ) {
 			if (!cgYsalFadeTime)
 			{
 				cgYsalFadeTime = cg.time;
-				cgYsalFadeVal = 0.15;
+				cgYsalFadeVal = 0.15f;
 			}
 
 			ysalTime = cgYsalFadeVal;
 
-			cgYsalFadeVal -= (cg.time - cgYsalFadeTime)*0.000005;
+			cgYsalFadeVal -= (cg.time - cgYsalFadeTime)*0.000005f;
 
 			if (ysalTime < 0)
 			{
 				ysalTime = 0;
 			}
-			if (ysalTime > 0.15)
+			if (ysalTime > 0.15f)
 			{
-				ysalTime = 0.15;
+				ysalTime = 0.15f;
 			}
 
-			hcolor[3] = ysalTime/2;
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
+			hcolor[3] = ysalTime * 0.5f;
+			hcolor[0] = 0.7f;
+			hcolor[1] = 0.7f;
 			hcolor[2] = 0;
 
 			if (!cg.renderingThirdPerson && ysalTime)

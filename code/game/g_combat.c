@@ -191,7 +191,7 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 
 	// Get center of target.
 	VectorAdd(target->r.absmin, target->r.absmax, tcenter);
-	VectorScale(tcenter, 0.5, tcenter);
+	VectorScale(tcenter, 0.5f, tcenter);
 
 	// Get radius width of target.
 	// tradius = (fabs(target->r.maxs[0]) + fabs(target->r.maxs[1]) + fabs(target->r.mins[0]) + fabs(target->r.mins[1]))/4;
@@ -230,19 +230,19 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 
 	// Get bottom to top (vertical) position index
 	udot = DotProduct(up, point_dir);
-	if(udot>.800)
+	if(udot>.800f)
 	{
 		Vertical = 4;
 	}
-	else if(udot>.400)
+	else if(udot>.400f)
 	{
 		Vertical = 3;
 	}
-	else if(udot>-.333)
+	else if(udot>-.333f)
 	{
 		Vertical = 2;
 	}
-	else if(udot>-.666)
+	else if(udot>-.666f)
 	{
 		Vertical = 1;
 	}
@@ -253,19 +253,19 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 
 	// Get back to front (forward) position index.
 	fdot = DotProduct(forward, point_dir);
-	if(fdot>.666)
+	if(fdot>.666f)
 	{
 		Forward = 4;
 	}
-	else if(fdot>.333)
+	else if(fdot>.333f)
 	{
 		Forward = 3;
 	}
-	else if(fdot>-.333)
+	else if(fdot>-.333f)
 	{
 		Forward = 2;
 	}
-	else if(fdot>-.666)
+	else if(fdot>-.666f)
 	{
 		Forward = 1;
 	}
@@ -276,19 +276,19 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 
 	// Get left to right (lateral) position index.
 	rdot = DotProduct(right, point_dir);
-	if(rdot>.666)
+	if(rdot>.666f)
 	{
 		Lateral = 4;
 	}
-	else if(rdot>.333)
+	else if(rdot>.333f)
 	{
 		Lateral = 3;
 	}
-	else if(rdot>-.333)
+	else if(rdot>-.333f)
 	{
 		Lateral = 2;
 	}
-	else if(rdot>-.666)
+	else if(rdot>-.666f)
 	{
 		Lateral = 1;
 	}
@@ -354,17 +354,17 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 	}
 	else
 	{
-		if(udot < 0.3)
+		if(udot < 0.3f)
 		{
 			return HL_WAIST;
 		}
 		else if(fdot < 0)
 		{
-			if(rdot > 0.4)
+			if(rdot > 0.4f)
 			{
 				return HL_BACK_RT;
 			}
-			else if(rdot < -0.4)
+			else if(rdot < -0.4f)
 			{
 				return HL_BACK_LT;
 			}
@@ -375,11 +375,11 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 		}
 		else
 		{
-			if(rdot > 0.3)
+			if(rdot > 0.3f)
 			{
 				return HL_CHEST_RT;
 			}
-			else if(rdot < -0.3)
+			else if(rdot < -0.3f)
 			{
 				return HL_CHEST_LT;
 			}
@@ -2283,8 +2283,8 @@ void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
 
 	if ( g_gravity.value > 0 )
 	{
-		VectorScale( newDir, g_knockback.value * (float)knockback / mass * 0.8, kvel );
-		kvel[2] = newDir[2] * g_knockback.value * (float)knockback / mass * 1.5;
+		VectorScale( newDir, g_knockback.value * knockback / mass * 0.8f, kvel );
+		kvel[2] = newDir[2] * g_knockback.value * knockback / mass * 1.5f;
 	}
 	else
 	{
@@ -2565,7 +2565,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 		fVSpeed += self->client->ps.velocity[2];
 	}
 
-	fVSpeed *= 0.08;
+	fVSpeed *= 0.08f;
 
 	properOrigin[0] += addVel[0]*fVSpeed;
 	properOrigin[1] += addVel[1]*fVSpeed;
@@ -2806,11 +2806,11 @@ int G_GetHitQuad( gentity_t *self, vec3_t hitloc )
 
 	if ( zdiff > 0 )
 	{
-		if ( rightdot > 0.3 )
+		if ( rightdot > 0.3f )
 		{
 			hitLoc = G2_MODELPART_RARM;
 		}
-		else if ( rightdot < -0.3 )
+		else if ( rightdot < -0.3f )
 		{
 			hitLoc = G2_MODELPART_LARM;
 		}
@@ -2821,11 +2821,11 @@ int G_GetHitQuad( gentity_t *self, vec3_t hitloc )
 	}
 	else if ( zdiff > -20 )
 	{
-		if ( rightdot > 0.1 )
+		if ( rightdot > 0.1f )
 		{
 			hitLoc = G2_MODELPART_RARM;
 		}
-		else if ( rightdot < -0.1 )
+		else if ( rightdot < -0.1f )
 		{
 			hitLoc = G2_MODELPART_LARM;
 		}
@@ -3610,41 +3610,41 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	// use the midpoint of the bounds instead of the origin, because
 	// bmodels may have their origin is 0,0,0
 	VectorAdd (targ->r.absmin, targ->r.absmax, midpoint);
-	VectorScale (midpoint, 0.5, midpoint);
+	VectorScale (midpoint, 0.5f, midpoint);
 
 	VectorCopy (midpoint, dest);
 	trap_Trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
-	if (tr.fraction == 1.0 || tr.entityNum == targ->s.number)
+	if (tr.fraction == 1.0f || tr.entityNum == targ->s.number)
 		return qtrue;
 
 	// this should probably check in the plane of projection,
 	// rather than in world coordinate, and also include Z
 	VectorCopy (midpoint, dest);
-	dest[0] += 15.0;
-	dest[1] += 15.0;
+	dest[0] += 15;
+	dest[1] += 15;
 	trap_Trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
-	if (tr.fraction == 1.0)
+	if (tr.fraction == 1.0f)
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] += 15.0;
-	dest[1] -= 15.0;
+	dest[0] += 15;
+	dest[1] -= 15;
 	trap_Trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
-	if (tr.fraction == 1.0)
+	if (tr.fraction == 1.0f)
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] -= 15.0;
-	dest[1] += 15.0;
+	dest[0] -= 15;
+	dest[1] += 15;
 	trap_Trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
-	if (tr.fraction == 1.0)
+	if (tr.fraction == 1.0f)
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] -= 15.0;
-	dest[1] -= 15.0;
+	dest[0] -= 15;
+	dest[1] -= 15;
 	trap_Trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
-	if (tr.fraction == 1.0)
+	if (tr.fraction == 1.0f)
 		return qtrue;
 
 
@@ -3704,7 +3704,7 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 			continue;
 		}
 
-		points = damage * ( 1.0 - dist / radius );
+		points = damage * ( 1.0f - dist / radius );
 
 		if( CanDamage (ent, origin) ) {
 			if( LogAccuracyHit( ent, attacker ) ) {

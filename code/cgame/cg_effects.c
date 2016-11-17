@@ -511,8 +511,8 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 
 	//Attempt to scale the glass directly to the size of the window
 
-	stepWidth = (0.25f - (width*0.0002)); //(width*0.0005));
-	mxWidth = width*0.2;
+	stepWidth = (0.25f - (width*0.0002f)); //(width*0.0005));
+	mxWidth = width*0.2f;
 	timeDecay = ( timeDecay + TIME_DECAY_FAST ) * 0.5f;
 
 	if (stepWidth < 0.05f)
@@ -701,9 +701,9 @@ void CG_GlassShatter_Old(int entnum, vec3_t org, vec3_t mins, vec3_t maxs)
 			dif[2] = 2;
 		}
 
-		difx[0] = Q_irand(1, (dif[0]*0.9)*2);
-		difx[1] = Q_irand(1, (dif[1]*0.9)*2);
-		difx[2] = Q_irand(1, (dif[2]*0.9)*2);
+		difx[0] = Q_irand(1, 2 * 0.9f * dif[0]);
+		difx[1] = Q_irand(1, 2 * 0.9f * dif[1]);
+		difx[2] = Q_irand(1, 2 * 0.9f * dif[2]);
 
 		if (difx[0] > dif[0])
 		{
@@ -852,9 +852,9 @@ void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debri
 			dif[2] = 2;
 		}
 
-		difx[0] = Q_irand(1, (dif[0]*0.9)*2);
-		difx[1] = Q_irand(1, (dif[1]*0.9)*2);
-		difx[2] = Q_irand(1, (dif[2]*0.9)*2);
+		difx[0] = Q_irand(1, 2 * 0.9f * dif[0]);
+		difx[1] = Q_irand(1, 2 * 0.9f * dif[1]);
+		difx[2] = Q_irand(1, 2 * 0.9f * dif[2]);
 
 		if (difx[0] > dif[0])
 		{
