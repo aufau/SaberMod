@@ -2239,7 +2239,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 
 	if (dflags & DAMAGE_HALF_ABSORB)
 	{	// Half the damage gets absorbed by the shields, rather than 100%
-		save = ceil( damage * ARMOR_PROTECTION );
+		save = ceilf( damage * ARMOR_PROTECTION );
 	}
 	else
 	{	// All the damage gets absorbed by the shields.
@@ -2343,14 +2343,14 @@ int RaySphereIntersections( vec3_t origin, float radius, vec3_t point, vec3_t di
 
 	d = b * b - 4 * c;
 	if (d > 0) {
-		t = (- b + sqrt(d)) / 2;
+		t = (- b + sqrtf(d)) * 0.5f;
 		VectorMA(point, t, dir, intersections[0]);
-		t = (- b - sqrt(d)) / 2;
+		t = (- b - sqrtf(d)) * 0.5f;
 		VectorMA(point, t, dir, intersections[1]);
 		return 2;
 	}
 	else if (d == 0) {
-		t = (- b ) / 2;
+		t = (- b ) * 0.5f;
 		VectorMA(point, t, dir, intersections[0]);
 		return 1;
 	}

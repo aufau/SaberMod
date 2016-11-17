@@ -628,7 +628,7 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 		}
 	}
 
-	if ( fabs( ent1->r.currentOrigin[2]-ent2->r.currentOrigin[2] ) > 16 )
+	if ( fabsf( ent1->r.currentOrigin[2]-ent2->r.currentOrigin[2] ) > 16 )
 	{
 		return qfalse;
 	}
@@ -1059,7 +1059,7 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 			{
 				quadDiff = -4 + (quadDiff + 4);
 			}
-			newQuad = attQuadEnd + ceil( ((float)quadDiff)/2.0f );
+			newQuad = attQuadEnd + ceilf( quadDiff * 0.5f );
 			if ( newQuad < Q_BR )
 			{//less than zero wraps around
 				newQuad = Q_B + newQuad;

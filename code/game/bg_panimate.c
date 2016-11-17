@@ -891,14 +891,14 @@ qboolean BG_ParseAnimationFile(const char *filename)
 		}
 		if ( fps < 0 )
 		{//backwards
-			bgGlobalAnimations[animNum].frameLerp = floor(1000.0f / fps);
+			bgGlobalAnimations[animNum].frameLerp = floorf(1000.0f / fps);
 		}
 		else
 		{
-			bgGlobalAnimations[animNum].frameLerp = ceil(1000.0f / fps);
+			bgGlobalAnimations[animNum].frameLerp = ceilf(1000.0f / fps);
 		}
 
-		bgGlobalAnimations[animNum].initialLerp = ceil(1000.0f / fabs(fps));
+		bgGlobalAnimations[animNum].initialLerp = ceilf(1000.0f / fabsf(fps));
 	}
 
 #ifdef _DEBUG

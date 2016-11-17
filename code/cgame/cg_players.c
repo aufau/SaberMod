@@ -2152,7 +2152,7 @@ static float CG_SwingAngles( float destination, float swingTolerance, float clam
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
-	scale = fabs( swing );
+	scale = fabsf( swing );
 	if ( scale < swingTolerance * 0.5 ) {
 		scale = 0.5;
 	} else if ( scale < swingTolerance ) {
@@ -2215,7 +2215,7 @@ static float CG_SwingAnglesATST( centity_t *cent, float destination, float swing
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
-	scale = fabs( swing );
+	scale = fabsf( swing );
 	if ( scale < swingTolerance * 0.5 ) {
 		scale = 0.5;
 	} else if ( scale < swingTolerance ) {
@@ -3540,7 +3540,7 @@ void CG_ForcePushBlur( vec3_t org )
 void CG_ForceGripEffect( vec3_t org )
 {
 	localEntity_t	*ex;
-	float wv = sin( cg.time * 0.004f ) * 0.08f + 0.1f;
+	float wv = sinf( cg.time * 0.004f ) * 0.08f + 0.1f;
 
 	ex = CG_AllocLocalEntity();
 	ex->leType = LE_PUFF;
@@ -4706,9 +4706,9 @@ void CG_AddLightningBeam(vec3_t start, vec3_t end)
 	VectorMA( b.start, 0.6666f * len, dir, c2 );
 
 	// get some chaos values that really aren't very chaotic :)
-	s1 = sin( cg.time * 0.005f ) * 2 + crandom() * 0.2f;
-	s2 = sin( cg.time * 0.001f );
-	s3 = sin( cg.time * 0.011f );
+	s1 = sinf( cg.time * 0.005f ) * 2 + crandom() * 0.2f;
+	s2 = sinf( cg.time * 0.001f );
+	s3 = sinf( cg.time * 0.011f );
 
 	VectorSet( chaos, len * 0.01f * s1,
 						len * 0.02f * s2,
@@ -5694,7 +5694,7 @@ void CG_G2Animated( centity_t *cent )
 
 			if ( dif < 500 )
 			{
-				brightness = floor((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
@@ -6095,9 +6095,9 @@ void CG_Player( centity_t *cent ) {
 							 //don't show in first person?
 
 		angle = ((cg.time / 12) & 255) * (M_PI * 2) / 255;
-		dir[0] = cos(angle) * 20;
-		dir[1] = sin(angle) * 20;
-		dir[2] = cos(angle) * 5;
+		dir[0] = cosf(angle) * 20;
+		dir[1] = sinf(angle) * 20;
+		dir[2] = cosf(angle) * 5;
 		VectorAdd(elevated, dir, seeker.origin);
 
 		VectorCopy(seeker.origin, seekorg);
@@ -6117,10 +6117,6 @@ void CG_Player( centity_t *cent ) {
 
 			elevated[2] -= 55-prefig;
 
-			angle = ((cg.time / 12) & 255) * (M_PI * 2) / 255;
-			dir[0] = cos(angle) * 20;
-			dir[1] = sin(angle) * 20;
-			dir[2] = cos(angle) * 5;
 			VectorAdd(elevated, dir, seeker.origin);
 		}
 		else if (cent->currentState.genericenemyindex != ENTITYNUM_NONE && cent->currentState.genericenemyindex != -1)
@@ -6138,8 +6134,8 @@ void CG_Player( centity_t *cent ) {
 
 		if (!successchange)
 		{
-			angles[0] = sin(angle) * 30;
-			angles[1] = (angle * 180 / M_PI) + 90;
+			angles[0] = sinf(angle) * 30;
+			angles[1] = RAD2DEG(angle) + 90;
 			if (angles[1] > 360)
 				angles[1] -= 360;
 			angles[2] = 0;
@@ -6486,7 +6482,7 @@ doEssentialTwo:
 				const char *limbName;
 				const char *limbCapName;
 				vec3_t armAng;
-				float wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
+				float wv = sinf( cg.time * 0.003f ) * 0.08f + 0.1f;
 
 				rotateBone = "lradius";
 				limbName = "l_arm";
@@ -6715,12 +6711,12 @@ doEssentialTwo:
 				if (renderedHolos == 0)
 				{
 					angle = ((cg.time / 8) & 255) * (M_PI * 2) / 255;
-					dir[0] = cos(angle) * 20;
-					dir[1] = sin(angle) * 20;
-					dir[2] = cos(angle) * 20;
+					dir[0] = cosf(angle) * 20;
+					dir[1] = sinf(angle) * 20;
+					dir[2] = cosf(angle) * 20;
 					VectorAdd(elevated, dir, holoRef.origin);
 
-					angles[0] = sin(angle) * 30;
+					angles[0] = sinf(angle) * 30;
 					angles[1] = (angle * 180 / M_PI) + 90;
 					if (angles[1] > 360)
 						angles[1] -= 360;
@@ -6732,12 +6728,12 @@ doEssentialTwo:
 					angle = ((cg.time / 8) & 255) * (M_PI * 2) / 255 + M_PI;
 					if (angle > M_PI * 2)
 						angle -= (float)M_PI * 2;
-					dir[0] = sin(angle) * 20;
-					dir[1] = cos(angle) * 20;
-					dir[2] = cos(angle) * 20;
+					dir[0] = sinf(angle) * 20;
+					dir[1] = cosf(angle) * 20;
+					dir[2] = cosf(angle) * 20;
 					VectorAdd(elevated, dir, holoRef.origin);
 
-					angles[0] = cos(angle - 0.5 * M_PI) * 30;
+					angles[0] = cosf(angle - (float) M_PI_2) * 30;
 					angles[1] = 360 - (angle * 180 / M_PI);
 					if (angles[1] > 360)
 						angles[1] -= 360;
@@ -6749,8 +6745,8 @@ doEssentialTwo:
 					angle = ((cg.time / 6) & 255) * (M_PI * 2) / 255 + 0.5 * M_PI;
 					if (angle > M_PI * 2)
 						angle -= (float)M_PI * 2;
-					dir[0] = sin(angle) * 20;
-					dir[1] = cos(angle) * 20;
+					dir[0] = sinf(angle) * 20;
+					dir[1] = cosf(angle) * 20;
 					dir[2] = 0;
 					VectorAdd(elevated, dir, holoRef.origin);
 
@@ -6774,7 +6770,7 @@ doEssentialTwo:
 					holoCenter[1] = holoRef.origin[1] + holoRef.axis[2][1]*18;
 					holoCenter[2] = holoRef.origin[2] + holoRef.axis[2][2]*18;
 
-					wv = sin( cg.time * 0.004f ) * 0.08f + 0.1f;
+					wv = sinf( cg.time * 0.004f ) * 0.08f + 0.1f;
 
 					VectorCopy(holoCenter, fxSArgs.origin);
 					VectorClear(fxSArgs.vel);
@@ -7042,7 +7038,7 @@ stillDoSaber:
 					efOrg[1] = boltMatrix.matrix[1][3];
 					efOrg[2] = boltMatrix.matrix[2][3];
 
-					wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
+					wv = sinf( cg.time * 0.003f ) * 0.08f + 0.1f;
 
 					//trap_FX_AddSprite( NULL, efOrg, NULL, NULL, 8.0f, 8.0f, wv, wv, 0.0f, 0.0f, 1.0f, cgs.media.yellowSaberGlowShader, 0x08000000 );
 					VectorCopy(efOrg, fxSArgs.origin);
@@ -7471,7 +7467,7 @@ doEssentialThree:
 
 			if ( dif < 500 )
 			{
-				brightness = floor((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;

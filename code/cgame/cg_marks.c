@@ -895,8 +895,8 @@ void CG_AddParticleToScene (cparticle_t *p, vec3_t org, float alpha)
 		if (height > p->endheight)
 			height = p->endheight;
 
-		sinR = height * sin(DEG2RAD(p->roll)) * sqrt(2);
-		cosR = width * cos(DEG2RAD(p->roll)) * sqrt(2);
+		sinR = height * sinf(DEG2RAD(p->roll)) * (float) M_SQRT2;
+		cosR = width * cosf(DEG2RAD(p->roll)) * (float) M_SQRT2;
 
 		VectorCopy (org, verts[0].xyz);
 		verts[0].xyz[0] -= sinR;
@@ -1004,7 +1004,7 @@ void CG_AddParticleToScene (cparticle_t *p, vec3_t org, float alpha)
 		}
 
 		i = p->shaderAnim;
-		j = (int)floor(ratio * shaderAnimCounts[p->shaderAnim]);
+		j = floorf(ratio * shaderAnimCounts[p->shaderAnim]);
 		p->pshader = shaderAnims[i][j];
 
 		if (p->roll) {

@@ -323,7 +323,7 @@ void *memmove( void *dest, const void *src, size_t count ) {
 
 #if 0
 
-double floor( double x ) {
+float floorf( float x ) {
 	return (int)(x + 0x40000000) - 0x40000000;
 }
 
@@ -355,7 +355,7 @@ char *strncpy( char *strDest, const char *strSource, size_t count ) {
 	return strDest;
 }
 
-double sqrt( double x ) {
+float sqrtf( float x ) {
 	float	y;
 	float	delta;
 	float	maxError;
@@ -510,11 +510,11 @@ float sintable[1024] = {
 0.999925,0.999942,0.999958,0.999971,0.999981,0.999989,0.999995,0.999999
 };
 
-double sin( double x ) {
+float sinf( float x ) {
 	int	index;
 	int	quad;
 
-	index = 1024 * x / (M_PI * 0.5);
+	index = 1024 * (float) M_2_PI * x;
 	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 	switch ( quad ) {
@@ -531,11 +531,11 @@ double sin( double x ) {
 }
 
 
-double cos( double x ) {
+float cosf( float x ) {
 	int	index;
 	int	quad;
 
-	index = 1024 * x / (M_PI * 0.5);
+	index = 1024 * (float) M_2_PI * x;
 	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 	switch ( quad ) {
@@ -702,18 +702,18 @@ float acostable[] = {
 0.17700769,0.16554844,0.15324301,0.13986823,0.12508152,0.10830610,0.08841715,0.06251018,
 }
 
-double acos( double x ) {
+float acosf( float x ) {
 	int index;
 
 	if (x < -1)
 		x = -1;
 	if (x > 1)
 		x = 1;
-	index = (float) (1.0 + x) * 511.9;
+	index = (1.0f + x) * 511.9f;
 	return acostable[index];
 }
 
-double atan2( double y, double x ) {
+float atan2f( float y, float x ) {
 	float	base;
 	float	temp;
 	float	dir;
@@ -723,7 +723,7 @@ double atan2( double y, double x ) {
 	if ( x < 0 ) {
 		if ( y >= 0 ) {
 			// quad 1
-			base = M_PI / 2;
+			base = M_PI_2;
 			temp = x;
 			x = y;
 			y = -temp;
@@ -736,7 +736,7 @@ double atan2( double y, double x ) {
 	} else {
 		if ( y < 0 ) {
 			// quad 3
-			base = 3 * M_PI / 2;
+			base = 3 * M_PI_2;
 			temp = x;
 			x = -y;
 			y = temp;
@@ -744,7 +744,7 @@ double atan2( double y, double x ) {
 	}
 
 	if ( y > x ) {
-		base += M_PI/2;
+		base += M_PI_2;
 		temp = x;
 		x = y;
 		y = temp;
@@ -775,8 +775,8 @@ double atan2( double y, double x ) {
 #ifdef Q3_VM
 // bk001127 - guarded this tan replacement
 // ld: undefined versioned symbol name tan@@GLIBC_2.0
-double tan( double x ) {
-	return sin(x) / cos(x);
+float tanf( float x ) {
+	return sinf(x) / cosf(x);
 }
 #endif
 
@@ -1032,7 +1032,7 @@ int abs( int n ) {
 	return n < 0 ? -n : n;
 }
 
-double fabs( double x ) {
+float fabsf( float x ) {
 	return x < 0 ? -x : x;
 }
 

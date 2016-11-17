@@ -113,16 +113,16 @@ void *memset( void *dest, int c, size_t count );
 void *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
-double ceil( double x );
-double floor( double x );
-double sqrt( double x );
-double sin( double x );
-double cos( double x );
-double atan2( double y, double x );
-double tan( double x );
+float ceilf( float x );
+float floorf( float x );
+float sqrtf( float x );
+float sinf( float x );
+float cosf( float x );
+float atan2f( float y, float x );
+float tanf( float x );
 int abs( int n );
-double fabs( double x );
-double acos( double x );
+float fabsf( float x );
+float acosf( float x );
 float roundf( float x );
 float frexpf( float x, int *exp );
 float expf( float x );

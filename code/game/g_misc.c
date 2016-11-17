@@ -708,7 +708,7 @@ void InitShooter( gentity_t *ent, int weapon ) {
 	if ( !ent->random ) {
 		ent->random = 1.0;
 	}
-	ent->random = sin( M_PI * ent->random / 180 );
+	ent->random = sinf( DEG2RAD( ent->random ) );
 	// target might be a moving object, so we can't set movedir for it
 	if ( ent->target ) {
 		ent->think = InitShooter_Finish;
@@ -2087,9 +2087,9 @@ float ExampleAnimEntYaw(gentity_t *self, float idealYaw, float yawSpeed)
 
 	diffYaw = AngleSubtract( curYaw, idealYaw );
 
-	if ( fabs(diffYaw) > 0.25f )
+	if ( fabsf(diffYaw) > 0.25f )
 	{
-		if ( fabs(diffYaw) > yawSpeed )
+		if ( fabsf(diffYaw) > yawSpeed )
 		{
 			// cap max speed
 			curYaw += (diffYaw > 0.0f) ? -yawSpeed : yawSpeed;

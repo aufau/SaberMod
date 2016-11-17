@@ -654,6 +654,7 @@ void CG_AddScorePlum( localEntity_t *le ) {
 	float		minSize, scaling;
 	int			i, score, digits[10], numdigits, negative;
 	int			numberSize;
+	float		amplitude;
 
 	re = &le->refEntity;
 
@@ -701,7 +702,8 @@ void CG_AddScorePlum( localEntity_t *le ) {
 	CrossProduct(dir, up, vec);
 	VectorNormalize(vec);
 
-	VectorMA(origin, -1 + 2 * sin(c * 2 * M_PI), vec, origin);
+	amplitude = 2 * sinf(c * 2 * (float) M_PI) - 1;
+	VectorMA(origin, amplitude, vec, origin);
 
 	// if the view would be "inside" the sprite, kill the sprite
 	// so it doesn't add too much overdraw

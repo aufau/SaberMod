@@ -590,10 +590,10 @@ static void CG_OffsetThirdPersonView( void )
 		float	deltayaw;
 		float	pitch;
 
-		deltayaw = fabs(focusAngles[YAW] - cam.lastYaw);
+		deltayaw = fabsf(focusAngles[YAW] - cam.lastYaw);
 		if (deltayaw > 180.0f)
 		{ // Normalize this angle so that it is between 0 and 180.
-			deltayaw = fabs(deltayaw - 360.0f);
+			deltayaw = fabsf(deltayaw - 360.0f);
 		}
 		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
 			if ( dtime > 0.0f ) {
@@ -926,9 +926,8 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	float	fov_y;
 	qboolean	inwater;
 
-	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
-	fov_y = atan2( cg.refdef.height, x );
-	fov_y = fov_y * 360 / M_PI;
+	x = cg.refdef.width / tanf( DEG2RAD( 0.5f * fov_x ) );
+	fov_y = RAD2DEG( 2 * atan2f( cg.refdef.height, x ) );
 
 	// there's a problem with this, it only takes the leafbrushes into account, not the entity brushes,
 	//	so if you give slime/water etc properties to a func_door area brush in order to move the whole water
@@ -1061,15 +1060,14 @@ static int CG_CalcFov( void ) {
 		}
 	}
 
-	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
-	fov_y = atan2( cg.refdef.height, x );
-	fov_y = fov_y * 360 / M_PI;
+	x = cg.refdef.width / tanf( DEG2RAD( 0.5f * fov_x ) );
+	fov_y = RAD2DEG( 2 * atan2f( cg.refdef.height, x ) );
 
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
 		phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
-		v = WAVE_AMPLITUDE * sin( phase );
+		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
 		inwater = qtrue;
@@ -1252,8 +1250,8 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabs( sin( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
-	cg.xyspeed = sqrt( ps->velocity[0] * ps->velocity[0] +
+	cg.bobfracsin = fabsf( sinf( ( ps->bobCycle & 127 ) * ( (float) M_PI / 127 ) ) );
+	cg.xyspeed = sqrtf( ps->velocity[0] * ps->velocity[0] +
 		ps->velocity[1] * ps->velocity[1] );
 
 	if (cg.xyspeed > 270)
