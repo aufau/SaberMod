@@ -159,7 +159,6 @@ static void CG_ParseServerinfo( const char *info ) {
 	const char	*mapname;
 	int			val;
 
-	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
 	cgs.needpass = atoi( Info_ValueForKey( info, "needpass" ) );

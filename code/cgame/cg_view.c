@@ -351,7 +351,7 @@ static void CG_ResetThirdPersonViewDamp(void)
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
 	CG_Trace(&trace, cam.focus, cameramins, cameramaxs, cam.target.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0f)
+	if (trace.fraction < 1.0f)
 	{
 		VectorSubtract(trace.endpos, cam.target.ideal, cam.target.damp);
 	}
@@ -360,7 +360,7 @@ static void CG_ResetThirdPersonViewDamp(void)
 
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
 	CG_Trace(&trace, target, cameramins, cameramaxs, cam.loc.ideal, cg.snap->ps.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0f)
+	if (trace.fraction < 1.0f)
 	{
 		VectorSubtract(trace.endpos, cam.loc.ideal, cam.loc.damp);
 	}
