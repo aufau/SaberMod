@@ -358,9 +358,9 @@ void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 Float_Parse
 =================
 */
-qboolean Float_Parse(char **p, float *f) {
-	char	*token;
-	token = COM_ParseExt((const char **)p, qfalse);
+qboolean Float_Parse(const char **p, float *f) {
+	const char	*token;
+	token = COM_ParseExt(p, qfalse);
 	if (token && token[0] != 0) {
 		*f = atof(token);
 		return qtrue;
@@ -401,7 +401,7 @@ qboolean PC_Float_Parse(int handle, float *f) {
 Color_Parse
 =================
 */
-qboolean Color_Parse(char **p, vec4_t *c) {
+qboolean Color_Parse(const char **p, vec4_t *c) {
 	int i;
 	float f;
 
@@ -437,9 +437,9 @@ qboolean PC_Color_Parse(int handle, vec4_t *c) {
 Int_Parse
 =================
 */
-qboolean Int_Parse(char **p, int *i) {
+qboolean Int_Parse(const char **p, int *i) {
 	char	*token;
-	token = COM_ParseExt((const char **)p, qfalse);
+	token = COM_ParseExt(p, qfalse);
 
 	if (token && token[0] != 0) {
 		*i = atoi(token);
@@ -480,7 +480,7 @@ qboolean PC_Int_Parse(int handle, int *i) {
 Rect_Parse
 =================
 */
-qboolean Rect_Parse(char **p, rectDef_t *r) {
+qboolean Rect_Parse(const char **p, rectDef_t *r) {
 	if (Float_Parse(p, &r->x)) {
 		if (Float_Parse(p, &r->y)) {
 			if (Float_Parse(p, &r->w)) {
@@ -516,10 +516,10 @@ qboolean PC_Rect_Parse(int handle, rectDef_t *r) {
 String_Parse
 =================
 */
-qboolean String_Parse(char **p, const char **out) {
+qboolean String_Parse(const char **p, const char **out) {
 	char *token;
 
-	token = COM_ParseExt((const char **)p, qfalse);
+	token = COM_ParseExt(p, qfalse);
 	if (token && token[0] != 0) {
 		*(out) = String_Alloc(token);
 		return qtrue;
@@ -968,7 +968,7 @@ itemDef_t *Menu_GetMatchingItemByNumber(menuDef_t *menu, int index, const char *
   return NULL;
 }
 
-qboolean Script_SetColor ( itemDef_t *item, char **args )
+qboolean Script_SetColor ( itemDef_t *item, const char **args )
 {
 	const char *name;
 	int i;
@@ -1010,7 +1010,7 @@ qboolean Script_SetColor ( itemDef_t *item, char **args )
 	return qtrue;
 }
 
-qboolean Script_SetAsset(itemDef_t *item, char **args)
+qboolean Script_SetAsset(itemDef_t *item, const char **args)
 {
 	const char *name;
 	// expecting name to set asset to
@@ -1024,7 +1024,7 @@ qboolean Script_SetAsset(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetBackground(itemDef_t *item, char **args)
+qboolean Script_SetBackground(itemDef_t *item, const char **args)
 {
 	const char *name;
 	// expecting name to set asset to
@@ -1051,7 +1051,7 @@ itemDef_t *Menu_FindItemByName(menuDef_t *menu, const char *p) {
   return NULL;
 }
 
-qboolean Script_SetTeamColor(itemDef_t *item, char **args)
+qboolean Script_SetTeamColor(itemDef_t *item, const char **args)
 {
 	if (DC->getTeamColor)
 	{
@@ -1066,7 +1066,7 @@ qboolean Script_SetTeamColor(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetItemColor(itemDef_t *item, char **args)
+qboolean Script_SetItemColor(itemDef_t *item, const char **args)
 {
 	const char *itemname;
 	const char *name;
@@ -1120,7 +1120,7 @@ qboolean Script_SetItemColor(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetItemRect(itemDef_t *item, char **args)
+qboolean Script_SetItemRect(itemDef_t *item, const char **args)
 {
 	const char *itemname;
 	rectDef_t *out;
@@ -1283,7 +1283,7 @@ void Menus_CloseAll()
 	FPMessageTime = 0;
 }
 
-qboolean Script_Show(itemDef_t *item, char **args)
+qboolean Script_Show(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1293,7 +1293,7 @@ qboolean Script_Show(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_Hide(itemDef_t *item, char **args)
+qboolean Script_Hide(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1303,7 +1303,7 @@ qboolean Script_Hide(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_FadeIn(itemDef_t *item, char **args)
+qboolean Script_FadeIn(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1314,7 +1314,7 @@ qboolean Script_FadeIn(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_FadeOut(itemDef_t *item, char **args)
+qboolean Script_FadeOut(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1324,7 +1324,7 @@ qboolean Script_FadeOut(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_Open(itemDef_t *item, char **args)
+qboolean Script_Open(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1334,7 +1334,7 @@ qboolean Script_Open(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_Close(itemDef_t *item, char **args)
+qboolean Script_Close(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1384,10 +1384,10 @@ Defers the rest of the script based on the defer condition.  The deferred
 portion of the script can later be run with the "rundeferred"
 =================
 */
-qboolean Script_Defer ( itemDef_t* item, char **args )
+qboolean Script_Defer ( itemDef_t* item, const char **args )
 {
 	// Should the script be deferred?
-	if ( DC->deferScript ( (char**)args ) )
+	if ( DC->deferScript ( args ) )
 	{
 		// Need the item the script was being run on
 		ui_deferredScriptItem = item;
@@ -1411,7 +1411,7 @@ Runs the last deferred script, there can only be one script deferred at a
 time so be careful of recursion
 =================
 */
-qboolean Script_RunDeferred ( itemDef_t* item, char **args )
+qboolean Script_RunDeferred ( itemDef_t* item, const char **args )
 {
 	// Make sure there is something to run.
 	if ( !ui_deferredScript[0] || !ui_deferredScriptItem )
@@ -1425,7 +1425,7 @@ qboolean Script_RunDeferred ( itemDef_t* item, char **args )
 	return qtrue;
 }
 
-qboolean Script_Transition(itemDef_t *item, char **args)
+qboolean Script_Transition(itemDef_t *item, const char **args)
 {
 	const char *name;
 	rectDef_t rectFrom, rectTo;
@@ -1462,7 +1462,7 @@ void Menu_OrbitItemByName(menuDef_t *menu, const char *p, float x, float y, floa
   }
 }
 
-qboolean Script_Orbit(itemDef_t *item, char **args)
+qboolean Script_Orbit(itemDef_t *item, const char **args)
 {
 	const char *name;
 	float cx, cy, x, y;
@@ -1479,7 +1479,7 @@ qboolean Script_Orbit(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetFocus(itemDef_t *item, char **args)
+qboolean Script_SetFocus(itemDef_t *item, const char **args)
 {
   const char *name;
   itemDef_t *focusItem;
@@ -1501,7 +1501,7 @@ qboolean Script_SetFocus(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetPlayerModel(itemDef_t *item, char **args)
+qboolean Script_SetPlayerModel(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1512,7 +1512,7 @@ qboolean Script_SetPlayerModel(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetPlayerHead(itemDef_t *item, char **args)
+qboolean Script_SetPlayerHead(itemDef_t *item, const char **args)
 {
 	const char *name;
 	if (String_Parse(args, &name))
@@ -1522,7 +1522,7 @@ qboolean Script_SetPlayerHead(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetCvar(itemDef_t *item, char **args)
+qboolean Script_SetCvar(itemDef_t *item, const char **args)
 {
 	const char *cvar, *val;
 	if (String_Parse(args, &cvar) && String_Parse(args, &val))
@@ -1532,7 +1532,7 @@ qboolean Script_SetCvar(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetCvarToCvar(itemDef_t *item, char **args) {
+qboolean Script_SetCvarToCvar(itemDef_t *item, const char **args) {
 	const char *cvar, *val;
 	if (String_Parse(args, &cvar) && String_Parse(args, &val)) {
 		char cvarBuf[1024];
@@ -1542,7 +1542,7 @@ qboolean Script_SetCvarToCvar(itemDef_t *item, char **args) {
 	return qtrue;
 }
 
-qboolean Script_Exec(itemDef_t *item, char **args) {
+qboolean Script_Exec(itemDef_t *item, const char **args) {
 	const char *val;
 	if (String_Parse(args, &val)) {
 		DC->executeText(EXEC_APPEND, va("%s ; ", val));
@@ -1550,7 +1550,7 @@ qboolean Script_Exec(itemDef_t *item, char **args) {
 	return qtrue;
 }
 
-qboolean Script_Play(itemDef_t *item, char **args) {
+qboolean Script_Play(itemDef_t *item, const char **args) {
 	const char *val;
 	if (String_Parse(args, &val)) {
 		DC->startLocalSound(DC->registerSound(val), CHAN_AUTO);
@@ -1558,7 +1558,7 @@ qboolean Script_Play(itemDef_t *item, char **args) {
 	return qtrue;
 }
 
-qboolean Script_playLooped(itemDef_t *item, char **args) {
+qboolean Script_playLooped(itemDef_t *item, const char **args) {
 	const char *val;
 	if (String_Parse(args, &val)) {
 		DC->stopBackgroundTrack();
@@ -1601,7 +1601,8 @@ int scriptCommandCount = sizeof(commandList) / sizeof(commandDef_t);
 
 void Item_RunScript(itemDef_t *item, const char *s)
 {
-	char script[2048], *p;
+	char script[2048];
+	const char *p;
 	int i;
 	qboolean bRan;
 
@@ -1654,7 +1655,8 @@ void Item_RunScript(itemDef_t *item, const char *s)
 
 
 qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag) {
-  char script[2048], *p;
+  char script[2048];
+  const char *p;
   if (item && item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest) {
 		char buff[2048];
 	  DC->getCVarString(item->cvarTest, buff, sizeof(buff));
@@ -5561,10 +5563,10 @@ ItemParse_flag
 */
 qboolean ItemParse_flag( itemDef_t *item, int handle)
 {
-	int		i;
-	char	*tempStr;
+	int			i;
+	const char	*tempStr;
 
-	if (!PC_String_Parse(handle, (const char **)&tempStr))
+	if (!PC_String_Parse(handle, &tempStr))
 	{
 		return qfalse;
 	}
@@ -6118,13 +6120,13 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle ) {
 
 	pass = 0;
 	while ( 1 ) {
-		char* psString;
+		const char* psString;
 
 //		if (!trap_PC_ReadToken(handle, &token)) {
 //			PC_SourceError(handle, "end of file inside menu item\n");
 //			return qfalse;
 //		}
-		if (!PC_String_Parse(handle, (const char **)&psString)) {
+		if (!PC_String_Parse(handle, &psString)) {
 			PC_SourceError(handle, "end of file inside menu item\n");
 			return qfalse;
 		}
@@ -6184,9 +6186,9 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 
 	while ( 1 )
 	{
-		char* string;
+		const char* string;
 
-		if ( !PC_String_Parse ( handle, (const char **)&string ) )
+		if ( !PC_String_Parse ( handle, &string ) )
 		{
 			PC_SourceError(handle, "end of file inside menu item\n");
 			return qfalse;

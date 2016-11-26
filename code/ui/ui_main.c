@@ -664,7 +664,7 @@ void _UI_Shutdown( void ) {
 
 char *defaultMenu = NULL;
 
-char *GetMenuBuffer(const char *filename) {
+const char *GetMenuBuffer(const char *filename) {
 	int	len;
 	fileHandle_t	f;
 	static char buf[MAX_MENUFILE];
@@ -4067,12 +4067,12 @@ UI_DeferMenuScript
 Return true if the menu script should be deferred for later
 ===============
 */
-static qboolean UI_DeferMenuScript ( char **args )
+static qboolean UI_DeferMenuScript ( const char **args )
 {
 	const char* name;
 
 	// Whats the reason for being deferred?
-	if (!String_Parse( (char**)args, &name))
+	if (!String_Parse( args, &name))
 	{
 		return qfalse;
 	}
@@ -4084,7 +4084,7 @@ static qboolean UI_DeferMenuScript ( char **args )
 		qboolean	deferred;
 
 		// No warning menu specified
-		if ( !String_Parse( (char**)args, &warningMenuName) )
+		if ( !String_Parse( args, &warningMenuName) )
 		{
 			return qfalse;
 		}
@@ -4197,7 +4197,7 @@ void UI_GetVideoSetup ( void )
 	trap_Cvar_Set ( "ui_r_modified", "0" );
 }
 
-static void UI_RunMenuScript(char **args)
+static void UI_RunMenuScript(const char **args)
 {
 	const char *name, *name2;
 	char buff[1024];
@@ -6080,10 +6080,10 @@ qboolean UI_FeederSelection(float feederID, int index) {
 }
 
 
-static qboolean GameType_Parse(char **p, qboolean join) {
-	char *token;
+static qboolean GameType_Parse(const char **p, qboolean join) {
+	const char *token;
 
-	token = COM_ParseExt((const char **)p, qtrue);
+	token = COM_ParseExt(p, qtrue);
 
 	if (token[0] != '{') {
 		return qfalse;
@@ -6096,7 +6096,7 @@ static qboolean GameType_Parse(char **p, qboolean join) {
 	}
 
 	while ( 1 ) {
-		token = COM_ParseExt((const char **)p, qtrue);
+		token = COM_ParseExt(p, qtrue);
 
 		if (Q_stricmp(token, "}") == 0) {
 			return qtrue;
@@ -6141,10 +6141,10 @@ static qboolean GameType_Parse(char **p, qboolean join) {
 	return qfalse;
 }
 
-static qboolean MapList_Parse(char **p) {
-	char *token;
+static qboolean MapList_Parse(const char **p) {
+	const char *token;
 
-	token = COM_ParseExt((const char **)p, qtrue);
+	token = COM_ParseExt(p, qtrue);
 
 	if (token[0] != '{') {
 		return qfalse;
@@ -6153,7 +6153,7 @@ static qboolean MapList_Parse(char **p) {
 	uiInfo.mapCount = 0;
 
 	while ( 1 ) {
-		token = COM_ParseExt((const char **)p, qtrue);
+		token = COM_ParseExt(p, qtrue);
 
 		if (Q_stricmp(token, "}") == 0) {
 			return qtrue;
@@ -6176,7 +6176,7 @@ static qboolean MapList_Parse(char **p) {
 			uiInfo.mapList[uiInfo.mapCount].typeBits = 0;
 
 			while (1) {
-				token = COM_ParseExt((const char **)p, qtrue);
+				token = COM_ParseExt(p, qtrue);
 				if (token[0] >= '0' && token[0] <= '9') {
 					uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << (token[0] - 0x030));
 					if (!Int_Parse(p, &uiInfo.mapList[uiInfo.mapCount].timeToBeat[token[0] - 0x30])) {
@@ -6207,8 +6207,8 @@ static qboolean MapList_Parse(char **p) {
 
 static void UI_ParseGameInfo(const char *teamFile) {
 	char	*token;
-	char *p;
-	char *buff = NULL;
+	const char *p;
+	const char *buff = NULL;
 	//int mode = 0; TTimo: unused
 
 	buff = GetMenuBuffer(teamFile);
@@ -6219,7 +6219,7 @@ static void UI_ParseGameInfo(const char *teamFile) {
 	p = buff;
 
 	while ( 1 ) {
-		token = COM_ParseExt( (const char **)(&p), qtrue );
+		token = COM_ParseExt( &p, qtrue );
 		if( !token || token[0] == 0 || token[0] == '}') {
 			break;
 		}

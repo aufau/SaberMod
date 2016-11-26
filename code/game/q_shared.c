@@ -579,7 +579,7 @@ char *COM_ParseExt( const char **data_p, qboolean allowLineBreaks )
 COM_ParseInfos
 ===============
 */
-int COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
+int COM_ParseInfos( const char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 	char	*token;
 	int		count;
 	char	key[MAX_TOKEN_CHARS];
@@ -710,7 +710,7 @@ COM_MatchToken
 ==================
 */
 void COM_MatchToken( const char **buf_p, const char *match ) {
-	char	*token;
+	const char	*token;
 
 	token = COM_Parse( buf_p );
 	if ( strcmp( token, match ) ) {
@@ -768,7 +768,7 @@ void SkipRestOfLine ( const char **data ) {
 
 
 void Parse1DMatrix (const char **buf_p, int x, float *m) {
-	char	*token;
+	const char	*token;
 	int		i;
 
 	COM_MatchToken( buf_p, "(" );
