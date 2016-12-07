@@ -1126,7 +1126,10 @@ void ClientThink_real( gentity_t *ent ) {
 	// following others may result in bad times, but we still want
 	// to check for follow toggles
 	if ( msec < 1 && client->sess.spectatorState != SPECTATOR_FOLLOW ) {
-		return;
+		// always initialize playerstate on ClientBegin
+		if ( client->ps.commandTime != 0 ) {
+			return;
+		}
 	}
 	if ( msec > 200 ) {
 		msec = 200;
