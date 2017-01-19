@@ -351,9 +351,9 @@ Authors
 
 * id Software 1999-2000
 * Raven Software 1999-2002
-* SaberMod team 2015-2016
+* SaberMod team 2015-2017
 
-  + Witold *fau* Piłat <witold.pilat@gmail.com> 2015-2016
+  + Witold *fau* Piłat <witold.pilat@gmail.com> 2015-2017
   + Dziablo 2015-2016
 
 Thanks
