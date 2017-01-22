@@ -1217,20 +1217,20 @@ float powf( float x, float y )
 void AddInt( char **buf_p, int val, int width, int flags ) {
 	char	text[32];
 	int		digits;
-	int		signedVal;
+	int		sign;
+	int		div;
 	char	*buf;
 
 	digits = 0;
-	signedVal = val;
-	if ( val < 0 ) {
-		val = -val;
-	}
+	sign = ( val >= 0 ) ? 1 : -1;
+
 	do {
-		text[digits++] = '0' + val % 10;
-		val /= 10;
+		div = val / 10;
+		text[digits++] = '0' + sign * (val - div * 10);
+		val = div;
 	} while ( val );
 
-	if ( signedVal < 0 ) {
+	if ( sign < 0 ) {
 		text[digits++] = '-';
 	}
 
