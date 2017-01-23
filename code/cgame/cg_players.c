@@ -1100,7 +1100,8 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
 				Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 			} else {
-				Q_strncpyz( newInfo.skinName, skin + 1, sizeof( newInfo.skinName ) );
+				*skin++ = '\0'; // separate model/skin
+				Q_strncpyz( newInfo.skinName, skin, sizeof( newInfo.skinName ) );
 			}
 
 			Q_strncpyz( newInfo.modelName, modelStr, sizeof( newInfo.modelName ) );
