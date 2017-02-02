@@ -3402,7 +3402,7 @@ CG_DrawSpectator
 static void CG_DrawSpectator(void)
 {
 	const char* s;
-	s = CG_GetStripEdString("INGAMETEXT", "SPECTATOR");
+
 	if (cgs.gametype == GT_TOURNAMENT &&
 		cgs.duelist1 != -1 &&
 		cgs.duelist2 != -1)
@@ -3411,8 +3411,7 @@ static void CG_DrawSpectator(void)
 		int size = 64;
 
 		Com_sprintf(text, sizeof(text), "%s %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name);
-		CG_Text_Paint ( 320 - CG_Text_Width ( text, 1.0f, 3 ) / 2, 420, 1.0f, colorWhite, text, 0, 0, 0, 3 );
-
+		UI_DrawProportionalString( 320, 420, text, UI_CENTER, colorWhite );
 
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		if ( cgs.clientinfo[cgs.duelist1].modelIcon )
@@ -3424,26 +3423,27 @@ static void CG_DrawSpectator(void)
 			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
 		}
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist1].score, cgs.fraglimit );
-		CG_Text_Paint( 42 - CG_Text_Width( text, 1.0f, 2 ) / 2, SCREEN_HEIGHT-(size*1.5) + 64, 1.0f, colorWhite, text, 0, 0, 0, 2 );
+		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
 
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist2].score, cgs.fraglimit );
-		CG_Text_Paint( SCREEN_WIDTH-size+22 - CG_Text_Width( text, 1.0f, 2 ) / 2, SCREEN_HEIGHT-(size*1.5) + 64, 1.0f, colorWhite, text, 0, 0, 0, 2 );
+		UI_DrawProportionalString( SCREEN_WIDTH - size + 22, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
 	}
 	else
 	{
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 420, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		s = CG_GetStripEdString("INGAMETEXT", "SPECTATOR");			// "SPECTATOR"
+		UI_DrawProportionalString( 320, 420, s, UI_CENTER, colorWhite );
 	}
 
 	if ( cgs.gametype == GT_TOURNAMENT )
 	{
 		s = CG_GetStripEdString("INGAMETEXT", "WAITING_TO_PLAY");	// "waiting to play";
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		UI_DrawProportionalString( 320, 440, s, UI_CENTER, colorWhite );
 	}
 	else //if ( GT_Team(cgs.gametype) )
 	{
 		//s = "press ESC and use the JOIN menu to play";
 		s = CG_GetStripEdString("INGAMETEXT", "SPEC_CHOOSEJOIN");
-		CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, 3 ) / 2, 440, 1.0f, colorWhite, s, 0, 0, 0, 3 );
+		UI_DrawProportionalString( 320, 440, s, UI_CENTER, colorWhite );
 	}
 }
 
