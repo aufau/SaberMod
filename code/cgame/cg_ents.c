@@ -284,22 +284,22 @@ void FX_DrawPortableShield(centity_t *cent)
 	{
 		if (cent->currentState.trickedentindex)
 		{
-			shader = trap_R_RegisterShader( "gfx/misc/red_dmgshield" );
+			shader = cgs.media.redDmgShieldShader;
 		}
 		else
 		{
-			shader = trap_R_RegisterShader( "gfx/misc/red_portashield" );
+			shader = cgs.media.redPortaShieldShader;
 		}
 	}
 	else
 	{
 		if (cent->currentState.trickedentindex)
 		{
-			shader = trap_R_RegisterShader( "gfx/misc/blue_dmgshield" );
+			shader = cgs.media.blueDmgShieldShader;
 		}
 		else
 		{
-			shader = trap_R_RegisterShader( "gfx/misc/blue_portashield" );
+			shader = cgs.media.bluePortaShieldShader;
 		}
 	}
 
@@ -1537,11 +1537,11 @@ Ghoul2 Insert End
 
 			if (item->giTag == PW_FORCE_ENLIGHTENED_LIGHT)
 			{
-				ent.customShader = trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
+				ent.customShader = cgs.media.lightEnglightDisableShader;
 			}
 			else
 			{
-				ent.customShader = trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
+				ent.customShader = cgs.media.darkEnglightDisableShader;
 			}
 		}
 		trap_R_AddRefEntityToScene(&ent);
@@ -1705,11 +1705,11 @@ Ghoul2 Insert End
 
 		if (item->giTag == PW_FORCE_ENLIGHTENED_LIGHT)
 		{
-			ent.customShader = trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
+			ent.customShader = cgs.media.lightEnglightDisableShader;
 		}
 		else
 		{
-			ent.customShader = trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
+			ent.customShader = cgs.media.darkEnglightDisableShader;
 		}
 
 		trap_R_AddRefEntityToScene( &ent );

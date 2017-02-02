@@ -1025,17 +1025,14 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.rivetMarkShader			= trap_R_RegisterShader( "gfx/damage/rivetmark" );
 
-	trap_R_RegisterShader( "gfx/effects/saberFlare" );
+	cgs.media.saberFlareShader			= trap_R_RegisterShader( "gfx/effects/saberFlare" );
+	cgs.media.saberDamageGlowShader		= trap_R_RegisterShader( "gfx/effects/saberDamageGlow" );
+	cgs.media.forcePushShader			= trap_R_RegisterShader( "gfx/effects/forcePush" );
 
-	trap_R_RegisterShader( "powerups/ysalimarishell" );
-	trap_R_RegisterShader("gfx/effects/saberDamageGlow" );
-
-	trap_R_RegisterShader( "gfx/effects/forcePush" );
-
-	trap_R_RegisterShader( "gfx/misc/red_dmgshield" );
-	trap_R_RegisterShader( "gfx/misc/red_portashield" );
-	trap_R_RegisterShader( "gfx/misc/blue_dmgshield" );
-	trap_R_RegisterShader( "gfx/misc/blue_portashield" );
+	cgs.media.redDmgShieldShader		= trap_R_RegisterShader( "gfx/misc/red_dmgshield" );
+	cgs.media.redPortaShieldShader		= trap_R_RegisterShader( "gfx/misc/red_portashield" );
+	cgs.media.blueDmgShieldShader		= trap_R_RegisterShader( "gfx/misc/blue_dmgshield" );
+	cgs.media.bluePortaShieldShader		= trap_R_RegisterShader( "gfx/misc/blue_portashield" );
 
 	trap_R_RegisterShader( "models/map_objects/imp_mine/turret_chair_dmg.tga" );
 
@@ -1192,8 +1189,6 @@ static void CG_RegisterSounds( void ) {
 	// cgs.media.explosionModel			= trap_R_RegisterModel ( "models/map_objects/mp/sphere.md3" );
 	// cgs.media.surfaceExplosionShader	= trap_R_RegisterShader( "surfaceExplosion" );
 
-	cgs.media.disruptorShader			= trap_R_RegisterShader( "gfx/effects/burn");
-
 	if (cg_buildScript.integer)
 	{
 		trap_R_RegisterShader( "gfx/effects/turretflashdie" );
@@ -1201,8 +1196,8 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.solidWhite = trap_R_RegisterShader( "gfx/effects/solidWhite_cull" );
 
-	trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
-	trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
+	cgs.media.lightEnglightDisableShader	= trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
+	cgs.media.darkEnglightDisableShader		= trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
 
 	trap_R_RegisterModel("models/items/remote.md3");
 
@@ -1347,16 +1342,16 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.chunkyNumberShaders[i]	= trap_R_RegisterShaderNoMip( sb_c_nums[i] );
 	}
 
-	cgs.media.balloonShader = trap_R_RegisterShaderNoMip( "gfx/mp/chat_icon" );
+	cgs.media.balloonShader = trap_R_RegisterShader( "gfx/mp/chat_icon" );
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
-	cgs.media.smokePuffShader = trap_R_RegisterShader( "smokePuff" );
-	cgs.media.bloodTrailShader = trap_R_RegisterShader( "bloodTrail" );
+	// cgs.media.smokePuffShader = trap_R_RegisterShader( "smokePuff" );
+	// cgs.media.bloodTrailShader = trap_R_RegisterShader( "bloodTrail" );
 	cgs.media.lagometerShader = trap_R_RegisterShaderNoMip("gfx/2d/lag" );
 	cgs.media.connectionShader = trap_R_RegisterShaderNoMip( "gfx/2d/net" );
 
-	cgs.media.waterBubbleShader = trap_R_RegisterShader( "waterBubble" );
+	// cgs.media.waterBubbleShader = trap_R_RegisterShader( "waterBubble" );
 
 	// cgs.media.tracerShader = trap_R_RegisterShader( "gfx/misc/tracer" );
 
@@ -1451,14 +1446,14 @@ static void CG_RegisterGraphics( void ) {
 			cgs.media.blueFlagModel = trap_R_RegisterModel( "models/flags/b_flag_ysal.md3" );
 		}
 
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_x" );
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_x" );
+		cgs.media.mpiRFlagXShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_x" );
+		cgs.media.mpiBFlagXShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_x" );
 
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_ys" );
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_ys" );
+		cgs.media.mpiRFlagYSShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_ys" );
+		cgs.media.mpiBFlagYSShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_ys" );
 
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag" );
-		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag" );
+		cgs.media.mpiRFlagShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag" );
+		cgs.media.mpiBFlagShader	= trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag" );
 
 		cgs.media.redFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/red_base.md3" );
 		cgs.media.blueFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/blue_base.md3" );

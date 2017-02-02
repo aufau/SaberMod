@@ -2205,11 +2205,11 @@ static void CG_DrawPowerupIcons(int y)
 				{
 					if (j == PW_REDFLAG)
 					{
-						icoShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_ys" );
+						icoShader = cgs.media.mpiRFlagYSShader;
 					}
 					else
 					{
-						icoShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_ys" );
+						icoShader = cgs.media.mpiBFlagYSShader;
 					}
 				}
 				else
@@ -2944,8 +2944,7 @@ void CG_SaberClashFlare( void )
 		trap_R_SetColor( color );
 
 		CG_DrawPic( x - ( v * 300 ), y - ( v * 300 ),
-			v * 600, v * 600,
-			trap_R_RegisterShader( "gfx/effects/saberFlare" ));
+			v * 600, v * 600, cgs.media.saberFlareShader );
 	}
 }
 
@@ -3925,26 +3924,26 @@ void CG_DrawFlagStatus()
 	{
 		if (team == TEAM_RED)
 		{
-			myFlagTakenShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_x" );
-			theirFlagShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_ys" );
+			myFlagTakenShader = cgs.media.mpiRFlagXShader;
+			theirFlagShader = cgs.media.mpiBFlagYSShader;
 		}
 		else
 		{
-			myFlagTakenShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_x" );
-			theirFlagShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_ys" );
+			myFlagTakenShader = cgs.media.mpiBFlagXShader;
+			theirFlagShader = cgs.media.mpiRFlagYSShader;
 		}
 	}
 	else
 	{
 		if (team == TEAM_RED)
 		{
-			myFlagTakenShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag_x" );
-			theirFlagShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag" );
+			myFlagTakenShader = cgs.media.mpiRFlagXShader;
+			theirFlagShader = cgs.media.mpiBFlagShader;
 		}
 		else
 		{
-			myFlagTakenShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag_x" );
-			theirFlagShader = trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag" );
+			myFlagTakenShader = cgs.media.mpiBFlagXShader;
+			theirFlagShader = cgs.media.mpiRFlagShader;
 		}
 	}
 

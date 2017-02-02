@@ -978,6 +978,9 @@ typedef struct {
 	qhandle_t	yellowDroppedSaberShader;
 
 	qhandle_t	rivetMarkShader;
+	qhandle_t	saberFlareShader;
+	qhandle_t	saberDamageGlowShader;
+	qhandle_t	forcePushShader;
 
 	qhandle_t	teamRedShader;
 	qhandle_t	teamBlueShader;
@@ -1002,6 +1005,12 @@ typedef struct {
 	qhandle_t	electricBody2Shader;
 
 	qhandle_t	shadowMarkShader;
+
+	// Portable shield shaders
+	qhandle_t	redDmgShieldShader;
+	qhandle_t	redPortaShieldShader;
+	qhandle_t	blueDmgShieldShader;
+	qhandle_t	bluePortaShieldShader;
 
 	//glass shard shader
 	qhandle_t	glassShardShader;
@@ -1037,6 +1046,9 @@ typedef struct {
 	qhandle_t	forceShell;
 	qhandle_t	sightShell;
 
+	qhandle_t	lightEnglightDisableShader;
+	qhandle_t	darkEnglightDisableShader;
+
 	// Disruptor zoom graphics
 	qhandle_t	disruptorMask;
 	qhandle_t	disruptorInsert;
@@ -1058,8 +1070,6 @@ typedef struct {
 	// explosion assets
 	qhandle_t	explosionModel;
 	qhandle_t	surfaceExplosionShader;
-
-	qhandle_t	disruptorShader;
 
 	qhandle_t	solidWhite;
 
@@ -1227,6 +1237,13 @@ typedef struct {
 	qhandle_t	HUDInnerLeft;
 
 	sfxHandle_t	holocronPickup;
+
+	qhandle_t	mpiRFlagXShader;
+	qhandle_t	mpiBFlagXShader;
+	qhandle_t	mpiRFlagYSShader;
+	qhandle_t	mpiBFlagYSShader;
+	qhandle_t	mpiRFlagShader;
+	qhandle_t	mpiBFlagShader;
 
 	// Zoom
 	sfxHandle_t	zoomStart;

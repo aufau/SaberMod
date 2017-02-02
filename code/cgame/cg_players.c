@@ -3518,7 +3518,7 @@ void CG_ForcePushBlur( vec3_t org )
 	ex->color[0] = 24;
 	ex->color[1] = 32;
 	ex->color[2] = 40;
-	ex->refEntity.customShader = trap_R_RegisterShader( "gfx/effects/forcePush" );
+	ex->refEntity.customShader = cgs.media.forcePushShader;
 
 	ex = CG_AllocLocalEntity();
 	ex->leType = LE_PUFF;
@@ -3535,7 +3535,7 @@ void CG_ForcePushBlur( vec3_t org )
 	ex->color[0] = 24;
 	ex->color[1] = 32;
 	ex->color[2] = 40;
-	ex->refEntity.customShader = trap_R_RegisterShader( "gfx/effects/forcePush" );
+	ex->refEntity.customShader = cgs.media.forcePushShader;
 }
 
 void CG_ForceGripEffect( vec3_t org )
@@ -3561,7 +3561,7 @@ void CG_ForceGripEffect( vec3_t org )
 	}
 	ex->color[1] = 0;
 	ex->color[2] = 0;
-	ex->refEntity.customShader = trap_R_RegisterShader( "gfx/effects/forcePush" );
+	ex->refEntity.customShader = cgs.media.forcePushShader;
 
 	ex = CG_AllocLocalEntity();
 	ex->leType = LE_PUFF;
@@ -3585,7 +3585,7 @@ void CG_ForceGripEffect( vec3_t org )
 	ex->color[0] = 255;
 	ex->color[1] = 255;
 	ex->color[2] = 255;
-	ex->refEntity.customShader = cgs.media.redSaberGlowShader;//trap_R_RegisterShader( "gfx/effects/forcePush" );
+	ex->refEntity.customShader = cgs.media.redSaberGlowShader;//cgs.media.forcePushShader;
 }
 
 
@@ -4033,7 +4033,7 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 
 			trap_FX_AddPoly(&apArgs);
 
-			apArgs.shader = trap_R_RegisterShader("gfx/effects/saberDamageGlow");
+			apArgs.shader = cgs.media.saberDamageGlowShader;
 			apArgs.rgb1[0] = 215 + random() * 40.0f;
 			apArgs.rgb1[1] = 96 + random() * 32.0f;
 			apArgs.rgb1[2] = apArgs.alphaParm = random()*15.0f;
@@ -4063,7 +4063,7 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 			mark = CG_AllocMark();
 			mark->time = cg.time - 8500;
 			mark->alphaFade = qfalse;
-			mark->markShader = trap_R_RegisterShader("gfx/effects/saberDamageGlow");
+			mark->markShader = cgs.media.saberDamageGlowShader;
 			mark->poly.numVerts = mf->numPoints;
 			mark->color[0] = 215 + random() * 40.0f;
 			mark->color[1] = 96 + random() * 32.0f;
@@ -6532,7 +6532,7 @@ doEssentialTwo:
 
 				cent->grip_arm.radius = 64;
 
-				cent->grip_arm.customShader = trap_R_RegisterShader( "gfx/misc/red_portashield" );
+				cent->grip_arm.customShader = cgs.media.redPortaShieldShader;
 
 				cent->grip_arm.renderfx |= RF_RGB_TINT;
 				cent->grip_arm.shaderRGBA[0] = 255 - (wv*900);
