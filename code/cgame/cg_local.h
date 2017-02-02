@@ -1848,11 +1848,11 @@ localEntity_t *CG_SmokePuff( const vec3_t p,
 				   int fadeInTime,
 				   int leFlags,
 				   qhandle_t hShader );
-void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, int maxShards);
 void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debrissound, int debrismodel);
 void CG_ScorePlum( int client, vec3_t org, int score );
-
+#if 0
+void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_Bleed( vec3_t origin, int entityNum );
 
 localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
@@ -1860,7 +1860,7 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 								qboolean isSprite, float scale, int flags );// Overloaded in single player
 
 void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shake_speed, qboolean smoke );
-
+#endif
 void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int radius);
 
 void CG_InitGlass( void );
@@ -2177,6 +2177,10 @@ void		trap_ROFF_UpdateEntities( void );
 qboolean	trap_ROFF_Play( int entID, int roffID, qboolean doTranslation );
 qboolean	trap_ROFF_Purge_Ent( int entID );
 
+const char *CG_GetStripEdString(const char *refSection, const char *refName);
+
+// cg_particles.c
+#if 0
 void	CG_ClearParticles (void);
 void	CG_AddParticles (void);
 void	CG_ParticleSnow (qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum);
@@ -2188,10 +2192,9 @@ void	CG_ParticleSparks (vec3_t org, vec3_t vel, int duration, float x, float y, 
 void	CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir);
 void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
-const char *CG_GetStripEdString(const char *refSection, const char *refName);
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
-
+#endif // 0
 void FX_TurretProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_TurretHitWall( vec3_t origin, vec3_t normal );
 void FX_TurretHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid );

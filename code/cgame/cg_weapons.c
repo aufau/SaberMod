@@ -1951,7 +1951,7 @@ BULLETS
 ============================================================================
 */
 
-
+#if 0
 /*
 ===============
 CG_Tracer
@@ -2030,7 +2030,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	//trap_S_StartSound( midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound );
 
 }
-
+#endif // 0
 /*
 ======================
 CG_CalcMuzzlePoint

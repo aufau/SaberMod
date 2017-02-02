@@ -1615,7 +1615,7 @@ Ghoul2 Insert End
 	cgs.media.halfShieldShader	= trap_R_RegisterShader( "halfShieldShell" );
 
 
-	CG_ClearParticles ();
+	// CG_ClearParticles ();
 /*
 	for (i=1; i<MAX_PARTICLES_AREAS; i++)
 	{
