@@ -33,7 +33,7 @@ VERSION		= $(shell git describe --always --tags --dirty)
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS) -fPIC
 ALL_CFLAGS += -Wall -Wno-unused-but-set-variable -Wno-unknown-pragmas	\
--Wno-missing-braces
+-Wno-missing-braces -fPIC -Wl,--no-undefined -lm
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) $(DEFS)
 LCC_CFLAGS += -S -Wf-target=bytecode -Wf-g -DQ3_VM
 ifneq ($(DEBUG_VM), 1)
