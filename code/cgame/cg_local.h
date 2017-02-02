@@ -951,19 +951,9 @@ typedef struct {
 	qhandle_t	neutralFlagModel;
 	qhandle_t	flagShader[4];
 
-	qhandle_t	flagPoleModel;
-	qhandle_t	flagFlapModel;
-
-	qhandle_t	redFlagFlapSkin;
-	qhandle_t	blueFlagFlapSkin;
-	qhandle_t	neutralFlagFlapSkin;
-
 	qhandle_t	redFlagBaseModel;
 	qhandle_t	blueFlagBaseModel;
 	qhandle_t	neutralFlagBaseModel;
-
-	qhandle_t	armorModel;
-	qhandle_t	armorIcon;
 
 	qhandle_t	teamStatusBar;
 
@@ -995,12 +985,10 @@ typedef struct {
 	qhandle_t	balloonShader;
 	qhandle_t	connectionShader;
 
-	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
-	qhandle_t	noammoShader;
 
 	qhandle_t	smokePuffShader;
 	qhandle_t	waterBubbleShader;
@@ -1187,7 +1175,6 @@ typedef struct {
 	qhandle_t teamLeaderShader;
 	qhandle_t retrieveShader;
 	qhandle_t escortShader;
-	qhandle_t flagShaders[3];
 
 	qhandle_t halfShieldModel;
 	qhandle_t halfShieldShader;

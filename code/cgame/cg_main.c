@@ -1175,8 +1175,8 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.watrOutSound				= trap_S_RegisterSound( "sound/player/watr_out.wav");
 	cgs.media.watrUnSound				= trap_S_RegisterSound( "sound/player/watr_un.wav");
 
-	cgs.media.explosionModel			= trap_R_RegisterModel ( "models/map_objects/mp/sphere.md3" );
-	cgs.media.surfaceExplosionShader	= trap_R_RegisterShader( "surfaceExplosion" );
+	// cgs.media.explosionModel			= trap_R_RegisterModel ( "models/map_objects/mp/sphere.md3" );
+	// cgs.media.surfaceExplosionShader	= trap_R_RegisterShader( "surfaceExplosion" );
 
 	cgs.media.disruptorShader			= trap_R_RegisterShader( "gfx/effects/burn");
 
@@ -1190,7 +1190,6 @@ static void CG_RegisterSounds( void ) {
 	trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
 	trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
 
-	trap_R_RegisterModel ( "models/map_objects/mp/sphere.md3" );
 	trap_R_RegisterModel("models/items/remote.md3");
 
 	cgs.media.holocronPickup = trap_S_RegisterSound( "sound/player/holocron.wav" );
@@ -1334,9 +1333,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.chunkyNumberShaders[i]	= trap_R_RegisterShaderNoMip( sb_c_nums[i] );
 	}
 
-	cgs.media.balloonShader = trap_R_RegisterShader( "gfx/mp/chat_icon" );
-
-	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
+	cgs.media.balloonShader = trap_R_RegisterShaderNoMip( "gfx/mp/chat_icon" );
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
@@ -1347,7 +1344,7 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.waterBubbleShader = trap_R_RegisterShader( "waterBubble" );
 
-	cgs.media.tracerShader = trap_R_RegisterShader( "gfx/misc/tracer" );
+	// cgs.media.tracerShader = trap_R_RegisterShader( "gfx/misc/tracer" );
 
 	Com_Printf( S_COLOR_CYAN "---------- Fx System Initialization ---------\n" );
 	trap_FX_InitSystem();
@@ -1382,13 +1379,12 @@ static void CG_RegisterGraphics( void ) {
 
 
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
-		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
+		cgs.media.crosshairShader[i] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
 
 	cg.loadLCARSStage = 4;
 
-	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
-	cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );
+	cgs.media.backTileShader = trap_R_RegisterShaderNoMip( "gfx/2d/backtile" );
 
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad" );
@@ -1450,15 +1446,6 @@ static void CG_RegisterGraphics( void ) {
 		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_rflag" );
 		trap_R_RegisterShaderNoMip( "gfx/hud/mpi_bflag" );
 
-		trap_R_RegisterShaderNoMip("gfx/2d/net.tga");
-
-		cgs.media.flagPoleModel = trap_R_RegisterModel( "models/flag2/flagpole.md3" );
-		cgs.media.flagFlapModel = trap_R_RegisterModel( "models/flag2/flagflap3.md3" );
-
-		cgs.media.redFlagFlapSkin = trap_R_RegisterSkin( "models/flag2/red.skin" );
-		cgs.media.blueFlagFlapSkin = trap_R_RegisterSkin( "models/flag2/blue.skin" );
-		cgs.media.neutralFlagFlapSkin = trap_R_RegisterSkin( "models/flag2/white.skin" );
-
 		cgs.media.redFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/red_base.md3" );
 		cgs.media.blueFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/blue_base.md3" );
 		cgs.media.neutralFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/ntrl_base.md3" );
@@ -1474,18 +1461,15 @@ static void CG_RegisterGraphics( void ) {
 
 
 	if ( GT_Team(cgs.gametype) || cg_buildScript.integer ) {
-		cgs.media.teamRedShader = trap_R_RegisterShader( "sprites/team_red" );
-		cgs.media.teamBlueShader = trap_R_RegisterShader( "sprites/team_blue" );
-		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
-		cgs.media.teamStatusBar = trap_R_RegisterShader( "gfx/2d/colorbar.tga" );
+		cgs.media.teamRedShader = trap_R_RegisterShaderNoMip( "sprites/team_red" );
+		cgs.media.teamBlueShader = trap_R_RegisterShaderNoMip( "sprites/team_blue" );
+		cgs.media.redQuadShader = trap_R_RegisterShaderNoMip( "powerups/blueflag" );
+		cgs.media.teamStatusBar = trap_R_RegisterShaderNoMip( "gfx/2d/colorbar" );
 	}
 	else if ( cgs.gametype == GT_JEDIMASTER )
 	{
-		cgs.media.teamRedShader = trap_R_RegisterShader( "sprites/team_red" );
+		cgs.media.teamRedShader = trap_R_RegisterShaderNoMip( "sprites/team_red" );
 	}
-
-	cgs.media.armorModel = 0;//trap_R_RegisterModel( "models/powerups/armor/armor_yel.md3" );
-	cgs.media.armorIcon  = 0;//trap_R_RegisterShaderNoMip( "icons/iconr_yellow" );
 
 	cgs.media.heartShader			= trap_R_RegisterShaderNoMip( "ui/assets/statusbar/selectedhealth.tga" );
 
@@ -1507,12 +1491,12 @@ static void CG_RegisterGraphics( void ) {
 #endif
 
 	// Binocular interface
-	cgs.media.binocularCircle		= trap_R_RegisterShader( "gfx/2d/binCircle" );
-	cgs.media.binocularMask			= trap_R_RegisterShader( "gfx/2d/binMask" );
-	cgs.media.binocularArrow		= trap_R_RegisterShader( "gfx/2d/binSideArrow" );
-	cgs.media.binocularTri			= trap_R_RegisterShader( "gfx/2d/binTopTri" );
-	cgs.media.binocularStatic		= trap_R_RegisterShader( "gfx/2d/binocularWindow" );
-	cgs.media.binocularOverlay		= trap_R_RegisterShader( "gfx/2d/binocularNumOverlay" );
+	cgs.media.binocularCircle		= trap_R_RegisterShaderNoMip( "gfx/2d/binCircle" );
+	cgs.media.binocularMask			= trap_R_RegisterShaderNoMip( "gfx/2d/binMask" );
+	cgs.media.binocularArrow		= trap_R_RegisterShaderNoMip( "gfx/2d/binSideArrow" );
+	cgs.media.binocularTri			= trap_R_RegisterShaderNoMip( "gfx/2d/binTopTri" );
+	cgs.media.binocularStatic		= trap_R_RegisterShaderNoMip( "gfx/2d/binocularWindow" );
+	cgs.media.binocularOverlay		= trap_R_RegisterShaderNoMip( "gfx/2d/binocularNumOverlay" );
 
 	cg.loadLCARSStage = 5;
 
@@ -1607,9 +1591,6 @@ Ghoul2 Insert End
 	cgs.media.cursor = trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
 	cgs.media.sizeCursor = trap_R_RegisterShaderNoMip( "ui/assets/sizecursor.tga" );
 	cgs.media.selectCursor = trap_R_RegisterShaderNoMip( "ui/assets/selectcursor.tga" );
-	cgs.media.flagShaders[0] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_in_base.tga");
-	cgs.media.flagShaders[1] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_capture.tga");
-	cgs.media.flagShaders[2] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_missing.tga");
 
 	cgs.media.halfShieldModel	= trap_R_RegisterModel ( "models/weaphits/testboom.md3" );
 	cgs.media.halfShieldShader	= trap_R_RegisterShader( "halfShieldShell" );
