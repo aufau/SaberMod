@@ -71,7 +71,7 @@ cg_snapshot cg_turret cg_view cg_weaponinit cg_weapons fx_blaster	\
 fx_bowcaster fx_bryarpistol fx_demp2 fx_disruptor fx_flechette		\
 fx_heavyrepeater fx_rocketlauncher fx_force bg_slidemove bg_weapons	\
 bg_panimate bg_pmove bg_lib bg_misc bg_saber q_math q_shared		\
-ui_shared cg_newDraw cg_syscalls
+cg_syscalls
 
 srcs_ui = ui_main ui_atoms ui_force ui_shared ui_gameinfo bg_misc	\
 bg_weapons bg_lib q_math q_shared ui_syscalls

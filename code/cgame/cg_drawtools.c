@@ -622,7 +622,7 @@ void CG_DrawNumField (int x, int y, int width, int value,int charWidth,int charH
 
 }
 
-#include "../ui/ui_shared.h"	// for some text style junk
+// #include "../ui/ui_shared.h"	// for some text style junk
 void UI_DrawProportionalString( int x, int y, const char* str, int style, const vec4_t color )
 {
 	// having all these different style defines (1 for UI, one for CG, and now one for the re->font stuff)

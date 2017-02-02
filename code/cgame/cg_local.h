@@ -775,10 +775,10 @@ typedef struct {
 	int				spectatorPaintX2;										// current paint x
 	int				spectatorOffset;										// current offset from start
 	int				spectatorPaintLen; 									// current offset from start
-
+#ifdef MISSIONPACK
 	// skull trails
 	skulltrail_t	skulltrails[MAX_CLIENTS];
-
+#endif
 	// centerprinting
 	int			centerPrintTime;
 	int			centerPrintY;
@@ -815,12 +815,12 @@ typedef struct {
 	int			soundBufferOut;
 	int			soundTime;
 	qhandle_t	soundBuffer[MAX_SOUNDBUFFER];
-
+#ifdef MISSIONPACK
 	// for voice chat buffer
 	int			voiceChatTime;
 	int			voiceChatBufferIn;
 	int			voiceChatBufferOut;
-
+#endif
 	// warmup countdown
 	int			warmup;
 	int			warmupCount;
@@ -1165,7 +1165,7 @@ typedef struct {
 	sfxHandle_t	count2Sound;
 	sfxHandle_t	count1Sound;
 	sfxHandle_t	countFightSound;
-
+#ifdef MISSIONPACK
 	// new stuff
 	qhandle_t patrolShader;
 	qhandle_t assaultShader;
@@ -1176,15 +1176,15 @@ typedef struct {
 	qhandle_t retrieveShader;
 	qhandle_t escortShader;
 
+	qhandle_t cursor;
+	qhandle_t selectCursor;
+	qhandle_t sizeCursor;
+#endif
 	qhandle_t halfShieldModel;
 	qhandle_t halfShieldShader;
 
 	qhandle_t demp2Shell;
 	qhandle_t demp2ShellShader;
-
-	qhandle_t cursor;
-	qhandle_t selectCursor;
-	qhandle_t sizeCursor;
 
 	//weapon icons
 	qhandle_t weaponIcons[WP_NUM_WEAPONS];
@@ -1233,7 +1233,12 @@ typedef struct {
 	sfxHandle_t	zoomLoop;
 	sfxHandle_t	zoomEnd;
 	sfxHandle_t	disruptorZoomLoop;
-
+#ifndef MISSIONPACK
+	// Fonts
+	qhandle_t	qhSmallFont;
+	qhandle_t	qhMediumFont;
+	qhandle_t	qhBigFont;
+#endif
 } cgMedia_t;
 
 
@@ -1536,8 +1541,10 @@ extern	vmCvar_t		cg_predictItems;
 extern	vmCvar_t		cg_deferPlayers;
 extern	vmCvar_t		cg_drawFriend;
 extern	vmCvar_t		cg_teamChatsOnly;
+#ifdef MISSIONPACK
 extern	vmCvar_t		cg_noVoiceChats;
 extern	vmCvar_t		cg_noVoiceText;
+#endif
 extern  vmCvar_t		cg_damagePlums;
 extern	vmCvar_t		cg_hudFiles;
 extern	vmCvar_t		cg_smoothClients;
@@ -1605,11 +1612,9 @@ void CG_UpdateCvars( void );
 
 int CG_CrosshairPlayer( void );
 int CG_LastAttacker( void );
-void CG_LoadMenus(const char *menuFile);
 void CG_KeyEvent(int key, qboolean down);
 void CG_MouseEvent(int x, int y);
 void CG_EventHandling(int type);
-void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString(void);
 void CG_NextInventory_f(void);
@@ -1684,7 +1689,6 @@ void CG_DrawTopBottom(float x, float y, float w, float h, float size);
 //
 extern	int sortedTeamPlayers[TEAM_MAXOVERLAY];
 extern	int	numSortedTeamPlayers;
-extern	int drawTeamOverlayModificationCount;
 extern  char systemChat[256];
 extern  char teamChat1[256];
 extern  char teamChat2[256];
@@ -1700,6 +1704,10 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
 void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
 int CG_Text_Width(const char *text, float scale, int iMenuFont);
 int CG_Text_Height(const char *text, float scale, int iMenuFont);
+qboolean CG_YourTeamHasFlag(void);
+qboolean CG_OtherTeamHasFlag(void);
+
+// cg_newDraw.c
 void CG_SelectPrevPlayer(void);
 void CG_SelectNextPlayer(void);
 float CG_GetValue(int ownerDraw);
@@ -1716,8 +1724,6 @@ void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandl
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending(void);
 const char *CG_GameTypeString(void);
-qboolean CG_YourTeamHasFlag(void);
-qboolean CG_OtherTeamHasFlag(void);
 qhandle_t CG_StatusHandle(int task);
 
 
@@ -1881,9 +1887,11 @@ void CG_InitConsoleCommands( void );
 // cg_servercmds.c
 //
 void CG_ExecuteNewServerCommands( int latestSequence );
+#ifdef MISSIONPACK
 void CG_LoadVoiceChats( void );
 void CG_VoiceChatLocal( int mode, qboolean voiceOnly, int clientNum, int color, const char *cmd );
 void CG_PlayBufferedVoiceChats( void );
+#endif
 void CG_UpdateConfigString( int num, qboolean init );
 
 //

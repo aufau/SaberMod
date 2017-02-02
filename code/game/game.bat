@@ -1,7 +1,7 @@
 del /q vm
 mkdir vm
 cd vm
-set cc=lcc -A -DQ3_VM -DMISSIONPACK -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
+set cc=lcc -A -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
 
 %cc%  ../g_main.c
 @if errorlevel 1 goto quit

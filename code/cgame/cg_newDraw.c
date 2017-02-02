@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ================================================================================
 */
 
+#ifndef MISSIONPACK
+#error This file is not used for classic JK2
+#endif
 
 #include "cg_local.h"
 #include "../ui/ui_shared.h"
@@ -33,7 +36,6 @@ extern displayContextDef_t cgDC;
 
 //static int sortedTeamPlayers[TEAM_MAXOVERLAY];
 //static int numSortedTeamPlayers;
-int drawTeamOverlayModificationCount = -1;
 
 //static char systemChat[256];
 //static char teamChat1[256];
@@ -235,34 +237,6 @@ float CG_GetValue(int ownerDraw) {
     break;
   }
 	return -1;
-}
-
-qboolean CG_OtherTeamHasFlag(void) {
-	if (GT_Flag(cgs.gametype)) {
-		int team = cg.snap->ps.persistant[PERS_TEAM];
-		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
-			return qtrue;
-		} else if (team == TEAM_BLUE && cgs.blueflag == FLAG_TAKEN) {
-			return qtrue;
-		} else {
-			return qfalse;
-		}
-	}
-	return qfalse;
-}
-
-qboolean CG_YourTeamHasFlag(void) {
-	if (GT_Flag(cgs.gametype)) {
-		int team = cg.snap->ps.persistant[PERS_TEAM];
-		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
-			return qtrue;
-		} else if (team == TEAM_BLUE && cgs.redflag == FLAG_TAKEN) {
-			return qtrue;
-		} else {
-			return qfalse;
-		}
-	}
-	return qfalse;
 }
 
 // THINKABOUTME: should these be exclusive or inclusive..

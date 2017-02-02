@@ -26,9 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "cg_local.h"
 #include "../game/bg_version.h"
+
+#ifdef MISSIONPACK
 #include "../ui/ui_shared.h"
 // display context for new ui stuff
 displayContextDef_t cgDC;
+#endif
 
 #if !defined(CL_LIGHT_H_INC)
 	#include "cg_lights.h"
@@ -147,7 +150,8 @@ static const char *HolocronIcons[] = {
 	"gfx/mp/f_icon_saber_throw"		//FP_SABERTHROW
 };
 
-int forceModelModificationCount = -1;
+static int forceModelModificationCount = -1;
+static int drawTeamOverlayModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
@@ -195,15 +199,21 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	case CG_LAST_ATTACKER:
 		return CG_LastAttacker();
 	case CG_KEY_EVENT:
+#ifdef MISSIONPACK
 		CG_KeyEvent(arg0, arg1);
+#endif
 		return 0;
 	case CG_MOUSE_EVENT:
+#ifdef MISSIONPACK
 		cgDC.cursorx = cgs.cursorX;
 		cgDC.cursory = cgs.cursorY;
 		CG_MouseEvent(arg0, arg1);
+#endif
 		return 0;
 	case CG_EVENT_HANDLING:
+#ifdef MISSIONPACK
 		CG_EventHandling(arg0);
+#endif
 		return 0;
 
 	case CG_POINT_CONTENTS:
@@ -516,8 +526,10 @@ vmCvar_t	cg_drawTeamOverlay;
 vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
 vmCvar_t	cg_teamChatsOnly;
+#ifdef MISSIONPACK
 vmCvar_t	cg_noVoiceChats;
 vmCvar_t	cg_noVoiceText;
+#endif
 vmCvar_t	cg_hudFiles;
 vmCvar_t 	cg_damagePlums;
 vmCvar_t 	cg_smoothClients;
@@ -674,8 +686,10 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_stats, "cg_stats", "0", 0 },
 	{ &cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE },
 	{ &cg_teamChatsOnly, "cg_teamChatsOnly", "0", CVAR_ARCHIVE },
+#ifdef MISSIONPACK
 	{ &cg_noVoiceChats, "cg_noVoiceChats", "0", CVAR_ARCHIVE },
 	{ &cg_noVoiceText, "cg_noVoiceText", "0", CVAR_ARCHIVE },
+#endif
 	// the following variables are created in other parts of the system,
 	// but we also reference them here
 	{ &cg_buildScript, "com_buildScript", "0", 0 },	// force loading of all possible data amd error on failures
@@ -978,11 +992,11 @@ static void CG_RegisterSounds( void ) {
 	int		i;
 	char	items[MAX_ITEMS+1];
 	char	name[MAX_QPATH];
-
+#ifdef MISSIONPACK
 	// voice commands
 	// rww - no "voice commands" I guess.
-	//CG_LoadVoiceChats();
-
+	CG_LoadVoiceChats();
+#endif
 	cgs.media.oneMinuteSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM004" );
 	cgs.media.fiveMinuteSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM005" );
 	cgs.media.oneFragSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM001" );
@@ -1578,7 +1592,7 @@ Ghoul2 Insert End
 */
 	cg.loadLCARSStage = 9;
 
-
+#ifdef MISSIONPACK
 	// new stuff
 	cgs.media.patrolShader = trap_R_RegisterShaderNoMip("ui/assets/statusbar/patrol.tga");
 	cgs.media.assaultShader = trap_R_RegisterShaderNoMip("ui/assets/statusbar/assault.tga");
@@ -1591,7 +1605,7 @@ Ghoul2 Insert End
 	cgs.media.cursor = trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
 	cgs.media.sizeCursor = trap_R_RegisterShaderNoMip( "ui/assets/sizecursor.tga" );
 	cgs.media.selectCursor = trap_R_RegisterShaderNoMip( "ui/assets/selectcursor.tga" );
-
+#endif
 	cgs.media.halfShieldModel	= trap_R_RegisterModel ( "models/weaphits/testboom.md3" );
 	cgs.media.halfShieldShader	= trap_R_RegisterShader( "halfShieldShell" );
 
@@ -1698,6 +1712,7 @@ void CG_StartMusic( qboolean bForceStart ) {
 	trap_S_StartBackgroundTrack( parm1, parm2, !bForceStart );
 }
 
+#ifdef MISSIONPACK
 char *CG_GetMenuBuffer(const char *filename) {
 	int	len;
 	fileHandle_t	f;
@@ -2286,7 +2301,7 @@ void CG_AssetCache() {
 	cgDC.Assets.sliderBar = trap_R_RegisterShaderNoMip( ASSET_SLIDER_BAR );
 	cgDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip( ASSET_SLIDER_THUMB );
 }
-
+#endif // MISSIONPACK
 /*
 Ghoul2 Insert Start
 */
@@ -2382,17 +2397,6 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
-
-	// this is kinda dumb as well, but I need to pre-load some fonts in order to have the text available
-	//	to say I'm loading the assets.... which includes loading the fonts. So I'll set these up as reasonable
-	//	defaults, then let the menu asset parser (which actually specifies the ingame fonts) load over them
-	//	if desired during parse.  Dunno how legal it is to store in these cgDC things, but it causes no harm
-	//	and even if/when they get overwritten they'll be legalised by the menu asset parser :-)
-//	CG_LoadFonts();
-	cgDC.Assets.qhSmallFont  = trap_R_RegisterFont("ocr_a");
-	cgDC.Assets.qhMediumFont = trap_R_RegisterFont("ergoec");
-	cgDC.Assets.qhBigFont = cgDC.Assets.qhMediumFont;
-
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
 
@@ -2405,6 +2409,22 @@ Ghoul2 Insert End
 
 	cg.itemSelect = -1;
 	cg.forceSelect = -1;
+
+#ifdef MISSIONPACK
+	// this is kinda dumb as well, but I need to pre-load some fonts in order to have the text available
+	//	to say I'm loading the assets.... which includes loading the fonts. So I'll set these up as reasonable
+	//	defaults, then let the menu asset parser (which actually specifies the ingame fonts) load over them
+	//	if desired during parse.  Dunno how legal it is to store in these cgDC things, but it causes no harm
+	//	and even if/when they get overwritten they'll be legalised by the menu asset parser :-)
+//	CG_LoadFonts();
+	cgDC.Assets.qhSmallFont  = trap_R_RegisterFont("ocr_a");
+	cgDC.Assets.qhMediumFont = trap_R_RegisterFont("ergoec");
+	cgDC.Assets.qhBigFont = cgDC.Assets.qhMediumFont;
+#else
+	cgs.media.qhSmallFont  = trap_R_RegisterFont("ocr_a");
+	cgs.media.qhMediumFont = trap_R_RegisterFont("ergoec");
+	cgs.media.qhBigFont    = trap_R_RegisterFont("anewhope");
+#endif
 
 	// load a few needed things before we do any screen updates
 	cgs.media.charsetShader		= trap_R_RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
@@ -2555,9 +2575,9 @@ Ghoul2 Insert End
 	CG_LoadingString( "collision map" );
 
 	trap_CM_LoadMap( cgs.mapname );
-
+#ifdef MISSIONPACK
 	String_Init();
-
+#endif
 	cg.loading = qtrue;		// force players to load instead of defer
 
 	CG_InitSagaMode();
@@ -2573,10 +2593,10 @@ Ghoul2 Insert End
 	CG_LoadingString( "clients" );
 
 	CG_RegisterClients();		// if low on memory, some clients will be deferred
-
+#ifdef MISSIONPACK
 	CG_AssetCache();
 	CG_LoadHudMenu();      // load new hud stuff
-
+#endif
 	cg.loading = qfalse;	// future players will be deferred
 
 	CG_InitLocalEntities();
@@ -2590,9 +2610,9 @@ Ghoul2 Insert End
 	CG_ClearLightStyles();
 
 	CG_LoadingString( "" );
-
+#ifdef MISSIONPACK
 	CG_InitTeamChat();
-
+#endif
 	trap_S_ClearLoopingSounds( qtrue );
 }
 

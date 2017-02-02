@@ -27,10 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // be a valid snapshot this frame
 
 #include "cg_local.h"
-#include "../../assets/ui/jk2mp/menudef.h"
+
 #if !defined(CL_LIGHT_H_INC)
 	#include "cg_lights.h"
 #endif
+
+#ifdef MISSIONPACK
+#include "../../assets/ui/jk2mp/menudef.h"
 
 typedef struct {
 	const char *order;
@@ -60,6 +63,7 @@ static int CG_ValidOrder(const char *p) {
 	}
 	return -1;
 }
+#endif // MISSIONPACK
 
 /*
 =================
@@ -118,7 +122,9 @@ static void CG_ParseScores( void ) {
 
 		cg.scores[i].team = cgs.clientinfo[cg.scores[i].client].team;
 	}
+#ifdef MISSIONPACK
 	CG_SetScoreSelection(NULL);
+#endif
 }
 
 /*
@@ -616,6 +622,8 @@ static void CG_MapRestart( void ) {
 	trap_Cvar_Set("cg_thirdPerson", "0");
 }
 
+#ifdef MISSIONPACK
+
 #define MAX_VOICEFILESIZE	16384
 #define MAX_VOICEFILES		8
 #define MAX_VOICECHATS		64
@@ -1080,7 +1088,7 @@ void CG_VoiceChat( int mode ) {
 
 	CG_VoiceChatLocal( mode, voiceOnly, clientNum, color, cmd );
 }
-
+#endif // MISSIONPACK
 /*
 =================
 CG_RemoveChatEscapeChar
@@ -1318,6 +1326,7 @@ static void CG_ServerCommand( void ) {
 		CG_Printf( "%s\n", text );
 		return;
 	}
+#ifdef MISSIONPACK
 	if ( !strcmp( cmd, "vchat" ) ) {
 		CG_VoiceChat( SAY_ALL );
 		return;
@@ -1332,7 +1341,7 @@ static void CG_ServerCommand( void ) {
 		CG_VoiceChat( SAY_TELL );
 		return;
 	}
-
+#endif
 	if ( !strcmp( cmd, "scores" ) ) {
 		CG_ParseScores();
 		return;

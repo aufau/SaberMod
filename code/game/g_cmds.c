@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "g_local.h"
 
+#ifdef MISSIONPACK
 #include "../../assets/ui/jk2mp/menudef.h"			// for the voice chats
+#endif
 
 //rww - for getting bot commands...
 int AcceptBotCommand(char *cmd, gentity_t *pl);
@@ -1569,7 +1571,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 }
 
-#if 0
+#ifdef MISSIONPACK
 static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *id, qboolean voiceonly ) {
 	int color;
 	const char *cmd;
@@ -1768,7 +1770,7 @@ static void Cmd_VoiceTaunt_f( gentity_t *ent ) {
 	// just say something
 	G_Voice( ent, NULL, SAY_ALL, VOICECHAT_TAUNT, qfalse );
 }
-#endif // 0
+#endif // MISSIONPACK
 
 static const char	*gc_orders[] = {
 	"hold your position",

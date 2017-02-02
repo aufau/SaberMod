@@ -26,9 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // executed by a key binding
 
 #include "cg_local.h"
+#ifdef MISSIONPACK
 #include "../ui/ui_shared.h"
 extern menuDef_t *menuScoreboard;
-
+#endif
 
 
 void CG_TargetCommand_f( void ) {
@@ -85,8 +86,9 @@ static void CG_Viewpos_f (void) {
 
 
 static void CG_ScoresDown_f( void ) {
-
+#ifdef MISSIONPACK
 	CG_BuildSpectatorString();
+#endif
 	if ( cg.scoresRequestTime + 2000 < cg.time ) {
 		// the scores are more than two seconds out of data,
 		// so request new ones
@@ -112,7 +114,7 @@ static void CG_ScoresUp_f( void ) {
 		cg.scoreFadeTime = cg.time;
 	}
 }
-
+#ifdef MISSIONPACK
 extern menuDef_t *menuScoreboard;
 void Menu_Reset();			// FIXME: add to right include file
 
@@ -132,7 +134,7 @@ static void CG_scrollScoresUp_f( void) {
 		Menu_ScrollFeeder(menuScoreboard, FEEDER_BLUETEAM_LIST, qfalse);
 	}
 }
-
+#endif // MISSIONPACK
 
 static void CG_spWin_f( void) {
 	trap_Cvar_Set("cg_cameraOrbit", "2");
@@ -186,7 +188,7 @@ static void CG_TellAttacker_f( void ) {
 	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
 	trap_SendClientCommand( command );
 }
-
+#ifdef MISSIONPACK
 static void CG_VoiceTellTarget_f( void ) {
 	int		clientNum;
 	char	command[128];
@@ -380,7 +382,7 @@ static void CG_EditHud_f( void ) {
   //VM_Call (cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
 }
 */
-
+#endif // MISSIONPACK
 
 /*
 ==================
@@ -512,11 +514,12 @@ static const consoleCommand_t	commands[] = {
 	{ "weapnext", CG_NextWeapon_f },
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },
+	{ "tcmd", CG_TargetCommand_f },
 	{ "tell_target", CG_TellTarget_f },
 	{ "tell_attacker", CG_TellAttacker_f },
+#ifdef MISSIONPACK
 	{ "vtell_target", CG_VoiceTellTarget_f },
 	{ "vtell_attacker", CG_VoiceTellAttacker_f },
-	{ "tcmd", CG_TargetCommand_f },
 	{ "nextTeamMember", CG_NextTeamMember_f },
 	{ "prevTeamMember", CG_PrevTeamMember_f },
 	{ "nextOrder", CG_NextOrder_f },
@@ -536,10 +539,11 @@ static const consoleCommand_t	commands[] = {
 	{ "tauntTaunt", CG_TauntTaunt_f },
 	{ "tauntDeathInsult", CG_TauntDeathInsult_f },
 	{ "tauntGauntlet", CG_TauntGauntlet_f },
-	{ "spWin", CG_spWin_f },
-	{ "spLose", CG_spLose_f },
 	{ "scoresDown", CG_scrollScoresDown_f },
 	{ "scoresUp", CG_scrollScoresUp_f },
+#endif
+	{ "spWin", CG_spWin_f },
+	{ "spLose", CG_spLose_f },
 	{ "startOrbit", CG_StartOrbit_f },
 	//{ "camera", CG_Camera_f },
 	{ "loaddeferred", CG_LoadDeferredPlayers },
@@ -625,6 +629,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("say");
 	trap_AddCommand ("say_team");
 	trap_AddCommand ("tell");
+#ifdef MISSIONPACK
 	trap_AddCommand ("vsay");
 	trap_AddCommand ("vsay_team");
 	trap_AddCommand ("vtell");
@@ -632,6 +637,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("vosay");
 	trap_AddCommand ("vosay_team");
 	trap_AddCommand ("votell");
+#endif
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
 	trap_AddCommand ("notarget");

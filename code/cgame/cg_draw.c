@@ -29,12 +29,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "../ui/ui_shared.h"
 
-qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y);
-qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle );
-
+#ifdef MISSIONPACK
 // used for scoreboard
 extern displayContextDef_t cgDC;
 menuDef_t *menuScoreboard = NULL;
+#endif
+
+qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y);
+qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle );
+
 vec4_t	bluehudtint = {0.5, 0.5, 1.0, 1.0};
 vec4_t	redhudtint = {1.0, 0.5, 0.5, 1.0};
 const float	*hudTintColor;
@@ -76,6 +79,7 @@ const char *showPowersName[] =
 
 int MenuFontToHandle(int iMenuFont)
 {
+#ifdef MISSIONPACK
 	switch (iMenuFont)
 	{
 		case FONT_SMALL:	return cgDC.Assets.qhSmallFont;
@@ -84,6 +88,16 @@ int MenuFontToHandle(int iMenuFont)
 	}
 
 	return cgDC.Assets.qhMediumFont;
+#else
+	switch (iMenuFont)
+	{
+		case FONT_SMALL:	return cgs.media.qhSmallFont;
+		case FONT_MEDIUM:	return cgs.media.qhMediumFont;
+		case FONT_LARGE:	return cgs.media.qhBigFont;
+	}
+
+	return cgs.media.qhMediumFont;
+#endif
 }
 
 int CG_Text_Width(const char *text, float scale, int iMenuFont)
@@ -1079,7 +1093,9 @@ CG_DrawHUD
 */
 void CG_DrawHUD(centity_t	*cent)
 {
+#ifdef MISSIONPACK
 	menuDef_t	*menuHUD = NULL;
+#endif
 	const char *scoreStr = NULL;
 	int	scoreBias;
 	char scoreBiasStr[16];
@@ -1144,7 +1160,7 @@ void CG_DrawHUD(centity_t	*cent)
 	{	// tint the hud items white (dont' tint)
 		hudTintColor = colorTable[CT_WHITE];
 	}
-
+#ifdef MISSIONPACK
 	menuHUD = Menus_FindByName("lefthud");
 	if (menuHUD)
 	{
@@ -1154,6 +1170,7 @@ void CG_DrawHUD(centity_t	*cent)
 		CG_DrawHUDLeftFrame2(menuHUD->window.rect.x,menuHUD->window.rect.y);
 	}
 	else
+#endif
 	{ //Apparently we failed to get proper coordinates from the menu, so resort to manually inputting them.
 		CG_DrawHUDLeftFrame1(0,SCREEN_HEIGHT-80);
 		CG_DrawArmor(0,SCREEN_HEIGHT-80);
@@ -1208,7 +1225,7 @@ void CG_DrawHUD(centity_t	*cent)
 			scoreStr = va("Round: %i", cgs.round);
 		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
 	}
-
+#ifdef MISSIONPACK
 	menuHUD = Menus_FindByName("righthud");
 	if (menuHUD)
 	{
@@ -1219,6 +1236,7 @@ void CG_DrawHUD(centity_t	*cent)
 
 	}
 	else
+#endif
 	{ //Apparently we failed to get proper coordinates from the menu, so resort to manually inputting them.
 		CG_DrawHUDRightFrame1(SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
 		CG_DrawForcePower(SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
@@ -3539,8 +3557,7 @@ static void CG_DrawTeamVote(void) {
 }
 
 static qboolean CG_DrawScoreboard() {
-	return CG_DrawOldScoreboard();
-#if 0
+#ifdef MISSIONPACK
 	static qboolean firstTime = qtrue;
 	float fade, *fadeColor;
 
@@ -3603,6 +3620,8 @@ static qboolean CG_DrawScoreboard() {
 	}
 
 	return qtrue;
+#else // MISSIONPACK
+	return CG_DrawOldScoreboard();
 #endif
 }
 
@@ -3836,6 +3855,7 @@ static void CG_DrawWarmup( void ) {
 }
 
 //==================================================================================
+#ifdef MISSIONPACK
 /*
 =================
 CG_DrawTimedMenus
@@ -3850,6 +3870,35 @@ void CG_DrawTimedMenus() {
 			cg.voiceTime = 0;
 		}
 	}
+}
+#endif // MISSIONPACK
+
+qboolean CG_OtherTeamHasFlag(void) {
+	if (GT_Flag(cgs.gametype)) {
+		int team = cg.snap->ps.persistant[PERS_TEAM];
+		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
+			return qtrue;
+		} else if (team == TEAM_BLUE && cgs.blueflag == FLAG_TAKEN) {
+			return qtrue;
+		} else {
+			return qfalse;
+		}
+	}
+	return qfalse;
+}
+
+qboolean CG_YourTeamHasFlag(void) {
+	if (GT_Flag(cgs.gametype)) {
+		int team = cg.snap->ps.persistant[PERS_TEAM];
+		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
+			return qtrue;
+		} else if (team == TEAM_BLUE && cgs.redflag == FLAG_TAKEN) {
+			return qtrue;
+		} else {
+			return qfalse;
+		}
+	}
+	return qfalse;
 }
 
 void CG_DrawFlagStatus()
@@ -3946,10 +3995,11 @@ static void CG_Draw2D( void ) {
 	int				drawSelect = 0;
 	float			fallTime, rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
 	vec4_t			hcolor;
-
+#ifdef MISSIONPACK
 	if (cgs.orderPending && cg.time > cgs.orderTime) {
 		CG_CheckOrderPending();
 	}
+#endif
 	// if we are taking a levelshot for the menu, don't draw anything
 	if ( cg.levelShot ) {
 		return;
@@ -4398,13 +4448,13 @@ static void CG_Draw2D( void ) {
 	} else {
 		// don't draw any status if dead or the scoreboard is being explicitly shown
 		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
-
+#ifdef MISSIONPACK
 			if ( /*cg_drawStatus.integer*/0 ) {
 				//Reenable if stats are drawn with menu system again
 				Menu_PaintAll();
 				CG_DrawTimedMenus();
 			}
-
+#endif
 			//CG_DrawTemporaryStats();
 
 			CG_DrawAmmoWarning();
