@@ -2163,6 +2163,7 @@ void trap_FX_AddSprite( addspriteArgStruct_t *p );
 
 void trap_SP_Print(const unsigned ID, byte *Data);
 int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength);
+qboolean trap_SP_Register(const char *file );
 
 void		trap_CG_RegisterSharedMemory(char *memory);
 
