@@ -143,26 +143,6 @@ void Cmd_Score_f( gentity_t *ent ) {
 	DeathmatchScoreboardMessage( ent );
 }
 
-
-
-/*
-==================
-CheatsOk
-==================
-*/
-qboolean	CheatsOk( gentity_t *ent ) {
-	if ( !g_cheats.integer ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOCHEATS")));
-		return qfalse;
-	}
-	if ( ent->health <= 0 ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MUSTBEALIVE")));
-		return qfalse;
-	}
-	return qtrue;
-}
-
-
 /*
 ==================
 ConcatArgs
@@ -573,10 +553,6 @@ void Cmd_God_f (gentity_t *ent)
 {
 	const char	*msg;
 
-	if ( !CheatsOk( ent ) ) {
-		return;
-	}
-
 	ent->flags ^= FL_GODMODE;
 	if (!(ent->flags & FL_GODMODE) )
 		msg = "godmode OFF\n";
@@ -655,12 +631,7 @@ void Cmd_LevelShot_f( gentity_t *ent ) {
 
 /*
 ==================
-Cmd_LevelShot_f
-
-This is just to help generate the level pictures
-for the menus.  It goes to the intermission immediately
-and sends over a command to the client to resize the view,
-hide the scoreboard, and take a special screenshot
+Cmd_TeamTask_f
 ==================
 */
 void Cmd_TeamTask_f( gentity_t *ent ) {
@@ -2985,9 +2956,11 @@ static const clientCommand_t commands[] = {
 	{ "teamvote", Cmd_TeamVote_f, CMD_NOINTERMISSION },
 	{ "gc", Cmd_GameCommand_f, CMD_NOINTERMISSION },
 	{ "give", Cmd_Give_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
+	{ "god", Cmd_God_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "notarget", Cmd_Notarget_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "noclip", Cmd_Noclip_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "setviewpos", Cmd_SetViewpos_f, CMD_CHEAT | CMD_NOINTERMISSION },
+	{ "teamtask", Cmd_TeamTask_f, CMD_CHEAT | CMD_NOINTERMISSION },
 	{ "levelshot", Cmd_LevelShot_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "thedestroyer", Cmd_TheDestroyer_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "addbot", Cmd_AddBot_f, 0 },
