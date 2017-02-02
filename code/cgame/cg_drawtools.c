@@ -118,18 +118,6 @@ void CG_DrawTopBottom(float x, float y, float w, float h, float size) {
 }
 
 /*
--------------------------
-CGC_FillRect2
-real coords
--------------------------
-*/
-void CG_FillRect2( float x, float y, float width, float height, const float *color ) {
-	trap_R_SetColor( color );
-	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
-	trap_R_SetColor( NULL );
-}
-
-/*
 ================
 CG_FillRect
 
@@ -304,10 +292,6 @@ void CG_DrawBigString( int x, int y, const char *s, float alpha ) {
 	CG_DrawStringExt( x, y, s, color, qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0 );
 }
 
-void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color ) {
-	CG_DrawStringExt( x, y, s, color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0 );
-}
-
 void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
 	float	color[4];
 
@@ -316,9 +300,15 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
 	CG_DrawStringExt( x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0 );
 }
 
+#ifdef UNUSED
+void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color ) {
+	CG_DrawStringExt( x, y, s, color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0 );
+}
+
 void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color ) {
 	CG_DrawStringExt( x, y, s, color, qtrue, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0 );
 }
+#endif
 
 /*
 =================

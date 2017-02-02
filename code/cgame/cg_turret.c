@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "cg_local.h"
+#include "fx_local.h"
 #include "../game/q_shared.h"
 #include "../ghoul2/g2.h"
 

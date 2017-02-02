@@ -244,6 +244,7 @@ void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops ) {
 	}
 }
 
+#ifdef UNUSED
 /*
 ==================
 CG_CheckChangedPredictableEvents
@@ -279,6 +280,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps ) {
 		}
 	}
 }
+#endif // UNUSED
 
 /*
 ==================

@@ -472,6 +472,7 @@ void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandl
 	trap_R_RenderScene( &refdef );
 }
 
+#ifdef UNUSED
 /*
 ================
 CG_DrawHead
@@ -493,6 +494,7 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 		CG_DrawPic( x, y, w, h, cgs.media.deferShader );
 	}
 }
+#endif
 
 /*
 ================
@@ -557,20 +559,6 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 
 /*
 ================
-DrawAmmo
-================
-*/
-void DrawAmmo()
-{
-	int x, y;
-
-	x = SCREEN_WIDTH-80;
-	y = SCREEN_HEIGHT-80;
-
-}
-
-/*
-================
 CG_DrawHUDLeftFrame1
 ================
 */
@@ -593,6 +581,7 @@ void CG_DrawHUDLeftFrame2(int x,int y)
 	CG_DrawPic(   x, y, 80, 80, cgs.media.HUDLeftFrame );		// Metal frame
 }
 
+#ifdef UNUSED
 /*
 ================
 DrawHealthArmor
@@ -748,6 +737,7 @@ void DrawHealthArmor(int x,int y)
 	trap_R_SetColor(hudTintColor );
 	CG_DrawPic(   x, y, 80, 80, cgs.media.HUDLeft );			// Metal frame
 }
+#endif // 0
 
 /*
 ================
@@ -3663,7 +3653,7 @@ static qboolean CG_DrawFollow( void )
 	return qtrue;
 }
 
-#if 0
+#ifdef UNUSED
 static void CG_DrawTemporaryStats()
 { //placeholder for testing (draws ammo and force power)
 	char s[512];

@@ -418,6 +418,7 @@ void CG_CreateBBRefEnts(entityState_t *s1, vec3_t origin )
 	*/
 }
 
+#ifdef UNUSED
 // write in the axis and stuff
 void G2_BoltToGhoul2Model(centity_t *cent, refEntity_t *ent)
 {
@@ -456,6 +457,7 @@ void G2_BoltToGhoul2Model(centity_t *cent, refEntity_t *ent)
  	ent->axis[2][1] = boltMatrix.matrix[1][2];
  	ent->axis[2][2] = boltMatrix.matrix[2][2];
 }
+#endif // UNUSED
 
 void ScaleModelAxis(refEntity_t	*ent)
 

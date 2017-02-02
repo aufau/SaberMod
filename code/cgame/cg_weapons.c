@@ -34,6 +34,7 @@ extern float	*hudTintColor;
 /*
 Ghoul2 Insert Start
 */
+#ifdef UNUSED
 // set up the appropriate ghoul2 info to a refent
 void CG_SetGhoul2InfoRef( refEntity_t *ent, refEntity_t	*s1)
 {
@@ -42,7 +43,7 @@ void CG_SetGhoul2InfoRef( refEntity_t *ent, refEntity_t	*s1)
 	ent->radius = s1->radius;
 	VectorCopy( s1->angles, ent->angles);
 }
-
+#endif
 /*
 Ghoul2 Insert End
 */
@@ -1951,7 +1952,7 @@ BULLETS
 ============================================================================
 */
 
-#if 0
+#ifdef UNUSED
 /*
 ===============
 CG_Tracer
@@ -2030,7 +2031,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	//trap_S_StartSound( midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound );
 
 }
-#endif // 0
+#endif // UNUSED
 /*
 ======================
 CG_CalcMuzzlePoint

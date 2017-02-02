@@ -66,6 +66,7 @@ void FX_DEMP2_HitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid )
 	trap_FX_PlayEffectID( cgs.effects.demp2FleshImpactEffect, origin, normal );
 }
 
+#ifdef UNUSED
 /*
 ---------------------------
 FX_DEMP2_AltBeam
@@ -259,6 +260,7 @@ void FX_DEMP2_AltBeam( vec3_t start, vec3_t end, vec3_t normal, //qboolean spark
 						trap_R_RegisterShader( "gfx/misc/lightningFlash" ));
 */
 }
+#endif
 
 //---------------------------------------------
 void FX_DEMP2_AltDetonate( vec3_t org, float size )

@@ -3009,7 +3009,7 @@ static void CG_DustTrail( centity_t *cent ) {
 CG_TrailItem
 ===============
 */
-#if 0
+#ifdef UNUSED
 static void CG_TrailItem( centity_t *cent, qhandle_t hModel ) {
 	refEntity_t		ent;
 	vec3_t			angles;
@@ -3029,7 +3029,7 @@ static void CG_TrailItem( centity_t *cent, qhandle_t hModel ) {
 	ent.hModel = hModel;
 	trap_R_AddRefEntityToScene( &ent );
 }
-#endif
+#endif // UNUSED
 
 
 /*
@@ -3187,7 +3187,7 @@ CG_PlayerFloatSprite
 Same as above but allows custom RGBA values
 ===============
 */
-#if 0
+#ifdef UNUSED
 static void CG_PlayerFloatSpriteRGBA( centity_t *cent, qhandle_t shader, vec4_t rgba ) {
 	int				rf;
 	refEntity_t		ent;
@@ -3716,7 +3716,7 @@ void CG_PlayerHitFX(centity_t *cent)
 }
 
 
-
+#ifdef UNUSED
 /*
 =================
 CG_LightVerts
@@ -3763,6 +3763,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 	}
 	return qtrue;
 }
+#endif // UNUSED
 
 void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 {
@@ -3873,6 +3874,7 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
 	trap_R_AddRefEntityToScene( &saber );
 }
 
+#ifdef UNUSED
 //--------------------------------------------------------------
 // CG_GetTagWorldPosition
 //
@@ -3898,6 +3900,7 @@ void CG_GetTagWorldPosition( refEntity_t *model, char *tag, vec3_t pos, vec3_t a
 		MatrixMultiply( orientation.axis, model->axis, axis );
 	}
 }
+#endif // UNUSED
 
 #define	MAX_MARK_FRAGMENTS	128
 #define	MAX_MARK_POINTS		384
@@ -4686,6 +4689,7 @@ void CG_DrawPlayerSphere(centity_t *cent, vec3_t origin, float scale, int shader
 	trap_R_AddRefEntityToScene( &ent );
 }
 
+#ifdef UNUSED
 void CG_AddLightningBeam(vec3_t start, vec3_t end)
 {
 	vec3_t	dir, chaos,
@@ -4799,6 +4803,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 
 	CG_AddLightningBeam(inOrg, outOrg);
 }
+#endif // UNUSED
 
 extern const char *forceHolocronModels[];
 

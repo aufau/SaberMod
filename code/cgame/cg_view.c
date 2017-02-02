@@ -889,6 +889,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 //======================================================================
 
+#ifdef UNUSED
 void CG_ZoomDown_f( void ) {
 	if ( cg.zoomed ) {
 		return;
@@ -960,6 +961,7 @@ qboolean CG_CalcFOVFromX( float fov_x )
 
 	return (inwater);
 }
+#endif // UNUSED
 
 /*
 ====================
@@ -1154,6 +1156,7 @@ static void CG_DamageBlendBlob( void )
 	trap_R_AddRefEntityToScene( &ent );
 }
 
+#ifdef UNUSED
 qboolean CheckOutOfConstrict(float curAng)
 {
 	float degrees_negative, degrees_positive;
@@ -1206,6 +1209,7 @@ qboolean CheckOutOfConstrict(float curAng)
 
 	return qfalse;
 }
+#endif // UNUSED
 
 /*
 ===============

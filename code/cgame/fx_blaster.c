@@ -44,6 +44,7 @@ void FX_BlasterProjectileThink( centity_t *cent, const struct weaponInfo_s *weap
 	trap_FX_PlayEffectID( cgs.effects.blasterShotEffect, cent->lerpOrigin, forward );
 }
 
+#ifdef UNUSED
 /*
 -------------------------
 FX_BlasterAltFireThink
@@ -60,6 +61,7 @@ void FX_BlasterAltFireThink( centity_t *cent, const struct weaponInfo_s *weapon 
 
 	trap_FX_PlayEffectID( cgs.effects.blasterShotEffect, cent->lerpOrigin, forward );
 }
+#endif
 
 /*
 -------------------------

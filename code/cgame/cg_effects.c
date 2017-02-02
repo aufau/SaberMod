@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "cg_local.h"
 
-#if 0
+#ifdef UNUSED
 /*
 ==================
 CG_BubbleTrail
@@ -90,7 +90,7 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing ) {
 		VectorAdd (move, vec, move);
 	}
 }
-#endif
+#endif // UNUSED
 
 /*
 =====================
@@ -657,7 +657,7 @@ void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, i
 	}
 	//otherwise something awful has happened.
 }
-#if 0
+#ifdef UNUSED
 /*
 ==================
 CG_GlassShatter_Old
@@ -739,7 +739,7 @@ void CG_GlassShatter_Old(int entnum, vec3_t org, vec3_t mins, vec3_t maxs)
 		shardsthrow += 10;
 	}
 }
-#endif // 0
+#endif // UNUSED
 /*
 ==================
 CG_CreateDebris
@@ -926,7 +926,7 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 	AnglesToAxis( angles, re->axis );
 }
 
-#if 0
+#ifdef UNUSED
 /*
 -------------------------
 CG_ExplosionEffects
@@ -1206,4 +1206,4 @@ void CG_LaunchGib( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 	le->leBounceSoundType = LEBS_BLOOD;
 	le->leMarkType = LEMT_BLOOD;
 }
-#endif // 0
+#endif // UNUSED

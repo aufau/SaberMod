@@ -305,7 +305,7 @@ void CG_AddMarks( void ) {
 		trap_R_AddPolyToScene( mp->markShader, mp->poly.numVerts, mp->verts );
 	}
 }
-#if 0
+#ifdef UNUSED
 // cg_particles.c
 
 #define BLOODRED	2
@@ -2273,4 +2273,4 @@ void CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 
 	p->rotate = qfalse;
 }
-#endif // 0
+#endif // UNUSED
