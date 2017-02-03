@@ -29,8 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **********************************************************************/
 #include "ui_local.h"
 
-qboolean		m_entersound;		// after a frame, so caching won't disrupt the sound
-
 // these are here so the functions in q_shared.c can link
 #ifndef UI_HARD_LINKED
 
@@ -57,30 +55,6 @@ void QDECL Com_Printf( const char *msg, ... ) {
 }
 
 #endif
-
-qboolean newUI = qfalse;
-
-
-/*
-=================
-UI_ClampCvar
-=================
-*/
-float UI_ClampCvar( float min, float max, float value )
-{
-	if ( value < min ) return min;
-	if ( value > max ) return max;
-	return value;
-}
-
-/*
-=================
-UI_StartDemoLoop
-=================
-*/
-void UI_StartDemoLoop( void ) {
-	trap_Cmd_ExecuteText( EXEC_APPEND, "d1\n" );
-}
 
 
 char *UI_Argv( int arg ) {
@@ -384,21 +358,14 @@ qboolean UI_ConsoleCommand( int realTime ) {
 	return qfalse;
 }
 
-/*
-=================
-UI_Shutdown
-=================
-*/
-void UI_Shutdown( void ) {
-}
-
-
+#ifdef UNUSED
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {
 	qhandle_t	hShader;
 
 	hShader = trap_R_RegisterShaderNoMip( picname );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
+#endif // UNUSED
 
 void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
 	float	s0;
@@ -444,6 +411,7 @@ void UI_FillRect( float x, float y, float width, float height, const float *colo
 	trap_R_SetColor( NULL );
 }
 
+#ifdef UNUSED
 void UI_DrawSides(float x, float y, float w, float h) {
 	trap_R_DrawStretchPic( x, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 	trap_R_DrawStretchPic( x + w - 1, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
@@ -468,16 +436,13 @@ void UI_DrawRect( float x, float y, float width, float height, const float *colo
 
 	trap_R_SetColor( NULL );
 }
+#endif // UNUSED
 
 void UI_SetColor( const float *rgba ) {
 	trap_R_SetColor( rgba );
 }
 
-void UI_UpdateScreen( void ) {
-	trap_UpdateScreen();
-}
-
-
+#ifdef UNUSED
 void UI_DrawTextBox (int x, int y, int width, int lines)
 {
 	UI_FillRect( x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, ( width + 1 ) * BIGCHAR_WIDTH, ( lines + 1 ) * BIGCHAR_HEIGHT, colorBlack );
@@ -494,3 +459,4 @@ qboolean UI_CursorInRect (int x, int y, int width, int height)
 
 	return qtrue;
 }
+#endif // UNUSED

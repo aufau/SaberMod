@@ -151,7 +151,7 @@ static const int numServerFilters = sizeof(serverFilters) / sizeof(serverFilter_
 
 
 
-static const char *skillLevels[] = {
+static const char * const skillLevels[] = {
   "SKILL1",//"I Can Win",
   "SKILL2",//"Bring It On",
   "SKILL3",//"Hurt Me Plenty",
@@ -162,7 +162,7 @@ static const int numSkillLevels = sizeof(skillLevels) / sizeof(const char*);
 
 
 
-static const char *teamArenaGameTypes[] = {
+static const char * const teamArenaGameTypes[] = {
 	"FFA",
 	"HOLOCRON",
 	"JEDIMASTER",
@@ -178,7 +178,7 @@ static int const numTeamArenaGameTypes = sizeof(teamArenaGameTypes) / sizeof(con
 
 
 
-static const char *netnames[] = {
+static const char * const netnames[] = {
 	"???",
 	"UDP",
 	"IPX",
@@ -465,16 +465,14 @@ void UI_ShowPostGame(qboolean newHigh) {
 _UI_Refresh
 =================
 */
-
+#ifdef UNUSED
 void UI_DrawCenteredPic(qhandle_t image, int w, int h) {
   int x, y;
   x = (SCREEN_WIDTH - w) / 2;
   y = (SCREEN_HEIGHT - h) / 2;
   UI_DrawHandlePic(x, y, w, h, image);
 }
-
-int frameCount = 0;
-int startTime;
+#endif // UNUSED
 
 vmCvar_t	ui_rankChange;
 static void UI_BuildPlayerList();
@@ -6710,6 +6708,7 @@ void _UI_MouseEvent( int dx, int dy )
 
 }
 
+#ifdef UNUSED
 void UI_LoadNonIngame() {
 	const char *menuSet = UI_Cvar_VariableString("ui_menuFilesMP");
 	if (menuSet == NULL || menuSet[0] == '\0') {
@@ -6718,6 +6717,7 @@ void UI_LoadNonIngame() {
 	UI_LoadMenus(menuSet, qfalse);
 	uiInfo.inGameLoad = qfalse;
 }
+#endif // UNUSED
 
 void _UI_SetActiveMenu( uiMenuCommand_t menu ) {
 	char buf[256];

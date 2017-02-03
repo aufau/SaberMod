@@ -316,7 +316,7 @@ char *UI_GetBotInfoByNumber( int num ) {
 	return ui_botInfos[num];
 }
 
-
+#ifdef UNUSED
 /*
 ===============
 UI_GetBotInfoByName
@@ -335,6 +335,7 @@ char *UI_GetBotInfoByName( const char *name ) {
 
 	return NULL;
 }
+#endif // UNUSED
 
 int UI_GetNumBots() {
 	return ui_numBots;
