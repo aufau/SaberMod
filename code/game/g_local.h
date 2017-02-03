@@ -631,7 +631,6 @@ int G_ItemUsable(playerState_t *ps, int forcedUse);
 void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
 
-gentity_t *G_GetDuelWinner(gclient_t *client);
 int G_ClientNumberFromString (const char *s, const char **errorMsg);
 
 //

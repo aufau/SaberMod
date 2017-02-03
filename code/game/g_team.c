@@ -328,6 +328,7 @@ void Team_CheckDroppedItem( gentity_t *dropped ) {
 	}
 }
 
+#ifdef UNUSED
 /*
 ================
 Team_ForceGesture
@@ -349,6 +350,7 @@ void Team_ForceGesture(int team) {
 		ent->flags |= FL_FORCE_GESTURE;
 	}
 }
+#endif // UNUSED
 
 /*
 ================

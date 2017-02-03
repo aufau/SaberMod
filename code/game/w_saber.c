@@ -3497,6 +3497,7 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 	}
 }
 
+#ifdef UNUSED
 void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 {
 	vec3_t diff, fwdangles={0,0,0}, right;
@@ -3572,6 +3573,7 @@ void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 		playerent->client->ps.saberBlocked = WP_MissileBlockForBlock( playerent->client->ps.saberBlocked );
 	}
 }
+#endif // UNUSED
 
 int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolean projectile, int attackStr)
 {

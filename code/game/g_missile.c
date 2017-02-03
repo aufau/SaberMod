@@ -215,7 +215,7 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	}
 }
 
-
+#ifdef UNUSED
 /*
 ================
 G_ExplodeMissile
@@ -258,6 +258,7 @@ void G_ExplodeMissile( gentity_t *ent ) {
 
 	trap_LinkEntity( ent );
 }
+#endif // UNUSED
 
 void G_RunStuckMissile( gentity_t *ent )
 {
@@ -279,6 +280,7 @@ void G_RunStuckMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
+#ifdef UNUSED
 /*
 ================
 G_BounceProjectile
@@ -295,7 +297,7 @@ void G_BounceProjectile( vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout 
 	VectorNormalize(newv);
 	VectorMA(impact, 8192, newv, endout);
 }
-
+#endif
 
 //-----------------------------------------------------------------------------
 gentity_t *CreateMissile( vec3_t org, vec3_t dir, float vel, int life,

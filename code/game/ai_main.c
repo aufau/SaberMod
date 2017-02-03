@@ -108,7 +108,8 @@ gentity_t *droppedRedFlag;
 gentity_t *eFlagBlue;
 gentity_t *droppedBlueFlag;
 
-const char *ctfStateNames[] = {
+#ifdef BOT_CTF_DEBUG
+const char * const ctfStateNames[] = {
 	"CTFSTATE_NONE",
 	"CTFSTATE_ATTACKER",
 	"CTFSTATE_DEFENDER",
@@ -117,8 +118,9 @@ const char *ctfStateNames[] = {
 	"CTFSTATE_GETFLAGHOME",
 	"CTFSTATE_MAXCTFSTATES"
 };
+#endif // BOT_CTF_DEBUG
 
-const char *ctfStateDescriptions[] = {
+const char * const ctfStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm attacking the enemy's base",
 	"I'm defending our base",
@@ -127,19 +129,20 @@ const char *ctfStateDescriptions[] = {
 	"I've got the enemy's flag"
 };
 
-const char *sagaStateDescriptions[] = {
+const char * const sagaStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm attemtping to complete the current objective",
 	"I'm preventing the enemy from completing their objective"
 };
 
-const char *teamplayStateDescriptions[] = {
+const char * const teamplayStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm following my squad commander",
 	"I'm assisting my commanding",
 	"I'm attempting to regroup and form a new squad"
 };
 
+#ifdef UNUSED
 void BotStraightTPOrderCheck(gentity_t *ent, int ordernum, bot_state_t *bs)
 {
 	switch (ordernum)
@@ -167,15 +170,6 @@ void BotStraightTPOrderCheck(gentity_t *ent, int ordernum, bot_state_t *bs)
 		bs->teamplayState = ordernum;
 		break;
 	}
-}
-
-void BotSelectWeapon(int client, int weapon)
-{
-	if (weapon <= WP_NONE)
-	{
-		return;
-	}
-	trap_EA_SelectWeapon(client, weapon);
 }
 
 void BotReportStatus(bot_state_t *bs)
@@ -286,6 +280,16 @@ void BotOrder(gentity_t *ent, int clientnum, int ordernum)
 		}
 	}
 }
+#endif // UNUSED
+
+void BotSelectWeapon(int client, int weapon)
+{
+	if (weapon <= WP_NONE)
+	{
+		return;
+	}
+	trap_EA_SelectWeapon(client, weapon);
+}
 
 int BotMindTricked(int botClient, int enemyClient)
 {
@@ -374,6 +378,7 @@ int BotAI_GetClientState( int clientNum, playerState_t *state ) {
 	return qtrue;
 }
 
+#ifdef UNUSED
 /*
 ==================
 BotAI_GetEntityState
@@ -427,6 +432,7 @@ NumBots
 int NumBots(void) {
 	return numbots;
 }
+#endif // UNUSED
 
 /*
 ==============
@@ -446,6 +452,7 @@ float AngleDifference(float ang1, float ang2) {
 	return diff;
 }
 
+#ifdef UNUSED
 /*
 ==============
 BotChangeViewAngle
@@ -472,6 +479,7 @@ float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
 	}
 	return AngleMod(angle + move);
 }
+#endif // UNUSED
 
 /*
 ==============
@@ -651,6 +659,7 @@ void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
 	}
 }
 
+#ifdef UNUSED
 /*
 ==============
 BotAIRegularUpdate
@@ -662,6 +671,7 @@ void BotAIRegularUpdate(void) {
 		regularupdate_time = FloatTime() + 0.3f;
 	}
 }
+#endif // UNUSED
 
 /*
 ==============
@@ -5072,6 +5082,7 @@ int BotSelectChoiceWeapon(bot_state_t *bs, int weapon, int doselection)
 	return 0;
 }
 
+#ifdef UNUSED
 int BotSelectMelee(bot_state_t *bs)
 {
 	if (bs->cur_ps.weapon != 1 && bs->virtualWeapon != 1)
@@ -5085,6 +5096,7 @@ int BotSelectMelee(bot_state_t *bs)
 
 	return 0;
 }
+#endif // UNUSED
 
 int GetLoveLevel(bot_state_t *bs, bot_state_t *love)
 {

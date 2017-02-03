@@ -28,10 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // g_client.c -- client functions that don't happen every frame
 
-static vec3_t	playerMins = {-15, -15, DEFAULT_MINS_2};
-static vec3_t	playerMaxs = {15, 15, DEFAULT_MAXS_2};
-
-forcedata_t Client_Force[MAX_CLIENTS];
+static const vec3_t	playerMins = {-15, -15, DEFAULT_MINS_2};
+static const vec3_t	playerMaxs = {15, 15, DEFAULT_MAXS_2};
 
 /*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
 potential spawning position for deathmatch games.
@@ -387,6 +385,7 @@ qboolean SpotWouldTelefrag( gentity_t *spot ) {
 	return qfalse;
 }
 
+#ifdef UNUSED
 /*
 ================
 SelectNearestDeathmatchSpawnPoint
@@ -451,6 +450,7 @@ gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	selection = rand() % count;
 	return spots[ selection ];
 }
+#endif // UNUSED
 
 /*
 ===========

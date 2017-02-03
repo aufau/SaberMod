@@ -32,17 +32,6 @@ void BotDamageNotification(gclient_t *bot, gentity_t *attacker);
 
 void ThrowSaberToAttacker(gentity_t *self, gentity_t *attacker);
 
-void ObjectDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
-{
-	if(self->target)
-	{
-		G_UseTargets(self, attacker);
-	}
-
-	//remove my script_targetname
-	G_FreeEntity( self );
-}
-
 /*
 int G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, vec3_t point )
 {
@@ -493,6 +482,18 @@ int G_PickPainAnim( gentity_t *self, vec3_t point, int damage )
 }
 */
 
+#ifdef UNUSED
+void ObjectDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+{
+	if(self->target)
+	{
+		G_UseTargets(self, attacker);
+	}
+
+	//remove my script_targetname
+	G_FreeEntity( self );
+}
+
 void ExplodeDeath( gentity_t *self )
 {
 //	gentity_t	*tent;
@@ -533,7 +534,7 @@ void ExplodeDeath( gentity_t *self )
 
 	ObjectDie( self, self, self, 20, 0 );
 }
-
+#endif // UNUSED
 
 /*
 ============
@@ -760,6 +761,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker ) 
 	angles[ROLL] = 0;
 }
 
+#ifdef UNUSED
 /*
 ==================
 GibEntity
@@ -771,6 +773,7 @@ void GibEntity( gentity_t *self, int killer ) {
 	self->s.eType = ET_INVISIBLE;
 	self->r.contents = 0;
 }
+#endif
 
 void BodyRid(gentity_t *ent)
 {
@@ -2320,6 +2323,7 @@ void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
 	}
 }
 
+#ifdef UNUSED
 /*
 ================
 RaySphereIntersections
@@ -2356,6 +2360,7 @@ int RaySphereIntersections( vec3_t origin, float radius, vec3_t point, vec3_t di
 	}
 	return 0;
 }
+#endif
 
 void LimbTouch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
@@ -2723,6 +2728,7 @@ void G_Dismember( gentity_t *ent, vec3_t point, int limbType, float limbRollBase
 	trap_LinkEntity( limb );
 }
 
+#ifdef _DEBUG
 void DismembermentTest(gentity_t *self)
 {
 	int sect = G2_MODELPART_HEAD;
@@ -2766,6 +2772,7 @@ void DismembermentByNum(gentity_t *self, int num)
 	G_GetDismemberBolt(self, boltPoint, sect);
 	G_Dismember( self, boltPoint, sect, 90, 0, BOTH_DEATH1 );
 }
+#endif // _DEBUG
 
 int G_GetHitQuad( gentity_t *self, vec3_t hitloc )
 {

@@ -674,24 +674,6 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
 }
 
-gentity_t *G_GetDuelWinner(gclient_t *client)
-{
-	gclient_t *wCl;
-	int i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		wCl = &level.clients[i];
-
-		if (wCl && wCl != client && /*wCl->ps.clientNum != client->ps.clientNum &&*/
-			wCl->pers.connected == CON_CONNECTED && wCl->sess.sessionTeam != TEAM_SPECTATOR)
-		{
-			return &g_entities[i];
-		}
-	}
-
-	return NULL;
-}
-
 /*
 =================
 BroadCastTeamChange
@@ -2289,30 +2271,6 @@ void Cmd_SetViewpos_f( gentity_t *ent ) {
 	angles[YAW] = atof( buffer );
 
 	TeleportPlayer( ent, origin, angles );
-}
-
-
-
-/*
-=================
-Cmd_Stats_f
-=================
-*/
-void Cmd_Stats_f( gentity_t *ent ) {
-/*
-	int max, n, i;
-
-	max = trap_AAS_PointReachabilityAreaIndex( NULL );
-
-	n = 0;
-	for ( i = 0; i < max; i++ ) {
-		if ( ent->client->areabits[i >> 3] & (1 << (i & 7)) )
-			n++;
-	}
-
-	//trap_SendServerCommand( ent-g_entities, va("print \"visited %d of %d areas\n\"", n, max));
-	trap_SendServerCommand( ent-g_entities, va("print \"%d%% level coverage\n\"", n * 100 / max));
-*/
 }
 
 int G_ItemUsable(playerState_t *ps, int forcedUse)

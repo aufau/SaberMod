@@ -183,6 +183,7 @@ static int G_GetMapTypeBits(const char *type)
 	return typeBits;
 }
 
+#ifdef UNUSED
 qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 {
 	int			typeBits = 0;
@@ -226,6 +227,7 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 
 	return qfalse;
 }
+#endif // UNUSED
 
 //rww - auto-obtain nextmap. I could've sworn Q3 had something like this, but I guess not.
 const char *G_RefreshNextMap(int gametype, qboolean forced)
@@ -344,7 +346,7 @@ static void G_LoadArenas( void ) {
 	G_RefreshNextMap(g_gametype.integer, qfalse);
 }
 
-
+#ifdef UNUSED
 /*
 ===============
 G_GetArenaInfoByNumber
@@ -362,7 +364,6 @@ const char *G_GetArenaInfoByMap( const char *map ) {
 	return NULL;
 }
 
-#if 0
 /*
 =================
 PlayerIntroSound
@@ -387,7 +388,7 @@ static void PlayerIntroSound( const char *modelAndSkin ) {
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "play sound/player/announce/%s.wav\n", skin ) );
 }
-#endif
+#endif // UNUSED
 
 /*
 ===============
@@ -1102,7 +1103,7 @@ static void G_LoadBots( void ) {
 }
 
 
-
+#ifdef UNUSED
 /*
 ===============
 G_GetBotInfoByNumber
@@ -1115,7 +1116,7 @@ char *G_GetBotInfoByNumber( int num ) {
 	}
 	return g_botInfos[num];
 }
-
+#endif // UNUSED
 
 /*
 ===============

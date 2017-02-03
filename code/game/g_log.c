@@ -841,10 +841,11 @@ void G_LogWeaponOutput(void)
 #endif //LOGGING_WEAPONS
 }
 
+#ifdef LOGGING_WEAPONS
+#ifdef UNUSED
 // did this player earn the efficiency award?
 qboolean CalculateEfficiency(gentity_t *ent, int *efficiency)
 {
-#ifdef LOGGING_WEAPONS
 	float		fAccuracyRatio = 0, fBestRatio = 0;
 	int			i = 0, nShotsFired = 0, nShotsHit = 0, nBestPlayer = -1, tempEff = 0;
 	gentity_t	*player = NULL;
@@ -879,14 +880,12 @@ qboolean CalculateEfficiency(gentity_t *ent, int *efficiency)
 		}
 		return qfalse;
 	}
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
 // did this player earn the sharpshooter award?
 qboolean CalculateSharpshooter(gentity_t *ent, int *frags)
 {
-#ifdef LOGGING_WEAPONS
 	int			i = 0, nBestPlayer = -1, nKills = 0, nMostKills = 0,
 				playTime = (level.time - ent->client->pers.enterTime)/60000;
 	gentity_t	*player = NULL;
@@ -924,14 +923,12 @@ qboolean CalculateSharpshooter(gentity_t *ent, int *frags)
 		*frags = nMostKills;
 		return qtrue;
 	}
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
 // did this player earn the untouchable award?
 qboolean CalculateUntouchable(gentity_t *ent)
 {
-#ifdef LOGGING_WEAPONS
 	int			playTime;
 	playTime = (level.time - ent->client->pers.enterTime)/60000;
 
@@ -952,14 +949,12 @@ qboolean CalculateUntouchable(gentity_t *ent)
 	if (ent->client->ps.persistant[PERS_KILLED]==0)
 		return qtrue;
 
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
 // did this player earn the logistics award?
 qboolean CalculateLogistics(gentity_t *ent, int *stuffUsed)
 {
-#ifdef LOGGING_WEAPONS
 	int			i = 0, j = 0, nBestPlayer = -1, nStuffUsed = 0, nMostStuffUsed = 0,
 				nDifferent = 0, nMostDifferent = 0;
 	gentity_t	*player = NULL;
@@ -1006,7 +1001,6 @@ qboolean CalculateLogistics(gentity_t *ent, int *stuffUsed)
 		*stuffUsed = nMostDifferent;
 		return qtrue;
 	}
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
@@ -1016,7 +1010,6 @@ qboolean CalculateLogistics(gentity_t *ent, int *stuffUsed)
 // did this player earn the tactician award?
 qboolean CalculateTactician(gentity_t *ent, int *kills)
 {
-#ifdef LOGGING_WEAPONS
 	int			i = 0, nBestPlayer = -1, nKills = 0, nMostKills = 0;
 	int			person = 0, weapon = 0;
 	gentity_t	*player = NULL;
@@ -1105,7 +1098,6 @@ qboolean CalculateTactician(gentity_t *ent, int *kills)
 		*kills = nMostKills;
 		return qtrue;
 	}
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
@@ -1115,7 +1107,6 @@ qboolean CalculateTactician(gentity_t *ent, int *kills)
 // did this player earn the demolitionist award?
 qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 {
-#ifdef LOGGING_WEAPONS
 	int			i = 0, nBestPlayer = -1, nKills = 0, nMostKills = 0;
 	int			playTime;
 	gentity_t	*player = NULL;
@@ -1165,7 +1156,6 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 		*kills = nMostKills;
 		return qtrue;
 	}
-#endif // LOGGING_WEAPONS
 	return qfalse;
 }
 
@@ -1552,7 +1542,6 @@ qboolean CalculateSection31Award(gentity_t *ent)
 
 void CalculateAwards(gentity_t *ent, char *msg)
 {
-#ifdef LOGGING_WEAPONS
 	char		buf1[AWARDS_MSG_LENGTH], buf2[AWARDS_MSG_LENGTH];
 	int			awardFlags = 0, efficiency = 0, stuffUsed = 0, kills = 0, streak = 0, teamAwards = 0;
 
@@ -1618,10 +1607,8 @@ void CalculateAwards(gentity_t *ent, char *msg)
 	}
 	Q_strncpyz(buf2, msg, sizeof(buf2));
 	Com_sprintf( msg, AWARDS_MSG_LENGTH, "%s %d%s", buf2, awardFlags, buf1);
-#endif // LOGGING_WEAPONS
 }
 
-#ifdef LOGGING_WEAPONS
 int GetMaxDeathsForClient(int nClient)
 {
 	int i = 0, nMostDeaths = 0;
@@ -1736,6 +1723,7 @@ int GetFavoriteWeaponForClient(int nClient)
 	}
 	return fav;
 }
+#endif // UNUSED
 #endif // LOGGIN_WEAPONS
 
 // kef -- if a client leaves the game, clear out all counters he may have set

@@ -1358,6 +1358,7 @@ void ATST_ManageDamageBoxes(gentity_t *ent)
 	G_SetOrigin(&g_entities[ent->client->damageBoxHandle_RLeg], rLegOrg);
 }
 
+#ifdef UNUSED
 int G_PlayerBecomeATST(gentity_t *ent)
 {
 	if (!ent || !ent->client)
@@ -1394,6 +1395,7 @@ int G_PlayerBecomeATST(gentity_t *ent)
 
 	return 1;
 }
+#endif // UNUSED
 
 /*QUAKED fx_runner (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF ONESHOT
 	STARTOFF - effect starts off, toggles on/off when used
@@ -3280,6 +3282,7 @@ void SP_target_escapetrig(gentity_t *ent)
 
 #endif
 
+#ifdef _DEBUG
 void G_CreateExampleAnimEnt(gentity_t *ent)
 {
 	vec3_t fwd, fwdPos;
@@ -3359,5 +3362,6 @@ void G_CreateExampleAnimEnt(gentity_t *ent)
 
 	G_SpawnExampleAnimEnt(fwdPos, iArg, &aeInfo);
 }
-//rww - here ends the main example g2animent stuff
+#endif // _DEBUG
 
+//rww - here ends the main example g2animent stuff

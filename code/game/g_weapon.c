@@ -1058,8 +1058,6 @@ static void WP_DEMP2_MainFire( gentity_t *ent )
 	missile->bounceCount = 0;
 }
 
-static gentity_t *ent_list[MAX_GENTITIES];
-
 void DEMP2_AltRadiusDamage( gentity_t *ent )
 {
 	float		frac = ( level.time - ent->bolt_Head ) / 800.0f; // / 1600.0f; // synchronize with demp2 effect
@@ -1352,46 +1350,6 @@ static void WP_FlechetteMainFire( gentity_t *ent )
 	}
 }
 
-//---------------------------------------------------------
-void prox_mine_think( gentity_t *ent )
-//---------------------------------------------------------
-{
-	int			count, i;
-	qboolean	blow = qfalse;
-
-	// if it isn't time to auto-explode, do a small proximity check
-	if ( ent->delay > level.time )
-	{
-		count = G_RadiusList( ent->r.currentOrigin, FLECHETTE_MINE_RADIUS_CHECK, ent, qtrue, ent_list );
-
-		for ( i = 0; i < count; i++ )
-		{
-			if ( ent_list[i]->client && ent_list[i]->health > 0 && ent->activator && ent_list[i]->s.number != ent->activator->s.number )
-			{
-				blow = qtrue;
-				break;
-			}
-		}
-	}
-	else
-	{
-		// well, we must die now
-		blow = qtrue;
-	}
-
-	if ( blow )
-	{
-		//G_Sound( ent, G_SoundIndex( "sound/weapons/flechette/warning.wav" ));
-		ent->think = laserTrapExplode;//thinkF_WP_Explode;
-		ent->nextthink = level.time + 200;
-	}
-	else
-	{
-		// we probably don't need to do this thinking logic very often...maybe this is fast enough?
-		ent->nextthink = level.time + 500;
-	}
-}
-
 //-----------------------------------------------------------------------------
 static void WP_TraceSetStart( gentity_t *ent, vec3_t start, const vec3_t mins, const vec3_t maxs )
 //-----------------------------------------------------------------------------
@@ -1425,11 +1383,6 @@ static void WP_TraceSetStart( gentity_t *ent, vec3_t start, const vec3_t mins, c
 	{
 		VectorCopy( tr.endpos, start );
 	}
-}
-
-void WP_ExplosiveDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
-{
-	laserTrapExplode(self);
 }
 
 //----------------------------------------------
@@ -1880,12 +1833,6 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 	bolt->bounceCount = -5;
 
 	return bolt;
-}
-
-gentity_t *WP_DropThermal( gentity_t *ent )
-{
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
-	return (WP_FireThermalDetonator( ent, qfalse ));
 }
 
 
@@ -2760,6 +2707,7 @@ void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, 
 	SnapVector( muzzlePoint );
 }
 
+#ifdef UNUSED
 /*
 ===============
 CalcMuzzlePointOrigin
@@ -2774,7 +2722,7 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }
-
+#endif // UNUSED
 
 
 /*

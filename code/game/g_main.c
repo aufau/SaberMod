@@ -927,6 +927,7 @@ void RemoveDuelDrawLoser(void)
 	}
 }
 
+#ifdef UNUSED
 /*
 =======================
 RemoveTournamentWinner
@@ -948,6 +949,7 @@ void RemoveTournamentWinner( void ) {
 	// make them a spectator
 	SetTeam( &g_entities[ clientNum ], TEAM_SPECTATOR );
 }
+#endif
 
 /*
 =======================
@@ -1412,10 +1414,12 @@ void BeginIntermission( void ) {
 	level.intermissiontime = level.time;
 	FindIntermissionPoint();
 
+#if 0
 	if (g_singlePlayer.integer) {
 		trap_Cvar_Set("ui_singlePlayerActive", "0");
 		UpdateTournamentInfo();
 	}
+#endif
 
 	// move all clients to the intermission point
 	for (i=0 ; i< level.maxclients ; i++) {

@@ -368,6 +368,7 @@ void G_StopObjectMoving( gentity_t *object )
 	*/
 }
 
+#ifdef UNUSED
 void G_StartObjectMoving( gentity_t *object, vec3_t dir, float speed, trType_t trType )
 {
 	VectorNormalize (dir);
@@ -396,3 +397,4 @@ void G_StartObjectMoving( gentity_t *object, vec3_t dir, float speed, trType_t t
 	{//You're responsible for calling RunObject
 	}
 }
+#endif // UNUSED

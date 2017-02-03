@@ -214,9 +214,6 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	return qfalse;
 }
 
-
-void G_ExplodeMissile( gentity_t *ent );
-
 /*
 ============
 G_MoverPush
@@ -1918,6 +1915,7 @@ void GlassDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int da
 	G_FreeEntity(self);
 }
 
+#ifdef UNUSED
 void GlassDie_Old(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
 {
 	gentity_t *te;
@@ -1936,6 +1934,7 @@ void GlassDie_Old(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	G_FreeEntity(self);
 }
+#endif // UNUSED
 
 void GlassPain(gentity_t *self, gentity_t *attacker, int damage)
 {

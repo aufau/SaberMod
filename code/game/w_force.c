@@ -75,6 +75,7 @@ qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold 
 	return (dot > threshHold);
 }
 
+#ifdef UNUSED
 int forcePowerMinRank[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] = //0 == neutral
 {
 	{
@@ -162,6 +163,7 @@ int forcePowerMinRank[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] = //0 == neutral
 		//NUM_FORCE_POWERS
 	}
 };
+#endif // UNUSED
 
 void WP_InitForcePowers( gentity_t *ent )
 {
@@ -623,6 +625,7 @@ qboolean WP_ForcePowerAvailable( gentity_t *self, forcePowers_t forcePower )
 	return qtrue;
 }
 
+#ifdef UNUSED
 qboolean WP_ForcePowerInUse( gentity_t *self, forcePowers_t forcePower )
 {
 	if ( (self->client->ps.fd.forcePowersActive & ( 1 << forcePower )) )
@@ -632,6 +635,7 @@ qboolean WP_ForcePowerInUse( gentity_t *self, forcePowers_t forcePower )
 
 	return qfalse;
 }
+#endif // UNUSED
 
 qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower )
 {
@@ -2057,6 +2061,7 @@ void ForceJumpCharge( gentity_t *self, usercmd_t *ucmd )
 #endif // 0
 }
 
+#ifdef UNUSED
 int WP_GetVelocityForForceJump( gentity_t *self, vec3_t jumpVel, usercmd_t *ucmd )
 {
 	float pushFwd = 0, pushRt = 0;
@@ -2141,6 +2146,7 @@ int WP_GetVelocityForForceJump( gentity_t *self, vec3_t jumpVel, usercmd_t *ucmd
 		return FJ_UP;
 	}
 }
+#endif // UNUSED
 
 void ForceJump( gentity_t *self, usercmd_t *ucmd )
 {
