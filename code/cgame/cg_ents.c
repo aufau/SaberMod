@@ -1767,7 +1767,10 @@ Ghoul2 Insert End
 		// Now draw the static shader over it.
 		// Alpha in over half the time, out over half.
 
-		//alpha = sin(M_PI*alpha);
+		ent.customShader = cgs.media.itemRespawningRezOut;
+
+		/*
+		alpha = sin(M_PI*alpha);
 		a = alpha * 255;
 
 		a = 255 - a;
@@ -1777,9 +1780,6 @@ Ghoul2 Insert End
 		if (a > 255)
 			a=255;
 
-		ent.customShader = cgs.media.itemRespawningRezOut;
-
-		/*
 		ent.shaderRGBA[0] = 0;
 		ent.shaderRGBA[1] = a;
 		ent.shaderRGBA[2] = a-100;

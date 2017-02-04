@@ -115,7 +115,7 @@ memmove(void *dp, const void *sp, size_t n)
 {
 	unsigned char *cdp, *csp;
 
-	if (n<=0)
+	if (n == 0)
 		return dp;
 	cdp = dp;
 	csp = (unsigned char *)sp;

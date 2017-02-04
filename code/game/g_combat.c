@@ -357,7 +357,7 @@ int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 			{
 				return HL_BACK_LT;
 			}
-			else if(fdot < 0)
+			else
 			{
 				return HL_BACK;
 			}
@@ -743,7 +743,6 @@ LookAtKiller
 */
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker ) {
 	vec3_t		dir;
-	vec3_t		angles;
 
 	if ( attacker && attacker != self ) {
 		VectorSubtract (attacker->s.pos.trBase, self->s.pos.trBase, dir);
@@ -755,10 +754,6 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker ) 
 	}
 
 	self->client->ps.stats[STAT_DEAD_YAW] = vectoyaw ( dir );
-
-	angles[YAW] = vectoyaw ( dir );
-	angles[PITCH] = 0;
-	angles[ROLL] = 0;
 }
 
 #ifdef UNUSED

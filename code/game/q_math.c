@@ -563,7 +563,6 @@ float Q_rsqrt( float number )
 	const float threehalfs = 1.5F;
 
 	x2 = number * 0.5F;
-	y  = number;
 	t.f  = number;
 	t.i  = 0x5f3759df - ( t.i >> 1 );               // what the fuck?
 	y  = t.f;

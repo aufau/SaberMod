@@ -1544,7 +1544,7 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec
 			{
 				int	dmg = Q_irand(1,2); //Q_irand( 1, 3 );
 
-				int modPowerLevel = -1;
+				int modPowerLevel;
 
 				modPowerLevel = WP_AbsorbConversion(traceEnt, traceEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_LIGHTNING, self->client->ps.fd.forcePowerLevel[FP_LIGHTNING], 1);
 
@@ -2580,7 +2580,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	vec3_t		pushDir;
 	vec3_t		thispush_org;
 	vec3_t		tfrom, tto, fwd, a;
-	float		knockback = pull?0:200;
+//	float		knockback = pull?0:200;
 	int			powerUse = 0;
 
 	visionArc = 0;
@@ -2955,8 +2955,6 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				int otherPushPower = push_list[x]->client->ps.fd.forcePowerLevel[powerUse];
 				qboolean canPullWeapon = qtrue;
 				float dirLen = 0;
-
-				knockback = pull?0:200;
 
 				pushPowerMod = pushPower;
 
@@ -4234,8 +4232,8 @@ void SeekerDroneUpdate(gentity_t *self)
 void HolocronUpdate(gentity_t *self)
 { //keep holocron status updated in holocron mode
 	int i = 0;
-	int noHRank = 0;
-
+	int noHRank = FORCE_LEVEL_0;
+	/*
 	if (noHRank < FORCE_LEVEL_0)
 	{
 		noHRank = FORCE_LEVEL_0;
@@ -4244,7 +4242,7 @@ void HolocronUpdate(gentity_t *self)
 	{
 		noHRank = FORCE_LEVEL_3;
 	}
-
+	*/
 	trap_Cvar_Update(&g_MaxHolocronCarry);
 
 	while (i < NUM_FORCE_POWERS)

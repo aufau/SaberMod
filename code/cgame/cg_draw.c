@@ -1087,8 +1087,6 @@ void CG_DrawHUD(centity_t	*cent)
 	menuDef_t	*menuHUD = NULL;
 #endif
 	const char *scoreStr = NULL;
-	int	scoreBias;
-	char scoreBiasStr[16];
 
 	if (cg_hudFiles.integer)
 	{
@@ -1174,8 +1172,12 @@ void CG_DrawHUD(centity_t	*cent)
 		//show current kills out of how many needed
 		scoreStr = va("Score: %i/%i", cg.snap->ps.persistant[PERS_SCORE], cgs.fraglimit);
 	}
-	else if (0 && !GT_Team(cgs.gametype) )
+#if 0
+	else if (!GT_Team(cgs.gametype) )
 	{	// This is a teamless mode, draw the score bias.
+		int	scoreBias;
+		char scoreBiasStr[16];
+
 		scoreBias = cg.snap->ps.persistant[PERS_SCORE] - cgs.scores1;
 		if (scoreBias == 0)
 		{	// We are the leader!
@@ -1202,6 +1204,7 @@ void CG_DrawHUD(centity_t	*cent)
 		}
 		scoreStr = va("Score: %i%s", cg.snap->ps.persistant[PERS_SCORE], scoreBiasStr);
 	}
+#endif
 	else
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
@@ -1265,13 +1268,9 @@ void CG_DrawForceSelect( void )
 	int		i;
 	int		count;
 	int		smallIconSize,bigIconSize;
-	int		holdX,x,y,x2,y2,pad,length;
+	int		holdX,x,y,pad;
 	int		sideLeftIconCnt,sideRightIconCnt;
 	int		sideMax,holdCount,iconCnt;
-
-
-	x2 = 0;
-	y2 = 0;
 
 	// don't display if dead
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 )
@@ -1334,8 +1333,8 @@ void CG_DrawForceSelect( void )
 	y = 425;
 
 	// Background
-	length = (sideLeftIconCnt * smallIconSize) + (sideLeftIconCnt*pad) +
-			bigIconSize + (sideRightIconCnt * smallIconSize) + (sideRightIconCnt*pad) + 12;
+	// length = (sideLeftIconCnt * smallIconSize) + (sideLeftIconCnt*pad) +
+	//		bigIconSize + (sideRightIconCnt * smallIconSize) + (sideRightIconCnt*pad) + 12;
 
 	i = BG_ProperForceIndex(cg.forceSelect) - 1;
 	if (i < 0)

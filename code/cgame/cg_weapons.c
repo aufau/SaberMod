@@ -1182,9 +1182,8 @@ void CG_DrawWeaponSelect( void ) {
 
 		if (cgs.media.weaponIcons[i])
 		{
-			weaponInfo_t	*weaponInfo;
+			// weaponInfo_t	*weaponInfo = &cg_weapons[i];
 			CG_RegisterWeapon( i );
-			weaponInfo = &cg_weapons[i];
 
 			trap_R_SetColor(colorTable[CT_WHITE]);
 			if (!CG_WeaponCheck(i))
@@ -1204,9 +1203,7 @@ void CG_DrawWeaponSelect( void ) {
 	height = bigIconSize * cg.iconHUDPercent;
 	if (cgs.media.weaponIcons[cg.weaponSelect])
 	{
-		weaponInfo_t	*weaponInfo;
 		CG_RegisterWeapon( cg.weaponSelect );
-		weaponInfo = &cg_weapons[cg.weaponSelect];
 
 		trap_R_SetColor( colorTable[CT_WHITE]);
 		if (!CG_WeaponCheck(cg.weaponSelect))
@@ -1251,9 +1248,7 @@ void CG_DrawWeaponSelect( void ) {
 
 		if (/*weaponData[i].weaponIcon[0]*/cgs.media.weaponIcons[i])
 		{
-			weaponInfo_t	*weaponInfo;
 			CG_RegisterWeapon( i );
-			weaponInfo = &cg_weapons[i];
 			// No ammo for this weapon?
 			trap_R_SetColor( colorTable[CT_WHITE]);
 			if (!CG_WeaponCheck(i))

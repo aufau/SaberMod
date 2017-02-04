@@ -1392,8 +1392,8 @@ static qboolean UI_AllForceDisabled(int force)
 qboolean UI_TrueJediEnabled( void )
 {
 	char	info[MAX_INFO_STRING];
-	int		gametype = 0, disabledForce = 0, trueJedi = 0;
-	qboolean saberOnly = qfalse, allForceDisabled = qfalse;
+	int		gametype, disabledForce, trueJedi;
+	qboolean saberOnly, allForceDisabled;
 
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 
@@ -1730,9 +1730,9 @@ void UpdateForceStatus()
 			if (GT_Team(atoi(Info_ValueForKey(info, "g_gametype"))))
 			{	// This is a team-based game.
 				Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
-
+#if 0
 				// This is disabled, always show both sides from spectator.
-				if ( 0 && atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
+				if ( atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
 				{	// Show red or blue based on what side is chosen.
 					if (uiForceSide==FORCE_LIGHTSIDE)
 					{
@@ -1751,6 +1751,7 @@ void UpdateForceStatus()
 					}
 				}
 				else
+#endif
 				{
 					Menu_ShowItemByName(menu, "playerforcered", qtrue);
 					Menu_ShowItemByName(menu, "playerforceblue", qtrue);
@@ -2583,7 +2584,7 @@ static void UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textSt
 	numLines = 0;
 	while ( y < rect->y + rect->h && *eptr )
 	{
-		while ( *eptr && *eptr == ' ' )
+		while ( *eptr == ' ' )
 			*eptr++ = '\0';
 
 		// track start of valid string

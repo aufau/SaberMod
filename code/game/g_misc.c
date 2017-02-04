@@ -965,7 +965,6 @@ ammo_power_converter_use
 void ammo_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	int			add,highest;
-	qboolean	overcharge;
 	int			difBlaster,difPowerCell,difMetalBolts;
 	int			stop = 1;
 
@@ -976,8 +975,6 @@ void ammo_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *act
 
 	if (self->setTime < level.time)
 	{
-		overcharge = qfalse;
-
 		if (!self->s.loopSound)
 		{
 			self->s.loopSound = G_SoundIndex("sound/player/pickupshield.wav");
@@ -2292,7 +2289,7 @@ void ExampleAnimEntNavigation(gentity_t *self, vec3_t goalPos)
 					}
 				}
 
-				if (desiredIndex != -1 && desiredIndex >= 0 && desiredIndex < gWPNum)
+				if (desiredIndex >= 0 && desiredIndex < gWPNum)
 				{
 					currentWP = gWPArray[desiredIndex];
 

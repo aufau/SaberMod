@@ -4744,7 +4744,7 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 
 void Item_Paint(itemDef_t *item)
 {
-	vec4_t		red = {1, 0, 0, 1};
+	// vec4_t		red = {1, 0, 0, 1};
 	menuDef_t	*parent;
 	int			xPos,textWidth;
 	vec4_t		color = {1, 1, 1, 1};

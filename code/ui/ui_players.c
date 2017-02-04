@@ -486,7 +486,7 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 			*swinging = qfalse;
 		}
 		*angle = AngleMod( *angle + move );
-	} else if ( swing < 0 ) {
+	} else {
 		move = uiInfo.uiDC.frameTime * scale * -speed;
 		if ( move <= swing ) {
 			move = swing;

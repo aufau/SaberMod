@@ -1113,7 +1113,6 @@ void CG_CheckSVStripEdRef(char *buf, const char *str)
 	int i = 0;
 	int b = 0;
 	int strLen = 0;
-	qboolean gotStrip = qfalse;
 
 	if (!str || !str[0])
 	{
@@ -1135,8 +1134,6 @@ void CG_CheckSVStripEdRef(char *buf, const char *str)
 
 	while (i < strLen && str[i])
 	{
-		gotStrip = qfalse;
-
 		if (str[i] == '@' && (i+1) < strLen)
 		{
 			if (str[i+1] == '@' && (i+2) < strLen)
@@ -1166,11 +1163,8 @@ void CG_CheckSVStripEdRef(char *buf, const char *str)
 			}
 		}
 
-		if (!gotStrip)
-		{
-			buf[b] = str[i];
-			b++;
-		}
+		buf[b] = str[i];
+		b++;
 		i++;
 	}
 

@@ -131,12 +131,10 @@ void G_BounceObject( gentity_t *ent, trace_t *trace )
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
 	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
-//	bounceFactor = 60/ent->mass;		// NOTENOTE Mass is not yet implemented
+	// bounceFactor = 60/ent->mass;		// NOTENOTE Mass is not yet implemented
+	// bounceFactor = MIN(bounceFactor, 1);
 	bounceFactor = 1.0f;
-	if ( bounceFactor > 1.0f )
-	{
-		bounceFactor = 1.0f;
-	}
+
 	VectorMA( velocity, -2*dot*bounceFactor, trace->plane.normal, ent->s.pos.trDelta );
 
 	//FIXME: customized or material-based impact/bounce sounds
@@ -260,11 +258,8 @@ void G_RunObject( gentity_t *ent )
 		if ( !g_gravity.value )
 		{
 			float friction = 0.975f;
-			//friction -= ent->mass/1000.0f;
-			if ( friction < 0.1f )
-			{
-				friction = 0.1f;
-			}
+			// friction -= ent->mass/1000.0f;
+			// friction = MAX(friction, 0.1f);
 
 			VectorScale( ent->s.pos.trDelta, friction, ent->s.pos.trDelta );
 			VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );

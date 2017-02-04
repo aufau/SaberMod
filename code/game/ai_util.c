@@ -267,11 +267,11 @@ int GetPairedValue(char *buf, const char *key, char *outbuf)
 
 	i = 0;
 
-	while (buf[i] && buf[i] != '\0')
+	while (buf[i] != '\0')
 	{
 		if (buf[i] == '/')
 		{
-			if (buf[i+1] && buf[i+1] != '\0' && buf[i+1] == '/')
+			if (buf[i+1] == '/')
 			{
 				while (buf[i] != '\n')
 				{
@@ -297,7 +297,7 @@ int GetPairedValue(char *buf, const char *key, char *outbuf)
 
 	while (!found)
 	{
-		if (startletter == 0 || !buf[startletter] || buf[startletter] == '\0' || buf[startletter] == 9 || buf[startletter] == ' ' || buf[startletter] == '\n')
+		if (startletter == 0 || buf[startletter] == '\0' || buf[startletter] == 9 || buf[startletter] == ' ' || buf[startletter] == '\n')
 		{
 			if (buf[startpoint] == '\0' || buf[startpoint] == 9 || buf[startpoint] == ' ' || buf[startpoint] == '\n')
 			{
@@ -322,7 +322,7 @@ int GetPairedValue(char *buf, const char *key, char *outbuf)
 
 	}
 
-	if (!found || !place || !buf[startpoint] || buf[startpoint] == '\0')
+	if (!found || !place || buf[startpoint] == '\0')
 	{
 		return 0;
 	}
@@ -334,7 +334,7 @@ int GetPairedValue(char *buf, const char *key, char *outbuf)
 
 	i = 0;
 
-	while (buf[startpoint] && buf[startpoint] != '\0' && buf[startpoint] != '\n')
+	while (buf[startpoint] != '\0' && buf[startpoint] != '\n')
 	{
 		outbuf[i] = buf[startpoint];
 		i++;
@@ -393,7 +393,7 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 	inc_1 = 0;
 	inc_2 = 2;
 
-	while (chatgroup[inc_2] && chatgroup[inc_2] != '\0')
+	while (chatgroup[inc_2] != '\0')
 	{
 		if (chatgroup[inc_2] != 13 && chatgroup[inc_2] != 9)
 		{
@@ -408,7 +408,7 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 
 	lines = 0;
 
-	while (chatgroup[inc_1] && chatgroup[inc_1] != '\0')
+	while (chatgroup[inc_1] != '\0')
 	{
 		if (chatgroup[inc_1] == '\n')
 		{
@@ -440,7 +440,7 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 
 	while (checkedline != getthisline)
 	{
-		if (chatgroup[inc_1] && chatgroup[inc_1] != '\0')
+		if (chatgroup[inc_1] != '\0')
 		{
 			if (chatgroup[inc_1] == '\n')
 			{
@@ -620,7 +620,7 @@ int ReadChatGroups(bot_state_t *bs, char *buf)
 
 	i = 0;
 
-	while (buf[cgbplace] && buf[cgbplace] != '\0')
+	while (buf[cgbplace] != '\0')
 	{
 		gBotChatBuffer[bs->client][i] = buf[cgbplace];
 		i++;

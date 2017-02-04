@@ -479,7 +479,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		{
 			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
-				gentity_t *te = NULL;
+				gentity_t *te;
 
 				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT, ent->s.number );
 				VectorCopy( muzzle, tent->s.origin2 );
@@ -664,7 +664,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		{
 			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR_SNIPER, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
-				gentity_t *te = NULL;
+				gentity_t *te;
 
 				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
 				VectorCopy( muzzle, tent->s.origin2 );

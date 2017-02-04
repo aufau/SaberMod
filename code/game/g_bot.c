@@ -750,7 +750,6 @@ G_AddBot
 static void G_AddBot( const char *name, float skill, const char *team, int delay, char *altname) {
 	int				clientNum;
 	const char		*botinfo;
-	gentity_t		*bot;
 	const char		*key;
 	const char		*s;
 	const char		*botname;
@@ -860,8 +859,6 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 //	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
 	Info_SetValueForKey( userinfo, "team", team );
-
-	bot = &g_entities[ clientNum ];
 
 	// register the userinfo
 	trap_SetUserinfo( clientNum, userinfo );

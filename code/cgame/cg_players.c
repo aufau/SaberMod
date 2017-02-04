@@ -489,6 +489,7 @@ retryModel:
 
 	if (clientNum != -1)
 	{
+#ifdef ATST
 		if (cg_entities[clientNum].isATST)
 		{
 			animation_t *anim;
@@ -531,7 +532,7 @@ retryModel:
 				cg_entities[clientNum].currentState.torsoAnim = 0;
 			}
 		}
-
+#endif
 		/*
 		if (cg_entities[clientNum].ghoul2 && trap_G2_HaveWeGhoul2Models(cg_entities[clientNum].ghoul2))
 		{
@@ -2170,7 +2171,7 @@ static float CG_SwingAngles( float destination, float swingTolerance, float clam
 			*swinging = qfalse;
 		}
 		*angle = AngleMod( *angle + move );
-	} else if ( swing < 0 ) {
+	} else {
 		move = cg.frametime * scale * -speed;
 		if ( move <= swing ) {
 			move = swing;
@@ -2244,7 +2245,7 @@ static float CG_SwingAnglesATST( centity_t *cent, float destination, float swing
 			*swinging = qfalse;
 		}
 		*angle = AngleMod( *angle + move );
-	} else if ( swing < 0 ) {
+	} else {
 		move = cg.frametime * scale * -speed;
 		if ( move <= swing ) {
 			move = swing;
@@ -2369,10 +2370,10 @@ qboolean CG_InKnockDown( int anim )
 
 void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t angles, vec3_t thoracicAngles, vec3_t ulAngles, vec3_t llAngles )
 {
-	float legDif = 0;
+//	float legDif;
 //	cent->pe.torso.pitchAngle = viewAngles[PITCH];
 	viewAngles[YAW] = AngleDelta( cent->lerpAngles[YAW], angles[YAW] );
-	legDif = viewAngles[YAW];
+//	legDif = viewAngles[YAW];
 //	cent->pe.torso.yawAngle = viewAngles[YAW];
 
 	/*
@@ -3110,7 +3111,6 @@ CG_PlayerPowerups
 */
 static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	int		powerups;
-	clientInfo_t	*ci;
 
 	powerups = cent->currentState.powerups;
 	if ( !powerups ) {
@@ -3122,7 +3122,6 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1 );
 	}
 
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.redFlagModel );
@@ -4825,14 +4824,17 @@ void CG_FootStepGeneric(centity_t *cent, int anim)
 	}
 
 skipCheck:
-	groundType = FOOTSTEP_GENERIC;//CG_FootstepForSurface(cent, cent->currentState.number);
+	groundType = FOOTSTEP_GENERIC;
+	/*
+	groundType = CG_FootstepForSurface(cent, cent->currentState.number);
 
-//skipCheck:
+	skipCheck:
 
 	if (!groundType)
 	{
 		return;
 	}
+	*/
 
 	switch (groundType)
 	{
@@ -5600,7 +5602,7 @@ void CG_G2Animated( centity_t *cent )
 
 	if (cent->currentState.weapon)
 	{
-		weaponInfo_t *weapon = NULL;
+		weaponInfo_t *weapon;
 
 		CG_RegisterWeapon(cent->currentState.weapon);
 

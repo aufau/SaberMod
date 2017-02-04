@@ -668,7 +668,7 @@ void UI_UpdateForcePowers()
 				i++;
 			}
 			readBuf[i_r] = '\0';
-			if (i_r >= 255 || !forcePowers[i] || forcePowers[i] != '-')
+			if (i_r >= 255 || forcePowers[i] != '-')
 			{
 				uiForceSide = 0;
 				goto validitycheck;
@@ -690,7 +690,7 @@ void UI_UpdateForcePowers()
 				i++;
 			}
 			readBuf[i_r] = '\0';
-			if (i_r >= 255 || !forcePowers[i] || forcePowers[i] != '-')
+			if (i_r >= 255 || forcePowers[i] != '-')
 			{
 				uiForceSide = 0;
 				goto validitycheck;

@@ -190,7 +190,6 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int c = 0;
 	int allowedPoints = 0;
 	int usedPoints = 0;
-	int countDown = 0;
 
 	int final_Side;
 	int final_Powers[NUM_FORCE_POWERS] = { 0 };
@@ -288,9 +287,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	i = 0;
 	while (i < NUM_FORCE_POWERS)
 	{
-		countDown = 0;
-
-		countDown = final_Powers[i];
+		int countDown = final_Powers[i];
 
 		while (countDown > 0)
 		{
@@ -2003,10 +2000,6 @@ BG_TouchJumpPad
 ========================
 */
 void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
-	vec3_t	angles;
-	float p;
-	int effectNum;
-
 	// spectators don't use jump pads
 	switch ( ps->pm_type ) {
 	case PM_NOCLIP:
@@ -2018,18 +2011,27 @@ void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
 		return;
 	}
 
-	// if we didn't hit this same jumppad the previous frame
-	// then don't play the event sound again if we are in a fat trigger
-	if ( ps->jumppad_ent != jumppad->number ) {
+	/*
+	{
+		vec3_t	angles;
+		float p;
+		int effectNum;
 
-		vectoangles( jumppad->origin2, angles);
-		p = fabsf( AngleNormalize180( angles[PITCH] ) );
-		if( p < 45 ) {
-			effectNum = 0;
-		} else {
-			effectNum = 1;
+		// if we didn't hit this same jumppad the previous frame
+		// then don't play the event sound again if we are in a fat trigger
+		if ( ps->jumppad_ent != jumppad->number ) {
+
+			vectoangles( jumppad->origin2, angles);
+			p = fabsf( AngleNormalize180( angles[PITCH] ) );
+			if( p < 45 ) {
+				effectNum = 0;
+			} else {
+				effectNum = 1;
+			}
 		}
 	}
+	*/
+
 	// remember hitting this jumppad this frame
 	ps->jumppad_ent = jumppad->number;
 	ps->jumppad_frame = ps->pmove_framecount;
@@ -2388,7 +2390,7 @@ char *BG_StringAlloc ( const char *source )
 {
 	char *dest;
 
-	dest = BG_Alloc ( strlen ( source ) + 1 );
+	dest = BG_AllocUnaligned ( strlen ( source ) + 1 );
 	strcpy ( dest, source );
 	return dest;
 }

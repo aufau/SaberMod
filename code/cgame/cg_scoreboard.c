@@ -253,7 +253,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 {
 	//vec3_t	headAngles;
 	clientInfo_t	*ci;
-	int				iconx, headx;
+	int				iconx;
 	int				x;
 	int				i;
 	int				padding, columnsWidth;
@@ -276,7 +276,6 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	ci = &cgs.clientinfo[score->client];
 
 	iconx = SB_BOTICON_X + (SB_RATING_WIDTH / 2);
-	headx = SB_HEAD_X + (SB_RATING_WIDTH / 2);
 
 	// draw the handicap or bot skill marker (unless player has flag)
 	if ( ci->powerups & ( 1 << PW_NEUTRALFLAG ) ) {

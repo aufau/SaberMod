@@ -121,11 +121,11 @@ int CGSagaGetPairedValue(char *buf, const char *key, char *outbuf, int inquotes)
 
 	i = 0;
 
-	while (buf[i] && buf[i] != '\0')
+	while (buf[i])
 	{
 		if (buf[i] == '/')
 		{
-			if (buf[i+1] && buf[i+1] != '\0' && buf[i+1] == '/')
+			if (buf[i+1] == '/')
 			{
 				while (buf[i] != '\n')
 				{
@@ -151,7 +151,7 @@ int CGSagaGetPairedValue(char *buf, const char *key, char *outbuf, int inquotes)
 
 	while (!found)
 	{
-		if (startletter == 0 || !buf[startletter] || buf[startletter] == '\0' || buf[startletter] == 9 || buf[startletter] == ' ' || buf[startletter] == '\n')
+		if (startletter == 0 || buf[startletter] == '\0' || buf[startletter] == 9 || buf[startletter] == ' ' || buf[startletter] == '\n')
 		{
 			if (buf[startpoint] == '\0' || buf[startpoint] == 9 || buf[startpoint] == ' ' || buf[startpoint] == '\n')
 			{
@@ -176,7 +176,7 @@ int CGSagaGetPairedValue(char *buf, const char *key, char *outbuf, int inquotes)
 
 	}
 
-	if (!found || !place || !buf[startpoint] || buf[startpoint] == '\0')
+	if (!found || !place || buf[startpoint] == '\0')
 	{
 		return 0;
 	}
@@ -198,7 +198,7 @@ int CGSagaGetPairedValue(char *buf, const char *key, char *outbuf, int inquotes)
 		startpoint++;
 	}
 
-	while (buf[startpoint] && buf[startpoint] != '\0' && buf[startpoint] != '\n')
+	while (buf[startpoint] && buf[startpoint] != '\n')
 	{
 		outbuf[i] = buf[startpoint];
 		i++;
