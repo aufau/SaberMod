@@ -1520,8 +1520,8 @@ int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hit
 	case BOTH_DEAD16:
 	case BOTH_DEADBACKWARD1:		//# First thrown backward death finished pose
 	case BOTH_DEADBACKWARD2:		//# Second thrown backward death finished pose
-		deathAnim = -2;
 		/*
+		deathAnim = -2;
 		if ( PM_FinishedCurrentLegsAnim( self ) )
 		{//done with the anim
 			deathAnim = BOTH_DEADFLOP2;
@@ -1541,8 +1541,8 @@ int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hit
 	case BOTH_DEAD15:
 	case BOTH_DEADFORWARD1:		//# First thrown forward death finished pose
 	case BOTH_DEADFORWARD2:		//# Second thrown forward death finished pose
-		deathAnim = -2;
 		/*
+		deathAnim = -2;
 		if ( PM_FinishedCurrentLegsAnim( self ) )
 		{//done with the anim
 			deathAnim = BOTH_DEADFLOP1;
@@ -1554,9 +1554,11 @@ int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hit
 		break;
 		*/
 	case BOTH_DEADFLOP1:
+		/*
 		deathAnim = -2;
-		//deathAnim = BOTH_DEADFLOP1;
+		deathAnim = BOTH_DEADFLOP1;
 		break;
+		*/
 	case BOTH_DEAD3:				//# Third Death finished pose
 	case BOTH_DEAD4:				//# Fourth Death finished pose
 	case BOTH_DEAD5:				//# Fifth Death finished pose

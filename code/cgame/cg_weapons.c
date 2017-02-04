@@ -71,7 +71,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 
 	item = &bg_itemlist[ itemNum ];
 
-	memset( itemInfo, 0, sizeof( &itemInfo ) );
+	memset( itemInfo, 0, sizeof( itemInfo_t ) );
 	itemInfo->registered = qtrue;
 
 	if (item->giType == IT_TEAM &&

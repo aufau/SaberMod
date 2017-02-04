@@ -1025,11 +1025,11 @@ void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 		return;
 	}
 
-	if (other && other->client && ent->delay && ent->moverState == MOVER_POS2)
+	if (other->client && ent->delay && ent->moverState == MOVER_POS2)
 	{ //This means I don't care if you're touching me, I already intend to go back down on a set interval.
 		return;
 	}
-	if (other && other->client && ent->delay && ent->moverState == MOVER_POS1 && ent->nextthink >= level.time)
+	if (other->client && ent->delay && ent->moverState == MOVER_POS1 && ent->nextthink >= level.time)
 	{
 		return;
 	}

@@ -1028,7 +1028,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		return;		// player just left
 	}
 
-	if (ci)
+	if ( ci->infoValid )
 	{
 		wasATST = ci->ATST;
 	}
