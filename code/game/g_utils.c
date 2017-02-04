@@ -896,7 +896,7 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 	te = G_SoundTempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND, channel, ent->s.number );
 	te->s.eventParm = soundIndex;
 
-	if (ent && ent->client && channel > TRACK_CHANNEL_NONE)
+	if (ent->client && channel > TRACK_CHANNEL_NONE)
 	{ //let the client remember the index of the player entity so he can kill the most recent sound on request
 		te->s.saberEntityNum = channel;
 

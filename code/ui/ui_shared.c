@@ -4744,18 +4744,17 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 
 void Item_Paint(itemDef_t *item)
 {
-	vec4_t		red;
-	menuDef_t	*parent = item->parent;
+	vec4_t		red = {1, 0, 0, 1};
+	menuDef_t	*parent;
 	int			xPos,textWidth;
 	vec4_t		color = {1, 1, 1, 1};
-
-	red[0] = red[3] = 1;
-	red[1] = red[2] = 0;
 
 	if (item == NULL)
 	{
 		return;
 	}
+
+	parent = item->parent;
 
 	if (item->window.flags & WINDOW_ORBITING)
 	{

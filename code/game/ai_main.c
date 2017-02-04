@@ -1882,13 +1882,13 @@ int BotCanHear(bot_state_t *bs, gentity_t *en, float endist)
 		return 0;
 	}
 
-	if (en && en->client && en->client->ps.otherSoundTime > level.time)
+	if (en->client->ps.otherSoundTime > level.time)
 	{
 		minlen = en->client->ps.otherSoundLen;
 		goto checkStep;
 	}
 
-	if (en && en->client && en->client->ps.footstepTime > level.time)
+	if (en->client->ps.footstepTime > level.time)
 	{
 		minlen = 256;
 		goto checkStep;

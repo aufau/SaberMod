@@ -789,12 +789,12 @@ void WP_DisruptorAltFire( gentity_t *ent )
 static void WP_FireDisruptor( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
-	if (!ent || !ent->client || ent->client->ps.zoomMode != 1)
+	if (!ent->client || ent->client->ps.zoomMode != 1)
 	{ //do not ever let it do the alt fire when not zoomed
 		altFire = qfalse;
 	}
 
-	if (ent && ent->s.eType == ET_GRAPPLE && !ent->client)
+	if (ent->s.eType == ET_GRAPPLE && !ent->client)
 	{ //special case for animents
 		WP_DisruptorAltFire( ent );
 		return;

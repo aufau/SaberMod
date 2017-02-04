@@ -4538,8 +4538,8 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		prepower = self->client->ps.fd.forcePower;
 	}
 
-	if (self && self->client && (BG_HasYsalamiri(g_gametype.integer, &self->client->ps) ||
-		self->client->ps.fd.forceDeactivateAll))
+	if (BG_HasYsalamiri(g_gametype.integer, &self->client->ps) ||
+		self->client->ps.fd.forceDeactivateAll)
 	{ //has ysalamiri.. or we want to forcefully stop all his active powers
 		i = 0;
 

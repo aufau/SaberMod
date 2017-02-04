@@ -2645,7 +2645,7 @@ void thrownSaberTouch (gentity_t *saberent, gentity_t *other, trace_t *trace)
 {
 	gentity_t *hitEnt = other;
 
-	if (other && other->s.number == saberent->r.ownerNum)
+	if (other->s.number == saberent->r.ownerNum)
 	{
 		return;
 	}
@@ -2662,7 +2662,7 @@ void thrownSaberTouch (gentity_t *saberent, gentity_t *other, trace_t *trace)
 	saberent->think = saberBackToOwner;
 	saberent->nextthink = level.time;
 
-	if (other && other->r.ownerNum < MAX_CLIENTS &&
+	if (other->r.ownerNum < MAX_CLIENTS &&
 		(other->r.contents & CONTENTS_LIGHTSABER) &&
 		g_entities[other->r.ownerNum].client &&
 		g_entities[other->r.ownerNum].inuse)
