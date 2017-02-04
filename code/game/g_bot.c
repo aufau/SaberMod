@@ -407,7 +407,7 @@ void G_AddRandomBot( int team ) {
 	for ( n = 0; n < g_numBots ; n++ ) {
 		value = Info_ValueForKey( g_botInfos[n], "name" );
 		//
-		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+		for ( i=0 ; i< level.maxclients ; i++ ) {
 			cl = level.clients + i;
 			if ( cl->pers.connected == CON_DISCONNECTED ) {
 				continue;
@@ -422,7 +422,7 @@ void G_AddRandomBot( int team ) {
 				break;
 			}
 		}
-		if (i >= g_maxclients.integer) {
+		if (i >= level.maxclients) {
 			num++;
 		}
 	}
@@ -430,7 +430,7 @@ void G_AddRandomBot( int team ) {
 	for ( n = 0; n < g_numBots ; n++ ) {
 		value = Info_ValueForKey( g_botInfos[n], "name" );
 		//
-		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+		for ( i=0 ; i< level.maxclients ; i++ ) {
 			cl = level.clients + i;
 			if ( cl->pers.connected == CON_DISCONNECTED ) {
 				continue;
@@ -445,7 +445,7 @@ void G_AddRandomBot( int team ) {
 				break;
 			}
 		}
-		if (i >= g_maxclients.integer) {
+		if (i >= level.maxclients) {
 			num--;
 			if (num <= 0) {
 				skill = trap_Cvar_VariableValue( "g_spSkill" );
@@ -470,7 +470,7 @@ int G_RemoveRandomBot( int team ) {
 	int i;
 	gclient_t	*cl;
 
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< level.maxclients ; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
@@ -497,7 +497,7 @@ int G_CountHumanPlayers( int team ) {
 	gclient_t	*cl;
 
 	num = 0;
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< level.maxclients ; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
@@ -523,7 +523,7 @@ int G_CountBotPlayers( int team ) {
 	gclient_t	*cl;
 
 	num = 0;
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< level.maxclients ; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected == CON_DISCONNECTED ) {
 			continue;
@@ -576,8 +576,8 @@ void G_CheckMinimumPlayers( void ) {
 	case GT_CTF:
 	case GT_CTY:
 	case GT_CLANARENA:
-		if (minplayers >= g_maxclients.integer / 2) {
-			minplayers = (g_maxclients.integer / 2) -1;
+		if (minplayers >= level.maxclients / 2) {
+			minplayers = (level.maxclients / 2) -1;
 		}
 
 		humanplayers = G_CountHumanPlayers( TEAM_RED );
@@ -599,8 +599,8 @@ void G_CheckMinimumPlayers( void ) {
 		}
 		break;
 	case GT_TOURNAMENT:
-		if (minplayers >= g_maxclients.integer) {
-			minplayers = g_maxclients.integer-1;
+		if (minplayers >= level.maxclients) {
+			minplayers = level.maxclients-1;
 		}
 		humanplayers = G_CountHumanPlayers( -1 );
 		botplayers = G_CountBotPlayers( -1 );
@@ -618,8 +618,8 @@ void G_CheckMinimumPlayers( void ) {
 	case GT_FFA:
 	case GT_HOLOCRON:
 	case GT_JEDIMASTER:
-		if (minplayers >= g_maxclients.integer) {
-			minplayers = g_maxclients.integer-1;
+		if (minplayers >= level.maxclients) {
+			minplayers = level.maxclients-1;
 		}
 		humanplayers = G_CountHumanPlayers( TEAM_FREE );
 		botplayers = G_CountBotPlayers( TEAM_FREE );
@@ -632,8 +632,8 @@ void G_CheckMinimumPlayers( void ) {
 		break;
 	case GT_REDROVER:
 		minplayers *= 2;
-		if (minplayers >= g_maxclients.integer) {
-			minplayers = g_maxclients.integer-1;
+		if (minplayers >= level.maxclients) {
+			minplayers = level.maxclients-1;
 		}
 		humanplayers = G_CountHumanPlayers( TEAM_RED ) + G_CountHumanPlayers( TEAM_BLUE );
 		botplayers = G_CountBotPlayers( TEAM_RED ) + G_CountBotPlayers( TEAM_BLUE );

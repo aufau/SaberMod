@@ -663,7 +663,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.gentities = g_entities;
 
 	// initialize all clients for this game
-	level.maxclients = g_maxclients.integer;
+	level.maxclients = CLAMP( 0, MAX_CLIENTS, g_maxclients.integer );
 	memset( g_clients, 0, MAX_CLIENTS * sizeof(g_clients[0]) );
 	level.clients = g_clients;
 
@@ -1549,7 +1549,7 @@ qboolean DuelLimitHit(void)
 	int i;
 	gclient_t *cl;
 
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< level.maxclients ; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -1599,7 +1599,7 @@ void ExitLevel (void) {
 	// reset all the scores so we don't enter the intermission again
 	level.teamScores[TEAM_RED] = 0;
 	level.teamScores[TEAM_BLUE] = 0;
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< level.maxclients ; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -1616,7 +1616,7 @@ void ExitLevel (void) {
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< level.maxclients ; i++) {
 		if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 			level.clients[i].pers.connected = CON_CONNECTING;
 		}
@@ -1770,7 +1770,7 @@ void CheckIntermissionExit( void ) {
 	ready = 0;
 	notReady = 0;
 	readyMask = 0;
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< level.maxclients ; i++) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -1886,7 +1886,7 @@ void CheckIntermissionExit( void ) {
 			return;
 		}
 
-		for (i=0 ; i< g_maxclients.integer ; i++)
+		for (i=0 ; i< level.maxclients ; i++)
 		{ //being in a "ready" state is not necessary here, so clear it for everyone
 		  //yes, I also thinking holding this in a ps value uniquely for each player
 		  //is bad and wrong, but it wasn't my idea.
@@ -1902,7 +1902,7 @@ void CheckIntermissionExit( void ) {
 
 	// copy the readyMask to each player's stats so
 	// it can be displayed on the scoreboard
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< level.maxclients ; i++) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -2175,7 +2175,7 @@ void CheckExitRules( void ) {
 			return;
 		}
 
-		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+		for ( i=0 ; i< level.maxclients ; i++ ) {
 			cl = level.clients + i;
 			if ( cl->pers.connected != CON_CONNECTED ) {
 				continue;
