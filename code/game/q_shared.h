@@ -735,8 +735,8 @@ extern const vec4_t		colorDkBlue;
 
 #define Q_COLOR_ESCAPE	'^'
 // you MUST have the last bit on here about colour strings being less than 7 or taiwanese strings register as colour!!!!
-#define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE && *((p)+1) <= '7' && *((p)+1) >= '0' )
 #define Q_IsColorChar(c)	( (c) >= '0' && (c) <= '7' )
+#define Q_IsColorString(p)	( *(p) == Q_COLOR_ESCAPE && Q_IsColorChar(*((p)+1)))
 
 
 #define COLOR_BLACK		'0'
