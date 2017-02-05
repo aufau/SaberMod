@@ -481,10 +481,10 @@ gametype_t G_GametypeForString( const char *s ) {
 		}
 	}
 
-	if ( i < 0 || i >= GT_MAX_GAME_TYPE )
-		return GT_MAX_GAME_TYPE;
-	else
+	if ( GT_Valid( i ) )
 		return (gametype_t) i;
+	else
+		return GT_MAX_GAME_TYPE;
 }
 
 /*

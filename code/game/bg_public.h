@@ -179,6 +179,7 @@ typedef enum {
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
 #define GT_Team(x) ((x) >= GT_TEAM)
 #define GT_Round(x) ((x) >= GT_REDROVER)
+#define GT_Valid(x) (GT_FFA <= (x) && (x) <= GT_MAX_GAME_TYPE)
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 

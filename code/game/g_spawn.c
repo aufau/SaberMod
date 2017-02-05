@@ -494,14 +494,12 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	}
 
 	if( G_SpawnString( "gametype", NULL, &value ) ) {
-		if( level.gametype >= GT_FFA && level.gametype < GT_MAX_GAME_TYPE ) {
-			gametypeName = gametypeNames[level.gametype];
+		gametypeName = gametypeNames[level.gametype];
 
-			s = strstr( value, gametypeName );
-			if( !s ) {
-				G_FreeEntity( ent );
-				return;
-			}
+		s = strstr( value, gametypeName );
+		if( !s ) {
+			G_FreeEntity( ent );
+			return;
 		}
 	}
 
