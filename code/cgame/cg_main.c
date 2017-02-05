@@ -37,14 +37,6 @@ displayContextDef_t cgDC;
 	#include "cg_lights.h"
 #endif
 
-/*
-Ghoul2 Insert Start
-*/
-void CG_InitItems(void);
-/*
-Ghoul2 Insert End
-*/
-
 const vec4_t colorTable[CT_MAX] =
 {
 {0, 0, 0, 0},			// CT_NONE
@@ -983,6 +975,41 @@ static void CG_RegisterItemSounds( int itemNum ) {
 
 /*
 =================
+CG_PreloadMedia
+
+Register media needed for loading screen
+=================
+*/
+static void CG_PreloadMedia( void ) {
+#ifdef MISSIONPACK
+	// this is kinda dumb as well, but I need to pre-load some fonts in order to have the text available
+	//	to say I'm loading the assets.... which includes loading the fonts. So I'll set these up as reasonable
+	//	defaults, then let the menu asset parser (which actually specifies the ingame fonts) load over them
+	//	if desired during parse.  Dunno how legal it is to store in these cgDC things, but it causes no harm
+	//	and even if/when they get overwritten they'll be legalised by the menu asset parser :-)
+//	CG_LoadFonts();
+	cgDC.Assets.qhSmallFont  = trap_R_RegisterFont("ocr_a");
+	cgDC.Assets.qhMediumFont = trap_R_RegisterFont("ergoec");
+	cgDC.Assets.qhBigFont = cgDC.Assets.qhMediumFont;
+#else
+	cgs.media.qhSmallFont  = trap_R_RegisterFont("ocr_a");
+	cgs.media.qhMediumFont = trap_R_RegisterFont("ergoec");
+	cgs.media.qhBigFont    = trap_R_RegisterFont("anewhope");
+#endif
+
+	// load a few needed things before we do any screen updates
+	cgs.media.charsetShader		= trap_R_RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
+	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
+
+	cgs.media.loadBarLED		= trap_R_RegisterShaderNoMip( "gfx/hud/load_tick" );
+	cgs.media.loadBarLEDCap		= trap_R_RegisterShaderNoMip( "gfx/hud/load_tick_cap" );
+	cgs.media.loadBarLEDSurround= trap_R_RegisterShaderNoMip( "gfx/hud/mp_levelload" );
+
+	trap_SP_Register( "sabermod_ingame" );
+}
+
+/*
+=================
 CG_RegisterSounds
 
 called during a precache command
@@ -1335,6 +1362,109 @@ static void CG_RegisterGraphics( void ) {
 
 	cg.loadLCARSStage = 3;
 
+	//rww - precache HUD weapon icons here
+	//actually, these should be stored in the icon field of each item def
+	cgs.media.weaponIcons[WP_STUN_BATON] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_stunbaton");
+	cgs.media.weaponIcons_NA[WP_STUN_BATON] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_stunbaton_na");
+
+	cgs.media.weaponIcons[WP_SABER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lightsaber");
+	cgs.media.weaponIcons_NA[WP_SABER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lightsaber_na");
+
+	cgs.media.weaponIcons[WP_BRYAR_PISTOL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar");
+	cgs.media.weaponIcons_NA[WP_BRYAR_PISTOL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar_na");
+
+	cgs.media.weaponIcons[WP_BLASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_blaster");
+	cgs.media.weaponIcons_NA[WP_BLASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_blaster_na");
+
+	cgs.media.weaponIcons[WP_DISRUPTOR] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_disruptor");
+	cgs.media.weaponIcons_NA[WP_DISRUPTOR] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_disruptor_na");
+
+	cgs.media.weaponIcons[WP_BOWCASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_bowcaster");
+	cgs.media.weaponIcons_NA[WP_BOWCASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_bowcaster_na");
+
+	cgs.media.weaponIcons[WP_REPEATER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_repeater");
+	cgs.media.weaponIcons_NA[WP_REPEATER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_repeater_na");
+
+	cgs.media.weaponIcons[WP_DEMP2] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_demp2");
+	cgs.media.weaponIcons_NA[WP_DEMP2] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_demp2_na");
+
+	cgs.media.weaponIcons[WP_FLECHETTE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flechette");
+	cgs.media.weaponIcons_NA[WP_FLECHETTE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flechette_na");
+
+	cgs.media.weaponIcons[WP_ROCKET_LAUNCHER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_merrsonn");
+	cgs.media.weaponIcons_NA[WP_ROCKET_LAUNCHER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_merrsonn_na");
+
+	cgs.media.weaponIcons[WP_THERMAL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_thermal");
+	cgs.media.weaponIcons_NA[WP_THERMAL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_thermal_na");
+
+	cgs.media.weaponIcons[WP_TRIP_MINE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tripmine");
+	cgs.media.weaponIcons_NA[WP_TRIP_MINE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tripmine_na");
+
+	cgs.media.weaponIcons[WP_DET_PACK] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_detpack");
+	cgs.media.weaponIcons_NA[WP_DET_PACK] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_detpack_na");
+
+	// HUD artwork for cycling inventory,weapons and force powers
+	cgs.media.weaponIconBackground		= trap_R_RegisterShaderNoMip( "gfx/hud/background");
+	cgs.media.weaponProngsOn			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_w");
+	cgs.media.weaponProngsOff			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_off");
+	cgs.media.forceProngsOn				= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_f");
+	cgs.media.forceIconBackground		= trap_R_RegisterShaderNoMip( "gfx/hud/background_f");
+	cgs.media.inventoryIconBackground	= trap_R_RegisterShaderNoMip( "gfx/hud/background_i");
+	cgs.media.inventoryProngsOn			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_i");
+
+	//rww - precache holdable item icons here
+	for (i = 0; i < bg_numItems; i++)
+	{
+		if (bg_itemlist[i].giType == IT_HOLDABLE)
+		{
+			if (bg_itemlist[i].icon)
+			{
+				cgs.media.invenIcons[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+			}
+			else
+			{
+				cgs.media.invenIcons[bg_itemlist[i].giTag] = 0;
+			}
+		}
+	}
+
+	//rww - precache force power icons here
+	i = 0;
+
+	while (i < NUM_FORCE_POWERS)
+	{
+		cgs.media.forcePowerIcons[i] = trap_R_RegisterShaderNoMip(HolocronIcons[i]);
+
+		i++;
+	}
+	cgs.media.rageRecShader = trap_R_RegisterShaderNoMip("gfx/mp/f_icon_ragerec");
+
+	//rww - precache other HUD graphics
+	cgs.media.HUDLeftFrame		= trap_R_RegisterShaderNoMip( "gfx/hud/static_test" );
+	cgs.media.HUDInnerLeft		= trap_R_RegisterShaderNoMip( "gfx/hud/hudleft_innerframe" );
+	cgs.media.HUDArmor1			= trap_R_RegisterShaderNoMip( "gfx/hud/armor1" );
+	cgs.media.HUDArmor2			= trap_R_RegisterShaderNoMip( "gfx/hud/armor2" );
+	cgs.media.HUDHealth			= trap_R_RegisterShaderNoMip( "gfx/hud/health" );
+	cgs.media.HUDHealthTic		= trap_R_RegisterShaderNoMip( "gfx/hud/health_tic" );
+	cgs.media.HUDArmorTic		= trap_R_RegisterShaderNoMip( "gfx/hud/armor_tic" );
+
+	cgs.media.HUDLeftStatic		= cgs.media.HUDLeftFrame;//trap_R_RegisterShaderNoMip( "gfx/hud/static_test" );
+	cgs.media.HUDLeft			= cgs.media.HUDInnerLeft;//trap_R_RegisterShaderNoMip( "gfx/hud/hudleft" );
+
+	cgs.media.HUDSaberStyle1	= trap_R_RegisterShader( "gfx/hud/saber_stylesFast"   );
+	cgs.media.HUDSaberStyle2	= trap_R_RegisterShader( "gfx/hud/saber_stylesMed"	  );
+	cgs.media.HUDSaberStyle3	= trap_R_RegisterShader( "gfx/hud/saber_stylesStrong" );
+
+	cgs.media.HUDRightFrame		= trap_R_RegisterShaderNoMip("gfx/hud/hudrightframe");
+	cgs.media.HUDInnerRight		= trap_R_RegisterShaderNoMip( "gfx/hud/hudright_innerframe" );
+
+	// Load tics
+	for (i=0;i<MAX_TICS;i++)
+	{
+		forceTicPos[i].tic		= trap_R_RegisterShaderNoMip( forceTicPos[i].file );
+		ammoTicPos[i].tic		= trap_R_RegisterShaderNoMip( ammoTicPos[i].file );
+	}
+
 	for ( i=0; i < 11; i++ )
 	{
 		cgs.media.numberShaders[i]			= trap_R_RegisterShaderNoMip( sb_nums[i] );
@@ -1508,15 +1638,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.binocularOverlay		= trap_R_RegisterShaderNoMip( "gfx/2d/binocularNumOverlay" );
 
 	cg.loadLCARSStage = 5;
-
-/*
-Ghoul2 Insert Start
-*/
-	CG_InitItems();
-/*
-Ghoul2 Insert End
-*/
-	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	// only register the items that the server says we need
 	Q_strncpyz( items, CG_ConfigString( CS_ITEMS), sizeof(items) );
@@ -2297,32 +2418,6 @@ void CG_AssetCache() {
 	cgDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip( ASSET_SLIDER_THUMB );
 }
 #endif // MISSIONPACK
-/*
-Ghoul2 Insert Start
-*/
-
-// initialise the cg_entities structure - take into account the ghoul2 stl stuff in the active snap shots
-void CG_Init_CG(void)
-{
-	memset( &cg, 0, sizeof(cg));
-}
-
-// initialise the cg_entities structure - take into account the ghoul2 stl stuff
-void CG_Init_CGents(void)
-{
-
-	memset(&cg_entities, 0, sizeof(cg_entities));
-}
-
-
-void CG_InitItems(void)
-{
-	memset( cg_items, 0, sizeof( cg_items ) );
-}
-
-/*
-Ghoul2 Insert End
-*/
 
 forceTicPos_t forceTicPos[] =
 {
@@ -2379,192 +2474,44 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	trap_CG_RegisterSharedMemory(cg.sharedBuffer);
 
 	// clear everything
-/*
-Ghoul2 Insert Start
-*/
-
-//	memset( cg_entities, 0, sizeof( cg_entities ) );
-	CG_Init_CGents();
-// this is a No-No now we have stl vector classes in here.
-//	memset( &cg, 0, sizeof( cg ) );
-	CG_Init_CG();
-	CG_InitItems();
-/*
-Ghoul2 Insert End
-*/
+	memset( &cg, 0, sizeof( cg ) );
 	memset( &cgs, 0, sizeof( cgs ) );
-	memset( cg_weapons, 0, sizeof(cg_weapons) );
+	memset( cg_entities, 0, sizeof( cg_entities ) );
+	memset( cg_items, 0, sizeof( cg_items ) );
+	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	cg.clientNum = clientNum;
+	cg.itemSelect = -1;
+	cg.forceSelect = -1;
+	cg.weaponSelect = WP_BRYAR_PISTOL;
 
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;
-
-	cg.loadLCARSStage		= 0;
-
-	cg.itemSelect = -1;
-	cg.forceSelect = -1;
-
-#ifdef MISSIONPACK
-	// this is kinda dumb as well, but I need to pre-load some fonts in order to have the text available
-	//	to say I'm loading the assets.... which includes loading the fonts. So I'll set these up as reasonable
-	//	defaults, then let the menu asset parser (which actually specifies the ingame fonts) load over them
-	//	if desired during parse.  Dunno how legal it is to store in these cgDC things, but it causes no harm
-	//	and even if/when they get overwritten they'll be legalised by the menu asset parser :-)
-//	CG_LoadFonts();
-	cgDC.Assets.qhSmallFont  = trap_R_RegisterFont("ocr_a");
-	cgDC.Assets.qhMediumFont = trap_R_RegisterFont("ergoec");
-	cgDC.Assets.qhBigFont = cgDC.Assets.qhMediumFont;
-#else
-	cgs.media.qhSmallFont  = trap_R_RegisterFont("ocr_a");
-	cgs.media.qhMediumFont = trap_R_RegisterFont("ergoec");
-	cgs.media.qhBigFont    = trap_R_RegisterFont("anewhope");
-#endif
-
-	// load a few needed things before we do any screen updates
-	cgs.media.charsetShader		= trap_R_RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
-	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
-
-	cgs.media.loadBarLED		= trap_R_RegisterShaderNoMip( "gfx/hud/load_tick" );
-	cgs.media.loadBarLEDCap		= trap_R_RegisterShaderNoMip( "gfx/hud/load_tick_cap" );
-	cgs.media.loadBarLEDSurround= trap_R_RegisterShaderNoMip( "gfx/hud/mp_levelload" );
-
-	//rww - precache HUD weapon icons here
-	//actually, these should be stored in the icon field of each item def
-	cgs.media.weaponIcons[WP_STUN_BATON] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_stunbaton");
-	cgs.media.weaponIcons_NA[WP_STUN_BATON] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_stunbaton_na");
-
-	cgs.media.weaponIcons[WP_SABER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lightsaber");
-	cgs.media.weaponIcons_NA[WP_SABER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lightsaber_na");
-
-	cgs.media.weaponIcons[WP_BRYAR_PISTOL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar");
-	cgs.media.weaponIcons_NA[WP_BRYAR_PISTOL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar_na");
-
-	cgs.media.weaponIcons[WP_BLASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_blaster");
-	cgs.media.weaponIcons_NA[WP_BLASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_blaster_na");
-
-	cgs.media.weaponIcons[WP_DISRUPTOR] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_disruptor");
-	cgs.media.weaponIcons_NA[WP_DISRUPTOR] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_disruptor_na");
-
-	cgs.media.weaponIcons[WP_BOWCASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_bowcaster");
-	cgs.media.weaponIcons_NA[WP_BOWCASTER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_bowcaster_na");
-
-	cgs.media.weaponIcons[WP_REPEATER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_repeater");
-	cgs.media.weaponIcons_NA[WP_REPEATER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_repeater_na");
-
-	cgs.media.weaponIcons[WP_DEMP2] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_demp2");
-	cgs.media.weaponIcons_NA[WP_DEMP2] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_demp2_na");
-
-	cgs.media.weaponIcons[WP_FLECHETTE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flechette");
-	cgs.media.weaponIcons_NA[WP_FLECHETTE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flechette_na");
-
-	cgs.media.weaponIcons[WP_ROCKET_LAUNCHER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_merrsonn");
-	cgs.media.weaponIcons_NA[WP_ROCKET_LAUNCHER] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_merrsonn_na");
-
-	cgs.media.weaponIcons[WP_THERMAL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_thermal");
-	cgs.media.weaponIcons_NA[WP_THERMAL] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_thermal_na");
-
-	cgs.media.weaponIcons[WP_TRIP_MINE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tripmine");
-	cgs.media.weaponIcons_NA[WP_TRIP_MINE] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tripmine_na");
-
-	cgs.media.weaponIcons[WP_DET_PACK] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_detpack");
-	cgs.media.weaponIcons_NA[WP_DET_PACK] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_detpack_na");
-
-	// HUD artwork for cycling inventory,weapons and force powers
-	cgs.media.weaponIconBackground		= trap_R_RegisterShaderNoMip( "gfx/hud/background");
-	cgs.media.weaponProngsOn			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_w");
-	cgs.media.weaponProngsOff			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_off");
-	cgs.media.forceProngsOn				= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_f");
-	cgs.media.forceIconBackground		= trap_R_RegisterShaderNoMip( "gfx/hud/background_f");
-	cgs.media.inventoryIconBackground	= trap_R_RegisterShaderNoMip( "gfx/hud/background_i");
-	cgs.media.inventoryProngsOn			= trap_R_RegisterShaderNoMip( "gfx/hud/prong_on_i");
-
-	//rww - precache holdable item icons here
-	while (i < bg_numItems)
-	{
-		if (bg_itemlist[i].giType == IT_HOLDABLE)
-		{
-			if (bg_itemlist[i].icon)
-			{
-				cgs.media.invenIcons[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
-			}
-			else
-			{
-				cgs.media.invenIcons[bg_itemlist[i].giTag] = 0;
-			}
-		}
-
-		i++;
-	}
-
-	//rww - precache force power icons here
-	i = 0;
-
-	while (i < NUM_FORCE_POWERS)
-	{
-		cgs.media.forcePowerIcons[i] = trap_R_RegisterShaderNoMip(HolocronIcons[i]);
-
-		i++;
-	}
-	cgs.media.rageRecShader = trap_R_RegisterShaderNoMip("gfx/mp/f_icon_ragerec");
-
-	//rww - precache other HUD graphics
-	cgs.media.HUDLeftFrame		= trap_R_RegisterShaderNoMip( "gfx/hud/static_test" );
-	cgs.media.HUDInnerLeft		= trap_R_RegisterShaderNoMip( "gfx/hud/hudleft_innerframe" );
-	cgs.media.HUDArmor1			= trap_R_RegisterShaderNoMip( "gfx/hud/armor1" );
-	cgs.media.HUDArmor2			= trap_R_RegisterShaderNoMip( "gfx/hud/armor2" );
-	cgs.media.HUDHealth			= trap_R_RegisterShaderNoMip( "gfx/hud/health" );
-	cgs.media.HUDHealthTic		= trap_R_RegisterShaderNoMip( "gfx/hud/health_tic" );
-	cgs.media.HUDArmorTic		= trap_R_RegisterShaderNoMip( "gfx/hud/armor_tic" );
-
-	cgs.media.HUDLeftStatic		= cgs.media.HUDLeftFrame;//trap_R_RegisterShaderNoMip( "gfx/hud/static_test" );
-	cgs.media.HUDLeft			= cgs.media.HUDInnerLeft;//trap_R_RegisterShaderNoMip( "gfx/hud/hudleft" );
-
-	cgs.media.HUDSaberStyle1	= trap_R_RegisterShader( "gfx/hud/saber_stylesFast"   );
-	cgs.media.HUDSaberStyle2	= trap_R_RegisterShader( "gfx/hud/saber_stylesMed"	  );
-	cgs.media.HUDSaberStyle3	= trap_R_RegisterShader( "gfx/hud/saber_stylesStrong" );
-
-	cgs.media.HUDRightFrame		= trap_R_RegisterShaderNoMip("gfx/hud/hudrightframe");
-	cgs.media.HUDInnerRight		= trap_R_RegisterShaderNoMip( "gfx/hud/hudright_innerframe" );
-
-	// Load tics
-	for (i=0;i<MAX_TICS;i++)
-	{
-		forceTicPos[i].tic		= trap_R_RegisterShaderNoMip( forceTicPos[i].file );
-		ammoTicPos[i].tic		= trap_R_RegisterShaderNoMip( ammoTicPos[i].file );
-	}
-
-
-	CG_RegisterCvars();
-
-	CG_InitConsoleCommands();
-
-	cg.weaponSelect = WP_BRYAR_PISTOL;
-
 	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
 	cgs.flagStatus = -1;
-	// old servers
 
-	// get the rendering configuration from the client system
 	trap_GetGlconfig( &cgs.glconfig );
 	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0;
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0;
 
-	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
 
-	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
 	if ( strcmp( s, "basejk-1" ) ) {
 		CG_Error( "Client/Server game mismatch: %s/%s", "basejk-1", s );
 	}
 
+	CG_RegisterCvars();
+	CG_InitConsoleCommands();
+	CG_PreloadMedia();
+
+	cg.loadLCARSStage = 0;
+	CG_LoadingString( "server info" );
+
 	// Update config strings
 	for ( i = 0; i < CS_MODELS; i++ ) {
 		CG_UpdateConfigString( i, qtrue );
 	}
-
-	trap_SP_Register( "sabermod_ingame" );
 
 	// load the new map
 	CG_LoadingString( "collision map" );

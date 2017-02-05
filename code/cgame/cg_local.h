@@ -2252,9 +2252,6 @@ qboolean	trap_G2API_SetRootSurface(void *ghoul2, const int modelIndex, const cha
 qboolean	trap_G2API_SetSurfaceOnOff(void *ghoul2, const char *surfaceName, const int flags);
 qboolean	trap_G2API_SetNewOrigin(void *ghoul2, const int boltIndex);
 
-void		CG_Init_CG(void);
-void		CG_Init_CGents(void);
-
 
 void CG_SetGhoul2Info( refEntity_t *ent, centity_t *cent);
 void CG_CreateBBRefEnts(entityState_t *s1, vec3_t origin );
