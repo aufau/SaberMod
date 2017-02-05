@@ -1843,18 +1843,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if ( i == GT_MAX_GAME_TYPE ) {
 			char		gametypes[MAX_PRINT_TEXT] = { 0 };
 			qboolean	printSep = qfalse;
-			char		*p;
 
 			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
 				if (i != GT_SINGLE_PLAYER && i != GT_SAGA) {
 					if (printSep)
 						Q_strcat(gametypes, sizeof(gametypes), ", ");
-					Q_strcat(gametypes, sizeof(gametypes), machineGameNames[i]);
+					Q_strcat(gametypes, sizeof(gametypes), gametypeShort[i]);
 					printSep = qtrue;
 				}
 			}
-			for (p = gametypes; *p != '\0'; p++)
-				*p = tolower(*p);
+
+			Q_strlwr( gametypes );
 
 			trap_SendServerCommand( ent-g_entities,
 				va("print \"Valid gametypes are: %s\n\"", gametypes) );
@@ -1864,7 +1863,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		level.voteArg = i;
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_gametype %d", i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Gametype %s", gameNames[i] );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Gametype %s", gametypeLong[i] );
 		break;
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting

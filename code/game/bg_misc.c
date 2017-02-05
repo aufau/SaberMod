@@ -27,10 +27,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "q_shared.h"
 #include "bg_public.h"
 
+const char * const gametypeLong[GT_MAX_GAME_TYPE] = {
+	"Free For All",
+	"Holocron FFA",
+	"Jedi Master",
+	"Duel",
+	"Single Player",
+	"Team FFA",
+	"Saga",
+	"Capture the Flag",
+	"Capture the Ysalamiri",
+	"Red Rover",
+	"Clan Arena",
+};
+
+const char * const gametypeShort[GT_MAX_GAME_TYPE] = {
+	"FFA",
+	"HOLOCRON",
+	"JEDIMASTER",
+	"DUEL",
+	"SINGLE_PLAYER",
+	"TFFA",
+	"SAGA",
+	"CTF",
+	"CTY",
+	"REDROVER",
+	"CLANARENA",
+};
+
 //rww - not putting @ in front of these because
 //we don't need them in a cgame striped lookup.
 //Let me know if this causes problems, pat.
-const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS] =
+const char * const forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS] =
 {
 	"MASTERY0",	//"Uninitiated",	// FORCE_MASTERY_UNINITIATED,
 	"MASTERY1",	//"Initiate",		// FORCE_MASTERY_INITIATE,
@@ -181,7 +209,7 @@ fpDisabled is actually only expected (needed) from the server, because the ui di
 force power selection anyway when force powers are disabled on the server.
 ================
 */
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, int gametype, int fpDisabled)
+qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled)
 {
 	char powerBuf[128];
 	char readBuf[128];

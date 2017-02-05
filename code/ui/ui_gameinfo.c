@@ -177,32 +177,10 @@ void UI_LoadArenas( void ) {
 		type = Info_ValueForKey( ui_arenaInfos[n], "type" );
 		// if no type specified, it will be treated as "ffa"
 		if( *type ) {
-			if( strstr( type, "ffa" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
-			}
-			if( strstr( type, "holocron" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_HOLOCRON);
-			}
-			if( strstr( type, "jedimaster" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_JEDIMASTER);
-			}
-			if( strstr( type, "duel" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TOURNAMENT);
-			}
-			if( strstr( type, "saga" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_SAGA);
-			}
-			if( strstr( type, "ctf" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTF);
-			}
-			if( strstr( type, "cty" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTY);
-			}
-			if( strstr( type, "redrover" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_REDROVER);
-			}
-			if ( strstr( type, "clanarena" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CLANARENA);
+			for ( i = 0; i < GT_MAX_GAME_TYPE; i++ ) {
+				if ( Q_stristr( type, gametypeShort[i] ) ) {
+					uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << i);
+				}
 			}
 		} else {
 			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);

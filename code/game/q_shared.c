@@ -971,6 +971,20 @@ char *Q_strupr( char *s1 ) {
     return s1;
 }
 
+char *Q_stristr( const char *str, const char *charset) {
+	int i;
+
+	while(*str) {
+		for (i = 0; charset[i] && str[i]; i++) {
+			if (toupper(charset[i]) != toupper(str[i]))
+				break;
+		}
+		if (!charset[i])
+			return (char *)str;
+		str++;
+	}
+	return NULL;
+}
 
 // never goes past bounds or leaves without a terminating 0
 void Q_strcat( char *dest, size_t size, const char *src ) {

@@ -474,9 +474,9 @@ gametype_t G_GametypeForString( const char *s ) {
 	else
 	{
 		for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
-			if ( !Q_stricmp( s, gameNames[i] ) )
+			if ( !Q_stricmp( s, gametypeLong[i] ) )
 				break;
-			if ( !Q_stricmp( s, machineGameNames[i] ) )
+			if ( !Q_stricmp( s, gametypeShort[i] ) )
 				break;
 		}
 	}
@@ -661,7 +661,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// set gametype
 	level.gametype = G_GametypeForString( g_gametype.string );
 	if ( level.gametype == GT_MAX_GAME_TYPE ) {
-		G_Printf( "Unrecognized g_gametype %s, defaulting to FFA\n", g_gametype.string );
+		G_Printf( "Unrecognized g_gametype %s, defaulting to %s\n", g_gametype.string, gametypeShort[GT_FFA] );
 		level.gametype = GT_FFA;
 	}
 	// set numeric value for engine hacks
@@ -1701,34 +1701,6 @@ void G_LogPrintf( int event, const char *fmt, ... ) {
 	}
 }
 
-const char * const gameNames[GT_MAX_GAME_TYPE] = {
-	"Free For All",
-	"Holocron FFA",
-	"Jedi Master",
-	"Duel",
-	"Single Player",
-	"Team FFA",
-	"N/A",
-	"Capture the Flag",
-	"Capture the Ysalamiri",
-	"Red Rover",
-	"Clan Arena",
-};
-
-const char * const machineGameNames[GT_MAX_GAME_TYPE] = {
-	"FFA",
-	"HOLOCRON",
-	"JEDIMASTER",
-	"DUEL",
-	"SINGLE_PLAYER",
-	"TFFA",
-	"N/A",
-	"CTF",
-	"CTY",
-	"REDROVER",
-	"CLANARENA",
-};
-
 /*
 ================
 LogExit
@@ -1740,7 +1712,7 @@ void LogExit( const char *string ) {
 	int				i;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
-	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", machineGameNames[level.gametype], string );
+	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", gametypeShort[level.gametype], string );
 
 	level.intermissionQueued = level.time;
 

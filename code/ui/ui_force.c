@@ -495,6 +495,7 @@ void UI_ReadLegalForce(void)
 	int forcePowerRank = 0;
 	int currank = 0;
 	int forceTeam = 0;
+	gametype_t gametype = GT_FFA;
 	qboolean updateForceLater = qfalse;
 
 	//First, stick them into a string.
@@ -529,8 +530,12 @@ void UI_ReadLegalForce(void)
 			break;
 		}
 	}
+
+	i = atoi( Info_ValueForKey( info, "g_gametype" ) );
+	gametype = GT_Valid(i) ? i : GT_FFA;
+
 	//Second, legalize them.
-	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, ui_freeSaber.integer, forceTeam, atoi( Info_ValueForKey( info, "g_gametype" )), 0))
+	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, ui_freeSaber.integer, forceTeam, gametype, 0))
 	{ //if they were illegal, we should refresh them.
 		updateForceLater = qtrue;
 	}
@@ -1134,6 +1139,7 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	char singleBuf[64];
 	char info[MAX_INFO_VALUE];
 	int forceTeam = 0;
+	gametype_t gametype;
 
 	if (oldindex == 0)
 	{ //switching out from custom config, so first shove the current values into the custom storage
@@ -1213,8 +1219,6 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	fcfBuffer[len] = 0;
 	trap_FS_FCloseFile(f);
 
-	i = 0;
-
 	info[0] = '\0';
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 
@@ -1233,11 +1237,15 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 		}
 	}
 
-	BG_LegalizedForcePowers(fcfBuffer, uiMaxRank, ui_freeSaber.integer, forceTeam, atoi( Info_ValueForKey( info, "g_gametype" )), 0);
+	i = atoi( Info_ValueForKey( info, "g_gametype" ) );
+	gametype = GT_Valid(i) ? i : GT_FFA;
+
+	BG_LegalizedForcePowers(fcfBuffer, uiMaxRank, ui_freeSaber.integer, forceTeam, gametype, 0);
 	//legalize the config based on the max rank
 
 	//now that we're done with the handle, it's time to parse our force data out of the string
 	//we store strings in rank-side-xxxxxxxxx format (where the x's are individual force power levels)
+	i = 0;
 	while (fcfBuffer[i] && fcfBuffer[i] != '-')
 	{
 		singleBuf[c] = fcfBuffer[i];

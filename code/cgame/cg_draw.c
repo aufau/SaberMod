@@ -3763,30 +3763,10 @@ static void CG_DrawWarmup( void ) {
 			CG_Text_Paint(320 - w / 2, 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 		}
 	} else {
-		if ( cgs.gametype == GT_FFA ) {
-			s = "Free For All";
-		} else if ( cgs.gametype == GT_HOLOCRON ) {
-			s = "Holocron FFA";
-		} else if ( cgs.gametype == GT_JEDIMASTER ) {
-			s = "Jedi Master";
-		} else if ( cgs.gametype == GT_TEAM ) {
-			s = "Team FFA";
-		} else if ( cgs.gametype == GT_SAGA ) {
-			s = "N/A";
-		} else if ( cgs.gametype == GT_CTF ) {
-			s = "Capture the Flag";
-		} else if ( cgs.gametype == GT_CTY ) {
-			s = "Capture the Ysalamiri";
-		} else if ( cgs.gametype == GT_REDROVER ) {
-			s = "Red Rover";
-		} else if ( cgs.gametype == GT_CLANARENA ) {
-			s = "Clan Arena";
-		} else {
-			s = "";
-		}
-
 		if ( GT_Round(cgs.gametype) && cgs.round > 0 ) {
 			s = va("Round %i", cgs.round);
+		} else {
+			s = gametypeLong[cgs.gametype];
 		}
 
 		w = CG_Text_Width(s, 1.5f, FONT_MEDIUM);

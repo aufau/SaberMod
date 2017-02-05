@@ -251,45 +251,7 @@ void CG_DrawInformation( void ) {
 	}
 
 	// game type
-	switch ( cgs.gametype ) {
-	case GT_FFA:
-		s = "Free For All";
-		break;
-	case GT_HOLOCRON:
-		s = "Holocron FFA";
-		break;
-	case GT_JEDIMASTER:
-		s = "Jedi Master";
-		break;
-	case GT_SINGLE_PLAYER:
-		s = "Single Player";
-		break;
-	case GT_TOURNAMENT:
-		s = "Duel";
-		break;
-	case GT_TEAM:
-		s = "Team FFA";
-		break;
-	case GT_SAGA:
-		s = "N/A";
-		break;
-	case GT_CTF:
-		s = "Capture The Flag";
-		break;
-	case GT_CTY:
-		s = "Capture The Ysalamiri";
-		break;
-	case GT_REDROVER:
-		s = "Red Rover";
-		break;
-	case GT_CLANARENA:
-		s = "Clan Arena";
-		break;
-	default:
-		s = "Unknown Gametype";
-		break;
-	}
-	UI_DrawProportionalString( 320, y, s,
+	UI_DrawProportionalString( 320, y, gametypeLong[cgs.gametype],
 		UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 	y += iPropHeight;
 

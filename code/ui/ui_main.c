@@ -160,24 +160,6 @@ static const char * const skillLevels[] = {
 };
 static const int numSkillLevels = sizeof(skillLevels) / sizeof(const char*);
 
-
-
-static const char * const teamArenaGameTypes[] = {
-	"FFA",
-	"HOLOCRON",
-	"JEDIMASTER",
-	"DUEL",
-	"SP",
-	"TEAM FFA",
-	"N/A",
-	"CTF",
-	"CTY",
-	"TEAMTOURNAMENT"
-};
-static int const numTeamArenaGameTypes = sizeof(teamArenaGameTypes) / sizeof(const char*);
-
-
-
 static const char * const netnames[] = {
 	"???",
 	"UDP",
@@ -1726,8 +1708,9 @@ void UpdateForceStatus()
 		}
 		else
 		{
+			int gametype = atoi(Info_ValueForKey(info, "g_gametype"));
 			// Set or reset buttons based on choices
-			if (GT_Team(atoi(Info_ValueForKey(info, "g_gametype"))))
+			if (GT_Valid(gametype) && GT_Team(gametype))
 			{	// This is a team-based game.
 				Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
 #if 0
@@ -5257,24 +5240,6 @@ static int UI_GetServerStatusInfo( const char *serverAddress, serverStatusInfo_t
 
 /*
 ==================
-stristr
-==================
-*/
-static char *stristr(char *str, char *charset) {
-	int i;
-
-	while(*str) {
-		for (i = 0; charset[i] && str[i]; i++) {
-			if (toupper(charset[i]) != toupper(str[i])) break;
-		}
-		if (!charset[i]) return str;
-		str++;
-	}
-	return NULL;
-}
-
-/*
-==================
 UI_BuildFindPlayerList
 ==================
 */
@@ -5334,7 +5299,7 @@ static void UI_BuildFindPlayerList(qboolean force) {
 					Q_strncpyz(name, info.lines[j][3], sizeof(name));
 					Q_CleanStr(name);
 					// if the player name is a substring
-					if (stristr(name, uiInfo.findPlayerName)) {
+					if (Q_stristr(name, uiInfo.findPlayerName)) {
 						// add to found server list if we have space (always leave space for a line with the number found)
 						if (uiInfo.numFoundPlayerServers < MAX_FOUNDPLAYER_SERVERS-1) {
 							//
@@ -5775,8 +5740,8 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 					return clientBuff;
 				case SORT_GAME :
 					game = atoi(Info_ValueForKey(info, "gametype"));
-					if (game >= 0 && game < numTeamArenaGameTypes) {
-						strcpy(needPass,teamArenaGameTypes[game]);
+					if (GT_Valid(game)) {
+						strcpy(needPass,gametypeShort[game]);
 					} else {
 						if (ping <= 0)
 						{

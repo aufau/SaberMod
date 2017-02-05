@@ -179,7 +179,10 @@ typedef enum {
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
 #define GT_Team(x) ((x) >= GT_TEAM)
 #define GT_Round(x) ((x) >= GT_REDROVER)
-#define GT_Valid(x) (GT_FFA <= (x) && (x) <= GT_MAX_GAME_TYPE)
+#define GT_Valid(x) (0 <= (x) && (x) < GT_MAX_GAME_TYPE)
+
+extern const char * const gametypeLong[GT_MAX_GAME_TYPE];
+extern const char * const gametypeShort[GT_MAX_GAME_TYPE];
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -251,7 +254,7 @@ enum {
 	FORCE_MASTERY_JEDI_MASTER,
 	NUM_FORCE_MASTERY_LEVELS
 };
-extern const char *forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
+extern const char * const forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
 extern const int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
 
 extern int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS];
@@ -1052,7 +1055,7 @@ typedef struct
 
 extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, int gametype, int fpDisabled);
+qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
 qboolean BG_InSpecialJump( int anim );

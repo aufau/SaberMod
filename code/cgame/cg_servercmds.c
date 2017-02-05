@@ -166,6 +166,10 @@ static void CG_ParseServerinfo( const char *info ) {
 	int			val;
 
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
+	if ( !GT_Valid( cgs.gametype ) ) {
+		Com_Printf( "WARNING: Unrecognised gametype, defaulting to %s\n", gametypeShort[GT_FFA] );
+		cgs.gametype = GT_FFA;
+	}
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
 	cgs.needpass = atoi( Info_ValueForKey( info, "needpass" ) );
 	cgs.jediVmerc = atoi( Info_ValueForKey( info, "g_jediVmerc" ) );
