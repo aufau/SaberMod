@@ -276,12 +276,7 @@ char *strstr( const char *string, const char *strCharSet ) {
 	}
 	return (char *)0;
 }
-#endif // bk001211
 
-// bk001120 - presumably needed for Mac
-//#if !defined(_MSC_VER) && !defined(__linux__)
-// bk001127 - undid undo
-#if defined ( Q3_VM )
 int tolower( int c ) {
 	if ( c >= 'A' && c <= 'Z' ) {
 		c += 'a' - 'A';
@@ -296,9 +291,6 @@ int toupper( int c ) {
 	}
 	return c;
 }
-
-#endif
-//#ifndef _MSC_VER
 
 void *memmove( void *dest, const void *src, size_t count ) {
 	size_t	i;
@@ -319,7 +311,7 @@ void *memmove( void *dest, const void *src, size_t count ) {
 	}
 	return dest;
 }
-
+#endif // Q3_VM
 
 #if 0
 
