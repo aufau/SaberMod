@@ -226,7 +226,7 @@ void ShieldGoNotSolid(gentity_t *self)
 // Somebody (a player) has touched the shield.  See if it is a "friend".
 void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if (GT_Team(g_gametype.integer))
+	if (GT_Team(level.gametype))
 	{ // let teammates through
 		if (self->s.teamowner == other->client->sess.sessionTeam)
 		{
@@ -428,7 +428,7 @@ qboolean PlaceShield(gentity_t *playerent)
 
 			shield->s.owner = playerent->s.number;
 			shield->s.shouldtarget = qtrue;
-			if (GT_Team(g_gametype.integer))
+			if (GT_Team(level.gametype))
 			{
 				shield->s.teamowner = playerent->client->sess.sessionTeam;
 			}
@@ -1058,7 +1058,7 @@ void ItemUse_Sentry( gentity_t *ent )
 
 	sentry->s.owner = ent->s.number;
 	sentry->s.shouldtarget = qtrue;
-	if (GT_Team(g_gametype.integer))
+	if (GT_Team(level.gametype))
 	{
 		sentry->s.teamowner = ent->client->sess.sessionTeam;
 	}
@@ -1155,7 +1155,7 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
     // if same team in team game, no sound
     // cannot use OnSameTeam as it expects to g_entities, not clients
-	if ( GT_Team(g_gametype.integer) && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
+	if ( GT_Team(level.gametype) && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
       continue;
     }
 
@@ -1245,7 +1245,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		}
 
 		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
+		if ( ! (ent->flags & FL_DROPPED_ITEM) && level.gametype != GT_TEAM ) {
 			// respawning rules
 
 			// New method:  If the player has less than half the minimum, give them the minimum, else add 1/2 the min.
@@ -1278,7 +1278,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	G_LogWeaponPickup(other->s.number, ent->item->giTag);
 
 	// team deathmatch has slow weapon respawns
-	if ( g_gametype.integer == GT_TEAM )
+	if ( level.gametype == GT_TEAM )
 	{
 		return adjustRespawnTime(RESPAWN_TEAM_WEAPON, ent->item->giType, ent->item->giTag);
 	}
@@ -1441,7 +1441,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	// the same pickup rules are used for client side and server side
-	if ( !BG_CanItemBeGrabbed( g_gametype.integer, &ent->s, &other->client->ps ) ) {
+	if ( !BG_CanItemBeGrabbed( level.gametype, &ent->s, &other->client->ps ) ) {
 		return;
 	}
 
@@ -1644,7 +1644,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	VectorCopy( velocity, dropped->s.pos.trDelta );
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	if (GT_Flag(g_gametype.integer) && item->giType == IT_TEAM) { // Special case for CTF flags
+	if (GT_Flag(level.gametype) && item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem( dropped );
@@ -1745,10 +1745,10 @@ void FinishSpawningItem( gentity_t *ent ) {
 //	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS );
 //	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
-	if (g_gametype.integer != GT_JEDIMASTER)
+	if (level.gametype != GT_JEDIMASTER)
 	{
 		// never spawn items in round gametypes for now
-		if (GT_Round(g_gametype.integer) || HasSetSaberOnly())
+		if (GT_Round(level.gametype) || HasSetSaberOnly())
 		{
 			if (ent->item->giType == IT_AMMO)
 			{
@@ -1783,7 +1783,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 	}
 
-	if (g_gametype.integer == GT_HOLOCRON)
+	if (level.gametype == GT_HOLOCRON)
 	{
 		if (ent->item->giType == IT_POWERUP)
 		{
@@ -1810,7 +1810,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{
 		if ( ent->item->giType == IT_ARMOR ||
 			ent->item->giType == IT_HEALTH ||
@@ -1821,7 +1821,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 	}
 
-	if (!GT_Flag(g_gametype.integer) && ent->item->giType == IT_TEAM)
+	if (!GT_Flag(level.gametype) && ent->item->giType == IT_TEAM)
 	{
 		int killMe = 0;
 
@@ -1932,7 +1932,7 @@ void G_CheckTeamItems( void ) {
 	// Set up team stuff
 	Team_InitGame();
 
-	if( GT_Flag(g_gametype.integer) ) {
+	if( GT_Flag(level.gametype) ) {
 		gitem_t	*item;
 
 		// check for the two flags
@@ -2057,7 +2057,7 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	G_SpawnFloat( "random", "0", &ent->random );
 	G_SpawnFloat( "wait", "0", &ent->wait );
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{
 		wDisable = g_duelWeaponDisable.integer;
 	}
@@ -2070,7 +2070,7 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 		wDisable &&
 		(wDisable & (1 << item->giTag)))
 	{
-		if (g_gametype.integer != GT_JEDIMASTER)
+		if (level.gametype != GT_JEDIMASTER)
 		{
 			G_FreeEntity( ent );
 			return;

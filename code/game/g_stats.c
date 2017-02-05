@@ -243,8 +243,8 @@ void G_PrintStats(void) {
 
 	trap_SendServerCommand(-1, "print \"\n\"");
 
-	if (GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER) {
-		if (g_gametype.integer == GT_CTF) {
+	if (GT_Team(level.gametype) && level.gametype != GT_REDROVER) {
+		if (level.gametype == GT_CTF) {
 			if (g_instagib.integer)
 				columns = ictfColumns;
 			else
@@ -275,7 +275,7 @@ void G_PrintStats(void) {
 	} else {
 		if (g_instagib.integer) {
 			columns = iffaColumns;
-		} else if (g_gametype.integer == GT_REDROVER) {
+		} else if (level.gametype == GT_REDROVER) {
 			columns = tffaColumns;
 		} else {
 			columns = ffaColumns;

@@ -618,7 +618,7 @@ hide the scoreboard, and take a special screenshot
 */
 void Cmd_LevelShot_f( gentity_t *ent ) {
 	// doesn't work in single player
-	if ( g_gametype.integer != 0 ) {
+	if ( level.gametype != 0 ) {
 		trap_SendServerCommand( ent-g_entities,
 			"print \"Must be in g_gametype 0 for levelshot\n\"" );
 		return;
@@ -660,7 +660,7 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
-	if (g_gametype.integer == GT_TOURNAMENT && level.numPlayingClients > 1 && !level.warmupTime)
+	if (level.gametype == GT_TOURNAMENT && level.numPlayingClients > 1 && !level.warmupTime)
 	{
 		if (!g_allowDuelSuicide.integer)
 		{
@@ -700,7 +700,7 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 			}
 		}
 	} else if ( client->sess.sessionTeam == TEAM_FREE ) {
-		if (g_gametype.integer == GT_TOURNAMENT)
+		if (level.gametype == GT_TOURNAMENT)
 		{
 			/*
 			gentity_t *currentWinner = G_GetDuelWinner(client);
@@ -867,7 +867,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-	} else if ( GT_Team(g_gametype.integer) ) {
+	} else if ( GT_Team(level.gametype) ) {
 		// if running a team game, assign player to one of the teams
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
 			if ( !ValidateTeam(clientNum, TEAM_RED) ) {
@@ -893,7 +893,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 		}
 
 		// new players need to wait for next round
-		if ( level.round > 0 && g_gametype.integer != GT_REDROVER && !level.roundQueued ) {
+		if ( level.round > 0 && level.gametype != GT_REDROVER && !level.roundQueued ) {
 			specState = SPECTATOR_FOLLOW;
 		}
 	} else {
@@ -1045,7 +1045,7 @@ void Cmd_ForceChanged_f( gentity_t *ent )
 
 	ent->client->ps.fd.forceDoInit = 1;
 argCheck:
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //If this is duel, don't even bother changing team in relation to this.
 		return;
 	}
@@ -1284,7 +1284,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		}
 	} while (i != clientRank);
 
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(level.gametype) ) {
 		// Cycle through sorted team
 		do {
 			if (--i < 0) {
@@ -1381,7 +1381,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
-		if (target && GT_Team(g_gametype.integer) &&
+		if (target && GT_Team(level.gametype) &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
 			Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
@@ -1424,7 +1424,7 @@ static void Cmd_Say_f( gentity_t *ent ) {
 	mode = SAY_ALL;
 	if ( g_restrictChat.integer && ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 		if ( !level.warmupTime && !level.intermissiontime )
-			if ( !GT_Round(g_gametype.integer) || level.round > 0 )
+			if ( !GT_Round(level.gametype) || level.round > 0 )
 				mode = SAY_TEAM;
 
 	G_Say( ent, NULL, mode, p );
@@ -1499,7 +1499,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 
 	if ( g_restrictChat.integer ) {
 		if ( !level.warmupTime && !level.intermissiontime &&
-			( !GT_Round(g_gametype.integer) || level.round > 0 ) &&
+			( !GT_Round(level.gametype) || level.round > 0 ) &&
 			 ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
 			 target->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 			trap_SendServerCommand( ent-g_entities,
@@ -1542,7 +1542,7 @@ static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *i
 		return;
 	}
 	// no chatting to players in tournements
-	if (g_gametype.integer == GT_TOURNAMENT) {
+	if (level.gametype == GT_TOURNAMENT) {
 		return;
 	}
 
@@ -1566,7 +1566,7 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 	int			j;
 	gentity_t	*other;
 
-	if ( !GT_Team(g_gametype.integer) && mode == SAY_TEAM ) {
+	if ( !GT_Team(level.gametype) && mode == SAY_TEAM ) {
 		mode = SAY_ALL;
 	}
 
@@ -1702,7 +1702,7 @@ static void Cmd_VoiceTaunt_f( gentity_t *ent ) {
 		}
 	}
 
-	if (GT_Team(g_gametype.integer)) {
+	if (GT_Team(level.gametype)) {
 		// praise a team mate who just got a reward
 		for(i = 0; i < level.maxclients; i++) {
 			who = g_entities + i;
@@ -2481,13 +2481,13 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		return;
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //rather pointless in this mode..
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NODUEL_GAMETYPE")) );
 		return;
 	}
 
-	if (GT_Team(g_gametype.integer))
+	if (GT_Team(level.gametype))
 	{ //no private dueling in team modes
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NODUEL_GAMETYPE")) );
 		return;
@@ -2722,7 +2722,7 @@ static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 	pmv.cmd = self->client->pers.cmd;
 	pmv.trace = trap_Trace;
 	pmv.pointcontents = trap_PointContents;
-	pmv.gametype = g_gametype.integer;
+	pmv.gametype = level.gametype;
 
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, i, flags, 0);
@@ -2754,7 +2754,7 @@ static void StandardSetBodyAnim(gentity_t *self, int anim, int flags)
 	pmv.cmd = self->client->pers.cmd;
 	pmv.trace = trap_Trace;
 	pmv.pointcontents = trap_PointContents;
-	pmv.gametype = g_gametype.integer;
+	pmv.gametype = level.gametype;
 
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, anim, flags, 0);

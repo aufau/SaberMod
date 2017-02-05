@@ -1888,7 +1888,7 @@ int LoadPathData(const char *filename)
 
 	trap_FS_FCloseFile(f);
 
-	if (g_gametype.integer == GT_SAGA)
+	if (level.gametype == GT_SAGA)
 	{
 		CalculateSagaGoals();
 	}

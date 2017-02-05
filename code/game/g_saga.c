@@ -52,7 +52,7 @@ void InitSagaMode(void)
 	int				len = 0;
 	fileHandle_t	f;
 
-	if (g_gametype.integer != GT_SAGA)
+	if (level.gametype != GT_SAGA)
 	{
 		goto failure;
 	}
@@ -384,7 +384,7 @@ void sagaTriggerUse(gentity_t *ent, gentity_t *other, gentity_t *activator)
 */
 void SP_info_saga_objective (gentity_t *ent)
 {
-	if (!saga_valid || g_gametype.integer != GT_SAGA)
+	if (!saga_valid || level.gametype != GT_SAGA)
 	{
 		G_FreeEntity(ent);
 		return;

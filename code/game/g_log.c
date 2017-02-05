@@ -935,7 +935,7 @@ qboolean CalculateUntouchable(gentity_t *ent)
 	if ( playTime == 0 )
 		return qfalse;
 
-	if ( g_gametype.integer == GT_JEDIMASTER && ent->client->ps.isJediMaster )
+	if ( level.gametype == GT_JEDIMASTER && ent->client->ps.isJediMaster )
 	{//Jedi Master (was Borg queen) can only be killed once anyway
 		return qfalse;
 	}
@@ -1021,7 +1021,7 @@ qboolean CalculateTactician(gentity_t *ent, int *kills)
 	{//duh, only 1 weapon
 		return qfalse;
 	}
-	if ( g_gametype.integer == GT_JEDIMASTER && ent->client->ps.isJediMaster )
+	if ( level.gametype == GT_JEDIMASTER && ent->client->ps.isJediMaster )
 	{//Jedi Master (was Borg queen) has only 1 weapon
 		return qfalse;
 	}
@@ -1482,7 +1482,7 @@ int CalculateTeamAward(gentity_t *ent)
 	{
 		teamAwards |= (1<<TEAM_MVP);
 	}
-	if (GT_Flag(g_gametype.integer))
+	if (GT_Flag(level.gametype))
 	{
 		if (CalculateTeamDefender(ent))
 		{
@@ -1589,7 +1589,7 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, streak);
 	}
-	if (GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER)
+	if (GT_Team(level.gametype) && level.gametype != GT_REDROVER)
 	{
 		teamAwards = CalculateTeamAward(ent);
 		if (teamAwards)

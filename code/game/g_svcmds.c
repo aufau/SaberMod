@@ -473,7 +473,7 @@ void	Svcmd_Remove_f( void )
 
 	ent = g_entities + clientNum;
 	// make him dedicated spectator so he doesn't join the queue if inactive
-	if ( g_gametype.integer == GT_TOURNAMENT )
+	if ( level.gametype == GT_TOURNAMENT )
 		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, -1 );
 	else
 		SetTeam( ent, TEAM_SPECTATOR );

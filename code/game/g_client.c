@@ -63,7 +63,7 @@ void SP_info_player_start(gentity_t *ent) {
 saga start point - imperial
 */
 void SP_info_player_imperial(gentity_t *ent) {
-	if (g_gametype.integer != GT_SAGA)
+	if (level.gametype != GT_SAGA)
 	{ //turn into a DM spawn if not in saga game mode
 		ent->classname = "info_player_deathmatch";
 		SP_info_player_deathmatch( ent );
@@ -74,7 +74,7 @@ void SP_info_player_imperial(gentity_t *ent) {
 saga start point - rebel
 */
 void SP_info_player_rebel(gentity_t *ent) {
-	if (g_gametype.integer != GT_SAGA)
+	if (level.gametype != GT_SAGA)
 	{ //turn into a DM spawn if not in saga game mode
 		ent->classname = "info_player_deathmatch";
 		SP_info_player_deathmatch( ent );
@@ -309,7 +309,7 @@ gentity_t *gJMSaberEnt = NULL;
 */
 void SP_info_jedimaster_start(gentity_t *ent)
 {
-	if (g_gametype.integer != GT_JEDIMASTER)
+	if (level.gametype != GT_JEDIMASTER)
 	{
 		gJMSaberEnt = NULL;
 		G_FreeEntity(ent);
@@ -923,7 +923,7 @@ qboolean ValidateTeam( int ignoreClientNum, team_t team )
 	// level.numNonSpectatorClients
 	count = TeamCount( ignoreClientNum, team, qtrue );
 
-	if ( g_gametype.integer == GT_TOURNAMENT && count >= 2 ) {
+	if ( level.gametype == GT_TOURNAMENT && count >= 2 ) {
 		return qfalse;
 	}
 	if ( g_teamsize.integer > 0 && count >= g_teamsize.integer ) {
@@ -1300,7 +1300,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 
 	// set model
-	if( GT_Team(g_gametype.integer) ) {
+	if( GT_Team(level.gametype) ) {
 		Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
 		//Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
 	} else {
@@ -1327,13 +1327,13 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	// don't ever use a default skin in teamplay, it would just waste memory
 	// however bots will always join a team but they spawn in as spectator
-	if ( GT_Team(g_gametype.integer) && team == TEAM_SPECTATOR) {
+	if ( GT_Team(level.gametype) && team == TEAM_SPECTATOR) {
 		ForceClientSkin(client, model, "red");
 //		ForceClientSkin(client, headModel, "red");
 	}
 */
 
-	if (GT_Team(g_gametype.integer)) {
+	if (GT_Team(level.gametype)) {
 		client->pers.teamInfo = qtrue;
 	} else {
 		s = Info_ValueForKey( userinfo, "teamoverlay" );
@@ -1489,7 +1489,7 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLCONNECT")) );
 	}
 
-	if ( GT_Team(g_gametype.integer) && client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( GT_Team(level.gametype) && client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		BroadcastTeamChange( client, -1 );
 	}
 
@@ -1531,7 +1531,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	ent = g_entities + clientNum;
 
-	if ((ent->r.svFlags & SVF_BOT) && GT_Team(g_gametype.integer))
+	if ((ent->r.svFlags & SVF_BOT) && GT_Team(level.gametype))
 	{
 		if (allowTeamReset)
 		{
@@ -1678,7 +1678,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
 		tent->s.clientNum = ent->s.number;
 
-		if ( g_gametype.integer != GT_TOURNAMENT  ) {
+		if ( level.gametype != GT_TOURNAMENT  ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
@@ -1757,14 +1757,14 @@ void ClientSpawn(gentity_t *ent) {
 	if ( client->sess.spectatorState != SPECTATOR_NOT ) {
 		spawnPoint = SelectSpectatorSpawnPoint (
 						spawn_origin, spawn_angles);
-	} else if ( GT_Flag(g_gametype.integer) ) {
+	} else if ( GT_Flag(level.gametype) ) {
 		// all base oriented team games use the CTF spawn points
 		spawnPoint = SelectCTFSpawnPoint (
 						client->sess.sessionTeam,
 						client->pers.teamState.state,
 						spawn_origin, spawn_angles);
 	}
-	else if (g_gametype.integer == GT_SAGA)
+	else if (level.gametype == GT_SAGA)
 	{
 		spawnPoint = SelectSagaSpawnPoint (
 						client->sess.sessionTeam,
@@ -1876,7 +1876,7 @@ void ClientSpawn(gentity_t *ent) {
 	// give default weapons
 	//
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{
 		wDisable = g_duelWeaponDisable.integer;
 	}
@@ -1888,13 +1888,13 @@ void ClientSpawn(gentity_t *ent) {
 	// g_spawnWeapons 0 means original behaviour, we're checking it later
 	wSpawn = g_spawnWeapons.integer & LEGAL_WEAPONS;
 
-	if ( g_gametype.integer != GT_HOLOCRON
-		&& g_gametype.integer != GT_JEDIMASTER
+	if ( level.gametype != GT_HOLOCRON
+		&& level.gametype != GT_JEDIMASTER
 		&& !HasSetSaberOnly()
 		&& !AllForceDisabled( g_forcePowerDisable.integer )
 		&& g_trueJedi.integer )
 	{
-		if ( GT_Team(g_gametype.integer)
+		if ( GT_Team(level.gametype)
 			 && (client->sess.sessionTeam == TEAM_BLUE || client->sess.sessionTeam == TEAM_RED) )
 		{//In Team games, force one side to be merc and other to be jedi
 			if ( level.numPlayingClients > 0 )
@@ -1963,9 +1963,9 @@ void ClientSpawn(gentity_t *ent) {
 		if (!g_spawnWeapons.integer) {
 			// these few lines reproduce original logic suprisingly
 			// give base weapon
-			if (g_gametype.integer == GT_HOLOCRON)
+			if (level.gametype == GT_HOLOCRON)
 				wSpawn = 1 << WP_SABER;
-			else if (g_gametype.integer == GT_JEDIMASTER)
+			else if (level.gametype == GT_JEDIMASTER)
 				wSpawn = 1 << WP_STUN_BATON;
 			else if (client->ps.fd.forcePowerLevel[FP_SABERATTACK])
 				wSpawn = 1 << WP_SABER;
@@ -1973,7 +1973,7 @@ void ClientSpawn(gentity_t *ent) {
 				wSpawn = 1 << WP_STUN_BATON;
 
 			// give bryar conditionally
-			if (!(wDisable & (1 << WP_BRYAR_PISTOL)) || g_gametype.integer == GT_JEDIMASTER)
+			if (!(wDisable & (1 << WP_BRYAR_PISTOL)) || level.gametype == GT_JEDIMASTER)
 				wSpawn |= 1 << WP_BRYAR_PISTOL;
 		}
 	}
@@ -2040,7 +2040,7 @@ void ClientSpawn(gentity_t *ent) {
 
 				// GT_Round check is here because it determines
 				// spawning weapons too
-				if (GT_Round(g_gametype.integer)) {
+				if (GT_Round(level.gametype)) {
 					client->ps.ammo[ammo] = ammoData[ammo].max;
 				} else {
 					// give weapon pickup ammo quantity
@@ -2275,7 +2275,7 @@ void ClientDisconnect( int clientNum ) {
 	}
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round
-	if ( (g_gametype.integer == GT_TOURNAMENT )
+	if ( (level.gametype == GT_TOURNAMENT )
 		&& !level.intermissionQueued
 		&& !level.intermissiontime
 		&& !level.warmupTime ) {

@@ -174,15 +174,15 @@ void BotStraightTPOrderCheck(gentity_t *ent, int ordernum, bot_state_t *bs)
 
 void BotReportStatus(bot_state_t *bs)
 {
-	if (g_gametype.integer == GT_SAGA)
+	if (level.gametype == GT_SAGA)
 	{
 		trap_EA_SayTeam(bs->client, sagaStateDescriptions[bs->sagaState]);
 	}
-	else if (GT_Flag(g_gametype.integer))
+	else if (GT_Flag(level.gametype))
 	{
 		trap_EA_SayTeam(bs->client, ctfStateDescriptions[bs->ctfState]);
 	}
-	else if (GT_Team(g_gametype.integer))
+	else if (GT_Team(level.gametype))
 	{
 		trap_EA_SayTeam(bs->client, teamplayStateDescriptions[bs->teamplayState]);
 	}
@@ -209,22 +209,22 @@ void BotOrder(gentity_t *ent, int clientnum, int ordernum)
 		return;
 	}
 
-	if (!GT_Team(g_gametype.integer))
+	if (!GT_Team(level.gametype))
 	{
 		return;
 	}
 
-	if (GT_Flag(g_gametype.integer))
+	if (GT_Flag(level.gametype))
 	{
 		stateMin = CTFSTATE_NONE;
 		stateMax = CTFSTATE_MAXCTFSTATES;
 	}
-	else if (g_gametype.integer == GT_SAGA)
+	else if (level.gametype == GT_SAGA)
 	{
 		stateMin = SAGASTATE_NONE;
 		stateMax = SAGASTATE_MAXSAGASTATES;
 	}
-	else if (GT_Team(g_gametype.integer))
+	else if (GT_Team(level.gametype))
 	{
 		stateMin = TEAMPLAYSTATE_NONE;
 		stateMax = TEAMPLAYSTATE_MAXTPSTATES;
@@ -350,7 +350,7 @@ qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower );
 
 int IsTeamplay(void)
 {
-	if ( !GT_Team(g_gametype.integer) )
+	if ( !GT_Team(level.gametype) )
 	{
 		return 0;
 	}
@@ -863,7 +863,7 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 
 	BotUtilizePersonality(bs);
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{
 		bs->botWeaponWeights[WP_SABER] = 13;
 	}
@@ -1375,7 +1375,7 @@ void WPConstantRoutine(bot_state_t *bs)
 
 qboolean BotCTFGuardDuty(bot_state_t *bs)
 {
-	if (!GT_Flag(g_gametype.integer))
+	if (!GT_Flag(level.gametype))
 	{
 		return qfalse;
 	}
@@ -1772,7 +1772,7 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 		return 0;
 	}
 
-	if (g_gametype.integer == GT_JEDIMASTER && !en->client->ps.isJediMaster && !bs->cur_ps.isJediMaster)
+	if (level.gametype == GT_JEDIMASTER && !en->client->ps.isJediMaster && !bs->cur_ps.isJediMaster)
 	{ //rules for attacking non-JM in JM mode
 		vec3_t vs;
 		float vLen = 0;
@@ -2012,7 +2012,7 @@ int PassLovedOneCheck(bot_state_t *bs, gentity_t *ent)
 		return 1;
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //There is no love in 1-on-1
 		return 1;
 	}
@@ -2084,7 +2084,7 @@ int ScanForEnemies(bot_state_t *bs)
 		return -1;
 	}
 
-	if (g_gametype.integer == GT_JEDIMASTER)
+	if (level.gametype == GT_JEDIMASTER)
 	{
 		if (G_ThereIsAMaster() && !bs->cur_ps.isJediMaster)
 		{
@@ -2231,12 +2231,12 @@ int BotIsAChickenWuss(bot_state_t *bs)
 		return 0;
 	}
 
-	if (g_gametype.integer == GT_SINGLE_PLAYER)
+	if (level.gametype == GT_SINGLE_PLAYER)
 	{
 		return 0;
 	}
 
-	if (g_gametype.integer == GT_JEDIMASTER && !bs->cur_ps.isJediMaster)
+	if (level.gametype == GT_JEDIMASTER && !bs->cur_ps.isJediMaster)
 	{ //Then you may know no fear.
 		//Well, unless he's strong.
 		if (bs->currentEnemy && bs->currentEnemy->client &&
@@ -2254,7 +2254,7 @@ jmPass:
 		return 2; //don't want to keep going between two points...
 	}
 
-	if (g_gametype.integer == GT_JEDIMASTER && !bs->cur_ps.isJediMaster)
+	if (level.gametype == GT_JEDIMASTER && !bs->cur_ps.isJediMaster)
 	{
 		return 1;
 	}
@@ -2717,7 +2717,7 @@ int CTFTakesPriority(bot_state_t *bs)
 	G_Printf("CTFSTATE: %s\n", ctfStateNames[bs->ctfState]);
 #endif
 
-	if (!GT_Flag(g_gametype.integer))
+	if (!GT_Flag(level.gametype))
 	{
 		return 0;
 	}
@@ -3156,7 +3156,7 @@ int SagaTakesPriority(bot_state_t *bs)
 	vec3_t dif;
 	trace_t tr;
 
-	if (g_gametype.integer != GT_SAGA)
+	if (level.gametype != GT_SAGA)
 	{
 		return 0;
 	}
@@ -3315,7 +3315,7 @@ int JMTakesPriority(bot_state_t *bs)
 	int wpClose = -1;
 	gentity_t *theImportantEntity = NULL;
 
-	if (g_gametype.integer != GT_JEDIMASTER)
+	if (level.gametype != GT_JEDIMASTER)
 	{
 		return 0;
 	}
@@ -3763,7 +3763,7 @@ void GetIdealDestination(bot_state_t *bs)
 			{
 				bs->wpDestination = gWPArray[tempInt];
 
-				if (g_gametype.integer == GT_SINGLE_PLAYER)
+				if (level.gametype == GT_SINGLE_PLAYER)
 				{ //be more aggressive
 					bs->wpDestSwitchTime = level.time + Q_irand(300, 1000);
 				}
@@ -4126,15 +4126,15 @@ void CommanderBotTeamplayAI(bot_state_t *bs)
 
 void CommanderBotAI(bot_state_t *bs)
 {
-	if (GT_Flag(g_gametype.integer))
+	if (GT_Flag(level.gametype))
 	{
 		CommanderBotCTFAI(bs);
 	}
-	else if (g_gametype.integer == GT_SAGA)
+	else if (level.gametype == GT_SAGA)
 	{
 		CommanderBotSagaAI(bs);
 	}
-	else if (GT_Team(g_gametype.integer))
+	else if (GT_Team(level.gametype))
 	{
 		CommanderBotTeamplayAI(bs);
 	}
@@ -5103,7 +5103,7 @@ int GetLoveLevel(bot_state_t *bs, bot_state_t *love)
 	int i = 0;
 	const char *lname = NULL;
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //There is no love in 1-on-1
 		return 0;
 	}
@@ -5153,7 +5153,7 @@ void BotLovedOneDied(bot_state_t *bs, bot_state_t *loved, int lovelevel)
 		return;
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //There is no love in 1-on-1
 		return;
 	}
@@ -6378,7 +6378,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 	}
 	else //We can't find a waypoint, going to need a fallback routine.
 	{
-		/*if (g_gametype.integer == GT_TOURNAMENT)*/
+		/*if (level.gametype == GT_TOURNAMENT)*/
 		{ //helps them get out of messy situations
 			/*if ((level.time - bs->forceJumpChargeTime) > 3500)
 			{
@@ -6528,7 +6528,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 				}
 			}
 
-			if (g_gametype.integer == GT_SINGLE_PLAYER)
+			if (level.gametype == GT_SINGLE_PLAYER)
 			{
 				saberRange *= 3;
 			}
@@ -6700,7 +6700,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		bs->forceWeaponSelect = 0;
 	}
 
-	if (g_gametype.integer == GT_JEDIMASTER && !bs->cur_ps.isJediMaster && bs->jmState == -1 && gJMSaberEnt && gJMSaberEnt->inuse)
+	if (level.gametype == GT_JEDIMASTER && !bs->cur_ps.isJediMaster && bs->jmState == -1 && gJMSaberEnt && gJMSaberEnt->inuse)
 	{
 		vec3_t saberLen;
 		float fSaberLen = 0;
@@ -6900,7 +6900,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			}
 		}
 	}
-	else if (GT_Team(g_gametype.integer))
+	else if (GT_Team(level.gametype))
 	{ //still check for anyone to help..
 		friendInLOF = CheckForFriendInLOF(bs);
 

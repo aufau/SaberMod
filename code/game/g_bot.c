@@ -343,7 +343,7 @@ static void G_LoadArenas( void ) {
 		Info_SetValueForKey( g_arenaInfos[n], "num", va( "%i", n ) );
 	}
 
-	G_RefreshNextMap(g_gametype.integer, qfalse);
+	G_RefreshNextMap(level.gametype, qfalse);
 }
 
 #ifdef UNUSED
@@ -571,7 +571,7 @@ void G_CheckMinimumPlayers( void ) {
 		minplayers = g_teamsize.integer;
 	}
 
-	switch (g_gametype.integer) {
+	switch (level.gametype) {
 	case GT_TEAM:
 	case GT_CTF:
 	case GT_CTY:
@@ -618,6 +618,7 @@ void G_CheckMinimumPlayers( void ) {
 	case GT_FFA:
 	case GT_HOLOCRON:
 	case GT_JEDIMASTER:
+	default:
 		if (minplayers >= level.maxclients) {
 			minplayers = level.maxclients-1;
 		}
@@ -668,7 +669,7 @@ void G_CheckBotSpawn( void ) {
 		botSpawnQueue[n].spawnTime = 0;
 
 		/*
-		if( g_gametype.integer == GT_SINGLE_PLAYER ) {
+		if( level.gametype == GT_SINGLE_PLAYER ) {
 			trap_GetUserinfo( botSpawnQueue[n].clientNum, userinfo, sizeof(userinfo) );
 			PlayerIntroSound( Info_ValueForKey (userinfo, "model") );
 		}

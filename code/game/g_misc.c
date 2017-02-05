@@ -547,7 +547,7 @@ void SP_misc_holocron(gentity_t *ent)
 	vec3_t dest;
 	trace_t tr;
 
-	if (g_gametype.integer != GT_HOLOCRON)
+	if (level.gametype != GT_HOLOCRON)
 	{
 		G_FreeEntity(ent);
 		return;
@@ -837,7 +837,7 @@ void SP_misc_shield_floor_unit( gentity_t *ent )
 	vec3_t dest;
 	trace_t tr;
 
-	if (GT_Flag(g_gametype.integer))
+	if (GT_Flag(level.gametype))
 	{
 		G_FreeEntity( ent );
 		return;
@@ -3089,7 +3089,7 @@ void AESpawner_Think(gentity_t *ent)
 
 void SP_misc_animent_spawner(gentity_t *ent)
 {
-	if (g_gametype.integer != GT_SINGLE_PLAYER)
+	if (level.gametype != GT_SINGLE_PLAYER)
 	{
 		G_FreeEntity(ent);
 		return;
@@ -3214,7 +3214,7 @@ void Use_Target_Screenshake( gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void SP_target_screenshake(gentity_t *ent)
 {
-	if (g_gametype.integer != GT_SINGLE_PLAYER)
+	if (level.gametype != GT_SINGLE_PLAYER)
 	{
 		G_FreeEntity(ent);
 		return;
@@ -3263,7 +3263,7 @@ void Use_Target_Escapetrig( gentity_t *ent, gentity_t *other, gentity_t *activat
 
 void SP_target_escapetrig(gentity_t *ent)
 {
-	if (g_gametype.integer != GT_SINGLE_PLAYER)
+	if (level.gametype != GT_SINGLE_PLAYER)
 	{
 		G_FreeEntity(ent);
 		return;

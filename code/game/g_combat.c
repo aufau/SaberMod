@@ -576,7 +576,7 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	//ScorePlum(ent, origin, score);
 	//
 	ent->client->ps.persistant[PERS_SCORE] += score;
-	if ( g_gametype.integer == GT_TEAM )
+	if ( level.gametype == GT_TEAM )
 		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
 	CalculateRanks();
 }
@@ -714,7 +714,7 @@ void TossClientItems( gentity_t *self ) {
 	}
 
 	// drop all the powerups if not in teamplay
-	if ( g_gametype.integer != GT_TEAM ) {
+	if ( level.gametype != GT_TEAM ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
@@ -889,7 +889,7 @@ void CheckAlmostCapture( gentity_t *self, gentity_t *attacker ) {
 		self->client->ps.powerups[PW_BLUEFLAG] ||
 		self->client->ps.powerups[PW_NEUTRALFLAG] ) {
 		// get the goal flag this player should have been going for
-		if ( GT_Flag(g_gametype.integer) ) {
+		if ( GT_Flag(level.gametype) ) {
 			if ( self->client->sess.sessionTeam == TEAM_BLUE ) {
 				classname = "team_CTF_blueflag";
 			}
@@ -1827,7 +1827,7 @@ gentity_t *G_GetJediMaster(void)
 
 static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
 {
-	if (g_gametype.integer == GT_JEDIMASTER)
+	if (level.gametype == GT_JEDIMASTER)
 	{
 		if (attacker->client->ps.isJediMaster || self->client->ps.isJediMaster)
 		{
@@ -1886,7 +1886,7 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 
 static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t meansOfDeath )
 {
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{ //in duel, if you kill yourself, the person you are dueling against gets a kill for it
 		int otherClNum = -1;
 		if (level.sortedClients[0] == self->s.number)
@@ -1914,7 +1914,7 @@ static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker, meansOfDeath_
 		if ( meansOfDeath != MOD_LEAVE )
 			AddScore( attacker, self->r.currentOrigin, -1 );
 	}
-	if (g_gametype.integer == GT_JEDIMASTER)
+	if (level.gametype == GT_JEDIMASTER)
 	{
 		if (self->client && self->client->ps.isJediMaster)
 		{ //killed ourself so return the saber to the original position
@@ -1959,7 +1959,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 				killer, self->s.number, meansOfDeath, killerName,
 				self->client->pers.netname, obit );
 
-	if ( g_gametype.integer == GT_TOURNAMENT && level.numPlayingClients >= 2 )
+	if ( level.gametype == GT_TOURNAMENT && level.numPlayingClients >= 2 )
 	{
 		int spawnTime = (level.clients[level.sortedClients[0]].respawnTime > level.clients[level.sortedClients[1]].respawnTime) ? level.clients[level.sortedClients[0]].respawnTime : level.clients[level.sortedClients[1]].respawnTime;
 		G_LogPrintf(LOG_AUSTRIAN, "Duel Kill Details:\n");
@@ -2090,7 +2090,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		return;
 	}
 
-	if (g_slowmoDuelEnd.integer && g_gametype.integer == GT_TOURNAMENT
+	if (g_slowmoDuelEnd.integer && level.gametype == GT_TOURNAMENT
 		&& attacker && attacker->inuse && attacker->client && !gDoSlowMoDuel)
 	{
 		gDoSlowMoDuel = qtrue;
@@ -2942,7 +2942,7 @@ void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int death
 	if (ent->client)
 	{
 		G_GetDismemberBolt(ent, boltPoint, hitLocUse);
-		if ( g_gametype.integer == GT_TOURNAMENT )
+		if ( level.gametype == GT_TOURNAMENT )
 		{
 			G_LogPrintf(LOG_AUSTRIAN, "Duel Dismemberment: %s dismembered at %s\n",
 				ent->client->pers.netname, hitLocName[hitLoc] );
@@ -3233,7 +3233,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 
-		if (g_gametype.integer == GT_JEDIMASTER && !g_friendlyFire.integer &&
+		if (level.gametype == GT_JEDIMASTER && !g_friendlyFire.integer &&
 			targ && targ->client && attacker && attacker->client &&
 			targ != attacker && !targ->client->ps.isJediMaster && !attacker->client->ps.isJediMaster &&
 			G_ThereIsAMaster())
@@ -3380,7 +3380,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// See if it's the player hurting the emeny flag carrier
-	if(GT_Flag(g_gametype.integer)) {
+	if(GT_Flag(level.gametype)) {
 		Team_CheckHurtCarrier(targ, attacker);
 	}
 
@@ -3581,7 +3581,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			client->pers.totalDamageTakenFromEnemies += take;
 
-			if (GT_Round(g_gametype.integer)) {
+			if (GT_Round(level.gametype)) {
 				int	oldScore, newScore;
 
 				oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;

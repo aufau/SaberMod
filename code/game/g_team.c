@@ -78,7 +78,7 @@ void Team_SetFlagStatus( int team, flagStatus_t status );
 void Team_InitGame( void ) {
 	memset(&teamgame, 0, sizeof teamgame);
 
-	if (GT_Flag(g_gametype.integer)) {
+	if (GT_Flag(level.gametype)) {
 		teamgame.redStatus = FLAG_TAKEN; // Other to force update
 		teamgame.blueStatus = FLAG_ATBASE;
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
@@ -201,7 +201,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		return qfalse;
 	}
 
-	if (g_gametype.integer == GT_SINGLE_PLAYER)
+	if (level.gametype == GT_SINGLE_PLAYER)
 	{
 		qboolean ent1IsBot = qfalse;
 		qboolean ent2IsBot = qfalse;
@@ -222,7 +222,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		return qfalse;
 	}
 
-	if ( !GT_Team(g_gametype.integer) ) {
+	if ( !GT_Team(level.gametype) ) {
 		return qfalse;
 	}
 
@@ -306,7 +306,7 @@ void Team_SetFlagStatus( int team, flagStatus_t status ) {
 	if( modified ) {
 		char st[4];
 
-		if( GT_Flag(g_gametype.integer) ) {
+		if( GT_Flag(level.gametype) ) {
 			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
 			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
 			st[2] = 0;
@@ -612,7 +612,7 @@ gentity_t *Team_ResetFlag( int team ) {
 }
 
 void Team_ResetFlags( void ) {
-	if( GT_Flag(g_gametype.integer) ) {
+	if( GT_Flag(level.gametype) ) {
 		Team_ResetFlag( TEAM_RED );
 		Team_ResetFlag( TEAM_BLUE );
 	}
@@ -983,7 +983,7 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 	gentity_t	*spots[MAX_TEAM_SPAWN_POINTS];
 	const char	*classname;
 
-	if (g_gametype.integer == GT_SAGA)
+	if (level.gametype == GT_SAGA)
 	{
 		if (team == SAGATEAM_IMPERIAL)
 		{

@@ -950,7 +950,7 @@ static void G_UpdateJediMasterBroadcasts ( gentity_t *self )
 	int i;
 
 	// Not jedi master mode then nothing to do
-	if ( g_gametype.integer != GT_JEDIMASTER )
+	if ( level.gametype != GT_JEDIMASTER )
 	{
 		return;
 	}
@@ -1054,7 +1054,7 @@ void G_Respawn( gentity_t *ent ) {
 	if ( level.intermissionQueued )
 		return;
 
-	if ( g_gametype.integer == GT_REDROVER ) {
+	if ( level.gametype == GT_REDROVER ) {
 		if ( !level.roundQueued )
 			G_SwitchTeam(ent);
 		respawn( ent );
@@ -1191,7 +1191,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		client->ps.pm_type = PM_DEAD;
-	} else if ( GT_Round(g_gametype.integer) &&
+	} else if ( GT_Round(level.gametype) &&
 		( level.intermissionQueued || level.roundQueued ) ) {
 		client->ps.pm_type = PM_HARMLESS;
 	} else if (client->ps.forceGripChangeMovetype) {
@@ -1438,7 +1438,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	pm.animations = bgGlobalAnimations;//NULL;
 
-	pm.gametype = g_gametype.integer;
+	pm.gametype = level.gametype;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
@@ -1501,7 +1501,7 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		ent->client->ps.saberLockFrame = 0;
 		//check for taunt
-		if ( (pm.cmd.generic_cmd == GENCMD_ENGAGE_DUEL) && (g_gametype.integer == GT_TOURNAMENT) )
+		if ( (pm.cmd.generic_cmd == GENCMD_ENGAGE_DUEL) && (level.gametype == GT_TOURNAMENT) )
 		{//already in a duel, make it a taunt command
 			pm.cmd.buttons |= BUTTON_GESTURE;
 		}
@@ -1548,7 +1548,7 @@ void ClientThink_real( gentity_t *ent ) {
 		Cmd_ToggleSaber_f(ent);
 		break;
 	case GENCMD_ENGAGE_DUEL:
-		if ( g_gametype.integer == GT_TOURNAMENT )
+		if ( level.gametype == GT_TOURNAMENT )
 		{//already in a duel, made it a taunt command
 		}
 		else

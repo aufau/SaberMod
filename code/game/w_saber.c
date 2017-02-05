@@ -537,7 +537,7 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 	pmv.cmd = attacker->client->pers.cmd;
 	pmv.trace = trap_Trace;
 	pmv.pointcontents = trap_PointContents;
-	pmv.gametype = g_gametype.integer;
+	pmv.gametype = level.gametype;
 
 	//This is a rare exception, you should never really call PM_ utility functions from game or cgame (despite the fact that it's technically possible)
 	pm = &pmv;
@@ -622,7 +622,7 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 		ent1->client->ps.duelIndex != ent2->s.number ||
 		ent2->client->ps.duelIndex != ent1->s.number)
 	{ //only allow saber locking if two players are dueling with each other directly
-		if (g_gametype.integer != GT_TOURNAMENT)
+		if (level.gametype != GT_TOURNAMENT)
 		{
 			return qfalse;
 		}
@@ -2465,7 +2465,7 @@ void MakeDeadSaber(gentity_t *ent)
 	vec3_t startang;
 	gentity_t *saberent;
 
-	if (g_gametype.integer == GT_JEDIMASTER)
+	if (level.gametype == GT_JEDIMASTER)
 	{ //never spawn a dead saber in JM, because the only saber on the level is really a world object
 		G_Sound(ent, CHAN_AUTO, saberOffSound);
 		return;
@@ -2731,13 +2731,13 @@ void saberFirstThrown(gentity_t *saberent)
 		}
 	}
 
-	if (BG_HasYsalamiri(g_gametype.integer, &saberOwn->client->ps))
+	if (BG_HasYsalamiri(level.gametype, &saberOwn->client->ps))
 	{
 		thrownSaberTouch(saberent, saberent, NULL);
 		goto runMin;
 	}
 
-	if (!BG_CanUseFPNow(g_gametype.integer, &saberOwn->client->ps, level.time, FP_SABERTHROW))
+	if (!BG_CanUseFPNow(level.gametype, &saberOwn->client->ps, level.time, FP_SABERTHROW))
 	{
 		thrownSaberTouch(saberent, saberent, NULL);
 		goto runMin;
@@ -3142,7 +3142,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 					skipSaberTrace = qtrue;
 				}
 				else if (g_saberTraceSaberFirst.integer >= 2 &&
-					g_gametype.integer != GT_TOURNAMENT &&
+					level.gametype != GT_TOURNAMENT &&
 					!self->client->ps.duelInProgress)
 				{ //if value is >= 2, and not in a duel, skip
 					skipSaberTrace = qtrue;
@@ -3760,12 +3760,12 @@ qboolean HasSetSaberOnly(void)
 {
 	int wEnable;
 
-	if (g_gametype.integer == GT_JEDIMASTER)
+	if (level.gametype == GT_JEDIMASTER)
 	{ //set to 0
 		return qfalse;
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT)
+	if (level.gametype == GT_TOURNAMENT)
 	{
 		wEnable = ~g_duelWeaponDisable.integer;
 	}

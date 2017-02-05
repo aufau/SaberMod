@@ -333,7 +333,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	// check item spawn functions
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
-			if ( GT_Round(g_gametype.integer) )
+			if ( GT_Round(level.gametype) )
 				return qfalse;
 			G_SpawnItem( ent, item );
 			return qtrue;
@@ -465,7 +465,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	}
 
 	// check for "notsingle" flag
-	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {
+	if ( level.gametype == GT_SINGLE_PLAYER ) {
 		G_SpawnInt( "notsingle", "0", &i );
 		if ( i ) {
 			G_FreeEntity( ent );
@@ -473,7 +473,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		}
 	}
 	// check for "notteam" flag (GT_FFA, GT_TOURNAMENT, GT_SINGLE_PLAYER)
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(level.gametype) ) {
 		G_SpawnInt( "notteam", "0", &i );
 		if ( i ) {
 			G_FreeEntity( ent );
@@ -494,8 +494,8 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	}
 
 	if( G_SpawnString( "gametype", NULL, &value ) ) {
-		if( g_gametype.integer >= GT_FFA && g_gametype.integer < GT_MAX_GAME_TYPE ) {
-			gametypeName = gametypeNames[g_gametype.integer];
+		if( level.gametype >= GT_FFA && level.gametype < GT_MAX_GAME_TYPE ) {
+			gametypeName = gametypeNames[level.gametype];
 
 			s = strstr( value, gametypeName );
 			if( !s ) {
@@ -851,7 +851,7 @@ void SP_worldspawn( void )
 	if ( g_restarted.integer ) {
 		trap_Cvar_Set( "g_restarted", "0" );
 		level.warmupTime = 0;
-	} else if ( g_doWarmup.integer && g_gametype.integer != GT_TOURNAMENT ) { // Turn it on
+	} else if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) { // Turn it on
 		level.warmupTime = -1;
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );

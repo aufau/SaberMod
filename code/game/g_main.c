@@ -732,10 +732,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_FindTeams();
 
 	// make sure we have flags for CTF, etc
-	if( GT_Team(g_gametype.integer) ) {
+	if( GT_Team(level.gametype) ) {
 		G_CheckTeamItems();
 	}
-	else if ( g_gametype.integer == GT_JEDIMASTER )
+	else if ( level.gametype == GT_JEDIMASTER )
 	{
 		trap_SetConfigstring ( CS_CLIENT_JEDIMASTER, "-1" );
 	}
@@ -749,7 +749,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_Printf ("-----------------------------------\n");
 
-	if( g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue( "com_buildScript" ) ) {
+	if( level.gametype == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue( "com_buildScript" ) ) {
 		G_ModelIndex( SP_PODIUM_MODEL );
 		G_SoundIndex( "sound/player/gurp1.wav" );
 		G_SoundIndex( "sound/player/gurp2.wav" );
@@ -763,7 +763,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_RemapTeamShaders();
 
-	if ( g_gametype.integer == GT_TOURNAMENT )
+	if ( level.gametype == GT_TOURNAMENT )
 	{
 		G_LogPrintf( LOG_GAME, "Duel Tournament Begun: kill limit %d, win limit: %d\n",
 			g_fraglimit.integer, g_duel_fraglimit.integer );
@@ -1217,7 +1217,7 @@ void CalculateRanks( void ) {
 	}
 
 	/*
-	if (level.numNonSpectatorClients == 2 && preNumSpec < 2 && nonSpecIndex != -1 && g_gametype.integer == GT_TOURNAMENT && !level.warmupTime)
+	if (level.numNonSpectatorClients == 2 && preNumSpec < 2 && nonSpecIndex != -1 && level.gametype == GT_TOURNAMENT && !level.warmupTime)
 	{
 		gentity_t *currentWinner = G_GetDuelWinner(&level.clients[nonSpecIndex]);
 
@@ -1242,7 +1242,7 @@ void CalculateRanks( void ) {
 	}
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
+	if ( GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -1270,17 +1270,17 @@ void CalculateRanks( void ) {
 				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
 			}
 			score = newScore;
-			if ( g_gametype.integer == GT_SINGLE_PLAYER && level.numPlayingClients == 1 ) {
+			if ( level.gametype == GT_SINGLE_PLAYER && level.numPlayingClients == 1 ) {
 				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
 			}
 		}
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( g_gametype.integer == GT_REDROVER ) {
+	if ( level.gametype == GT_REDROVER ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", TeamCount( -1, TEAM_RED, qtrue ) ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", TeamCount( -1, TEAM_BLUE, qtrue ) ) );
-	} else if ( GT_Team(g_gametype.integer) ) {
+	} else if ( GT_Team(level.gametype) ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -1295,7 +1295,7 @@ void CalculateRanks( void ) {
 			trap_SetConfigstring( CS_SCORES2, va("%i", level.clients[ level.sortedClients[1] ].ps.persistant[PERS_SCORE] ) );
 		}
 
-		if (g_gametype.integer != GT_TOURNAMENT)
+		if (level.gametype != GT_TOURNAMENT)
 		{ //when not in duel, use this configstring to pass the index of the player currently in first place
 			if ( level.numConnectedClients >= 1 )
 			{
@@ -1312,7 +1312,7 @@ void CalculateRanks( void ) {
 	CheckExitRules();
 
 	// if we are at the intermission or in multi-frag Duel game mode, send the new info to everyone
-	if ( level.intermissiontime || g_gametype.integer == GT_TOURNAMENT ) {
+	if ( level.intermissiontime || level.gametype == GT_TOURNAMENT ) {
 		gQueueScoreMessage = qtrue;
 		gQueueScoreMessageTime = level.time + 500;
 		//SendScoreboardMessageToAllClients();
@@ -1428,7 +1428,7 @@ void BeginIntermission( void ) {
 	}
 
 	// if in tournement mode, change the wins / losses
-	if ( g_gametype.integer == GT_TOURNAMENT ) {
+	if ( level.gametype == GT_TOURNAMENT ) {
 		trap_SetConfigstring ( CS_CLIENT_DUELWINNER, "-1" );
 
 		AdjustTournamentScores();
@@ -1547,7 +1547,7 @@ static void NextRound( void )
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
 	}
 
-	if ( g_gametype.integer == GT_REDROVER ) {
+	if ( level.gametype == GT_REDROVER ) {
 		Shuffle(); // calls CheckExitRules
 	} else {
 		gentity_t	*ent;
@@ -1610,7 +1610,7 @@ void ExitLevel (void) {
 
 	// if we are running a tournement map, kick the loser to spectator status,
 	// which will automatically grab the next spectator and restart
-	if ( g_gametype.integer == GT_TOURNAMENT  ) {
+	if ( level.gametype == GT_TOURNAMENT  ) {
 		if (!DuelLimitHit())
 		{
 			if ( !level.restarted ) {
@@ -1740,7 +1740,7 @@ void LogExit( const char *string ) {
 	int				i;
 	gclient_t		*cl;
 	qboolean		won = qtrue;
-	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", machineGameNames[g_gametype.integer], string );
+	G_LogPrintf( LOG_GAME, "Exit: %s: %s\n", machineGameNames[level.gametype], string );
 
 	level.intermissionQueued = level.time;
 
@@ -1748,7 +1748,7 @@ void LogExit( const char *string ) {
 	// that will get cut off when the queued intermission starts
 	trap_SetConfigstring( CS_INTERMISSION, "1" );
 
-	if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
+	if ( GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 		G_LogPrintf( LOG_GAME, "Score: %i %i: %s %s\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
 			teamName[TEAM_RED], teamName[TEAM_BLUE]);
@@ -1768,7 +1768,7 @@ void LogExit( const char *string ) {
 	G_LogStats();
 
 	if (g_singlePlayer.integer) {
-		if (g_gametype.integer == GT_TOURNAMENT) {
+		if (level.gametype == GT_TOURNAMENT) {
 			for (i=0 ; i < level.numPlayingClients ; i++) {
 				cl = &level.clients[level.sortedClients[i]];
 
@@ -1777,7 +1777,7 @@ void LogExit( const char *string ) {
 					won = qfalse;
 				}
 			}
-		} else if (GT_Flag(g_gametype.integer)) {
+		} else if (GT_Flag(level.gametype)) {
 			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
 		}
 
@@ -1834,7 +1834,7 @@ void CheckIntermissionExit( void ) {
 		}
 	}
 
-	if ( g_gametype.integer == GT_TOURNAMENT && !gDidDuelStuff &&
+	if ( level.gametype == GT_TOURNAMENT && !gDidDuelStuff &&
 		(level.time > level.intermissiontime + 2000) )
 	{
 		gDidDuelStuff = qtrue;
@@ -1923,7 +1923,7 @@ void CheckIntermissionExit( void ) {
 		}
 	}
 
-	if (g_gametype.integer == GT_TOURNAMENT && !gDuelExit)
+	if (level.gametype == GT_TOURNAMENT && !gDuelExit)
 	{ //in duel, we have different behaviour for between-round intermissions
 		if ( level.time > level.intermissiontime + 4000 )
 		{ //automatically go to next after 4 seconds
@@ -1999,7 +1999,7 @@ qboolean ScoreIsTied( void ) {
 		return qfalse;
 	}
 
-	if ( GT_Team(g_gametype.integer) ) {
+	if ( GT_Team(level.gametype) ) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
 
@@ -2074,18 +2074,18 @@ void CheckExitRules( void ) {
 
 		if ( g_singlePlayer.integer ) {
 			time = SP_INTERMISSION_DELAY_TIME;
-		} else if ( GT_Round(g_gametype.integer) ) {
+		} else if ( GT_Round(level.gametype) ) {
 			time = ROUND_INTERMISSION_DELAY_TIME;
 		} else {
 			time = INTERMISSION_DELAY_TIME;
 		}
 		if ( level.time - level.intermissionQueued >= time ) {
 			level.intermissionQueued = 0;
-			if (GT_Round(g_gametype.integer)) {
+			if (GT_Round(level.gametype)) {
 				qboolean abort = qfalse;
 				qboolean roundlimitHit = qfalse;
 
-				if ( g_gametype.integer == GT_REDROVER ) {
+				if ( level.gametype == GT_REDROVER ) {
 					if ( level.numPlayingClients < 2 )
 						abort = qtrue;
 					if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
@@ -2141,9 +2141,9 @@ void CheckExitRules( void ) {
 	}
 
 	// check for sudden death
-	if ( g_gametype.integer != GT_TOURNAMENT || !g_timelimit.integer ) {
+	if ( level.gametype != GT_TOURNAMENT || !g_timelimit.integer ) {
 		// always wait for sudden death
-		if ( !GT_Round(g_gametype.integer) && ScoreIsTied() ) {
+		if ( !GT_Round(level.gametype) && ScoreIsTied() ) {
 			return;
 		}
 	}
@@ -2152,7 +2152,7 @@ void CheckExitRules( void ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
 
-			if ( GT_Round(g_gametype.integer) ) {
+			if ( GT_Round(level.gametype) ) {
 				team_t winner = GetStrongerTeam();
 
 				if ( winner == TEAM_SPECTATOR ) {
@@ -2173,8 +2173,8 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( GT_Round(g_gametype.integer) ) {
-		qboolean	countDead = ( g_gametype.integer == GT_REDROVER && g_forcerespawn.integer <= 5 );
+	if ( GT_Round(level.gametype) ) {
+		qboolean	countDead = ( level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5 );
 		int			redCount = TeamCount( -1, TEAM_RED, countDead );
 		int			blueCount = TeamCount( -1, TEAM_BLUE, countDead );
 
@@ -2205,7 +2205,7 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( !GT_Flag(g_gametype.integer) && !GT_Round(g_gametype.integer) && g_fraglimit.integer ) {
+	if ( !GT_Flag(level.gametype) && !GT_Round(level.gametype) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, va("print \"" S_COLOR_RED "Red" S_COLOR_WHITE " %s\n\"",
 					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
@@ -2229,7 +2229,7 @@ void CheckExitRules( void ) {
 				continue;
 			}
 
-			if ( g_gametype.integer == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
+			if ( level.gametype == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
 			{
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
@@ -2251,7 +2251,7 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( GT_Flag(g_gametype.integer) && g_capturelimit.integer ) {
+	if ( GT_Flag(level.gametype) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"" S_COLOR_RED "Red" S_COLOR_WHITE " hit the capturelimit.\n\"");
@@ -2316,7 +2316,7 @@ void CheckTournament( void ) {
 		return;
 	}
 
-	if ( g_gametype.integer == GT_TOURNAMENT ) {
+	if ( level.gametype == GT_TOURNAMENT ) {
 
 		// pull in a spectator if needed
 		if ( level.numNonSpectatorClients < 2 ) {
@@ -2409,7 +2409,7 @@ void CheckTournament( void ) {
 		int		counts[TEAM_NUM_TEAMS];
 		qboolean	notEnough = qfalse;
 
-		if ( GT_Team(g_gametype.integer) && g_gametype.integer != GT_REDROVER ) {
+		if ( GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE, qtrue );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED, qtrue );
 

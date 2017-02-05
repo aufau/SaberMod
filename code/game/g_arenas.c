@@ -79,7 +79,7 @@ void UpdateTournamentInfo( void ) {
 			accuracy = 0;
 		}
 		won = qfalse;
-		if (GT_Flag(g_gametype.integer)) {
+		if (GT_Flag(level.gametype)) {
 			score1 = level.teamScores[TEAM_RED];
 			score2 = level.teamScores[TEAM_BLUE];
 			if (level.clients[playerClientNum].sess.sessionTeam	== TEAM_RED) {
@@ -347,7 +347,7 @@ void SpawnModelsOnVictoryPads( void ) {
 //===============
 
 void Svcmd_AbortPodium_f( void ) {
-	if( g_gametype.integer != GT_SINGLE_PLAYER ) {
+	if( level.gametype != GT_SINGLE_PLAYER ) {
 		return;
 	}
 
