@@ -459,6 +459,36 @@ Q_NORETURN void QDECL G_Error( const char *fmt, ... ) {
 
 /*
 ================
+G_GametypeForString
+
+Returns GT_MAX_GAME_TYPE for unrecognized gametype
+================
+*/
+gametype_t G_GametypeForString( const char *s ) {
+	int			i;
+
+	if ( Q_IsInteger( s ) )
+	{
+		i = atoi( s );
+	}
+	else
+	{
+		for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
+			if ( !Q_stricmp( s, gameNames[i] ) )
+				break;
+			if ( !Q_stricmp( s, machineGameNames[i] ) )
+				break;
+		}
+	}
+
+	if ( i < 0 || i >= GT_MAX_GAME_TYPE )
+		return GT_MAX_GAME_TYPE;
+	else
+		return (gametype_t) i;
+}
+
+/*
+================
 G_FindTeams
 
 Chain together all entities with a matching team field.
@@ -557,12 +587,6 @@ void G_RegisterCvars( void ) {
 		G_RemapTeamShaders();
 	}
 
-	// check some things
-	if ( g_gametype.integer < 0 || g_gametype.integer >= GT_MAX_GAME_TYPE ) {
-		G_Printf( "g_gametype %i is out of range, defaulting to 0\n", g_gametype.integer );
-		trap_Cvar_Set( "g_gametype", "0" );
-	}
-
 	level.warmupModificationCount = g_warmup.modificationCount;
 }
 
@@ -633,6 +657,15 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.idleTime = levelTime;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
+
+	// set gametype
+	level.gametype = G_GametypeForString( g_gametype.string );
+	if ( level.gametype == GT_MAX_GAME_TYPE ) {
+		G_Printf( "Unrecognized g_gametype %s, defaulting to FFA\n", g_gametype.string );
+		level.gametype = GT_FFA;
+	}
+	// set numeric value for engine hacks
+	trap_Cvar_Set( "g_gametype", va( "%d", level.gametype ) );
 
 	//trap_SP_RegisterServer("mp_svgame");
 
@@ -1668,7 +1701,21 @@ void G_LogPrintf( int event, const char *fmt, ... ) {
 	}
 }
 
-const char *machineGameNames[GT_MAX_GAME_TYPE] = {
+const char * const gameNames[GT_MAX_GAME_TYPE] = {
+	"Free For All",
+	"Holocron FFA",
+	"Jedi Master",
+	"Duel",
+	"Single Player",
+	"Team FFA",
+	"N/A",
+	"Capture the Flag",
+	"Capture the Ysalamiri",
+	"Red Rover",
+	"Clan Arena",
+};
+
+const char * const machineGameNames[GT_MAX_GAME_TYPE] = {
 	"FFA",
 	"HOLOCRON",
 	"JEDIMASTER",
@@ -2424,7 +2471,7 @@ void CheckVote( void ) {
 
 		if (level.voteCmd == CV_GAMETYPE)
 		{
-			if (trap_Cvar_VariableIntegerValue("g_gametype") != level.voteArg)
+			if (level.gametype != level.voteArg)
 			{ //If we're voting to a different game type, be sure to refresh all the map stuff
 				const char *nextMap = G_RefreshNextMap(level.voteArg, qtrue);
 
@@ -2441,8 +2488,8 @@ void CheckVote( void ) {
 
 			if (g_fraglimitVoteCorrection.integer)
 			{ //This means to auto-correct fraglimit when voting to and from duel.
-				int currentGT = trap_Cvar_VariableIntegerValue("g_gametype");
-				int currentFL = trap_Cvar_VariableIntegerValue("fraglimit");
+				int currentGT = level.gametype;
+				int currentFL = g_fraglimit.integer;
 
 				if (level.voteArg == GT_TOURNAMENT && currentGT != GT_TOURNAMENT)
 				{

@@ -1764,20 +1764,6 @@ void Cmd_Where_f( gentity_t *ent ) {
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
 }
 
-static const char *gameNames[] = {
-	"Free For All",
-	"Holocron FFA",
-	"Jedi Master",
-	"Duel",
-	"Single Player",
-	"Team FFA",
-	"N/A",
-	"Capture the Flag",
-	"Capture the Ysalamiri",
-	"Red Rover",
-	"Clan Arena",
-};
-
 /*
 ==================
 Cmd_CallVote_f
@@ -1852,18 +1838,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
-		// special case for g_gametype, check for bad values
-		if ( isdigit( arg2[0] ) ) {
-			i = atoi( arg2 );
-		} else {
-			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
-				if ( !Q_stricmp(gameNames[i], arg2) ||
-					!Q_stricmp(machineGameNames[i], arg2) )
-					break;
-			}
-		}
+		i = G_GametypeForString( arg2 );
 
-		if( i == GT_SINGLE_PLAYER || i == GT_SAGA || i < 0 || i >= GT_MAX_GAME_TYPE) {
+		if ( i == GT_MAX_GAME_TYPE ) {
 			char		gametypes[MAX_PRINT_TEXT] = { 0 };
 			qboolean	printSep = qfalse;
 			char		*p;

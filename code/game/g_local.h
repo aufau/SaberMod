@@ -525,6 +525,7 @@ typedef struct {
 
 	// store latched cvars here that we want to get at often
 	int			maxclients;
+	gametype_t	gametype;
 
 	int			framenum;
 	int			time;					// in msec
@@ -888,7 +889,8 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 extern vmCvar_t g_ff_objectives;
 extern qboolean gDoSlowMoDuel;
 extern int gSlowMoDuelTime;
-extern const char *machineGameNames[GT_MAX_GAME_TYPE];
+extern const char * const gameNames[GT_MAX_GAME_TYPE];
+extern const char * const machineGameNames[GT_MAX_GAME_TYPE];
 
 void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
@@ -899,6 +901,7 @@ void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
 const char *G_GetStripEdString(const char *refSection, const char *refName);
+gametype_t G_GametypeForString( const char *s );
 
 //
 // g_client.c
