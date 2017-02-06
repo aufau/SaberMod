@@ -1942,12 +1942,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			}
 			if ( i > 2 ) {
 				Com_sprintf( level.voteString, sizeof( level.voteString ),
-					"dmflags %d; g_friendlyFire 1; g_noKick 3; ", g_dmflags.integer | DF_NO_KICK );
+					"dmflags %d; g_friendlyFire 1; g_noKick 3", g_dmflags.integer | DF_NO_KICK );
+				Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick" );
 			} else {
 				Com_sprintf( level.voteString, sizeof( level.voteString ),
-					"dmflags %d; g_friendlyFire 1; g_noKick %d; ", i, g_dmflags.integer & ~DF_NO_KICK );
+					"dmflags %d; g_friendlyFire 1; g_noKick %d", g_dmflags.integer & ~DF_NO_KICK, i );
+				Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick (%d)", i );
 			}
-			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick %d", i );
 		}
 		else
 		{
