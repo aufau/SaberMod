@@ -46,8 +46,6 @@ This is the only way control passes into the module.
 !!! This MUST BE THE VERY FIRST FUNCTION compiled into the .qvm file !!!
 ================
 */
-vmCvar_t  ui_debug;
-vmCvar_t  ui_initialized;
 
 void _UI_Init( qboolean );
 void _UI_MVAPI_Init( int apilevel );
@@ -7043,34 +7041,11 @@ typedef struct {
 	int			cvarFlags;
 } cvarTable_t;
 
-vmCvar_t	ui_ffa_fraglimit;
-vmCvar_t	ui_ffa_timelimit;
-
-vmCvar_t	ui_tourney_fraglimit;
-vmCvar_t	ui_tourney_timelimit;
-
 vmCvar_t	ui_selectedModelIndex;
-
-vmCvar_t	ui_team_fraglimit;
-vmCvar_t	ui_team_timelimit;
-vmCvar_t	ui_team_friendly;
-
-vmCvar_t	ui_ctf_capturelimit;
-vmCvar_t	ui_ctf_timelimit;
-vmCvar_t	ui_ctf_friendly;
 
 vmCvar_t	ui_arenasFile;
 vmCvar_t	ui_botsFile;
-vmCvar_t	ui_spScores1;
-vmCvar_t	ui_spScores2;
-vmCvar_t	ui_spScores3;
-vmCvar_t	ui_spScores4;
-vmCvar_t	ui_spScores5;
-vmCvar_t	ui_spAwards;
-vmCvar_t	ui_spVideos;
 vmCvar_t	ui_spSkill;
-
-vmCvar_t	ui_spSelection;
 
 vmCvar_t	ui_browserMaster;
 vmCvar_t	ui_browserGameType;
@@ -7079,25 +7054,6 @@ vmCvar_t	ui_browserShowFull;
 vmCvar_t	ui_browserShowEmpty;
 
 vmCvar_t	ui_drawCrosshair;
-vmCvar_t	ui_drawCrosshairNames;
-vmCvar_t	ui_marks;
-
-vmCvar_t	ui_server1;
-vmCvar_t	ui_server2;
-vmCvar_t	ui_server3;
-vmCvar_t	ui_server4;
-vmCvar_t	ui_server5;
-vmCvar_t	ui_server6;
-vmCvar_t	ui_server7;
-vmCvar_t	ui_server8;
-vmCvar_t	ui_server9;
-vmCvar_t	ui_server10;
-vmCvar_t	ui_server11;
-vmCvar_t	ui_server12;
-vmCvar_t	ui_server13;
-vmCvar_t	ui_server14;
-vmCvar_t	ui_server15;
-vmCvar_t	ui_server16;
 
 vmCvar_t	ui_cdkeychecked;
 
@@ -7158,8 +7114,6 @@ vmCvar_t	ui_scoreShutoutBonus;
 vmCvar_t	ui_scoreTime;
 vmCvar_t	ui_captureLimit;
 vmCvar_t	ui_fragLimit;
-vmCvar_t	ui_smallFont;
-vmCvar_t	ui_bigFont;
 vmCvar_t	ui_findPlayer;
 vmCvar_t	ui_Q3Model;
 vmCvar_t	ui_hudFiles;
@@ -7171,34 +7125,11 @@ vmCvar_t	s_language;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		cvarTable[] = {
-	{ &ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE },
-	{ &ui_ffa_timelimit, "ui_ffa_timelimit", "0", CVAR_ARCHIVE },
-
-	{ &ui_tourney_fraglimit, "ui_tourney_fraglimit", "0", CVAR_ARCHIVE },
-	{ &ui_tourney_timelimit, "ui_tourney_timelimit", "15", CVAR_ARCHIVE },
-
 	{ &ui_selectedModelIndex, "ui_selectedModelIndex", "16", CVAR_ARCHIVE },
-
-	{ &ui_team_fraglimit, "ui_team_fraglimit", "0", CVAR_ARCHIVE },
-	{ &ui_team_timelimit, "ui_team_timelimit", "20", CVAR_ARCHIVE },
-	{ &ui_team_friendly, "ui_team_friendly",  "1", CVAR_ARCHIVE },
-
-	{ &ui_ctf_capturelimit, "ui_ctf_capturelimit", "8", CVAR_ARCHIVE },
-	{ &ui_ctf_timelimit, "ui_ctf_timelimit", "30", CVAR_ARCHIVE },
-	{ &ui_ctf_friendly, "ui_ctf_friendly",  "0", CVAR_ARCHIVE },
 
 	{ &ui_arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM },
 	{ &ui_botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM },
-	{ &ui_spScores1, "g_spScores1", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spScores2, "g_spScores2", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spScores3, "g_spScores3", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spScores4, "g_spScores4", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spScores5, "g_spScores5", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spAwards, "g_spAwards", "", CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_spVideos, "g_spVideos", "", CVAR_ARCHIVE | CVAR_ROM },
 	{ &ui_spSkill, "g_spSkill", "2", CVAR_ARCHIVE },
-
-	{ &ui_spSelection, "ui_spSelection", "", CVAR_ROM },
 
 	{ &ui_browserMaster, "ui_browserMaster", "0", CVAR_ARCHIVE },
 	{ &ui_browserGameType, "ui_browserGameType", "0", CVAR_ARCHIVE },
@@ -7207,28 +7138,8 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_browserShowEmpty, "ui_browserShowEmpty", "1", CVAR_ARCHIVE },
 
 	{ &ui_drawCrosshair, "cg_drawCrosshair", "1", CVAR_ARCHIVE },
-	{ &ui_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
-	{ &ui_marks, "cg_marks", "1", CVAR_ARCHIVE },
 
-	{ &ui_server1, "server1", "", CVAR_ARCHIVE },
-	{ &ui_server2, "server2", "", CVAR_ARCHIVE },
-	{ &ui_server3, "server3", "", CVAR_ARCHIVE },
-	{ &ui_server4, "server4", "", CVAR_ARCHIVE },
-	{ &ui_server5, "server5", "", CVAR_ARCHIVE },
-	{ &ui_server6, "server6", "", CVAR_ARCHIVE },
-	{ &ui_server7, "server7", "", CVAR_ARCHIVE },
-	{ &ui_server8, "server8", "", CVAR_ARCHIVE },
-	{ &ui_server9, "server9", "", CVAR_ARCHIVE },
-	{ &ui_server10, "server10", "", CVAR_ARCHIVE },
-	{ &ui_server11, "server11", "", CVAR_ARCHIVE },
-	{ &ui_server12, "server12", "", CVAR_ARCHIVE },
-	{ &ui_server13, "server13", "", CVAR_ARCHIVE },
-	{ &ui_server14, "server14", "", CVAR_ARCHIVE },
-	{ &ui_server15, "server15", "", CVAR_ARCHIVE },
-	{ &ui_server16, "server16", "", CVAR_ARCHIVE },
 	{ &ui_cdkeychecked, "ui_cdkeychecked", "0", CVAR_ROM },
-	{ &ui_debug, "ui_debug", "0", CVAR_TEMP },
-	{ &ui_initialized, "ui_initialized", "0", CVAR_TEMP },
 	{ &ui_teamName, "ui_teamName", "Empire", CVAR_ARCHIVE },
 	{ &ui_opponentName, "ui_opponentName", "Rebellion", CVAR_ARCHIVE },
 	{ &ui_rankChange, "ui_rankChange", "0", CVAR_ARCHIVE },
@@ -7288,8 +7199,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_scoreShutoutBonus, "ui_scoreShutoutBonus", "0", CVAR_ARCHIVE},
 	{ &ui_fragLimit, "ui_fragLimit", "10", 0},
 	{ &ui_captureLimit, "ui_captureLimit", "5", 0},
-	{ &ui_smallFont, "ui_smallFont", "0.25", CVAR_ARCHIVE},
-	{ &ui_bigFont, "ui_bigFont", "0.4", CVAR_ARCHIVE},
 	{ &ui_findPlayer, "ui_findPlayer", "Kyle", CVAR_ARCHIVE},
 	{ &ui_Q3Model, "ui_q3model", "0", CVAR_ARCHIVE},
 	{ &ui_recordSPDemo, "ui_recordSPDemo", "0", CVAR_ARCHIVE},

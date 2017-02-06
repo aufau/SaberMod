@@ -6010,22 +6010,23 @@ void CG_Player( centity_t *cent ) {
 	// get the player model information
 	renderfx = 0;
 	if ( cent->currentState.number == cg.snap->ps.clientNum) {
-		if (!cg.renderingThirdPerson) {
+		if (!cg.renderingThirdPerson)
+		{
 			if (!cg_fpls.integer || cent->currentState.weapon != WP_SABER)
 			{
 				renderfx = RF_THIRD_PERSON;			// only draw in mirrors
 			}
-		} else {
-			if (cg_cameraMode.integer) {
-				iwantout = 1;
-
-
-				// goto minimal_add;
-
-				// NOTENOTE Temporary
-				return;
-			}
 		}
+		/*
+		else if (cg_cameraMode.integer) {
+			iwantout = 1;
+
+			// goto minimal_add;
+
+			// NOTENOTE Temporary
+			return;
+		}
+		*/
 	}
 
 	// Update the player's client entity information regarding weapons.

@@ -236,10 +236,10 @@ static cvarTable_t	gameCvarTable[] = {
 	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_doWarmup, "g_doWarmup", "0", 0, 0, qtrue  },
 
-	{ &g_log[0], "g_log1", "games.log", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_log[2], "g_log3", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_log[3], "g_log4", "", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_log[0], "g_log1", "games.log", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
+	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
+	{ &g_log[2], "g_log3", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
+	{ &g_log[3], "g_log4", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
 	{ &g_logFilter[0], "g_logFilter1", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_logFilter[1], "g_logFilter2", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_logFilter[2], "g_logFilter3", "", CVAR_ARCHIVE, 0, qfalse },
@@ -273,10 +273,10 @@ static cvarTable_t	gameCvarTable[] = {
 	{ &g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse },
 	{ &g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse },
 	{ &g_motd, "g_motd", "", 0, 0, qfalse },
-	{ &g_blood, "com_blood", "1", 0, 0, qfalse },
+//	{ &g_blood, "com_blood", "1", 0, 0, qfalse },
 
-	{ &g_podiumDist, "g_podiumDist", "80", 0, 0, qfalse },
-	{ &g_podiumDrop, "g_podiumDrop", "70", 0, 0, qfalse },
+//	{ &g_podiumDist, "g_podiumDist", "80", 0, 0, qfalse },
+//	{ &g_podiumDrop, "g_podiumDrop", "70", 0, 0, qfalse },
 
 	{ &g_allowVote, "g_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_listEntity, "g_listEntity", "0", 0, 0, qfalse },
