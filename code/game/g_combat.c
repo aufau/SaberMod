@@ -3306,7 +3306,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	if (dflags == DAMAGE_NO_DAMAGE) {
+	if (dflags & DAMAGE_NO_DAMAGE) {
 		damage = 0;
 	}
 
