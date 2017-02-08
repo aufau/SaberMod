@@ -1450,6 +1450,9 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		}
 	}
 
+	if ( clientNum >= level.maxclients )
+		return "Too many clients";
+
 	// they can connect
 	ent->client = level.clients + clientNum;
 	client = ent->client;
