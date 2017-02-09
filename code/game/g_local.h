@@ -345,6 +345,11 @@ typedef enum {
 	TEAM_ACTIVE		// Now actively playing
 } playerTeamStateState_t;
 
+typedef union {
+	byte		b[4];
+	unsigned	ui;
+} qipv4_t;
+
 typedef struct {
 	playerTeamStateState_t	state;
 
@@ -383,6 +388,8 @@ typedef struct {
 	qboolean	setForce;			// set to true once player is given the chance to set force powers
 	int			updateUITime;		// only update userinfo for FP/SL if < level.time
 	qboolean	teamLeader;			// true when this client is a team leader
+	qipv4_t		ip;					// parsed "ip" info key
+	int			qport;				// parsed "qport" info key
 } clientSession_t;
 
 //
@@ -416,6 +423,12 @@ typedef struct {
 	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
 
+// client data that stays across reconnections.
+typedef struct {
+	qipv4_t		ip;
+	int			qport;
+	int			switchTeamTime;		// time the player switched teams
+} clientProfile_t;
 
 // this structure is cleared on each ClientSpawn(),
 // except for 'client->pers' and 'client->sess'
@@ -426,6 +439,7 @@ struct gclient_s {
 	// the rest of the structure is private to game
 	clientPersistant_t	pers;
 	clientSession_t		sess;
+	clientProfile_t		prof;
 
 	int			invulnerableTimer;
 
@@ -475,8 +489,6 @@ struct gclient_s {
 
 	qboolean	fireHeld;			// used for hook
 	gentity_t	*hook;				// grapple hook if out
-
-	int			switchTeamTime;		// time the player switched teams
 
 	// timeResidual is used to handle events that happen every second
 	// like health / armor countdowns and regeneration
@@ -860,6 +872,7 @@ extern gentity_t *gJMSaberEnt;
 qboolean	ConsoleCommand( void );
 void G_ProcessIPBans(void);
 qboolean G_FilterPacket (const char *from);
+qipv4_t G_StringToIPv4(const char *s);
 
 //
 // g_weapon.c

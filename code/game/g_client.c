@@ -1427,6 +1427,10 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		address[MAX_INFO_VALUE];
 	gentity_t	*ent;
 	gentity_t	*te;
+	qipv4_t		ip;
+	int			qport;
+	qboolean	reconnected = qfalse;
+	clientProfile_t	savedProf;
 
 	ent = &g_entities[ clientNum ];
 
@@ -1438,6 +1442,10 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	if ( G_FilterPacket( value ) ) {
 		return "Banned.";
 	}
+	ip = G_StringToIPv4( value );
+
+	value = Info_ValueForKey (userinfo, "qport");
+	qport = atoi( value );
 
 	if ( !( ent->r.svFlags & SVF_BOT ) && !isBot && g_needpass.integer ) {
 		// check for a password
@@ -1457,9 +1465,22 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	ent->client = level.clients + clientNum;
 	client = ent->client;
 
+	// players can't get rid of removed status by simply reconnecting
+	if ( ip.ui == client->prof.ip.ui && qport == client->prof.qport ) {
+		savedProf = client->prof;
+		reconnected = qtrue;
+	}
+
 //	areabits = client->areabits;
 
 	memset( client, 0, sizeof(*client) );
+
+	if ( reconnected ) {
+		client->prof = savedProf;
+	} else {
+		client->prof.ip = ip;
+		client->prof.qport = qport;
+	}
 
 	client->pers.connected = CON_CONNECTING;
 
@@ -1734,6 +1755,7 @@ void ClientSpawn(gentity_t *ent) {
 	int		i;
 	clientPersistant_t	saved;
 	clientSession_t		savedSess;
+	clientProfile_t		savedProf;
 	int		persistant[MAX_PERSISTANT];
 	gentity_t	*spawnPoint;
 	int		flags;
@@ -1812,6 +1834,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	saved = client->pers;
 	savedSess = client->sess;
+	savedProf = client->prof;
 	savedPing = client->ps.ping;
 //	savedAreaBits = client->areabits;
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
@@ -1839,6 +1862,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->pers = saved;
 	client->sess = savedSess;
+	client->prof = savedProf;
 	client->ps.ping = savedPing;
 //	client->areabits = savedAreaBits;
 	client->lastkilled_client = -1;

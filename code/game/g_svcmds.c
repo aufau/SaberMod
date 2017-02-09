@@ -118,6 +118,58 @@ static qboolean StringToFilter (char *s, ipFilter_t *f)
 
 /*
 =================
+G_StringToIPv4
+=================
+*/
+qipv4_t G_StringToIPv4(const char *s)
+{
+	qipv4_t	ip;
+	char	c;
+	int		i;
+
+	if ( !strcmp( s, "localhost" ) )
+	{
+		ip.b[0] = 127;
+		ip.b[1] = 0;
+		ip.b[2] = 0;
+		ip.b[3] = 1;
+
+		return ip;
+	}
+
+	for ( i = 0; i < 4; i++ )
+	{
+		unsigned	b = 0;
+
+		c = *s;
+		while ( isdigit( c ) ) {
+			b = b * 10 + (c - '0');
+			s++;
+			c = *s;
+		}
+
+		if ( b > 0xffu ) {
+			ip.ui = 0;
+			return ip;
+		}
+
+		ip.b[i] = b;
+		s++;
+
+		if ( c != '.' )
+			break;
+	}
+
+	if ( i != 3 )
+		ip.ui = 0;
+	if ( c != '\0' && c != ':' )
+		ip.ui = 0;
+
+	return ip;
+}
+
+/*
+=================
 UpdateIPBans
 =================
 */
@@ -397,7 +449,7 @@ void	Svcmd_ForceTeam_f( void ) {
 	if ( team != TEAM_NUM_TEAMS ) {
 		ent = g_entities + clientNum;
 		SetTeam( ent, team );
-		ent->client->switchTeamTime = level.time + 5000;
+		ent->client->prof.switchTeamTime = level.time + 5000;
 	}
 }
 
@@ -479,7 +531,7 @@ void	Svcmd_Remove_f( void )
 		SetTeam( ent, TEAM_SPECTATOR );
 	// overwrite "joined the spectators" message
 	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->pers.netname) );
-	ent->client->switchTeamTime = level.time + delay;
+	ent->client->prof.switchTeamTime = level.time + delay;
 }
 
 /*

@@ -911,7 +911,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 	}
 
 	if ( SetTeamSpec( ent, team, specState, ent->client->sess.spectatorClient ) ) {
-		ent->client->switchTeamTime = level.time + 5000;
+		ent->client->prof.switchTeamTime = level.time + 5000;
 	};
 }
 
@@ -1003,11 +1003,11 @@ void Cmd_Team_f( gentity_t *ent ) {
 		return;
 	}
 
-	if ( ent->client->switchTeamTime > level.time ) {
-		if ( ent->client->switchTeamTime - level.time > 5000 ) {
+	if ( ent->client->prof.switchTeamTime > level.time ) {
+		if ( ent->client->prof.switchTeamTime - level.time > 5000 ) {
 			trap_SendServerCommand( ent-g_entities,
 				va("print \"You were removed. May not switch teams for %d seconds\n\"",
-					(ent->client->switchTeamTime - level.time + 999) / 1000));
+					(ent->client->prof.switchTeamTime - level.time + 999) / 1000));
 		} else {
 			trap_SendServerCommand( ent-g_entities,
 				va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSWITCH")) );
@@ -1101,7 +1101,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	}
 
 	if ( SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, i ) ) {
-		ent->client->switchTeamTime = level.time + 5000;
+		ent->client->prof.switchTeamTime = level.time + 5000;
 	};
 }
 
