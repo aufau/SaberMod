@@ -1484,6 +1484,8 @@ done:
 	else
 		*buf_end = '\0';
 
+	assert( buf_p <= buf_end );
+
 	return buf_p - buffer;
 }
 
