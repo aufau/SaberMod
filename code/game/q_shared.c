@@ -1105,19 +1105,16 @@ qboolean Q_IsInteger( const char * s ) {
 int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	size_t		len;
 	va_list		argptr;
-	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
 
 	va_start (argptr,fmt);
-	len = vsnprintf (bigbuffer, sizeof(bigbuffer), fmt,argptr);
+	len = vsnprintf (dest, size, fmt, argptr);
 	va_end (argptr);
-	if ( len >= sizeof( bigbuffer ) ) {
-		Com_Error( ERR_FATAL, "Com_sprintf: overflowed bigbuffer" );
-	}
+
 	if (len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
 		len = size - 1;
 	}
-	Q_strncpyz (dest, bigbuffer, size );
+
 	return len;
 }
 
