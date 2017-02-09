@@ -1079,7 +1079,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 // eg the typical tint = (rand() * 255) / 32768
 // becomes tint = irand(0, 255)
 
-static unsigned long	holdrand = 0x89abcdef;
+static unsigned holdrand = 0x89abcdef;
 
 void Rand_Init(int seed)
 {
@@ -1094,7 +1094,7 @@ float flrand(float min, float max)
 
 	assert((max - min) < 32768);
 
-	holdrand = (holdrand * 214013L) + 2531011L;
+	holdrand = (holdrand * 214013) + 2531011;
 	result = (float)(holdrand >> 17);						// 0 - 32767 range
 	result = ((result * (max - min)) / 32768.0F) + min;
 
