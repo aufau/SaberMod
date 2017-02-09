@@ -1593,6 +1593,7 @@ extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
 extern	vmCvar_t		cg_camerafps;
+extern	vmCvar_t		cg_crosshairColor;
 extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
 extern	vmCvar_t		cg_duelGlow;
