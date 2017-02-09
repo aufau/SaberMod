@@ -764,7 +764,7 @@ qboolean BG_ParseAnimationFile(const char *filename)
 	fileHandle_t	f;
 	// int because values correspond to animTable indexes, not ids
 	int			 	animHashTable[HASH_TABLE_SIZE];
-	int				hash;
+	unsigned		hash;
 	int				index;
 	int				animNum;
 

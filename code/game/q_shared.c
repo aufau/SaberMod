@@ -90,20 +90,17 @@ return a hash value for the string
 currently size has to be a power of two
 ============
 */
-int COM_HashForString(const char *str, int size) {
-	int		i;
-	long	hash;
-	char	letter;
+unsigned COM_HashForString(const char *str, size_t size) {
+	unsigned	hash = 0;
+	unsigned	i = 0;
 
-	hash = 0;
-	i = 0;
 	while (str[i] != '\0') {
-		letter = tolower(str[i]);
-		hash+=(long)(letter)*(i+119);
+		unsigned letter = (unsigned)tolower(str[i]);
+		hash += letter * (i+119);
 		i++;
 	}
-	hash &= size - 1;
-	return hash;
+
+	return hash & (size - 1);
 }
 
 /*
