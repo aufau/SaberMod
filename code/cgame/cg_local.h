@@ -1445,6 +1445,8 @@ Ghoul2 Insert End
 	// effects
 	cgEffects_t		effects;
 
+	// precomputed
+	vec4_t			crosshairColor;
 } cgs_t;
 
 //==============================================================================

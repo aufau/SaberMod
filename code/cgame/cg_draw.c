@@ -2698,18 +2698,9 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		return;
 	}
 
-	if ( cg_crosshairColor.integer > 0 && cg_crosshairColor.integer < 0x01000000 )
+	if ( cgs.crosshairColor[3] > 0.0f )
 	{
-		vec4_t		color;
-		int			value = cg_crosshairColor.integer;
-		float		scale = 1.0f / 255.0f;
-
-		color[0] = ((value >> 16) & 0xff) * scale;
-		color[1] = ((value >>  8) & 0xff) * scale;
-		color[2] = ((value >>  0) & 0xff) * scale;
-		color[3] = 1.0f;
-
-		trap_R_SetColor( hcolor );
+		trap_R_SetColor( cgs.crosshairColor );
 	}
 	else if ( cg_crosshairHealth.integer )
 	{

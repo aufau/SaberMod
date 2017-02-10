@@ -144,6 +144,7 @@ static const char *HolocronIcons[] = {
 
 static int forceModelModificationCount = -1;
 static int drawTeamOverlayModificationCount = -1;
+static int crosshairColorModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
@@ -806,6 +807,55 @@ static void CG_ForceModelChange( void ) {
 }
 
 /*
+===================
+CG_UpdateCrosshairColor
+===================
+*/
+static void CG_UpdateCrosshairColor( void ) {
+	const char	*s = cg_crosshairColor.string;
+	int			i;
+
+	if ( s[0] == '#' ) {
+		s++;
+	} else if ( s[0] == '0' && s[1] == 'x' ) {
+		s += 2;
+	}
+
+	for ( i = 0; i < 4; i++ ) {
+		byte	val = 0;
+		char	ch = *s++;
+
+		if ( isdigit( ch ) )
+			val += ch - '0';
+		else if ( 'a' <= ch && ch <= 'f' )
+			val += ch - 'a' + 10;
+		else if ( 'A' <= ch && ch <= 'F' )
+			val += ch - 'A' + 10;
+		else
+			break;
+
+		val *= 16;
+		ch = *s++;
+
+		if ( isdigit( ch ) )
+			val += ch - '0';
+		else if ( 'a' <= ch && ch <= 'f' )
+			val += ch - 'a' + 10;
+		else if ( 'A' <= ch && ch <= 'F' )
+			val += ch - 'A' + 10;
+		else
+			break;
+
+		cgs.crosshairColor[i] = val * (1.0f / 255.0f);
+	}
+
+	if ( i == 3 )
+		cgs.crosshairColor[3] = 1.0f;	// no alpha specified, default to 1
+	else if ( i != 4 )
+		cgs.crosshairColor[3] = 0.0f;	// alpha 0 means use original method
+}
+
+/*
 =================
 CG_UpdateCvars
 =================
@@ -838,6 +888,10 @@ void CG_UpdateCvars( void ) {
 	if ( forceModelModificationCount != cg_forceModel.modificationCount ) {
 		forceModelModificationCount = cg_forceModel.modificationCount;
 		CG_ForceModelChange();
+	}
+
+	if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
+		CG_UpdateCrosshairColor();
 	}
 }
 
