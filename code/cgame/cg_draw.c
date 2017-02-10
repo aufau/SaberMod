@@ -2822,7 +2822,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		y = cg_crosshairY.integer;
 	}
 
-	hShader = cgs.media.crosshairShader[ cg_drawCrosshair.integer % NUM_CROSSHAIRS ];
+	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
 
 	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5f * (640 - w),
 		y + cg.refdef.y + 0.5f * (480 - h),
