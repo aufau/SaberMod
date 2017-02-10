@@ -104,7 +104,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ASSET_SCROLL_THUMB          "gfx/menus/scrollbar_thumb.tga"
 #define ASSET_SLIDER_BAR			"menu/new/slider"
 #define ASSET_SLIDER_THUMB			"menu/new/sliderthumb"
-#define	NUM_CROSSHAIRS			10
+#define	NUM_CROSSHAIRS			('j' - 'a' + 1)
 
 typedef struct {
   const char *command;
