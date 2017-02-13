@@ -117,7 +117,7 @@ static const char *weaponNameFromIndex[WP_NUM_WEAPONS] =
 	"Turret"
 };
 
-extern const char	*modNames[];
+extern const char * const modNames[];
 
 #endif //LOGGING_WEAPONS
 

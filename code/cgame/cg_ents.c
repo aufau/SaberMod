@@ -482,7 +482,7 @@ void ScaleModelAxis(refEntity_t	*ent)
 Ghoul2 Insert End
 */
 
-const char *forceHolocronModels[] = {
+const char * const forceHolocronModels[] = {
 	"models/map_objects/mp/lt_heal.md3",		//FP_HEAL,
 	"models/map_objects/mp/force_jump.md3",		//FP_LEVITATION,
 	"models/map_objects/mp/force_speed.md3",	//FP_SPEED,
@@ -677,7 +677,7 @@ static void CG_General( centity_t *cent ) {
 
 			if (clEnt && clEnt->ghoul2)
 			{
-				animation_t		*anim = NULL;
+				const animation_t	*anim = NULL;
 				float			animSpeed;
 				int				flags=BONE_ANIM_OVERRIDE_FREEZE;
 				clientInfo_t	*ci;

@@ -38,8 +38,8 @@ menuDef_t *menuScoreboard = NULL;
 qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y);
 qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle );
 
-vec4_t	bluehudtint = {0.5, 0.5, 1.0, 1.0};
-vec4_t	redhudtint = {1.0, 0.5, 0.5, 1.0};
+static const vec4_t	bluehudtint = {0.5, 0.5, 1.0, 1.0};
+static const vec4_t	redhudtint = {1.0, 0.5, 0.5, 1.0};
 const float	*hudTintColor;
 
 int sortedTeamPlayers[TEAM_MAXOVERLAY];
@@ -53,7 +53,7 @@ char systemChat[256];
 char teamChat1[256];
 char teamChat2[256];
 
-const char *showPowersName[] =
+const char * const showPowersName[] =
 {
 	"HEAL2",//FP_HEAL
 	"JUMP2",//FP_LEVITATION
@@ -3303,7 +3303,7 @@ CG_DrawCrosshairNames
 static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	vec4_t		tcolor;
-	char		*name;
+	const char	*name;
 	int			baseColor;
 
 	if ( !cg_drawCrosshair.integer ) {

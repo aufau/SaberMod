@@ -305,7 +305,7 @@ typedef struct {
 
 	int			gametype;
 
-	animation_t	*animations;
+	const animation_t	*animations;
 
 	float		xyspeed;
 

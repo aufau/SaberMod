@@ -502,8 +502,6 @@ enum
 #define ATST_MAXS1			40
 #define ATST_MAXS2			248
 
-extern float forceSpeedLevels[4];
-
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
 	PRINT_ALL,

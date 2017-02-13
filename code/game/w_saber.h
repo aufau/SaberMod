@@ -39,7 +39,7 @@ enum
 };
 
 extern vmCvar_t g_MaxHolocronCarry;
-extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
-extern float forceJumpHeight[NUM_FORCE_POWER_LEVELS];
-extern float forceJumpStrength[NUM_FORCE_POWER_LEVELS];
+extern const int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
+extern const float forceJumpHeight[NUM_FORCE_POWER_LEVELS];
+extern const float forceJumpStrength[NUM_FORCE_POWER_LEVELS];
 

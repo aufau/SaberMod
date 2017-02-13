@@ -58,24 +58,9 @@ typedef struct
 
 extern	pml_t		pml;
 
-// movement parameters
-extern	float	pm_stopspeed;
-extern	float	pm_duckScale;
-extern	float	pm_swimScale;
-extern	float	pm_wadeScale;
-
-extern	float	pm_accelerate;
-extern	float	pm_airaccelerate;
-extern	float	pm_wateraccelerate;
-extern	float	pm_flyaccelerate;
-
-extern	float	pm_friction;
-extern	float	pm_waterfriction;
-extern	float	pm_flightfriction;
-
 extern	int		c_pmove;
 
-extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
+extern const int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
 
 // Had to add these here because there was no file access within the BG right now.
 int		trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );

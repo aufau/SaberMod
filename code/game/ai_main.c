@@ -109,7 +109,7 @@ gentity_t *eFlagBlue;
 gentity_t *droppedBlueFlag;
 
 #ifdef BOT_CTF_DEBUG
-const char * const ctfStateNames[] = {
+static const char * const ctfStateNames[] = {
 	"CTFSTATE_NONE",
 	"CTFSTATE_ATTACKER",
 	"CTFSTATE_DEFENDER",
@@ -120,7 +120,8 @@ const char * const ctfStateNames[] = {
 };
 #endif // BOT_CTF_DEBUG
 
-const char * const ctfStateDescriptions[] = {
+#ifdef UNUSED
+static const char * const ctfStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm attacking the enemy's base",
 	"I'm defending our base",
@@ -129,20 +130,19 @@ const char * const ctfStateDescriptions[] = {
 	"I've got the enemy's flag"
 };
 
-const char * const sagaStateDescriptions[] = {
+static const char * const sagaStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm attemtping to complete the current objective",
 	"I'm preventing the enemy from completing their objective"
 };
 
-const char * const teamplayStateDescriptions[] = {
+static const char * const teamplayStateDescriptions[] = {
 	"I'm not occupied",
 	"I'm following my squad commander",
 	"I'm assisting my commanding",
 	"I'm attempting to regroup and form a new squad"
 };
 
-#ifdef UNUSED
 void BotStraightTPOrderCheck(gentity_t *ent, int ordernum, bot_state_t *bs)
 {
 	switch (ordernum)

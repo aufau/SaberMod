@@ -1352,7 +1352,7 @@ static void CG_RegisterEffects( void )
 
 //===================================================================================
 
-extern char *forceHolocronModels[];
+extern const char * const forceHolocronModels[];
 /*
 =================
 CG_RegisterGraphics

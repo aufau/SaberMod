@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern int g_saberFlashTime;
 extern vec3_t g_saberFlashPos;
-extern const char *showPowersName[];
+extern const char * const showPowersName[];
 
 /*
 ===================
@@ -701,7 +701,7 @@ void CG_ReattachLimb(centity_t *source)
 static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 {
 	centity_t		*source;
-	animation_t		*anim;
+	const animation_t	*anim;
 	float			animSpeed;
 	int				flags=BONE_ANIM_OVERRIDE_FREEZE;
 

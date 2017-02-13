@@ -27,9 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "cg_local.h"
 #include "fx_local.h"
 
-extern vec4_t	bluehudtint;
-extern vec4_t	redhudtint;
-extern float	*hudTintColor;
+extern const float *hudTintColor;
 
 /*
 Ghoul2 Insert Start
@@ -155,7 +153,7 @@ CG_MapTorsoToWeaponFrame
 =================
 */
 static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int animNum ) {
-	animation_t *animations = bgGlobalAnimations;
+	const animation_t *animations = bgGlobalAnimations;
 #ifdef WEAPON_FORCE_BUSY_HOLSTER
 	if (cg.snap->ps.forceHandExtend != HANDEXTEND_NONE || cgWeapFrameTime > cg.time)
 	{ //the reason for the after delay is so that it doesn't snap the weapon frame to the "idle" (0) frame

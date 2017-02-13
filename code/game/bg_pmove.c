@@ -37,24 +37,24 @@ pml_t		pml;
 qboolean gPMDoSlowFall = qfalse;
 
 // movement parameters
-float	pm_stopspeed = 100.0f;
-float	pm_duckScale = 0.50f;
-float	pm_swimScale = 0.50f;
-float	pm_wadeScale = 0.70f;
+static const float	pm_stopspeed = 100.0f;
+static const float	pm_duckScale = 0.50f;
+static const float	pm_swimScale = 0.50f;
+// static const float	pm_wadeScale = 0.70f;
 
-float	pm_accelerate = 10.0f;
-float	pm_airaccelerate = 1.0f;
-float	pm_wateraccelerate = 4.0f;
-float	pm_flyaccelerate = 8.0f;
+static const float	pm_accelerate = 10.0f;
+static const float	pm_airaccelerate = 1.0f;
+static const float	pm_wateraccelerate = 4.0f;
+static const float	pm_flyaccelerate = 8.0f;
 
-float	pm_friction = 6.0f;
-float	pm_waterfriction = 1.0f;
-float	pm_flightfriction = 3.0f;
-float	pm_spectatorfriction = 5.0f;
+static const float	pm_friction = 6.0f;
+static const float	pm_waterfriction = 1.0f;
+// static const float	pm_flightfriction = 3.0f;
+static const float	pm_spectatorfriction = 5.0f;
 
 int		c_pmove = 0;
 
-float forceSpeedLevels[4] =
+static const float forceSpeedLevels[4] =
 {
 	1, //rank 0?
 	1.25,
@@ -62,7 +62,7 @@ float forceSpeedLevels[4] =
 	1.75
 };
 
-int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
+const int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
 {
 	{ //nothing should be usable at rank 0..
 		999,//FP_HEAL,//instant
@@ -150,7 +150,7 @@ int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
 	}
 };
 
-float forceJumpHeight[NUM_FORCE_POWER_LEVELS] =
+const float forceJumpHeight[NUM_FORCE_POWER_LEVELS] =
 {
 	32,//normal jump (+stepheight+crouchdiff = 66)
 	96,//(+stepheight+crouchdiff = 130)
@@ -158,7 +158,7 @@ float forceJumpHeight[NUM_FORCE_POWER_LEVELS] =
 	384//(+stepheight+crouchdiff = 418)
 };
 
-float forceJumpStrength[NUM_FORCE_POWER_LEVELS] =
+const float forceJumpStrength[NUM_FORCE_POWER_LEVELS] =
 {
 	JUMP_VELOCITY,//normal jump
 	420,

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 
-static const char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
+static const char * const cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 	"*death1.wav",
 	"*death2.wav",
 	"*death3.wav",
@@ -492,7 +492,7 @@ retryModel:
 #ifdef ATST
 		if (cg_entities[clientNum].isATST)
 		{
-			animation_t *anim;
+			const animation_t *anim;
 
 			anim = &bgGlobalAnimations[ (cg_entities[clientNum].currentState.legsAnim & ~ANIM_TOGGLEBIT) ];
 
@@ -1240,7 +1240,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	// Check if the ghoul2 model changed in any way.  This is safer than assuming we have a legal cent shile loading info.
 	if (entitiesInitialized && ci->ghoul2Model && (oldGhoul2 != ci->ghoul2Model))
 	{	// Copy the new ghoul2 model to the centity.
-		animation_t *anim;
+		const animation_t *anim;
 		centity_t *cent = &cg_entities[clientNum];
 
 		anim = &bgGlobalAnimations[ (cg_entities[clientNum].currentState.legsAnim & ~ANIM_TOGGLEBIT) ];
@@ -1391,7 +1391,7 @@ may include ANIM_TOGGLEBIT
 ===============
 */
 static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float animSpeedMult, qboolean torsoOnly) {
-	animation_t	*anim;
+	const animation_t	*anim;
 	float animSpeed;
 	int	  flags=BONE_ANIM_OVERRIDE_FREEZE;
 	int oldAnim = -1;
@@ -1881,7 +1881,7 @@ cg.time should be between oldFrameTime and frameTime after exit
 static void CG_RunLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale, qboolean torsoOnly)
 {
 	int			f, numFrames;
-	animation_t	*anim;
+	const animation_t	*anim;
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
@@ -4804,7 +4804,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 }
 #endif // UNUSED
 
-extern const char *forceHolocronModels[];
+extern const char * const forceHolocronModels[];
 
 //rww - here begins the majority of my g2animent stuff.
 void CG_FootStepGeneric(centity_t *cent, int anim)
@@ -4852,7 +4852,7 @@ skipCheck:
 }
 
 static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int newAnimation, float animSpeedMult, qboolean torsoOnly) {
-	animation_t	*anim;
+	const animation_t	*anim;
 	float animSpeed;
 	int	  flags=BONE_ANIM_OVERRIDE_FREEZE;
 	int oldAnim = -1;
@@ -5011,7 +5011,7 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 static void CG_G2EntRunLerpFrame( centity_t *cent, lerpFrame_t *lf, int newAnimation, float speedScale, qboolean torsoOnly)
 {
 	int			f, numFrames;
-	animation_t	*anim;
+	const animation_t	*anim;
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
@@ -5740,7 +5740,7 @@ int cgFPLSState = 0;
 void CG_ForceFPLSPlayerModel(centity_t *cent, clientInfo_t *ci)
 {
 	int clientNum = cent->currentState.number;
-	animation_t *anim;
+	const animation_t *anim;
 
 	if (cg_fpls.integer && !cg.renderingThirdPerson)
 	{

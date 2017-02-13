@@ -1841,7 +1841,8 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	}
 }
 
-const char *eventnames[] = {
+#ifdef _DEBUG
+static const char * const eventnames[] = {
 	"EV_NONE",
 
 	"EV_CLIENTJOIN",
@@ -1991,6 +1992,7 @@ const char *eventnames[] = {
 	"EV_BODY_QUEUE_COPY"
 
 };
+#endif // _DEBUG
 
 /*
 ===============

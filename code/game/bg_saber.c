@@ -908,11 +908,11 @@ static void PM_SaberLocked( void )
 		}
 		if ( (pm->cmd.buttons & BUTTON_ATTACK) || pm->ps->saberLockAdvance )
 		{//holding attack
-			animation_t *anim;
+			const animation_t *anim;
 
 			if (pm->ps->saberLockAdvance)
 			{//tapping
-				animation_t *anim;
+				const animation_t *anim;
 				float		currentFrame;
 				int			curFrame;
 				int			strength = 1;

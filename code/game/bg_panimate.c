@@ -1080,7 +1080,7 @@ PM_SetAnimFinal
 */
 void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime)		// default blendTime=350
 {
-	animation_t *animations = pm->animations;
+	const animation_t *animations = pm->animations;
 
 	float editAnimSpeed = 1;
 

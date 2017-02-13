@@ -91,13 +91,13 @@ typedef enum {
 
 typedef struct
 {
-	char	*name;
-	int		ofs;
+	const char	*name;
+	int			ofs;
 	fieldtype_t	type;
-	int		flags;
+	int			flags;
 } field_t;
 
-field_t fields[] = {
+static const field_t fields[] = {
 	{"classname", FOFS(classname), F_LSTRING},
 	{"teamnodmg", FOFS(teamnodmg), F_INT},
 	{"roffname", FOFS(roffname), F_LSTRING},
@@ -127,8 +127,8 @@ field_t fields[] = {
 
 
 typedef struct {
-	char	*name;
-	void	(*spawn)(gentity_t *ent);
+	const char	*name;
+	void		(*spawn)(gentity_t *ent);
 } spawn_t;
 
 void SP_info_player_start (gentity_t *ent);
@@ -219,7 +219,7 @@ void SP_item_botroam( gentity_t *ent )
 
 void SP_emplaced_gun( gentity_t *ent );
 
-spawn_t	spawns[] = {
+static const spawn_t	spawns[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
@@ -322,8 +322,8 @@ returning qfalse if not found
 ===============
 */
 qboolean G_CallSpawn( gentity_t *ent ) {
-	spawn_t	*s;
-	gitem_t	*item;
+	const spawn_t	*s;
+	gitem_t			*item;
 
 	if ( !ent->classname ) {
 		G_Printf ("G_CallSpawn: NULL classname\n");
@@ -399,7 +399,7 @@ in a gentity
 ===============
 */
 void G_ParseField( const char *key, const char *value, gentity_t *ent ) {
-	field_t	*f;
+	const field_t	*f;
 	byte	*b;
 	float	v;
 	vec3_t	vec;

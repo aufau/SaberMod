@@ -212,7 +212,7 @@ static int G_ClientNumberFromPattern ( const char *pattern ) {
 	char		cciName[MAX_NETNAME];
 	char		ciPattern[MAX_NETNAME];
 	char		cciPatter[MAX_NETNAME];
-	char		*name;
+	const char	*name;
 	int			idnum = 0;
 	int			matches[5];			// Element n stores last client number matched in test case n
 	int			matched = 0;		// bit n stores 1 if at least one netname passed test case n
