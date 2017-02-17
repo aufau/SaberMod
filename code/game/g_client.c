@@ -1011,8 +1011,9 @@ ClientSetName
 ============
 */
 static void ClientSetName( gclient_t *client, const char *in ) {
-	char	cleanName[MAX_NETNAME - 4]; // "(99)" suffix
+	char	cleanName[MAX_NETNAME - 3]; // "(9)" suffix
 	char	*name;
+	int		clientNum;
 	int		i, num;
     int		characters;
     int		spaces;
@@ -1046,7 +1047,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
             characters++;
             *p++ = ch;
         }
-    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 4);
+    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 3);
 
     *p = '\0';
 
@@ -1057,14 +1058,18 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 
 	name = client->pers.netname;
 	Q_strncpyz(name, cleanName, MAX_NETNAME);
+	clientNum = client - level.clients;
 	num = 1;
 
 	while ((free = qtrue)) {
-		for (i = 0; i < level.numConnectedClients; i++) {
-			if (&level.clients[level.sortedClients[i]] == client) {
+		for (i = 0; i < level.maxclients; i++) {
+			if (level.clients[i].pers.connected == CON_DISCONNECTED) {
 				continue;
 			}
-			if (!Q_strncmp(name, level.clients[level.sortedClients[i]].pers.netname, MAX_NETNAME)) {
+			if (i == clientNum) {
+				continue;
+			}
+			if (!Q_strncmp(name, level.clients[i].pers.netname, MAX_NETNAME)) {
 				free = qfalse;
 				break;
 			}
@@ -1072,7 +1077,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 		if (free) {
 			break;
 		}
-		Com_sprintf(name, MAX_NETNAME, "%s(%d)", cleanName, num);
+		Com_sprintf(name, MAX_NETNAME, "%s(%c)", cleanName, '0' + num);
 		num++;
 	}
 }
