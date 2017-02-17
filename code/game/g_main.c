@@ -35,7 +35,7 @@ typedef struct {
 	int			cvarFlags;
 	int			modificationCount;  // for tracking changes
 	qboolean	trackChange;	    // track this variable, and announce if changed
-  qboolean teamShader;        // track and if changed, update shader state
+	qboolean	teamShader;        // track and if changed, update shader state
 } cvarTable_t;
 
 gentity_t		g_entities[MAX_GENTITIES];
@@ -161,7 +161,7 @@ int gDuelist1 = -1;
 int gDuelist2 = -1;
 
 // bk001129 - made static to avoid aliasing
-static cvarTable_t	gameCvarTable[] = {
+static cvarTable_t gameCvarTable[] = {
 	// don't override the cheat state set by the system
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
@@ -319,10 +319,6 @@ static cvarTable_t	gameCvarTable[] = {
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 };
-
-// bk001129 - made static to avoid aliasing
-static int gameCvarTableSize = ARRAY_LEN( gameCvarTable );
-
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
 int  MVAPI_Init					( int apilevel );
@@ -568,7 +564,7 @@ void G_RegisterCvars( void ) {
 	cvarTable_t	*cv;
 	qboolean remapped = qfalse;
 
-	for ( i = 0, cv = gameCvarTable ; i < gameCvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = gameCvarTable ; i < ARRAY_LEN( gameCvarTable ) ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 		if ( cv->vmCvar )
@@ -600,7 +596,7 @@ void G_UpdateCvars( void ) {
 	cvarTable_t	*cv;
 	qboolean remapped = qfalse;
 
-	for ( i = 0, cv = gameCvarTable ; i < gameCvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = gameCvarTable ; i < ARRAY_LEN( gameCvarTable ) ; i++, cv++ ) {
 		if ( cv->vmCvar ) {
 			trap_Cvar_Update( cv->vmCvar );
 

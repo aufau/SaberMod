@@ -99,13 +99,13 @@ typedef struct {
 
 static sbColumnData_t columnData[SBC_MAX];
 
-static sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t iffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
-static sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t iffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 
 static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const char *maxValue, float scale)
 {

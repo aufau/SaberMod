@@ -2475,7 +2475,7 @@ void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t an
 static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngles){
 	vec3_t		torsoAngles, headAngles;
 	float		dest;
-	static	int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
+	static int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed; //, speed_dif, speed_desired;
 	int			dir;

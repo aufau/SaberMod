@@ -54,7 +54,7 @@ extern vmCvar_t	g_statLog;
 extern vmCvar_t	g_statLogFile;
 
 // MOD-weapon mapping array.
-int weaponFromMOD[MOD_MAX] =
+static const int weaponFromMOD[MOD_MAX] =
 {
 	WP_NONE,				//MOD_UNKNOWN,
 	WP_STUN_BATON,			//MOD_STUN_BATON,
@@ -97,7 +97,7 @@ int weaponFromMOD[MOD_MAX] =
 	WP_NONE,				//MOD_LEAVE,
 };
 
-static const char *weaponNameFromIndex[WP_NUM_WEAPONS] =
+static const char * const weaponNameFromIndex[WP_NUM_WEAPONS] =
 {
 	"No Weapon",
 	"Stun Baton",

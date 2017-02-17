@@ -274,10 +274,8 @@ team_t GetStrongerTeam( void )
 	return TEAM_SPECTATOR;
 }
 
-
-static char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
-
 void Team_SetFlagStatus( int team, flagStatus_t status ) {
+	static const char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
 	qboolean modified = qfalse;
 
 	switch( team ) {

@@ -251,7 +251,7 @@ void G_G2ClientSpineAngles( gentity_t *ent, vec3_t viewAngles, const vec3_t angl
 void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	vec3_t		torsoAngles, headAngles;
 	float		dest;
-	static	int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
+	static const int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed;
 	int			dir;

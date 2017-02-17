@@ -121,7 +121,7 @@ const vec4_t colorTable[CT_MAX] =
 
 };
 
-static const char *HolocronIcons[] = {
+static const char * const HolocronIcons[] = {
 	"gfx/mp/f_icon_lt_heal",		//FP_HEAL,
 	"gfx/mp/f_icon_levitation",		//FP_LEVITATION,
 	"gfx/mp/f_icon_speed",			//FP_SPEED,
@@ -745,8 +745,6 @@ Ghoul2 Insert End
 	{ &cg_param2, "cg_param2", "0", CVAR_TEMP},
 };
 
-static int  cvarTableSize = ARRAY_LEN( cvarTable );
-
 /*
 =================
 CG_RegisterCvars
@@ -757,7 +755,7 @@ void CG_RegisterCvars( void ) {
 	cvarTable_t	*cv;
 	char		var[MAX_TOKEN_CHARS];
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN( cvarTable ); i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 	}
@@ -864,7 +862,7 @@ void CG_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
 
@@ -1363,7 +1361,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void ) {
 	int			i;
 	char		items[MAX_ITEMS+1];
-	const char * const sb_nums[11] = {
+	static const char * const sb_nums[11] = {
 		"gfx/2d/numbers/zero",
 		"gfx/2d/numbers/one",
 		"gfx/2d/numbers/two",
@@ -1377,7 +1375,7 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/minus",
 	};
 
-	const char * const sb_t_nums[11] = {
+	static const char * const sb_t_nums[11] = {
 		"gfx/2d/numbers/t_zero",
 		"gfx/2d/numbers/t_one",
 		"gfx/2d/numbers/t_two",
@@ -1391,7 +1389,7 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/t_minus",
 	};
 
-	const char * const sb_c_nums[11] = {
+	static const char * const sb_c_nums[11] = {
 		"gfx/2d/numbers/c_zero",
 		"gfx/2d/numbers/c_one",
 		"gfx/2d/numbers/c_two",

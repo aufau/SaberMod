@@ -118,7 +118,7 @@ menuDef_t *Menus_FindByName(const char *p);
 void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow);
 void UpdateForceUsed();
 
-char holdSPString[1024]={0};
+static char holdSPString[1024]={0};
 
 uiInfo_t uiInfo;
 
@@ -7039,7 +7039,7 @@ typedef struct {
 	const char	*cvarName;
 	const char	*defaultString;
 	int			cvarFlags;
-} cvarTable_t;
+} const cvarTable_t;
 
 vmCvar_t	ui_selectedModelIndex;
 
@@ -7124,7 +7124,7 @@ vmCvar_t	ui_serverStatusTimeOut;
 vmCvar_t	s_language;
 
 // bk001129 - made static to avoid aliasing
-static cvarTable_t		cvarTable[] = {
+static cvarTable_t cvarTable[] = {
 	{ &ui_selectedModelIndex, "ui_selectedModelIndex", "16", CVAR_ARCHIVE },
 
 	{ &ui_arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM },
@@ -7208,10 +7208,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &s_language, "s_language", "english", CVAR_ARCHIVE | CVAR_NORESTART},
 };
 
-// bk001129 - made static to avoid aliasing
-static int		cvarTableSize = ARRAY_LEN(cvarTable);
-
-
 /*
 =================
 UI_RegisterCvars
@@ -7221,7 +7217,7 @@ void UI_RegisterCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
 }
@@ -7235,7 +7231,7 @@ void UI_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
 }

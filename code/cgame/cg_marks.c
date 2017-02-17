@@ -375,7 +375,7 @@ typedef enum
 #define	MAX_SHADER_ANIMS		32
 #define	MAX_SHADER_ANIM_FRAMES	64
 
-static const char *shaderAnimNames[MAX_SHADER_ANIMS] = {
+static const char * const shaderAnimNames[MAX_SHADER_ANIMS] = {
 	"explode1",
 	NULL
 };
