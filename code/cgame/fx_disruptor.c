@@ -72,7 +72,7 @@ void FX_DisruptorAltShot( vec3_t start, vec3_t end, qboolean fullCharge )
 
 	if ( fullCharge )
 	{
-		vec3_t	YELLER={0.8f,0.7f,0.0f};
+		static const vec3_t YELLER = { 0.8f, 0.7f, 0.0f };
 
 		// add some beef
 		trap_FX_AddLine( start, end, 0.1f, 7.0f, 0.0f,

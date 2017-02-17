@@ -464,7 +464,7 @@ void Text_PaintCenter(float x, float y, float scale, const vec4_t color, const c
 
 const char *UI_GetStripEdString(const char *refSection, const char *refName)
 {
-	static char text[MAX_STRIPED_UI_STRING] = { 0 };
+	static char text[MAX_STRIPED_UI_STRING];
 
 	trap_SP_GetStringTextString(va("%s_%s", refSection, refName), text, sizeof(text));
 	return text;
@@ -6842,7 +6842,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint,
 	int leftWidth;
 	const char *s;
 
-	vec4_t colorLtGreyAlpha = {0, 0, 0, .5};
+	static const vec4_t colorLtGreyAlpha = {0, 0, 0, .5};
 
 	UI_FillRect( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, colorLtGreyAlpha );
 

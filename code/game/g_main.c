@@ -2912,7 +2912,7 @@ end = trap_Milliseconds();
 const char *G_GetStripEdString(const char *refSection, const char *refName)
 {
 	/*
-	static char text[1024]={0};
+	static char text[1024];
 	trap_SP_GetStringTextString(va("%s_%s", refSection, refName), text, sizeof(text));
 	return text;
 	*/
@@ -2922,7 +2922,7 @@ const char *G_GetStripEdString(const char *refSection, const char *refName)
 	//a striped reference with @@@ and send the refname to the client, and when it goes
 	//to print it will get scanned for the striped reference indication and dealt with
 	//properly.
-	static char text[1024]={0};
+	static char text[1024];
 	Com_sprintf(text, sizeof(text), "@@@%s", refName);
 	return text;
 }

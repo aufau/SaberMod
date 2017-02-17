@@ -412,10 +412,10 @@ instead of an orientation.
 ===============
 */
 void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
-	static vec3_t VEC_UP		= {0, -1, 0};
-	static vec3_t MOVEDIR_UP	= {0, 0, 1};
-	static vec3_t VEC_DOWN		= {0, -2, 0};
-	static vec3_t MOVEDIR_DOWN	= {0, 0, -1};
+	static const vec3_t VEC_UP			= {0,-1, 0};
+	static const vec3_t MOVEDIR_UP		= {0, 0, 1};
+	static const vec3_t VEC_DOWN		= {0,-2, 0};
+	static const vec3_t MOVEDIR_DOWN	= {0, 0,-1};
 
 	if ( VectorCompare (angles, VEC_UP) ) {
 		VectorCopy (MOVEDIR_UP, movedir);
@@ -1125,7 +1125,8 @@ DebugLine
 ================
 */
 int DebugLine(vec3_t start, vec3_t end, int color) {
-	vec3_t points[4], dir, cross, up = {0, 0, 1};
+	static const vec3_t up = {0, 0, 1};
+	vec3_t points[4], dir, cross;
 	float dot;
 
 	VectorCopy(start, points[0]);

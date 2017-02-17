@@ -2573,7 +2573,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	int			visionArc;
 	int			pushPower;
 	int			pushPowerMod;
-	vec3_t		center, ent_org, size, forward, right, end, dir, fwdangles = {0};
+	vec3_t		center, ent_org, size, forward, right, end, dir, fwdangles;
 	float		dot1;
 	trace_t		tr;
 	int			x;

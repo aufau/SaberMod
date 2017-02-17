@@ -1492,8 +1492,8 @@ void MoveTowardIdealAngles(bot_state_t *bs)
 
 int BotTrace_Strafe(bot_state_t *bs, vec3_t traceto)
 {
-	vec3_t playerMins = {-15, -15, /*DEFAULT_MINS_2*/-8};
-	vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
+	static const vec3_t playerMins = {-15, -15, /*DEFAULT_MINS_2*/-8};
+	static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
 	vec3_t from, to;
 	vec3_t dirAng, dirDif;
 	vec3_t forward, right;

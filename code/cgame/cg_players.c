@@ -254,7 +254,6 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *model,
 	char		afilename[MAX_QPATH];
 	char		/**GLAName,*/ *slash;
 	char		GLAName[MAX_QPATH];
-	vec3_t	tempVec = {0,0,0};
 	qboolean badModel = qfalse;
 	qboolean retriedAlready = qfalse;
 	char	surfOff[MAX_SURF_LIST_SIZE];
@@ -441,8 +440,8 @@ retryModel:
 		ci->torsoSkin = 0;
 		ci->bolt_rhand = trap_G2API_AddBolt(ci->ghoul2Model, 0, "*flash1");
 		trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "Model_root", 0, 12, BONE_ANIM_OVERRIDE_LOOP, 1.0f, cg.time, -1, -1);
-		trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "l_clavical", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, cg.time);
-		trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "r_clavical", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, cg.time);
+		trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "l_clavical", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, cg.time);
+		trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "r_clavical", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, cg.time);
 
 		ci->bolt_lhand = trap_G2API_AddBolt(ci->ghoul2Model, 0, "*flash2");
 		ci->bolt_head = trap_G2API_AddBolt(ci->ghoul2Model, 0, "pelvis");
@@ -456,12 +455,12 @@ retryModel:
 			badModel = qtrue;
 		}
 
-		if (!trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "upper_lumbar", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, cg.time))
+		if (!trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "upper_lumbar", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, cg.time))
 		{
 			badModel = qtrue;
 		}
 
-		if (!trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "cranium", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, cg.time))
+		if (!trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "cranium", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, cg.time))
 		{
 			badModel = qtrue;
 		}
@@ -1786,8 +1785,8 @@ static int CG_FootstepForSurface( centity_t *cent, int skip )
 {
 	trace_t tr;
 	vec3_t org, dOrg, legDir, bAngles;
-	vec3_t playerMins = {-15, -15, DEFAULT_MINS_2};
-	vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
+	static const vec3_t playerMins = {-15, -15, DEFAULT_MINS_2};
+	static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
 	mdxaBone_t boltMatrix;
 
 //	VectorCopy(ent->lerpOrigin, org);
@@ -2475,7 +2474,7 @@ void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t an
 static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngles){
 	vec3_t		torsoAngles, headAngles;
 	float		dest;
-	static int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
+	static const int movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed; //, speed_dif, speed_desired;
 	int			dir;
@@ -2484,7 +2483,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 	float		dif;
 	float		degrees_negative = 0;
 	float		degrees_positive = 0;
-	vec3_t		ulAngles, llAngles, viewAngles, angles, thoracicAngles = {0,0,0};
+	vec3_t		ulAngles, llAngles, viewAngles, angles, thoracicAngles;
 
 	VectorCopy( cent->lerpAngles, headAngles );
 	headAngles[YAW] = AngleMod( headAngles[YAW] );
@@ -5274,7 +5273,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 {
 	vec3_t		torsoAngles, headAngles;
 	float		dest;
-	static	int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
+	static const int movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed; //, speed_dif, speed_desired;
 	int			dir;

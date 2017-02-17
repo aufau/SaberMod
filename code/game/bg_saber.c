@@ -1031,8 +1031,8 @@ static qboolean PM_CanBackstab(void)
 	trace_t tr;
 	vec3_t flatAng;
 	vec3_t fwd, back;
-	vec3_t trmins = {-15, -15, -8};
-	vec3_t trmaxs = {15, 15, 8};
+	static const vec3_t trmins = {-15, -15, -8};
+	static const vec3_t trmaxs = {15, 15, 8};
 
 	VectorCopy(pm->ps->viewangles, flatAng);
 	flatAng[PITCH] = 0;
@@ -1114,8 +1114,8 @@ qboolean PM_SomeoneInFront(trace_t *tr)
 { //Also a very simplified version of the sp counterpart
 	vec3_t flatAng;
 	vec3_t fwd, back;
-	vec3_t trmins = {-15, -15, -8};
-	vec3_t trmaxs = {15, 15, 8};
+	static const vec3_t trmins = {-15, -15, -8};
+	static const vec3_t trmaxs = {15, 15, 8};
 
 	VectorCopy(pm->ps->viewangles, flatAng);
 	flatAng[PITCH] = 0;

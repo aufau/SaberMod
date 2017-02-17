@@ -454,7 +454,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	gentity_t	*hit;
 	trace_t		trace;
 	vec3_t		mins, maxs;
-	static vec3_t	range = { 40, 40, 52 };
+	static const vec3_t	range = { 40, 40, 52 };
 
 	if ( !ent->client ) {
 		return;
@@ -541,7 +541,7 @@ void G_MoverTouchPushTriggers( gentity_t *ent, vec3_t oldOrg )
 	gentity_t	*hit;
 	trace_t		trace;
 	vec3_t		mins, maxs, dir, size, checkSpot;
-	const vec3_t	range = { 40, 40, 52 };
+	static const vec3_t	range = { 40, 40, 52 };
 
 	// non-moving movers don't hit triggers!
 	if ( !VectorLengthSquared( ent->s.pos.trDelta ) )

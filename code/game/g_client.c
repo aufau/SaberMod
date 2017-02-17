@@ -1110,7 +1110,6 @@ void SetupGameGhoul2Model(gclient_t *client, const char *modelname)
 	char		afilename[MAX_QPATH];
 	char		/**GLAName,*/ *slash;
 	char		GLAName[MAX_QPATH];
-	vec3_t	tempVec = {0,0,0};
 
 	// First things first.  If this is a ghoul2 model, then let's make sure we demolish this first.
 	if (client->ghoul2 && trap_G2_HaveWeGhoul2Models(client->ghoul2))
@@ -1200,8 +1199,8 @@ void SetupGameGhoul2Model(gclient_t *client, const char *modelname)
 
 	// NOTE - ensure this sequence of bolt and bone accessing are always the same because the client expects them in a certain order
 	trap_G2API_SetBoneAnim(client->ghoul2, 0, "model_root", 0, 12, BONE_ANIM_OVERRIDE_LOOP, 1.0f, level.time, -1, -1);
-	trap_G2API_SetBoneAngles(client->ghoul2, 0, "upper_lumbar", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, level.time);
-	trap_G2API_SetBoneAngles(client->ghoul2, 0, "cranium", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, level.time);
+	trap_G2API_SetBoneAngles(client->ghoul2, 0, "upper_lumbar", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, level.time);
+	trap_G2API_SetBoneAngles(client->ghoul2, 0, "cranium", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, NULL, 0, level.time);
 
 	if (!g2SaberInstance)
 	{

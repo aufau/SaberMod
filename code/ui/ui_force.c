@@ -166,7 +166,7 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 			if (uiForcePowersDisabled[forceindex])
 			{
-				vec4_t grColor = {0.2f, 0.2f, 0.2f, 1.0f};
+				static const vec4_t grColor = {0.2f, 0.2f, 0.2f, 1.0f};
 				trap_R_SetColor(grColor);
 			}
 

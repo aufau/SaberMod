@@ -45,7 +45,7 @@ and returns.
 void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 {
 	vec3_t	slope;
-	vec3_t	nvf, ovf, ovr, startspot, endspot, new_angles = { 0, 0, 0 };
+	vec3_t	nvf, ovf, ovr, startspot, endspot, new_angles;
 	float	pitch, mod, dot;
 	float	oldmins2;
 

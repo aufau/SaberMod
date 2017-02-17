@@ -1549,8 +1549,8 @@ void CG_DrawInvenSelect( void )
 		itemNdex = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
 		if (bg_itemlist[itemNdex].classname)
 		{
-			vec4_t	textColor = { .312f, .75f, .621f, 1.0f };
-			char	text[1024];
+			static const vec4_t	textColor = { .312f, .75f, .621f, 1.0f };
+			char				text[1024];
 
 			if ( trap_SP_GetStringTextString( va("INGAME_%s",bg_itemlist[itemNdex].classname), text, sizeof( text )))
 			{
@@ -2932,7 +2932,7 @@ void CG_SaberClashFlare( void )
 	v = ( 1.0f - ((float)t / maxTime )) * ((1.0f - ( len / 800.0f )) * 2.0f + 0.35f);
 
 	if ( CG_WorldCoordToScreenCoord( g_saberFlashPos, &x, &y ) ) {
-		vec4_t color = { 0.8f, 0.8f, 0.8f, 1.0f };
+		static const vec4_t color = { 0.8f, 0.8f, 0.8f, 1.0f };
 
 		trap_R_SetColor( color );
 

@@ -261,7 +261,7 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	float		degrees_negative = 0;
 	float		degrees_positive = 0;
 	qboolean	yawing = qfalse;
-	vec3_t		ulAngles, llAngles, viewAngles, angles, thoracicAngles = {0,0,0};
+	vec3_t		ulAngles, llAngles, viewAngles, angles, thoracicAngles;
 
 	VectorCopy( ent->client->ps.viewangles, headAngles );
 	headAngles[YAW] = AngleMod( headAngles[YAW] );

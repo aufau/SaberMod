@@ -1497,8 +1497,8 @@ ROCKET LAUNCHER
 void rocketThink( gentity_t *ent )
 //---------------------------------------------------------
 {
-	vec3_t newdir, targetdir,
-			up={0,0,1}, right;
+	static const vec3_t up = { 0, 0, 1 };
+	vec3_t newdir, targetdir, right;
 	vec3_t	org;
 	float dot, dot2, dis;
 	int i;
@@ -1709,8 +1709,8 @@ void thermalDetonatorExplode( gentity_t *ent )
 	}
 	else
 	{
+		static const vec3_t dir = { 0, 0, 1 };
 		vec3_t	origin;
-		vec3_t	dir={0,0,1};
 
 		BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 		origin[2] += 8;

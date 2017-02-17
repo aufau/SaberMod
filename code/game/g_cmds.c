@@ -1841,9 +1841,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		i = G_GametypeForString( arg2 );
 
 		if ( i == GT_MAX_GAME_TYPE ) {
-			char		gametypes[MAX_PRINT_TEXT] = { 0 };
+			char		gametypes[MAX_PRINT_TEXT];
 			qboolean	printSep = qfalse;
 
+			gametypes[0] = '\0';
 			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
 				if (i != GT_SINGLE_PLAYER && i != GT_SAGA) {
 					if (printSep)

@@ -649,7 +649,8 @@ CG_AddScorePlum
 */
 void CG_AddScorePlum( localEntity_t *le ) {
 	refEntity_t	*re;
-	vec3_t		origin, delta, dir, vec, up = {0, 0, 1};
+	static const vec3_t up = {0, 0, 1};
+	vec3_t		origin, delta, dir, vec;
 	float		c, len;
 	float		minSize, scaling;
 	int			i, score, digits[10], numdigits, negative;

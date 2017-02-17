@@ -679,8 +679,8 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	refEntity_t		flash;
 	vec3_t			origin;
 	int				renderfx;
-	vec3_t			mins = {-16, -16, -24};
-	vec3_t			maxs = {16, 16, 32};
+	static const vec3_t	mins = {-16, -16, -24};
+	static const vec3_t	maxs = {16, 16, 32};
 	float			len;
 	float			xx;
 

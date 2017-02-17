@@ -1266,7 +1266,7 @@ void CG_DrawWeaponSelect( void ) {
 	// draw the selected name
 	if ( cg_weapons[ cg.weaponSelect ].item )
 	{
-		vec4_t			textColor = { .875f, .718f, .121f, 1.0f };
+		static const vec4_t textColor = { .875f, .718f, .121f, 1.0f };
 		char	text[1024];
 
 		if ( trap_SP_GetStringTextString( va("INGAME_%s",cg_weapons[ cg.weaponSelect ].item->classname), text, sizeof( text )))
@@ -1743,7 +1743,7 @@ Caused by an EV_MISSILE_MISS event, or directly by local bullet tracing
 void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean altFire, int charge)
 {
 	int parm;
-	vec3_t up={0,0,1};
+	vec3_t up = { 0, 0, 1 };
 
 	switch( weapon )
 	{
@@ -1835,7 +1835,7 @@ CG_MissileHitPlayer
 void CG_MissileHitPlayer(int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean altFire)
 {
 	qboolean	humanoid = qtrue;
-	vec3_t up={0,0,1};
+	vec3_t		 up = { 0, 0, 1 };
 
 	/*
 	// NOTENOTE Non-portable code from single player

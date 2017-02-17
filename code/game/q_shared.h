@@ -809,7 +809,7 @@ signed short ClampShort( int i );
 float Q_pown(float x, int n);
 
 // this isn't a real cheap function to call!
-int DirToByte( vec3_t dir );
+int DirToByte( const vec3_t dir );
 void ByteToDir( int b, vec3_t dir );
 
 #if	1

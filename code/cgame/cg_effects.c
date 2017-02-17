@@ -1052,7 +1052,7 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	localEntity_t	*le;
 	//FXTrail			*particle;
 	vec3_t			direction, new_org;
-	vec3_t			velocity		= { 0, 0, 0 };
+	static const vec3_t	velocity = { 0.0f, 0.0f, 16.0f };
 	vec3_t			temp_org, temp_vel;
 	int				i;
 
@@ -1087,7 +1087,6 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	//Smoke
 	//Move this out a little from the impact surface
 	VectorMA( origin, 4, normal, new_org );
-	VectorSet( velocity, 0.0f, 0.0f, 16.0f );
 
 	for ( i = 0; i < 4; i++ )
 	{

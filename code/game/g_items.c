@@ -365,7 +365,9 @@ qboolean PlaceShield(gentity_t *playerent)
 {
 	gentity_t	*shield = NULL;
 	trace_t		tr;
-	vec3_t		fwd, pos, dest, mins = {-4,-4, 0}, maxs = {4,4,4};
+	vec3_t		fwd, pos, dest;
+	static const vec3_t mins = {-4,-4, 0};
+	static const vec3_t maxs = {4,4,4};
 
 	if (shieldAttachSound==0)
 	{

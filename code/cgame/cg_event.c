@@ -1554,8 +1554,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_SABER_UNHOLSTER");
 		{
 			trace_t tr;
-			vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
-			vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
+			static const vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
+			static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
 			vec3_t ang, pos, dpos;
 
 			VectorClear(ang);
@@ -1837,8 +1837,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_PLAYER_TELEPORT_IN");
 		{
 			trace_t tr;
-			vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
-			vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
+			static const vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
+			static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
 			vec3_t ang, pos, dpos;
 
 			VectorClear(ang);
@@ -1864,8 +1864,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_PLAYER_TELEPORT_OUT");
 		{
 			trace_t tr;
-			vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
-			vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
+			static const vec3_t playerMins = {-15, -15, DEFAULT_MINS_2+8};
+			static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
 			vec3_t ang, pos, dpos;
 
 			VectorClear(ang);

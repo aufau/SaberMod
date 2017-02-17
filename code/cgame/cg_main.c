@@ -1798,7 +1798,7 @@ Ghoul2 Insert End
 
 const char *CG_GetStripEdString(const char *refSection, const char *refName)
 {
-	static char text[2][1024]={{0}};	//just incase it's nested
+	static char text[2][1024];	//just incase it's nested
 	static int		index = 0;
 
 	index ^= 1;
