@@ -351,7 +351,7 @@ void Text_Paint(float x, float y, float scale, const vec4_t color, const char *t
 }
 
 
-void Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont)
+void Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, unsigned cursorPos, char cursor, unsigned limit, int style, int iMenuFont)
 {
 	Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 
@@ -359,7 +359,8 @@ void Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, con
 	//
 	{
 		char sTemp[1024];
-		int iCopyCount = limit ? MIN(strlen(text), limit) : strlen(text);
+		size_t len = strlen(text);
+		size_t iCopyCount = limit > 0 ? MIN(len, limit) : len;
 			iCopyCount = MIN(iCopyCount,cursorPos);
 			iCopyCount = MIN(iCopyCount,sizeof(sTemp) - 1);
 
@@ -7214,10 +7215,10 @@ UI_RegisterCvars
 =================
 */
 void UI_RegisterCvars( void ) {
-	int			i;
-	cvarTable_t	*cv;
+	cvarTable_t * const end = cvarTable + ARRAY_LEN( cvarTable );
+	cvarTable_t *cv;
 
-	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
+	for ( cv = cvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
 }
@@ -7228,10 +7229,10 @@ UI_UpdateCvars
 =================
 */
 void UI_UpdateCvars( void ) {
-	int			i;
+	cvarTable_t * const end = cvarTable + ARRAY_LEN( cvarTable );
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
+	for ( cv = cvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
 }

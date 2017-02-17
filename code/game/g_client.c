@@ -859,7 +859,7 @@ TeamCount
 Returns number of players on a team
 ================
 */
-int TeamCount( int ignoreClientNum, int team, qboolean dead ) {
+int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	int		i;
 	int		count = 0;
 
@@ -891,7 +891,7 @@ TeamLeader
 Returns the client number of the team leader
 ================
 */
-int TeamLeader( int team ) {
+int TeamLeader( team_t team ) {
 	int		i;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {

@@ -300,7 +300,7 @@ static void G_LogStatsHeader(void)
 		+ ARRAY_LEN(logColumns) * (STAT_COL_WIDTH + 1)
 		+ 1 + STRLEN("Team")
 		+ 1 + STRLEN("Name\n") + 1];
-	int  i;
+	unsigned i;
 
 	Q_strncpyz(header, "SH: Num", sizeof(header));
 	for (i = 0; i < ARRAY_LEN(logColumns); i++) {
@@ -327,7 +327,7 @@ static void G_LogStatsRow(int clientNum)
 		+ 1 + MAX_NETNAME + 1];
 	int			stats[STAT_MAX];
 	gclient_t	*client = level.clients + clientNum;
-	int			i;
+	unsigned 	i;
 
 	GetStats(stats, client);
 

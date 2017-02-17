@@ -415,7 +415,7 @@ void G_AddRandomBot( int team ) {
 			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 				continue;
 			}
-			if ( team >= 0 && cl->sess.sessionTeam != team ) {
+			if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 				continue;
 			}
 			if ( !Q_stricmp( value, cl->pers.netname ) ) {
@@ -438,7 +438,7 @@ void G_AddRandomBot( int team ) {
 			if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 				continue;
 			}
-			if ( team >= 0 && cl->sess.sessionTeam != team ) {
+			if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 				continue;
 			}
 			if ( !Q_stricmp( value, cl->pers.netname ) ) {
@@ -478,7 +478,7 @@ int G_RemoveRandomBot( int team ) {
 		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 			continue;
 		}
-		if ( team >= 0 && cl->sess.sessionTeam != team ) {
+		if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 			continue;
 		}
 		trap_SendConsoleCommand( EXEC_INSERT, va("clientkick %d\n", i) );
@@ -505,7 +505,7 @@ int G_CountHumanPlayers( int team ) {
 		if ( g_entities[i].r.svFlags & SVF_BOT ) {
 			continue;
 		}
-		if ( team >= 0 && cl->sess.sessionTeam != team ) {
+		if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 			continue;
 		}
 		num++;
@@ -531,7 +531,7 @@ int G_CountBotPlayers( int team ) {
 		if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 			continue;
 		}
-		if ( team >= 0 && cl->sess.sessionTeam != team ) {
+		if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 			continue;
 		}
 		num++;

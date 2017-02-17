@@ -206,7 +206,7 @@ void G_InitWorldSession( void ) {
 
 	// if the gametype changed since the last session, don't use any
 	// client sessions
-	if ( level.gametype != gt ) {
+	if ( (int)level.gametype != gt ) {
 		level.newSession = qtrue;
 		G_Printf( "Gametype changed, clearing session data.\n" );
 	}

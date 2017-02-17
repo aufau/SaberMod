@@ -228,7 +228,7 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if (GT_Team(level.gametype))
 	{ // let teammates through
-		if (self->s.teamowner == other->client->sess.sessionTeam)
+		if ((team_t)self->s.teamowner == other->client->sess.sessionTeam)
 		{
 			ShieldGoNotSolid(self);
 		}
@@ -747,7 +747,7 @@ void pas_think( gentity_t *ent )
 	}
 
 	if (!g_entities[ent->boltpoint3].inuse || !g_entities[ent->boltpoint3].client ||
-		g_entities[ent->boltpoint3].client->sess.sessionTeam != ent->boltpoint2)
+		g_entities[ent->boltpoint3].client->sess.sessionTeam != (team_t)ent->boltpoint2)
 	{
 		ent->think = G_FreeEntity;
 		ent->nextthink = level.time;

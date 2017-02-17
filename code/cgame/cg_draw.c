@@ -2024,7 +2024,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 	count = (numSortedTeamPlayers > 8) ? 8 : numSortedTeamPlayers;
 	for (i = 0; i < count; i++) {
 		ci = cgs.clientinfo + sortedTeamPlayers[i];
-		if ( ci->infoValid && ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
+		if ( ci->infoValid && ci->team == (team_t)cg.snap->ps.persistant[PERS_TEAM]) {
 			plyrs++;
 			len = CG_DrawStrlen(ci->name);
 			if (len > pwidth)
@@ -2085,7 +2085,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 	for (i = 0; i < count; i++) {
 		ci = cgs.clientinfo + sortedTeamPlayers[i];
-		if ( ci->infoValid && ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
+		if ( ci->infoValid && ci->team == (team_t)cg.snap->ps.persistant[PERS_TEAM]) {
 
 			hcolor[0] = hcolor[1] = hcolor[2] = hcolor[3] = 1.0;
 
@@ -2769,7 +2769,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 				if (crossEnt->currentState.owner == cg.snap->ps.clientNum ||
 					(GT_Team(cgs.gametype) &&
-					 crossEnt->currentState.teamowner == cgs.clientinfo[cg.snap->ps.clientNum].team))
+						(team_t)crossEnt->currentState.teamowner ==	cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
 					ecolor[0] = 0.0;//R
 					ecolor[1] = 1.0;//G
@@ -2777,7 +2777,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 				}
 				else if (crossEnt->currentState.teamowner == 16 ||
 					(GT_Team(cgs.gametype) && crossEnt->currentState.teamowner &&
-					 crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
+						(team_t)crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
 					ecolor[0] = 1.0;//R
 					ecolor[1] = 0.0;//G

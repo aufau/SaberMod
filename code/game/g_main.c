@@ -560,11 +560,11 @@ G_RegisterCvars
 =================
 */
 void G_RegisterCvars( void ) {
-	int			i;
-	cvarTable_t	*cv;
+	const cvarTable_t *end = gameCvarTable + ARRAY_LEN( gameCvarTable );
+	cvarTable_t *cv;
 	qboolean remapped = qfalse;
 
-	for ( i = 0, cv = gameCvarTable ; i < ARRAY_LEN( gameCvarTable ) ; i++, cv++ ) {
+	for ( cv = gameCvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 		if ( cv->vmCvar )
@@ -592,11 +592,11 @@ G_UpdateCvars
 =================
 */
 void G_UpdateCvars( void ) {
-	int			i;
-	cvarTable_t	*cv;
+	const cvarTable_t *end = gameCvarTable + ARRAY_LEN( gameCvarTable );
+	cvarTable_t *cv;
 	qboolean remapped = qfalse;
 
-	for ( i = 0, cv = gameCvarTable ; i < ARRAY_LEN( gameCvarTable ) ; i++, cv++ ) {
+	for ( cv = gameCvarTable ; cv < end ; cv++ ) {
 		if ( cv->vmCvar ) {
 			trap_Cvar_Update( cv->vmCvar );
 
@@ -2439,7 +2439,7 @@ void CheckVote( void ) {
 
 		if (level.voteCmd == CV_GAMETYPE)
 		{
-			if (level.gametype != level.voteArg)
+			if (level.gametype != (gametype_t)level.voteArg)
 			{ //If we're voting to a different game type, be sure to refresh all the map stuff
 				const char *nextMap = G_RefreshNextMap(level.voteArg, qtrue);
 
@@ -2512,7 +2512,7 @@ void CheckVote( void ) {
 PrintTeam
 ==================
 */
-void PrintTeam(int team, char *message) {
+static void PrintTeam(team_t team, char *message) {
 	int i;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
@@ -2527,7 +2527,7 @@ void PrintTeam(int team, char *message) {
 SetLeader
 ==================
 */
-void SetLeader(int team, int client) {
+void SetLeader(team_t team, int client) {
 	int i;
 
 	if ( level.clients[client].pers.connected == CON_DISCONNECTED ) {
@@ -2556,7 +2556,7 @@ void SetLeader(int team, int client) {
 CheckTeamLeader
 ==================
 */
-void CheckTeamLeader( int team ) {
+void CheckTeamLeader( team_t team ) {
 	int i;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {

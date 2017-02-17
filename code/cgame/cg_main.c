@@ -751,11 +751,11 @@ CG_RegisterCvars
 =================
 */
 void CG_RegisterCvars( void ) {
-	int			i;
+	const cvarTable_t *end = cvarTable + ARRAY_LEN( cvarTable );
 	cvarTable_t	*cv;
 	char		var[MAX_TOKEN_CHARS];
 
-	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN( cvarTable ); i++, cv++ ) {
+	for ( cv = cvarTable ; cv < end; cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 	}
@@ -803,7 +803,6 @@ static void CG_ForceModelChange( void ) {
 		CG_UpdateConfigString( CS_PLAYERS + i, qfalse );
 	}
 }
-
 /*
 ===================
 CG_UpdateCrosshairColor
@@ -859,10 +858,10 @@ CG_UpdateCvars
 =================
 */
 void CG_UpdateCvars( void ) {
-	int			i;
+	const cvarTable_t *end = cvarTable + ARRAY_LEN( cvarTable );
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN(cvarTable) ; i++, cv++ ) {
+	for ( cv = cvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
 

@@ -178,7 +178,7 @@ struct gentity_s {
 	const char	*classname;			// set in QuakeEd
 	int			spawnflags;			// set in QuakeEd
 
-	int			teamnodmg;			// set in QuakeEd
+	team_t		teamnodmg;			// set in QuakeEd
 
 	char		*roffname;			// set in QuakeEd
 	char		*rofftarget;		// set in QuakeEd
@@ -191,7 +191,7 @@ struct gentity_s {
 	int			aimDebounceTime;
 	int			painDebounceTime;
 	int			attackDebounceTime;
-	int			noDamageTeam;
+	team_t		noDamageTeam;
 
 	int			roffid;				// if roffname != NULL then set on spawn
 
@@ -848,8 +848,8 @@ qboolean CheckGauntletAttack( gentity_t *ent );
 //
 // g_client.c
 //
-int TeamCount( int ignoreClientNum, int team, qboolean dead );
-int TeamLeader( int team );
+int TeamCount( int ignoreClientNum, team_t team, qboolean dead );
+int TeamLeader( team_t team );
 team_t PickTeam( int ignoreClientNum );
 void ResetClientState( gentity_t *self );
 void SetClientViewAngle( gentity_t *ent, vec3_t angle );
@@ -904,8 +904,8 @@ extern qboolean gDoSlowMoDuel;
 extern int gSlowMoDuelTime;
 
 void FindIntermissionPoint( void );
-void SetLeader(int team, int client);
-void CheckTeamLeader( int team );
+void SetLeader(team_t team, int client);
+void CheckTeamLeader( team_t team );
 void G_RunThink (gentity_t *ent);
 void G_LogPrintf( int event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );

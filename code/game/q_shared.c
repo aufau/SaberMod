@@ -878,7 +878,7 @@ void Q_strncpyz( char *dest, const char *src, size_t destsize ) {
 		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" );
 	}
 
-	assert( dest - src >= destsize || src - dest >= destsize );
+	assert( dest >= src + destsize || src >= dest + destsize );
 	strncpy( dest, src, destsize-1 );
   dest[destsize-1] = 0;
 }
@@ -1504,7 +1504,7 @@ const char *Spaces(int n)
 {
 	static const char spaces[] = "                                   "; // 35
 
-	if (n >= sizeof(spaces)) {
+	if (n >= (int)sizeof(spaces)) {
 		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
 		n = sizeof(spaces);
 	}
@@ -1520,7 +1520,7 @@ const char *Dashes(int n)
 {
 	static const char dashes[] = "-----------------------------------"; // 35
 
-	if (n >= sizeof(dashes)) {
+	if (n >= (int)sizeof(dashes)) {
 		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
 		n = sizeof(dashes);
 	}
