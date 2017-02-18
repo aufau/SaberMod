@@ -1012,7 +1012,8 @@ void CG_AddBufferedVoiceChat( bufferedVoiceChat_t *vchat ) {
 		return;
 	}
 
-	memcpy(&voiceChatBuffer[cg.voiceChatBufferIn], vchat, sizeof(bufferedVoiceChat_t));
+	voiceChatBuffer[cg.voiceChatBufferIn] = *vchat;
+
 	cg.voiceChatBufferIn = (cg.voiceChatBufferIn + 1) % MAX_VOICECHATBUFFER;
 	if (cg.voiceChatBufferIn == cg.voiceChatBufferOut) {
 		CG_PlayVoiceChat( &voiceChatBuffer[cg.voiceChatBufferOut] );

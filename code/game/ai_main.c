@@ -374,7 +374,7 @@ int BotAI_GetClientState( int clientNum, playerState_t *state ) {
 		return qfalse;
 	}
 
-	memcpy( state, &ent->client->ps, sizeof(playerState_t) );
+	*state = ent->client->ps;
 	return qtrue;
 }
 
@@ -392,7 +392,7 @@ int BotAI_GetEntityState( int entityNum, entityState_t *state ) {
 	if (!ent->inuse) return qfalse;
 	if (!ent->r.linked) return qfalse;
 	if (ent->r.svFlags & SVF_NOCLIENT) return qfalse;
-	memcpy( state, &ent->s, sizeof(entityState_t) );
+	*state = ent->s;
 	return qtrue;
 }
 
@@ -841,7 +841,7 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 		return qfalse;
 	}
 
-	memcpy(&bs->settings, settings, sizeof(bot_settings_t));
+	bs->settings = *settings;
 
 	bs->client = client; //need to know the client number before doing personality stuff
 
@@ -938,8 +938,8 @@ void BotResetState(bot_state_t *bs) {
 	float entergame_time;
 
 	//save some things that should not be reset here
-	memcpy(&settings, &bs->settings, sizeof(bot_settings_t));
-	memcpy(&ps, &bs->cur_ps, sizeof(playerState_t));
+	settings = bs->settings;
+	ps = bs->cur_ps;
 	inuse = bs->inuse;
 	client = bs->client;
 	entitynum = bs->entitynum;
@@ -953,8 +953,8 @@ void BotResetState(bot_state_t *bs) {
 	bs->ms = movestate;
 	bs->gs = goalstate;
 	bs->ws = weaponstate;
-	memcpy(&bs->cur_ps, &ps, sizeof(playerState_t));
-	memcpy(&bs->settings, &settings, sizeof(bot_settings_t));
+	bs->cur_ps = ps;
+	bs->settings = settings;
 	bs->inuse = inuse;
 	bs->client = client;
 	bs->entitynum = entitynum;

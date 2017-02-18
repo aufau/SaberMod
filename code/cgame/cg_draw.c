@@ -615,7 +615,7 @@ void DrawHealthArmor(int x,int y)
 	CG_DrawPic(   x, y, 80, 80, cgs.media.HUDLeftFrame );		// Circular black background
 
 	//	Outer Armor circular
-	memcpy(calcColor, colorTable[CT_GREEN], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_GREEN], calcColor);
 
 	hold = armorAmt-(ps->stats[STAT_MAX_HEALTH]/2);
 	armorPercent = (float) hold/(ps->stats[STAT_MAX_HEALTH]/2);
@@ -638,7 +638,7 @@ void DrawHealthArmor(int x,int y)
 	{
 		armorPercent = (float) armorAmt/(ps->stats[STAT_MAX_HEALTH]/2);
 	}
-	memcpy(calcColor, colorTable[CT_GREEN], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_GREEN], calcColor);
 	calcColor[0] *= armorPercent;
 	calcColor[1] *= armorPercent;
 	calcColor[2] *= armorPercent;
@@ -673,7 +673,7 @@ void DrawHealthArmor(int x,int y)
 		cg.HUDArmorFlag=qfalse;
 	}
 
-	memcpy(calcColor, colorTable[CT_RED], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_RED], calcColor);
 	healthPercent = (float) healthAmt/ps->stats[STAT_MAX_HEALTH];
 	calcColor[0] *= healthPercent;
 	calcColor[1] *= healthPercent;
@@ -760,7 +760,7 @@ void CG_DrawHealth(int x,int y)
 		healthAmt = ps->stats[STAT_MAX_HEALTH];
 	}
 
-	memcpy(calcColor, colorTable[CT_HUD_RED], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_HUD_RED], calcColor);
 	healthPercent = (float) healthAmt/ps->stats[STAT_MAX_HEALTH];
 	calcColor[0] *= healthPercent;
 	calcColor[1] *= healthPercent;
@@ -796,7 +796,7 @@ void CG_DrawArmor(int x,int y)
 	ps = &cg.snap->ps;
 
 	//	Outer Armor circular
-	memcpy(calcColor, colorTable[CT_HUD_GREEN], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_HUD_GREEN], calcColor);
 
 	armor =ps->stats[STAT_ARMOR];
 
@@ -826,7 +826,7 @@ void CG_DrawArmor(int x,int y)
 	{
 		armorPercent = (float) ps->stats[STAT_ARMOR]/(ps->stats[STAT_MAX_HEALTH]/2);
 	}
-	memcpy(calcColor, colorTable[CT_HUD_GREEN], sizeof(vec4_t));
+	Vector4Copy(colorTable[CT_HUD_GREEN], calcColor);
 	calcColor[0] *= armorPercent;
 	calcColor[1] *= armorPercent;
 	calcColor[2] *= armorPercent;
@@ -1004,11 +1004,11 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 
 		if (value <= 0)	// partial tic
 		{
-			memcpy(calcColor, colorTable[CT_BLACK], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_BLACK], calcColor);
 		}
 		else if (value < inc)	// partial tic
 		{
-			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_WHITE], calcColor);
 			percent = value / inc;
 			calcColor[0] *= percent;
 			calcColor[1] *= percent;
@@ -1016,7 +1016,7 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 		}
 		else
 		{
-			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_WHITE], calcColor);
 		}
 
 		trap_R_SetColor( calcColor);
@@ -1050,11 +1050,11 @@ void CG_DrawForcePower(int x,int y)
 
 		if (value <= 0)	// partial tic
 		{
-			memcpy(calcColor, colorTable[CT_BLACK], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_BLACK], calcColor);
 		}
 		else if (value < inc)	// partial tic
 		{
-			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_WHITE], calcColor);
 			percent = value / inc;
 			calcColor[0] *= percent;
 			calcColor[1] *= percent;
@@ -1062,7 +1062,7 @@ void CG_DrawForcePower(int x,int y)
 		}
 		else
 		{
-			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+			Vector4Copy(colorTable[CT_WHITE], calcColor);
 		}
 
 		trap_R_SetColor( calcColor);

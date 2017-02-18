@@ -338,7 +338,7 @@ static void PC_SourceError(int handle, const char *format, ...) {
 LerpColor
 =================
 */
-void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
+void LerpColor(const vec4_t a, const vec4_t b, vec4_t c, float t)
 {
 	int i;
 
@@ -1071,7 +1071,6 @@ qboolean Script_SetItemColor(itemDef_t *item, const char **args)
 	const char *itemname;
 	const char *name;
 	vec4_t color;
-	int i;
 	vec4_t *out;
 
 	// expecting type of color to set and 4 args for the color
@@ -1108,10 +1107,7 @@ qboolean Script_SetItemColor(itemDef_t *item, const char **args)
 
 				if (out)
 				{
-					for (i = 0; i < 4; i++)
-					{
-						(*out)[i] = color[i];
-					}
+					Vector4Copy(color, *out);
 				}
 			}
 		}
@@ -1360,12 +1356,12 @@ void Menu_TransitionItemByName(menuDef_t *menu, const char *p, rectDef_t rectFro
     if (item != NULL) {
       item->window.flags |= (WINDOW_INTRANSITION | WINDOW_VISIBLE);
       item->window.offsetTime = time;
-			memcpy(&item->window.rectClient, &rectFrom, sizeof(rectDef_t));
-			memcpy(&item->window.rectEffects, &rectTo, sizeof(rectDef_t));
-			item->window.rectEffects2.x = fabsf(rectTo.x - rectFrom.x) / amt;
-			item->window.rectEffects2.y = fabsf(rectTo.y - rectFrom.y) / amt;
-			item->window.rectEffects2.w = fabsf(rectTo.w - rectFrom.w) / amt;
-			item->window.rectEffects2.h = fabsf(rectTo.h - rectFrom.h) / amt;
+	  item->window.rectClient = rectFrom;
+	  item->window.rectEffects = rectTo;
+	  item->window.rectEffects2.x = fabsf(rectTo.x - rectFrom.x) / amt;
+	  item->window.rectEffects2.y = fabsf(rectTo.y - rectFrom.y) / amt;
+	  item->window.rectEffects2.w = fabsf(rectTo.w - rectFrom.w) / amt;
+	  item->window.rectEffects2.h = fabsf(rectTo.h - rectFrom.h) / amt;
       Item_UpdatePosition(item);
     }
   }
@@ -3548,13 +3544,13 @@ void Item_TextColor(itemDef_t *item, vec4_t *newColor) {
 		lowLight[3] = 0.8f * item->window.foreColor[3];
 		LerpColor(item->window.foreColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} else {
-		memcpy(newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, *newColor);
 		// items can be enabled and disabled based on cvars
 	}
 
 	if (item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest) {
 		if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
-			memcpy(newColor, &parent->disableColor, sizeof(vec4_t));
+			Vector4Copy(parent->disableColor, *newColor);
 		}
 	}
 }
@@ -3785,7 +3781,7 @@ void Item_TextField_Paint(itemDef_t *item) {
 		lowLight[3] = 0.8f * parent->focusColor[3];
 		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} else {
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, newColor);
 	}
 
 	offset = (item->text && *item->text) ? 8 : 0;
@@ -3814,7 +3810,7 @@ void Item_YesNo_Paint(itemDef_t *item) {
 		lowLight[3] = 0.8f * parent->focusColor[3];
 		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} else {
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, newColor);
 	}
 
 
@@ -3843,7 +3839,7 @@ void Item_Multi_Paint(itemDef_t *item) {
 		lowLight[3] = 0.8f * parent->focusColor[3];
 		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} else {
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, newColor);
 	}
 
 	text = Item_Multi_Setting(item);
@@ -4137,7 +4133,7 @@ void Item_Slider_Paint(itemDef_t *item) {
 		lowLight[3] = 0.8f * parent->focusColor[3];
 		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} else {
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, newColor);
 	}
 
 	y = item->window.rect.y;
@@ -4193,7 +4189,7 @@ void Item_Bind_Paint(itemDef_t *item)
 	}
 	else
 	{
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		Vector4Copy(item->window.foreColor, newColor);
 	}
 
 	if (item->text)
@@ -4696,14 +4692,14 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 	if (DC->ownerDrawItem) {
 		vec4_t color, lowLight;
 		Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
-		memcpy(&color, &item->window.foreColor, sizeof(color));
+		Vector4Copy(item->window.foreColor, color);
 		if (item->numColors > 0 && DC->getValue) {
 			// if the value is within one of the ranges then set color to that, otherwise leave at default
 			int i;
 			float f = DC->getValue(item->window.ownerDraw);
 			for (i = 0; i < item->numColors; i++) {
 				if (f >= item->colorRanges[i].low && f <= item->colorRanges[i].high) {
-					memcpy(&color, &item->colorRanges[i].color, sizeof(color));
+					Vector4Copy(item->colorRanges[i].color, color);
 					break;
 				}
 			}
@@ -4724,7 +4720,7 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 		}
 
 		if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
-		  memcpy(color, parent->disableColor, sizeof(vec4_t)); // bk001207 - FIXME: Com_Memcpy
+			Vector4Copy(parent->disableColor, color);
 		}
 
 		if (item->text) {
@@ -6232,7 +6228,7 @@ qboolean ItemParse_addColorRange( itemDef_t *item, int handle ) {
 		PC_Float_Parse(handle, &color.high) &&
 		PC_Color_Parse(handle, &color.color) ) {
 		if (item->numColors < MAX_COLOR_RANGES) {
-			memcpy(&item->colorRanges[item->numColors], &color, sizeof(color));
+			item->colorRanges[item->numColors] = color;
 			item->numColors++;
 		}
 		return qtrue;

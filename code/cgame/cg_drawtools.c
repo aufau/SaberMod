@@ -227,10 +227,8 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 	{
 		// hack-a-doodle-do (post-release quick fix code)...
 		//
-		vec4_t color;
-		memcpy(color,setColor, sizeof(color));	// de-const it
 		CG_Text_Paint(x, y, 1.0f,	// float scale,
-						color,		// vec4_t color,
+						setColor,	// vec4_t color,
 						string,		// const char *text,
 						0.0f,		// float adjust,
 						0,			// int limit,
@@ -269,7 +267,7 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 		while ( *s ) {
 			if ( Q_IsColorString( s ) ) {
 				if ( !forceColor ) {
-					memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
+					VectorCopy( g_color_table[ColorIndex(*(s+1))], color );
 					color[3] = setColor[3];
 					trap_R_SetColor( color );
 				}

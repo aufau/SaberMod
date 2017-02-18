@@ -1148,7 +1148,7 @@ void CG_DrawWeaponSelect( void ) {
 	y = 410;
 
 	// Background
-//	memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+//	Vector4Copy(colorTable[CT_WHITE], calcColor);
 //	calcColor[3] = .35f;
 //	trap_R_SetColor( calcColor);
 

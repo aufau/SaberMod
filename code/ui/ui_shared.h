@@ -472,7 +472,7 @@ menuDef_t *Menus_FindByName(const char *p);
 void Menus_ShowByName(const char *p);
 void Menus_CloseByName(const char *p);
 void Display_HandleKey(int key, qboolean down, int x, int y);
-void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
+void LerpColor(const vec4_t a, const vec4_t b, vec4_t c, float t);
 void Menus_CloseAll();
 void Menu_Paint(menuDef_t *menu, qboolean forcePaint);
 void Menu_SetFeederSelection(menuDef_t *menu, int feeder, int index, const char *name);

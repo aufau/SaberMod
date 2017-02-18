@@ -1187,7 +1187,7 @@ Ghoul2 Insert End
 		int i;
 		addspriteArgStruct_t fxSArgs;
 		//refEntity_t sRef;
-		//memcpy( &sRef, &ent, sizeof( sRef ) );
+		//sRef = ent;
 
 		ent.customShader = cgs.media.solidWhite;
 		ent.renderfx = RF_RGB_TINT;
@@ -1224,7 +1224,7 @@ Ghoul2 Insert End
 		float wv;
 		addspriteArgStruct_t fxSArgs;
 		//refEntity_t sRef;
-		//memcpy( &sRef, &ent, sizeof( sRef ) );
+		//sRef = ent;
 
 		ent.customShader = cgs.media.solidWhite;
 		ent.renderfx = RF_RGB_TINT;
@@ -2049,7 +2049,7 @@ Ghoul2 Insert End
 		int i;
 		addspriteArgStruct_t fxSArgs;
 		//refEntity_t sRef;
-		//memcpy( &sRef, &ent, sizeof( sRef ) );
+		//sRef = ent;
 
 		ent.customShader = cgs.media.solidWhite;
 		ent.renderfx = RF_RGB_TINT;
