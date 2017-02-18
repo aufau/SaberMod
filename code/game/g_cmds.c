@@ -149,28 +149,24 @@ ConcatArgs
 ==================
 */
 char	*ConcatArgs( int start ) {
-	int		i, c, tlen;
 	static char	line[MAX_STRING_CHARS];
-	int		len;
-	char	arg[MAX_STRING_CHARS];
+	char		*cursor = line;
+	int			remaining = MAX_STRING_CHARS;
+	size_t		len;
+	int			c = trap_Argc();
+	int			i;
 
-	len = 0;
-	c = trap_Argc();
-	for ( i = start ; i < c ; i++ ) {
-		trap_Argv( i, arg, sizeof( arg ) );
-		tlen = strlen( arg );
-		if ( len + tlen >= MAX_STRING_CHARS - 1 ) {
-			break;
+	// need at least 3 bytes for space, one character and '\0'
+	for ( i = start ; i < c && remaining >= 3 ; i++ ) {
+		if ( i > start ) {
+			*cursor++ = ' ';
+			remaining--;
 		}
-		memcpy( line + len, arg, tlen );
-		len += tlen;
-		if ( i != c - 1 ) {
-			line[len] = ' ';
-			len++;
-		}
+		trap_Argv( i, cursor, remaining );
+		len = strlen( cursor );
+		cursor += len;
+		remaining -= len;
 	}
-
-	line[len] = 0;
 
 	return line;
 }
