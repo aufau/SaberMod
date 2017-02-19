@@ -672,11 +672,11 @@ gentity_t *GetTrackerEnt(int channel)
 	int i = MAX_CLIENTS;
 	gentity_t *ent;
 
-	while (i < MAX_GENTITIES)
+	while (i < level.num_entities)
 	{
 		ent = &g_entities[i];
 
-		if (ent && (ent->s.eFlags & EF_SOUNDTRACKER) && ent->s.saberEntityNum == channel)
+		if (ent->inuse && (ent->s.eFlags & EF_SOUNDTRACKER) && ent->s.saberEntityNum == channel)
 		{
 			return ent;
 		}

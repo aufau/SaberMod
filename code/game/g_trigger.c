@@ -93,11 +93,11 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 	{
 		if (ent->rofftarget)
 		{
-			while (i < MAX_GENTITIES)
+			while (i < level.num_entities)
 			{
 				testent = &g_entities[i];
 
-				if (testent && testent->targetname && strcmp(testent->targetname, ent->rofftarget) == 0)
+				if (testent->inuse && testent->targetname && strcmp(testent->targetname, ent->rofftarget) == 0)
 				{
 					rofftarget = testent;
 					break;
