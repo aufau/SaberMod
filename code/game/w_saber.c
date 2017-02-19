@@ -2347,6 +2347,9 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 { //we're going to cheat and damage players within the saber's radius, just for the sake of doing things more "efficiently" (and because the saber entity has no server g2 instance)
 	int i;
 	int dist;
+	int num;
+	int touch[MAX_GENTITIES];
+	vec3_t mins, maxs;
 	gentity_t *ent;
 	gentity_t *saberOwner = &g_entities[saberent->r.ownerNum];
 
@@ -2369,10 +2372,14 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 		return;
 	}
 
-	// perhaps trap_EntitiesInBox would be faster (it takes max/min into account though)
-	for (i = 0; i < level.num_entities; i++)
+	VectorSet( mins, -dist, -dist, -dist );
+	VectorSet( maxs,  dist,  dist,  dist );
+
+	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+
+	for (i = 0; i < num; i++)
 	{
-		ent = &g_entities[i];
+		ent = &g_entities[touch[i]];
 
 		// few conditions from CheckThrownSaberDamaged for optimization
 		if (!ent->inuse || !ent->takedamage || ent->health <= 0)
