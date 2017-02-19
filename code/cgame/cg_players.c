@@ -845,7 +845,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 
 //	to->ATST = from->ATST;
 
-	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
+	blockcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 }
 
 /*
@@ -910,7 +910,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci, int clientNum ) 
 					ci->bolt_motion = match->bolt_motion;
 					ci->bolt_llumbar = match->bolt_llumbar;
 
-					memcpy( ci->sounds, match->sounds, sizeof( ci->sounds ) );
+					blockcpy( ci->sounds, match->sounds, sizeof( ci->sounds ) );
 
 					//We can share this pointer, because it already belongs to this client.
 					//The pointer itself and the ghoul2 instance is never actually changed, just passed between

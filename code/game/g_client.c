@@ -1841,9 +1841,7 @@ void ClientSpawn(gentity_t *ent) {
 	savedProf = client->prof;
 	savedPing = client->ps.ping;
 //	savedAreaBits = client->areabits;
-	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
-		persistant[i] = client->ps.persistant[i];
-	}
+	blockcpy( persistant, client->ps.persistant, sizeof( persistant ) );
 	eventSequence = client->ps.eventSequence;
 
 	savedForce = client->ps.fd;
@@ -1871,9 +1869,7 @@ void ClientSpawn(gentity_t *ent) {
 //	client->areabits = savedAreaBits;
 	client->lastkilled_client = -1;
 
-	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
-		client->ps.persistant[i] = persistant[i];
-	}
+	blockcpy( client->ps.persistant, persistant, sizeof( persistant ) );
 	client->ps.eventSequence = eventSequence;
 	// increment the spawncount so the client will detect the respawn
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
