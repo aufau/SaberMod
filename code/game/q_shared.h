@@ -833,6 +833,23 @@ void ByteToDir( int b, vec3_t dir );
 #endif
 
 #ifdef __LCC__
+
+// memory copy performance for compiled qvm: single VectorCopy,
+// Vector4Copy is fastest up to 4 dwords. Beyond that it's blockcpy
+// and then memcpy. bg_lib.c memcpy is very slow, so is any loop.
+
+// Less overhead thany memcpy syscall. Struct assignment generates
+// OP_BLOCK_COPY instruction. Size must be const at compile time and
+// divisible by 4 because q3asm. Curiosity rather than necessity.
+#define blockcpy(dst, src, size)						\
+	{													\
+		struct block {									\
+			char dword[size];							\
+		};												\
+		assert(((size) & 3) == 0);						\
+		*(struct block *)dst = *(struct block *)src;	\
+	}
+
 #ifdef VectorCopy
 #undef VectorCopy
 // this is a little hack to get more efficient copies in our interpreter
@@ -842,7 +859,9 @@ typedef struct {
 #define VectorCopy(a,b)	*(vec3struct_t *)b=*(vec3struct_t *)a;
 #define ID_INLINE static
 #endif
-#endif
+#else // __LCC__
+#define blockcpy memcpy
+#endif // !__LCC__
 
 #define VectorClear(a)			((a)[0]=(a)[1]=(a)[2]=0)
 #define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
