@@ -47,28 +47,23 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 	}
 
 	if (mvapi) {
-		mvsharedEntity_t	*mvEnt = mv_entities + ent->s.number;
-		int					i;
+		uint8_t	*snapshotIgnore = mv_entities[ent->s.number].snapshotIgnore;
+		int		i;
 
 		if (blame == ENTITYNUM_WORLD) {
 			for (i = 0; i < level.maxclients; i++) {
-				mvEnt->snapshotIgnore[i] = 0;
+				snapshotIgnore[i] = 0;
 			}
 		} else {
 			for (i = 0; i < level.maxclients; i++) {
-				gclient_t	*client;
+				gclient_t	*client = level.clients + i;
 
-				if (!g_entities[i].inuse) {
-					continue;
-				}
-
-				client = level.clients + i;
-
-				if (client->pers.privateDuel && client->ps.duelInProgress &&
+				if (client->pers.connected == CON_CONNECTED &&
+					client->pers.privateDuel && client->ps.duelInProgress &&
 					blame != i && blame != client->ps.duelIndex) {
-					mvEnt->snapshotIgnore[i] = 1;
+					snapshotIgnore[i] = 1;
 				} else {
-					mvEnt->snapshotIgnore[i] = 0;
+					snapshotIgnore[i] = 0;
 				}
 			}
 		}
