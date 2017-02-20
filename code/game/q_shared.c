@@ -990,7 +990,9 @@ void Q_strcat( char *dest, size_t size, const char *src ) {
 	if ( l1 >= size ) {
 		Com_Error( ERR_FATAL, "Q_strcat: already overflowed" );
 	}
-	Q_strncpyz( dest + l1, src, size - l1 );
+
+	strncpy( dest + l1, src, size - l1 );
+	dest[size - 1] = '\0';
 }
 
 
