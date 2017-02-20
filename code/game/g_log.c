@@ -1555,38 +1555,38 @@ void CalculateAwards(gentity_t *ent, char *msg)
 	if (CalculateSharpshooter(ent, &kills))
 	{
 		awardFlags |= (1<<AWARD_SHARPSHOOTER);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, kills);
 	}
 	if (CalculateUntouchable(ent))
 	{
 		awardFlags |= (1<<AWARD_UNTOUCHABLE);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, 0);
 	}
 	if (CalculateLogistics(ent, &stuffUsed))
 	{
 		awardFlags |= (1<<AWARD_LOGISTICS);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, stuffUsed);
 	}
 	if (CalculateTactician(ent, &kills))
 	{
 		awardFlags |= (1<<AWARD_TACTICIAN);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, kills);
 	}
 	if (CalculateDemolitionist(ent, &kills))
 	{
 		awardFlags |= (1<<AWARD_DEMOLITIONIST);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, kills);
 	}
 	streak = CalculateStreak(ent);
 	if (streak)
 	{
 		awardFlags |= (1<<AWARD_STREAK);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, streak);
 	}
 	if (GT_Team(level.gametype) && level.gametype != GT_REDROVER)
@@ -1595,14 +1595,14 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		if (teamAwards)
 		{
 			awardFlags |= (1<<AWARD_TEAM);
-			strcpy(buf2, buf1);
+			strncpy(buf2, buf1, sizeof(buf2));
 			Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, teamAwards);
 		}
 	}
 	if (CalculateSection31Award(ent))
 	{
 		awardFlags |= (1<<AWARD_SECTION31);
-		strcpy(buf2, buf1);
+		strncpy(buf2, buf1, sizeof(buf2));
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, 0);
 	}
 	Q_strncpyz(buf2, msg, sizeof(buf2));

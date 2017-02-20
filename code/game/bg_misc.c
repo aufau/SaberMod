@@ -230,11 +230,11 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	}
 	else
 	{
-		strcpy(powerBuf, powerOut); //copy it as the original
+		strncpy(powerBuf, powerOut, sizeof(powerBuf)); //copy it as the original
 	}
 
 	//first of all, print the max rank into the string as the rank
-	strcpy(powerOut, va("%i-", maxRank));
+	Com_sprintf(powerOut, sizeof(powerOut), "%i-", maxRank);
 
 	while (i < 128 && powerBuf[i] && powerBuf[i] != '-')
 	{
@@ -478,7 +478,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	c = 0;
 	while (c < NUM_FORCE_POWERS)
 	{
-		strcpy(readBuf, va("%i", final_Powers[c]));
+		Com_sprintf(readBuf, sizeof(readBuf), "%i", final_Powers[c]);
 		powerOut[i] = readBuf[0];
 		c++;
 		i++;
@@ -2419,9 +2419,10 @@ void BG_TempFree( int size )
 char *BG_StringAlloc ( const char *source )
 {
 	char *dest;
+	size_t len = strlen ( source ) + 1;
 
-	dest = BG_AllocUnaligned ( strlen ( source ) + 1 );
-	strcpy ( dest, source );
+	dest = BG_AllocUnaligned ( len );
+	strncpy ( dest, source, len );
 	return dest;
 }
 
