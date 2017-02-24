@@ -1404,7 +1404,7 @@ void CG_Weapon_f( void ) {
 		if (cg.snap->ps.weaponTime < 1)
 		{
 			//trap_SendClientCommand("sv_saberswitch");
-			trap_SendConsoleCommand("sv_saberswitch");
+			trap_SendConsoleCommand("sv_saberswitch\n");
 		}
 		return;
 	}

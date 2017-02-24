@@ -113,6 +113,7 @@ void UpdateTournamentInfo( void ) {
 		Com_sprintf( buf, sizeof(buf), " %i %i %i", n, level.clients[n].ps.persistant[PERS_RANK], level.clients[n].ps.persistant[PERS_SCORE] );
 		Q_strcat( msg, sizeof(msg), buf );
 	}
+	Q_strcat( msg, sizeof(msg), "\n" );
 	trap_SendConsoleCommand( EXEC_APPEND, msg );
 }
 

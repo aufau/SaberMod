@@ -316,7 +316,7 @@ clientkilled:
 			Q_strncpyz( cg.killerName, attackerName, sizeof( cg.killerName ) );
 
 			if ( cg_followKiller.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-				trap_SendConsoleCommand(va("follow %i", attacker));
+				trap_SendClientCommand(va("follow %i", attacker));
 			}
 		}
 
@@ -1325,7 +1325,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				cg.snap->ps.pm_flags & PMF_FOLLOW &&
 				!cg.snap->ps.powerups[PW_REDFLAG] && !cg.snap->ps.powerups[PW_BLUEFLAG] )
 			{
-				trap_SendConsoleCommand(va("follow %i", es->number));
+				trap_SendClientCommand(va("follow %i", es->number));
 			}
 		}
 		break;
@@ -1352,7 +1352,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				CG_ItemPickup( index );
 			}
 			if ( cg_followPowerup.integer && cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-				trap_SendConsoleCommand(va("follow %i", es->number));
+				trap_SendClientCommand(va("follow %i", es->number));
 			}
 		}
 		break;
