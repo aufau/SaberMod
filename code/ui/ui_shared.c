@@ -2558,15 +2558,26 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 
 		buff[0] = 0;
 		DC->getCVarString(item->cvar, buff, sizeof(buff));
-		len = strlen(buff);
-		if (editPtr->maxChars && len > editPtr->maxChars) {
-			len = editPtr->maxChars;
+		len = (int)strlen(buff);
+
+		// just sanitize everything here. better safe than sorry
+		if (editPtr->maxChars <= 0 || editPtr->maxChars > (int)sizeof(buff) - 1) {
+			editPtr->maxChars = sizeof(buff) - 1;
 		}
+		if (len > editPtr->maxChars) {
+			len = editPtr->maxChars;
+			buff[len] = '\0';
+		}
+		if (item->cursorPos < 0) {
+			item->cursorPos = 0;
+		} else if (item->cursorPos > len) {
+			item->cursorPos = len;
+		}
+
 		if ( key & K_CHAR_FLAG ) {
 			key &= ~K_CHAR_FLAG;
 
-
-			if (key == 'h' - 'a' + 1 )	{	// ctrl-h is backspace
+			if (key == CTRL('h') )	{	// ctrl-h is backspace
 				if ( item->cursorPos > 0 ) {
 					memmove( &buff[item->cursorPos - 1], &buff[item->cursorPos], len + 1 - item->cursorPos);
 					item->cursorPos--;
@@ -2592,36 +2603,31 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 				}
 			}
 
+			if (item->cursorPos >= editPtr->maxChars) {
+				return qtrue;
+			}
+
 			if (!DC->getOverstrikeMode()) {
-				if (( len == MAX_EDITFIELD - 1 ) || (editPtr->maxChars && len >= editPtr->maxChars)) {
+				if (len >= editPtr->maxChars) {
 					return qtrue;
 				}
+
+				// fau - move at least one byte to keep '\0'
 				memmove( &buff[item->cursorPos + 1], &buff[item->cursorPos], len + 1 - item->cursorPos );
 			} else {
-				if (editPtr->maxChars && item->cursorPos >= editPtr->maxChars) {
-					return qtrue;
+				// fau - nul-terminate!
+				if (item->cursorPos >= len) {
+					buff[len + 1] = '\0';
 				}
 			}
 
 			buff[item->cursorPos] = key;
 
-			//rww - nul-terminate!
-			if (item->cursorPos+1 < 2048)
-			{
-				buff[item->cursorPos+1] = 0;
-			}
-			else
-			{
-				buff[item->cursorPos] = 0;
-			}
-
 			DC->setCVar(item->cvar, buff);
 
-			if (item->cursorPos < len + 1) {
-				item->cursorPos++;
-				if (editPtr->maxPaintChars && item->cursorPos > editPtr->maxPaintChars) {
-					editPtr->paintOffset++;
-				}
+			item->cursorPos++;
+			if (editPtr->maxPaintChars && item->cursorPos > editPtr->maxPaintChars) {
+				editPtr->paintOffset++;
 			}
 
 		} else {
@@ -2658,16 +2664,35 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 				return qtrue;
 			}
 
-			if ( key == A_HOME || key == A_KP_7) {// || ( tolower(key) == 'a' && trap_Key_IsDown( K_CTRL ) ) ) {
+			if ( key == A_HOME || key == A_KP_7 ||
+				( tolower(key) == 'a' && DC->isDown( A_CTRL ) ) )
+			{
 				item->cursorPos = 0;
 				editPtr->paintOffset = 0;
 				return qtrue;
 			}
 
-			if ( key == A_END || key == A_KP_1)  {// ( tolower(key) == 'e' && trap_Key_IsDown( K_CTRL ) ) ) {
-				item->cursorPos = len;
+			if ( key == A_END || key == A_KP_1 ||
+				( tolower(key) == 'e' && DC->isDown( A_CTRL ) ) )
+			{
+				item->cursorPos = (int)len;
 				if(item->cursorPos > editPtr->maxPaintChars) {
-					editPtr->paintOffset = len - editPtr->maxPaintChars;
+					editPtr->paintOffset = (int)(len - editPtr->maxPaintChars);
+				}
+				return qtrue;
+			}
+
+			if ((key == A_INSERT && DC->isDown( A_SHIFT )) ||
+				(tolower(key) == 'v' && DC->isDown( A_CTRL )))
+			{
+				char		clipboard[2048];
+				const char	*c = clipboard;
+
+				DC->getClipBoardData(clipboard, sizeof(clipboard));
+
+				while(*c) {
+					Item_TextField_HandleKey(item, (int)(*c) | K_CHAR_FLAG);
+					c++;
 				}
 				return qtrue;
 			}
