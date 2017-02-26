@@ -78,7 +78,7 @@
 			style                   0
 			text                    @MENUS0_NAME
 			cvar                    "ui_Name"
-			maxchars                26
+			maxchars                33
 			rect                    80 40 300 20
 			textalign               ITEM_ALIGN_LEFT
 			textalignx              0
