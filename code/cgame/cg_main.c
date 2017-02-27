@@ -1576,7 +1576,7 @@ static void CG_RegisterGraphics( void ) {
 	cg.loadLCARSStage = 4;
 
 	cgs.media.backTileShader = trap_R_RegisterShaderNoMip( "gfx/2d/backtile" );
-
+#ifdef UNUSED
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad" );
 	cgs.media.quadWeaponShader = trap_R_RegisterShader("powerups/quadWeapon" );
@@ -1585,7 +1585,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility" );
 	cgs.media.regenShader = trap_R_RegisterShader("powerups/regen" );
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff" );
-
+#endif
 	cgs.media.itemRespawningPlaceholder = trap_R_RegisterShader("powerups/placeholder");
 	cgs.media.itemRespawningRezOut = trap_R_RegisterShader("powerups/rezout");
 
@@ -1654,7 +1654,9 @@ static void CG_RegisterGraphics( void ) {
 	if ( GT_Team(cgs.gametype) || cg_buildScript.integer ) {
 		cgs.media.teamRedShader = trap_R_RegisterShaderNoMip( "sprites/team_red" );
 		cgs.media.teamBlueShader = trap_R_RegisterShaderNoMip( "sprites/team_blue" );
+#if UNUSED
 		cgs.media.redQuadShader = trap_R_RegisterShaderNoMip( "powerups/blueflag" );
+#endif
 		cgs.media.teamStatusBar = trap_R_RegisterShaderNoMip( "gfx/2d/colorbar" );
 	}
 	else if ( cgs.gametype == GT_JEDIMASTER )
@@ -1708,15 +1710,16 @@ static void CG_RegisterGraphics( void ) {
 	// doing one shader just makes it look like a shell.  By using two shaders with different bulge offsets and different texture scales, it has a much more chaotic look
 	cgs.media.electricBodyShader			= trap_R_RegisterShader( "gfx/misc/electric" );
 	cgs.media.electricBody2Shader			= trap_R_RegisterShader( "gfx/misc/fullbodyelectric2" );
-
+#ifdef UNUSED
 	// wall marks
 	cgs.media.bulletMarkShader	= trap_R_RegisterShader( "gfx/damage/bullet_mrk" );
 	cgs.media.burnMarkShader	= trap_R_RegisterShader( "gfx/damage/burn_med_mrk" );
 	cgs.media.holeMarkShader	= trap_R_RegisterShader( "gfx/damage/hole_lg_mrk" );
 	cgs.media.energyMarkShader	= trap_R_RegisterShader( "gfx/damage/plasma_mrk" );
+	cgs.media.bloodMarkShader	= trap_R_RegisterShader( "bloodMark" );
+#endif
 	cgs.media.shadowMarkShader	= trap_R_RegisterShader( "markShadow" );
 	cgs.media.wakeMarkShader	= trap_R_RegisterShader( "wake" );
-	cgs.media.bloodMarkShader	= trap_R_RegisterShader( "bloodMark" );
 
 	cgs.media.viewPainShader					= trap_R_RegisterShader( "gfx/misc/borgeyeflare" );
 	cgs.media.viewPainShader_Shields			= trap_R_RegisterShader( "gfx/mp/dmgshader_shields" );
