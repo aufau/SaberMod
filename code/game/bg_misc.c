@@ -822,7 +822,7 @@ Don't place this
         { "models/weapons2/briar_pistol/briar_pistol_w.glm",
 		0, 0, 0},
 /* view */		"models/weapons2/briar_pistol/briar_pistol.md3",
-/* icon */		"gfx/hud/w_icon_rifle",
+/* icon */		"gfx/hud/w_icon_briar",
 /* pickup *///	"Bryar Pistol",
 		100,
 		IT_WEAPON,
