@@ -281,12 +281,12 @@ CG_CalcTargetThirdPersonViewLocation
 */
 static void CG_CalcIdealThirdPersonViewTarget(void)
 {
-	/*
+#ifdef ATST
 	if (cg.snap && cg.snap->ps.usingATST)
 	{
 		thirdPersonVertOffset = 200;
 	}
-	*/
+#endif
 
 	// Initialize IdealTarget
 	if (gCGHasFallVector)
@@ -321,12 +321,12 @@ CG_CalcTargetThirdPersonViewLocation
 static void CG_CalcIdealThirdPersonViewLocation(void)
 {
 	float thirdPersonRange = cg_thirdPersonRange.value;
-
+#ifdef ATST
 	if (cg.snap && cg.snap->ps.usingATST)
 	{
 		thirdPersonRange = 300;
 	}
-
+#endif
 	VectorMA(cam.target.ideal, -(thirdPersonRange), cam.fwd, cam.loc.ideal);
 }
 
@@ -374,34 +374,32 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 		return;
 
 	VectorSubtract(pos->ideal, pos->prevIdeal, idealDelta);
+	// saving previous ideal position only when dtime > 0 makes camera
+	// freeze when player is lagging
+	VectorCopy(pos->ideal, pos->prevIdeal);
 
 	if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
 	{
 		// FPS-independent solution thanks to semigroup property:
-		// If t1, t2 are positive time periods and dampfactor,
-		// velocity don't change then
+		// If t1, t2 are positive time periods, dampfactor and
+		// velocity (idealDelta) don't change then:
 		// damp_(t1 + t2)(pos) = damp_t1(damp_t2(pos))
 
 		// if dtime == 1 (stable framerate equal to cg_camerafps)
 		// result is the same as in original code.
-		vec3_t	velocity;
 		vec3_t	shift;
 		float	invdtime;
 		float	timeadjfactor;
 		float	codampfactor;
 
-		if (dtime == 0.0f)
-			return;
-		// save previous ideal position only when it changes
-		VectorCopy(pos->ideal, pos->prevIdeal);
 		// dtime is relative: physics time / emulated time
+		dtime *= cg_camerafps.value / 1000.0f;
 		invdtime = 1.0f / dtime;
 		timeadjfactor = powf(dampfactor, dtime);
-		// velocity is in units / emulated frame time
-		VectorScale(idealDelta, invdtime, velocity);
-		// shift = velocity * dampfactor / (1 - dampfactor)
+		// shift = (idealDelta / dtime) * (dampfactor / (1 - dampfactor))
 		codampfactor = dampfactor / (1.0f - dampfactor);
-		VectorScale(velocity, codampfactor, shift);
+		VectorScale(idealDelta, invdtime, shift);
+		VectorScale(shift, codampfactor, shift);
 		// damp(dtime) = dampfactor^dtime * (damp(0) + shift) - shift
 		pos->damp[0] = timeadjfactor * (pos->damp[0] + shift[0]) - shift[0];
 		pos->damp[1] = timeadjfactor * (pos->damp[1] + shift[1]) - shift[1];
@@ -409,10 +407,9 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 	}
 	else
 	{
-		// original:
+		// Original JK2 camera damping:
 		// idealDelta_n = ideal_n+1 - ideal_n
 		// damp_n+1 = dampfactor * (damp_n - idealDelta_n)
-		VectorCopy(pos->ideal, pos->prevIdeal);
 		VectorSubtract(pos->damp, idealDelta, pos->damp);
 		VectorScale(pos->damp, dampfactor, pos->damp);
 	}
@@ -434,7 +431,7 @@ static void CG_UpdateThirdPersonTargetDamp(float dtime)
 	{	// No damping.
 		VectorClear(cam.target.damp);
 	}
-	else if (cg_thirdPersonTargetDamp.value >= 0)
+	else if (cg_thirdPersonTargetDamp.value > 0.0f)
 	{
 		dampfactor = 1.0f - cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
 
@@ -489,7 +486,7 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 	{	// No damping.
 		VectorClear(cam.loc.damp);
 	}
-	else if (dampfactor >= 0)
+	else if (dampfactor > 0.0f)
 	{
 		dampfactor = 1.0f - dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
 
@@ -531,8 +528,6 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 	// This has the benefit that the camera is a lot smoother now (before it lerped between tested points),
 	// however two full volume traces each frame is a bit scary to think about.
 }
-
-
 
 
 /*
@@ -617,7 +612,6 @@ static void CG_OffsetThirdPersonView( void )
 		}
 
 		pitch = Q_fabs(focusAngles[PITCH]);
-		dtime *= cg_camerafps.value / 1000.0f;
 
 		// Move the target to the new location.
 		CG_UpdateThirdPersonTargetDamp(dtime);
@@ -1289,6 +1283,8 @@ static int CG_CalcViewValues( void ) {
 		// back away from character
 		CG_OffsetThirdPersonView();
 	} else {
+		// reset third person camera damping
+		cam.lastTime = 0;
 		// offset for local bobbing and kicks
 		CG_OffsetFirstPersonView();
 	}

@@ -314,7 +314,6 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 			f * (next->ps.velocity[i] - prev->ps.velocity[i] );
 	}
 
-	out->commandTime = prev->ps.commandTime;
 	cg.predictedTimeFrac = f * (next->ps.commandTime - prev->ps.commandTime);
 }
 
