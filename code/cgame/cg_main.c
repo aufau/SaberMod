@@ -1147,7 +1147,6 @@ static void CG_RegisterSounds( void ) {
 	trap_S_RegisterSound("sound/weapons/force/see.wav");
 	trap_S_RegisterSound("sound/weapons/force/rage.wav");
 	trap_S_RegisterSound("sound/weapons/force/lightning.wav");
-	trap_S_RegisterSound("sound/weapons/force/lightninghit.wav");
 	trap_S_RegisterSound("sound/weapons/force/drain.wav");
 	trap_S_RegisterSound("sound/weapons/force/jumpbuild.wav");
 	trap_S_RegisterSound("sound/weapons/force/distract.wav");

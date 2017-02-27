@@ -1568,7 +1568,8 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec
 				{
 					if ( !Q_irand( 0, 2 ) )
 					{
-						G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
+						// fau - missing, there are lightninghit1-3 though
+						// G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
 					}
 
 					if (traceEnt->client->ps.electrifyTime < (level.time + 400))
