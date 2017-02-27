@@ -54,7 +54,7 @@ extern gentity_t *droppedBlueFlag;
 #define MAX_SENTRY_DISTANCE			256
 
 // For more than four players, adjust the respawn times, up to 1/4.
-int adjustRespawnTime(float preRespawnTime, int itemType, int itemTag)
+static int adjustRespawnTime(int preRespawnTime, int itemType, int itemTag)
 {
 	float respawnTime = preRespawnTime;
 
@@ -1023,7 +1023,7 @@ void ItemUse_Sentry( gentity_t *ent )
 	sentry->classname = "sentryGun";
 	sentry->s.modelindex = G_ModelIndex("models/items/psgun.glm"); //replace ASAP
 
-	sentry->s.g2radius = 30.0f;
+	sentry->s.g2radius = 30;
 	sentry->s.modelGhoul2 = 1;
 
 	G_SetOrigin(sentry, fwdorg);
@@ -1253,10 +1253,10 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 			// New method:  If the player has less than half the minimum, give them the minimum, else add 1/2 the min.
 
 			// drop the quantity if the already have over the minimum
-			if ( other->client->ps.ammo[ ent->item->giTag ] < quantity*0.5 ) {
+			if ( other->client->ps.ammo[ ent->item->giTag ] < quantity / 2 ) {
 				quantity = quantity - other->client->ps.ammo[ ent->item->giTag ];
 			} else {
-				quantity = quantity*0.5;		// only add half the value.
+				quantity = quantity / 2;		// only add half the value.
 			}
 
 			// Old method:  If the player has less than the minimum, give them the minimum, else just add 1.

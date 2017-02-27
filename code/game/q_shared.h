@@ -864,6 +864,10 @@ typedef struct {
 #define blockcpy memcpy
 #endif // !__LCC__
 
+#ifndef ID_INLINE
+#define ID_INLINE
+#endif
+
 #define VectorClear(a)			((a)[0]=(a)[1]=(a)[2]=0)
 #define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
 #define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
@@ -1624,7 +1628,7 @@ typedef struct playerState_s {
 	float		rocketTargetTime;
 
 	int			emplacedIndex;
-	float		emplacedTime;
+	int			emplacedTime;
 
 	qboolean	isJediMaster;
 	qboolean	forceRestricted;
@@ -1633,16 +1637,16 @@ typedef struct playerState_s {
 	int			saberIndex;
 
 	int			genericEnemyIndex;
-	float		droneFireTime;
-	float		droneExistTime;
+	int			droneFireTime;
+	int			droneExistTime;
 
 	int			activeForcePass;
 
 	qboolean	hasDetPackPlanted; //better than taking up an eFlag isn't it?
 
-	float		holocronsCarried[NUM_FORCE_POWERS];
+	int			holocronsCarried[NUM_FORCE_POWERS];
 	int			holocronCantTouch;
-	float		holocronCantTouchTime; //for keeping track of the last holocron that just popped out of me (if any)
+	int			holocronCantTouchTime; //for keeping track of the last holocron that just popped out of me (if any)
 	int			holocronBits;
 
 	int			legsAnimExecute;

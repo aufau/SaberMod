@@ -1844,7 +1844,7 @@ LASER TRAP / TRIP MINE
 ======================================================================
 */
 #define LT_DAMAGE			100
-#define LT_SPLASH_RAD		256.0f
+#define LT_SPLASH_RAD		256
 #define LT_SPLASH_DAM		105
 #define LT_VELOCITY			900.0f
 #define LT_SIZE				1.5f
@@ -2032,9 +2032,9 @@ void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->classname = "laserTrap";
 	laserTrap->s.eFlags = EF_BOUNCE_HALF;
 	laserTrap->s.eFlags |= EF_MISSILE_STICK;
-	laserTrap->splashDamage = LT_SPLASH_DAM;//*2;
-	laserTrap->splashRadius = LT_SPLASH_RAD;//*2;
-	laserTrap->damage = LT_DAMAGE;//*DMG_VAR;
+	laserTrap->splashDamage = LT_SPLASH_DAM;// * 2;
+	laserTrap->splashRadius = LT_SPLASH_RAD;// * 2;
+	laserTrap->damage = LT_DAMAGE;// * DMG_VAR;
 	laserTrap->methodOfDeath = MOD_TRIP_MINE_SPLASH;//MOD_TRIP_WIRE;
 	laserTrap->splashMethodOfDeath = MOD_TRIP_MINE_SPLASH;//MOD_TRIP_WIRE;
 	laserTrap->s.eType = ET_GENERAL;

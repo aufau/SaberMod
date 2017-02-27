@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ================================================================================
 */
 
-#include <g_local.h>
+#include "g_local.h"
 
 typedef enum {
 	STAT_SCORE,

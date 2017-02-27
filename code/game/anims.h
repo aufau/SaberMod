@@ -179,7 +179,7 @@ typedef enum //# animNumber_e
 	BOTH_MELEE6,			//# Sixth melee attack
 	BOTH_THERMAL_READY,		//# pull back with thermal
 	BOTH_THERMAL_THROW,		//# throw thermal
-	//* #sep BOTH_ SABER ANIMS
+	//# #sep BOTH_ SABER ANIMS
 	//Saber attack anims - power level 2
 	BOTH_A1_T__B_,	//# Fast weak vertical attack top to bottom
 	BOTH_A1__L__R,	//# Fast weak horizontal attack left to right

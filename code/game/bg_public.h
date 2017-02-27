@@ -1096,10 +1096,10 @@ int BG_GetItemIndexByTag(int tag, itemType_t type);
 qboolean BG_HasYsalamiri(int gametype, playerState_t *ps);
 qboolean BG_CanUseFPNow(int gametype, playerState_t *ps, int time, forcePowers_t power);
 
-void *BG_Alloc ( int size );
-void *BG_AllocUnaligned ( int size );
-void *BG_TempAlloc( int size );
-void BG_TempFree( int size );
+void *BG_Alloc ( size_t size );
+void *BG_AllocUnaligned ( size_t size );
+void *BG_TempAlloc( size_t size );
+void BG_TempFree( size_t size );
 char *BG_StringAlloc ( const char *source );
 qboolean BG_OutOfMemory ( void );
 

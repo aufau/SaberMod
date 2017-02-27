@@ -2655,13 +2655,10 @@ Runs thinking code for this frame if necessary
 =============
 */
 void G_RunThink (gentity_t *ent) {
-	float	thinktime;
-
-	thinktime = ent->nextthink;
-	if (thinktime <= 0) {
+	if (ent->nextthink <= 0) {
 		return;
 	}
-	if (thinktime > level.time) {
+	if (ent->nextthink > level.time) {
 		return;
 	}
 
@@ -2696,8 +2693,8 @@ void SlowMoDuelTimescale() {
 	}
 	else
 	{
-		float timeDif = (level.time - gSlowMoDuelTime); //difference in time between when the slow motion was initiated and now
-		float useDif = 0; //the difference to use when actually setting the timescale
+		int		timeDif = (level.time - gSlowMoDuelTime); //difference in time between when the slow motion was initiated and now
+		float	useDif = 0; //the difference to use when actually setting the timescale
 
 		if (timeDif < 150)
 		{

@@ -2357,10 +2357,10 @@ PLAYER ANGLES
 #define MAX_POOL_SIZE	2048000 //1024000
 
 static char		bg_pool[MAX_POOL_SIZE];
-static int		bg_poolSize = 0;
-static int		bg_poolTail = MAX_POOL_SIZE;
+static size_t	bg_poolSize = 0;
+static size_t	bg_poolTail = MAX_POOL_SIZE;
 
-void *BG_Alloc ( int size )
+void *BG_Alloc ( size_t size )
 {
 	// for 64bit pointers
 	bg_poolSize = PAD(bg_poolSize, sizeof(void *));
@@ -2376,7 +2376,7 @@ void *BG_Alloc ( int size )
 	return &bg_pool[bg_poolSize-size];
 }
 
-void *BG_AllocUnaligned ( int size )
+void *BG_AllocUnaligned ( size_t size )
 {
 	if (bg_poolSize + size > bg_poolTail)
 	{
@@ -2389,7 +2389,7 @@ void *BG_AllocUnaligned ( int size )
 	return &bg_pool[bg_poolSize-size];
 }
 
-void *BG_TempAlloc( int size )
+void *BG_TempAlloc( size_t size )
 {
 	size = PAD(size, sizeof(void *));
 
@@ -2404,7 +2404,7 @@ void *BG_TempAlloc( int size )
 	return &bg_pool[bg_poolTail];
 }
 
-void BG_TempFree( int size )
+void BG_TempFree( size_t size )
 {
 	size = PAD(size, sizeof(void *));
 

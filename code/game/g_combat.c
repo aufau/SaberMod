@@ -3661,7 +3661,7 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 G_RadiusDamage
 ============
 */
-qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
+qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, int damage, int radius,
 					 gentity_t *ignore, meansOfDeath_t mod) {
 	float		points, dist;
 	gentity_t	*ent;

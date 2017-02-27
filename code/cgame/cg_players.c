@@ -3647,7 +3647,7 @@ void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
 	}
 	else
 	{
-		time = cg.time + 500 + amount*15;
+		time = cg.time + MIN_SHIELD_TIME + amount * ((MAX_SHIELD_TIME - MIN_SHIELD_TIME) / 100);
 	}
 
 	if (time > cent->damageTime)
@@ -3677,7 +3677,7 @@ void CG_DrawPlayerShield(centity_t *cent, vec3_t origin)
 	ent.origin[2] += 10.0f;
 	AnglesToAxis( cent->damageAngles, ent.axis );
 
-	alpha = 255.0f * (cent->damageTime - cg.time) / MIN_SHIELD_TIME + random() * 16;
+	alpha = 255.0f * (cent->damageTime - cg.time) / MAX_SHIELD_TIME + random() * 16;
 	if (alpha>255)
 		alpha=255;
 

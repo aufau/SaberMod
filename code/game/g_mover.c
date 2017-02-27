@@ -38,7 +38,7 @@ typedef struct {
 	gentity_t	*ent;
 	vec3_t	origin;
 	vec3_t	angles;
-	float	deltayaw;
+	int		deltayaw;
 } pushed_t;
 static pushed_t	pushed[MAX_GENTITIES], *pushed_p;
 

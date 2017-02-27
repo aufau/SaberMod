@@ -76,7 +76,7 @@ unsigned G_GetFreeDuelDimension(void)
 	qboolean free;
 	int i;
 
-	for (dimension = 1 << 15; dimension != 0; dimension <<= 1) {
+	for (dimension = 1u << 15; dimension != 0; dimension <<= 1) {
 		free = qtrue;
 
 		for (i = 0; i < level.maxclients; i++) {

@@ -46,7 +46,7 @@ global pain sound events for all clients.
 */
 void P_DamageFeedback( gentity_t *player ) {
 	gclient_t	*client;
-	float	count;
+	int		count;
 	vec3_t	angles;
 
 	client = player->client;
@@ -313,7 +313,7 @@ void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf )
 	*/
 				if ( other->r.svFlags & SVF_GLASS_BRUSH )
 				{
-					other->splashRadius = (float)(self->r.maxs[0] - self->r.mins[0])/4.0f;
+					other->splashRadius = 0.25f * (self->r.maxs[0] - self->r.mins[0]);
 				}
 				if ( other->takedamage )
 				{
@@ -793,7 +793,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 					break;
 				}
 
-				damage = delta*0.16; //good enough for now, I guess
+				damage = delta*0.16f; //good enough for now, I guess
 
 				VectorSet (dir, 0, 0, 1);
 				ent->pain_debounce_time = level.time + 200;	// no normal pain sound
@@ -1200,11 +1200,11 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 
-	client->ps.gravity = g_gravity.value;
+	client->ps.gravity = g_gravity.integer;
 
 	// set speed
-	client->ps.speed = g_speed.value;
-	client->ps.basespeed = g_speed.value;
+	client->ps.speed = g_speed.integer;
+	client->ps.basespeed = g_speed.integer;
 
 	if (client->ps.pm_type == PM_HARMLESS) {
 		if (client->ps.weapon == WP_SABER && !client->ps.saberHolstered) {
@@ -1739,7 +1739,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 				// pmove sets velocity to 150 on XY. Z could go as
 				// low as 200, resulting in strength 12
-				strength = 0.05 * (int)VectorNormalize2( client->ps.velocity, oppDir );
+				strength = 0.05f * (int)VectorNormalize2( client->ps.velocity, oppDir );
 
 				if (g_noKick.integer) {
 					dflag |= DAMAGE_NO_DAMAGE;
