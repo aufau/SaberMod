@@ -263,13 +263,14 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *model,
 	const char *teamName = team ? team : ci->teamName;
 
 retryModel:
+#ifdef ATST
 	if (ci->ATST && clientNum == -1)
 	{
 		if (team)
-			Com_sprintf(ci->teamName, sizeof(ci->teamName), teamName);
+			Q_strncpyz(ci->teamName, teamName, sizeof(ci->teamName));
 		return qtrue;
 	}
-
+#endif
 	if (badModel)
 	{
 		modelName = "kyle";
