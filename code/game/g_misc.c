@@ -1576,23 +1576,23 @@ void SP_fx_runner( gentity_t *ent )
 #define TROOPER_PAIN_SOUNDS 4
 #define TROOPER_DEATH_SOUNDS 3
 #define TROOPER_ALERT_SOUNDS 5
-int gTrooperSound_Pain[TROOPER_PAIN_SOUNDS];
-int gTrooperSound_Death[TROOPER_DEATH_SOUNDS];
-int gTrooperSound_Alert[TROOPER_ALERT_SOUNDS];
+static int gTrooperSound_Pain[TROOPER_PAIN_SOUNDS];
+static int gTrooperSound_Death[TROOPER_DEATH_SOUNDS];
+static int gTrooperSound_Alert[TROOPER_ALERT_SOUNDS];
 
 #define RODIAN_PAIN_SOUNDS 4
 #define RODIAN_DEATH_SOUNDS 3
 #define RODIAN_ALERT_SOUNDS 5
-int gRodianSound_Pain[RODIAN_PAIN_SOUNDS];
-int gRodianSound_Death[RODIAN_DEATH_SOUNDS];
-int gRodianSound_Alert[RODIAN_ALERT_SOUNDS];
+static int gRodianSound_Pain[RODIAN_PAIN_SOUNDS];
+static int gRodianSound_Death[RODIAN_DEATH_SOUNDS];
+static int gRodianSound_Alert[RODIAN_ALERT_SOUNDS];
 
 #define JAN_PAIN_SOUNDS 4
 #define JAN_DEATH_SOUNDS 3
 #define JAN_ALERT_SOUNDS 5
-int gJanSound_Pain[JAN_PAIN_SOUNDS];
-int gJanSound_Death[JAN_DEATH_SOUNDS];
-int gJanSound_Alert[JAN_ALERT_SOUNDS];
+static int gJanSound_Pain[JAN_PAIN_SOUNDS];
+static int gJanSound_Death[JAN_DEATH_SOUNDS];
+static int gJanSound_Alert[JAN_ALERT_SOUNDS];
 
 int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hitLoc );
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
@@ -1620,7 +1620,7 @@ typedef struct animentCustomInfo_s
 	struct animentCustomInfo_s	*next;
 } animentCustomInfo_t;
 
-animentCustomInfo_t *animEntRoot = NULL;
+static animentCustomInfo_t *animEntRoot = NULL;
 
 animentCustomInfo_t *ExampleAnimEntCustomData(gentity_t *self)
 {

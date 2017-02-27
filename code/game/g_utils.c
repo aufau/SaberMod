@@ -34,8 +34,8 @@ typedef struct {
 
 #define MAX_SHADER_REMAPS 128
 
-int remapCount = 0;
-shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
+static int remapCount = 0;
+static shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
@@ -521,8 +521,8 @@ qboolean G_EntitiesFree( void ) {
 
 #define MAX_G2_KILL_QUEUE 64
 
-int gG2KillIndex[MAX_G2_KILL_QUEUE];
-int gG2KillNum = 0;
+static int gG2KillIndex[MAX_G2_KILL_QUEUE];
+static int gG2KillNum = 0;
 
 void G_SendG2KillQueue(void)
 {

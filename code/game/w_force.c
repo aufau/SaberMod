@@ -30,17 +30,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern bot_state_t *botstates[MAX_CLIENTS];
 
-int speedLoopSound = 0;
-
-int rageLoopSound = 0;
-
-int protectLoopSound = 0;
-
-int absorbLoopSound = 0;
-
-int seeLoopSound = 0;
-
-int	ysalamiriLoopSound = 0;
+static int speedLoopSound;
+static int rageLoopSound;
+static int protectLoopSound;
+static int absorbLoopSound;
+static int seeLoopSound;
+static int ysalamiriLoopSound;
 
 #define FORCE_VELOCITY_DAMAGE 0
 

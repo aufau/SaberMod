@@ -1449,7 +1449,7 @@ void CalculateSagaGoals(void)
 	}
 }
 
-float botGlobalNavWeaponWeights[WP_NUM_WEAPONS] =
+static const float botGlobalNavWeaponWeights[WP_NUM_WEAPONS] =
 {
 	0,//WP_NONE,
 

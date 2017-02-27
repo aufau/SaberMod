@@ -457,7 +457,7 @@ void UI_DrawCenteredPic(qhandle_t image, int w, int h) {
 
 vmCvar_t	ui_rankChange;
 static void UI_BuildPlayerList();
-char parsedFPMessage[1024];
+static char parsedFPMessage[1024];
 extern int FPMessageTime;
 void Text_PaintCenter(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int iMenuFont);
 

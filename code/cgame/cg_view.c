@@ -541,7 +541,6 @@ CG_OffsetThirdPersonView
 
 ===============
 */
-extern vmCvar_t cg_thirdPersonHorzOffset;
 static void CG_OffsetThirdPersonView( void )
 {
 	vec3_t	target, location, diff;

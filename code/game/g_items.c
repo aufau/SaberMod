@@ -1922,7 +1922,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 }
 
 
-qboolean	itemRegistered[MAX_ITEMS];
+static qboolean	itemRegistered[MAX_ITEMS];
 
 /*
 ==================

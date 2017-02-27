@@ -31,15 +31,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern displayContextDef_t cgDC;
 
-
 // set in CG_ParseTeamInfo
 
 //static int sortedTeamPlayers[TEAM_MAXOVERLAY];
 //static int numSortedTeamPlayers;
 
-//static char systemChat[256];
-//static char teamChat1[256];
-//static char teamChat2[256];
+static char systemChat[256];
+static char teamChat1[256];
+static char teamChat2[256];
 
 void CG_InitTeamChat(void) {
   memset(teamChat1, 0, sizeof(teamChat1));

@@ -45,13 +45,7 @@ const float	*hudTintColor;
 int sortedTeamPlayers[TEAM_MAXOVERLAY];
 int	numSortedTeamPlayers;
 
-int lastvalidlockdif;
-
 extern float zoomFov; //this has to be global client-side
-
-char systemChat[256];
-char teamChat1[256];
-char teamChat2[256];
 
 const char * const showPowersName[] =
 {
@@ -2889,8 +2883,6 @@ qboolean CG_WorldCoordToScreenCoord( vec3_t worldCoord, int *x, int *y )
 CG_SaberClashFlare
 ====================
 */
-int g_saberFlashTime = 0;
-vec3_t g_saberFlashPos = {0, 0, 0};
 void CG_SaberClashFlare( void )
 {
 	int				t, maxTime = 150;
@@ -2899,7 +2891,7 @@ void CG_SaberClashFlare( void )
 	float v, len;
 	trace_t tr;
 
-	t = cg.time - g_saberFlashTime;
+	t = cg.time - cg.saberFlashTime;
 
 	if ( t <= 0 || t >= maxTime )
 	{
@@ -2907,14 +2899,14 @@ void CG_SaberClashFlare( void )
 	}
 
 	// Don't do clashes for things that are behind us
-	VectorSubtract( g_saberFlashPos, cg.refdef.vieworg, dif );
+	VectorSubtract( cg.saberFlashPos, cg.refdef.vieworg, dif );
 
 	if ( DotProduct( dif, cg.refdef.viewaxis[0] ) < 0.2f )
 	{
 		return;
 	}
 
-	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, g_saberFlashPos, -1, CONTENTS_SOLID );
+	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, cg.saberFlashPos, -1, CONTENTS_SOLID );
 
 	if ( tr.fraction < 1.0f )
 	{
@@ -2931,7 +2923,7 @@ void CG_SaberClashFlare( void )
 
 	v = ( 1.0f - ((float)t / maxTime )) * ((1.0f - ( len / 800.0f )) * 2.0f + 0.35f);
 
-	if ( CG_WorldCoordToScreenCoord( g_saberFlashPos, &x, &y ) ) {
+	if ( CG_WorldCoordToScreenCoord( cg.saberFlashPos, &x, &y ) ) {
 		static const vec4_t color = { 0.8f, 0.8f, 0.8f, 1.0f };
 
 		trap_R_SetColor( color );
@@ -3048,6 +3040,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 {
 	int		cx, cy;
 	vec3_t	org;
+	static	int lastvalidlockdif = 0;
 	static	int oldDif = 0;
 	centity_t *cent = &cg_entities[lockEntNum];
 	vec4_t color={0.0f,0.0f,0.0f,0.0f};

@@ -314,7 +314,9 @@ void CG_UpdateConfigString( int num, qboolean init )
 	else if ( num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS )
 	{
 		CG_NewClientInfo( num - CS_PLAYERS, !init);
+#ifdef MISSIONPACK
 		CG_BuildSpectatorString();
+#endif
 	}
 	else if ( num >= CS_LIGHT_STYLES && num < CS_LIGHT_STYLES + (MAX_LIGHT_STYLES * 3))
 	{
@@ -441,6 +443,7 @@ CG_AddToTeamChat
 =======================
 */
 static void CG_AddToTeamChat( const char *str ) {
+#ifdef MISSIONPACK
 	int len;
 	char *p, *ls;
 	int lastcolor;
@@ -505,6 +508,7 @@ static void CG_AddToTeamChat( const char *str ) {
 
 	if (cgs.teamChatPos - cgs.teamLastChatPos > chatHeight)
 		cgs.teamLastChatPos = cgs.teamChatPos - chatHeight;
+#endif // MISSIONPACK
 }
 
 void CG_LoadClientInfo( clientInfo_t *ci );

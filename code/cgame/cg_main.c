@@ -1812,6 +1812,7 @@ CG_BuildSpectatorString
 
 =======================
 */
+#ifdef MISSIONPACK
 void CG_BuildSpectatorString(void) {
 	int i;
 	cg.spectatorList[0] = 0;
@@ -1826,7 +1827,7 @@ void CG_BuildSpectatorString(void) {
 		cg.spectatorWidth = -1;
 	}
 }
-
+#endif
 
 /*
 ===================

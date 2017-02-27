@@ -767,6 +767,7 @@ typedef struct {
 	qboolean	scoreBoardShowing;
 	int			scoreFadeTime;
 	char		killerName[MAX_NETNAME];
+#ifdef MISSIONPACK
 	char			spectatorList[MAX_STRING_CHARS];		// list of names
 	int				spectatorLen;												// length of list
 	float			spectatorWidth;											// width in device units
@@ -775,7 +776,7 @@ typedef struct {
 	int				spectatorPaintX2;										// current paint x
 	int				spectatorOffset;										// current offset from start
 	int				spectatorPaintLen; 									// current offset from start
-#ifdef MISSIONPACK
+
 	// skull trails
 	skulltrail_t	skulltrails[MAX_CLIENTS];
 #endif
@@ -802,14 +803,14 @@ typedef struct {
 	// attacking player
 	int			attackerTime;
 	int			voiceTime;
-
+#ifdef JK2AWARDS
 	// reward medals
 	int			rewardStack;
 	int			rewardTime;
 	int			rewardCount[MAX_REWARDSTACK];
 	qhandle_t	rewardShader[MAX_REWARDSTACK];
 	qhandle_t	rewardSound[MAX_REWARDSTACK];
-
+#endif
 	// sound buffer mainly for announcer sounds
 	int			soundBufferIn;
 	int			soundBufferOut;
@@ -838,15 +839,6 @@ typedef struct {
 	// blend blobs
 	float		damageTime;
 	float		damageX, damageY, damageValue;
-
-	// status bar head
-	float		headYaw;
-	float		headEndPitch;
-	float		headEndYaw;
-	int			headEndTime;
-	float		headStartPitch;
-	float		headStartYaw;
-	int			headStartTime;
 
 	// view movement
 	float		v_dmg_time;
@@ -883,6 +875,9 @@ typedef struct {
 
 	vec3_t			lastFPFlashPoint;
 
+	// saber clash flare
+	int				saberFlashTime;
+	vec3_t			saberFlashPos;
 /*
 Ghoul2 Insert Start
 */
@@ -1414,7 +1409,7 @@ Ghoul2 Insert End
 	vec3_t			inlineModelMidpoints[MAX_MODELS];
 
 	clientInfo_t	clientinfo[MAX_CLIENTS];
-
+#ifdef MISSIONPACK
 	// teamchat width is *3 because of embedded color codes
 	char			teamChatMsgs[TEAMCHAT_HEIGHT][TEAMCHAT_WIDTH*3+1];
 	int				teamChatMsgTimes[TEAMCHAT_HEIGHT];
@@ -1438,7 +1433,7 @@ Ghoul2 Insert End
 	int acceptTask;
 	int acceptLeader;
 	char acceptVoice[MAX_NAME_LENGTH];
-
+#endif // MISSIONPACK
 	// media
 	cgMedia_t		media;
 
@@ -1709,9 +1704,6 @@ void CG_DrawTopBottom(float x, float y, float w, float h, float size);
 //
 extern	int sortedTeamPlayers[TEAM_MAXOVERLAY];
 extern	int	numSortedTeamPlayers;
-extern  char systemChat[256];
-extern  char teamChat1[256];
-extern  char teamChat2[256];
 
 void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );

@@ -32,10 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern bot_state_t *botstates[MAX_CLIENTS];
 extern qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold );
 
-int saberSpinSound = 0;
+static int saberSpinSound = 0;
 int saberOffSound = 0;
 int saberOnSound = 0;
-int saberHumSound = 0;
+static int saberHumSound = 0;
 
 //would be cleaner if these were renamed to BG_ and proto'd in a header.
 qboolean PM_SaberInTransition( int move );

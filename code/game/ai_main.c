@@ -66,18 +66,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //bot states
 bot_state_t	*botstates[MAX_CLIENTS];
 //number of bots
-int numbots;
+static int numbots;
 //floating point time
 float floattime;
+#ifdef UNUSED
 //time to do a regular update
-float regularupdate_time;
+static float regularupdate_time;
+#endif
 //
 
 //for saga:
 extern int rebel_attackers;
 extern int imperial_attackers;
 
-boteventtracker_t gBotEventTracker[MAX_CLIENTS];
+static boteventtracker_t gBotEventTracker[MAX_CLIENTS];
 
 //rww - new bot cvars..
 vmCvar_t bot_forcepowers;

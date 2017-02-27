@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef BOT_ZMALLOC
 #define MAX_BALLOC 8192
 
-void *BAllocList[MAX_BALLOC];
+static void *BAllocList[MAX_BALLOC];
 #endif
 
 char gBotChatBuffer[MAX_CLIENTS][MAX_CHAT_BUFFER_SIZE];

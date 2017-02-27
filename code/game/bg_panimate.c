@@ -718,9 +718,9 @@ models/players/visor/animation.cfg, etc
 
 ======================
 */
-char		BGPAFtext[40000];
-qboolean	BGPAFtextLoaded = qfalse;
-animation_t	bgGlobalAnimations[MAX_TOTALANIMATIONS];
+static char		BGPAFtext[40000];
+qboolean		BGPAFtextLoaded = qfalse;
+animation_t		bgGlobalAnimations[MAX_TOTALANIMATIONS];
 
 //#define CONVENIENT_ANIMATION_FILE_DEBUG_THING
 

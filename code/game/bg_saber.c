@@ -264,7 +264,7 @@ const saberMoveData_t	saberMoveData[LS_MOVE_MAX] = {//							NB:randomized
 };
 
 
-saberMoveName_t transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
+static const saberMoveName_t transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
 {
 	LS_NONE,	//Can't transition to same pos!
 	LS_T1_BR__R,//40

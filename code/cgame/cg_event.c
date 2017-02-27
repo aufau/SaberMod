@@ -36,8 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 //==========================================================================
 
-extern int g_saberFlashTime;
-extern vec3_t g_saberFlashPos;
 extern const char * const showPowersName[];
 
 /*
@@ -1530,8 +1528,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			trap_S_StartSound(es->origin, es->number, CHAN_AUTO, trap_S_RegisterSound(va( "sound/weapons/saber/saberblock%d.wav", Q_irand(1, 9) )));
 			trap_FX_PlayEffectID( trap_FX_RegisterEffect("saber/saber_block.efx"), es->origin, fxDir );
 
-			g_saberFlashTime = cg.time-50;
-			VectorCopy( es->origin, g_saberFlashPos );
+			cg.saberFlashTime = cg.time-50;
+			VectorCopy( es->origin, cg.saberFlashPos );
 		}
 		else
 		{ //projectile block

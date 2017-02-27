@@ -38,17 +38,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #ifdef LOGGING_WEAPONS
-int G_WeaponLogPickups[MAX_CLIENTS][WP_NUM_WEAPONS];
-int G_WeaponLogFired[MAX_CLIENTS][WP_NUM_WEAPONS];
-int G_WeaponLogDamage[MAX_CLIENTS][MOD_MAX];
-int G_WeaponLogKills[MAX_CLIENTS][MOD_MAX];
-int G_WeaponLogDeaths[MAX_CLIENTS][WP_NUM_WEAPONS];
-int G_WeaponLogFrags[MAX_CLIENTS][MAX_CLIENTS];
-int G_WeaponLogTime[MAX_CLIENTS][WP_NUM_WEAPONS];
-int G_WeaponLogLastTime[MAX_CLIENTS];
-qboolean G_WeaponLogClientTouch[MAX_CLIENTS];
-int G_WeaponLogPowerups[MAX_CLIENTS][HI_NUM_HOLDABLE];
-int	G_WeaponLogItems[MAX_CLIENTS][PW_NUM_POWERUPS];
+static int G_WeaponLogPickups[MAX_CLIENTS][WP_NUM_WEAPONS];
+static int G_WeaponLogFired[MAX_CLIENTS][WP_NUM_WEAPONS];
+static int G_WeaponLogDamage[MAX_CLIENTS][MOD_MAX];
+static int G_WeaponLogKills[MAX_CLIENTS][MOD_MAX];
+static int G_WeaponLogDeaths[MAX_CLIENTS][WP_NUM_WEAPONS];
+static int G_WeaponLogFrags[MAX_CLIENTS][MAX_CLIENTS];
+static int G_WeaponLogTime[MAX_CLIENTS][WP_NUM_WEAPONS];
+static int G_WeaponLogLastTime[MAX_CLIENTS];
+static qboolean G_WeaponLogClientTouch[MAX_CLIENTS];
+static int G_WeaponLogPowerups[MAX_CLIENTS][HI_NUM_HOLDABLE];
+static int	G_WeaponLogItems[MAX_CLIENTS][PW_NUM_POWERUPS];
 
 extern vmCvar_t	g_statLog;
 extern vmCvar_t	g_statLogFile;

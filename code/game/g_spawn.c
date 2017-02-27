@@ -595,7 +595,7 @@ static int QDECL SortStrcmp( const void *a, const void *b )
 	return strcmp(*(const char **)a, *(const char **) b);
 }
 
-static	char *defaultStyles[32][3] =
+static const char * const defaultStyles[32][3] =
 {
 	{	// 0 normal
 		"z",
@@ -911,7 +911,7 @@ void SP_worldspawn( void )
 			Q_strcat( cs, sizeof( cs ), modes[i] );
 
 		if ( strlen( cs ) + 1 >= sizeof( cs ) )
-			Com_Printf( "WARNING: Too many modes. Delete some or use shorter names.\n" );
+			Com_Printf( S_COLOR_YELLOW "WARNING: Too many modes. Delete some or use shorter names.\n" );
 
 		trap_SetConfigstring( CS_MODES, cs );
 	}

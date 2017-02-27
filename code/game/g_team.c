@@ -36,7 +36,7 @@ typedef struct teamgame_s {
 	int				blueTakenTime;
 } teamgame_t;
 
-teamgame_t teamgame;
+static teamgame_t teamgame;
 
 const char * const teamName[TEAM_NUM_TEAMS] = {
 	"Free",

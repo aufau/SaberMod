@@ -2397,7 +2397,7 @@ void LimbThink( gentity_t *ent )
 }
 
 
-static const char *hitLocName[HL_MAX] =
+static const char * const hitLocName[HL_MAX] =
 {
 	"none",	//HL_NONE = 0,
 	"right foot",	//HL_FOOT_RT,

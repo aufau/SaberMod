@@ -31,7 +31,7 @@ static int		g_numBots;
 static char		*g_botInfos[MAX_BOTS];
 
 
-int				g_numArenas;
+static int		g_numArenas;
 static char		*g_arenaInfos[MAX_ARENAS];
 
 
