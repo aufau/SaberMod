@@ -626,7 +626,7 @@ static void CG_OffsetThirdPersonView( void )
 
 	// We must now take the angle taken from the camera target and location.
 	VectorSubtract(target, location, diff);
-	if ( VectorCompare( diff, vec3_origin ) )
+	if ( VectorLengthSquared( diff ) < 0.01f * 0.01f )
 	{//must be hitting something, need some value to calc angles, so use cam forward
 		VectorCopy( cam.fwd, diff );
 	}
