@@ -1013,7 +1013,6 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	clientInfo_t newInfo;
 	const char	*configstring;
 	const char	*v;
-	const char	*slash;
 	void *oldGhoul2;
 	int i = 0;
 	qboolean wasATST = qfalse;
@@ -1108,6 +1107,8 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		}
 
 		if ( GT_Team(cgs.gametype) ) {
+			const char *slash;
+
 			// keep skin name
 			slash = strchr( v, '/' );
 			if ( slash ) {
@@ -1115,6 +1116,8 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			}
 		}
 	} else {
+		char *slash;
+
 		Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
 
 		slash = strchr( newInfo.modelName, '/' );
@@ -1124,7 +1127,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		} else {
 			Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
 			// truncate modelName
-			// *slash = 0;
+			*slash = 0;
 		}
 	}
 
