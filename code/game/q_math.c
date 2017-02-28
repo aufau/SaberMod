@@ -1077,7 +1077,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 
 static unsigned holdrand = 0x89abcdef;
 
-void Rand_Init(int seed)
+void Rand_Init(unsigned seed)
 {
 	holdrand = seed;
 }
@@ -1094,7 +1094,7 @@ float flrand(float min, float max)
 	result = (float)(holdrand >> 17);						// 0 - 32767 range
 	result = ((result * (max - min)) / 32768.0F) + min;
 
-	return(result);
+	return result;
 }
 
 // Returns an integer min <= x <= max (ie inclusive)
@@ -1106,10 +1106,11 @@ int irand(int min, int max)
 	assert((max - min) < 32768);
 
 	max++;
-	holdrand = (holdrand * 214013L) + 2531011L;
+	holdrand = (holdrand * 214013) + 2531011;
 	result = holdrand >> 17;
 	result = ((result * (max - min)) >> 15) + min;
-	return(result);
+
+	return result;
 }
 
 // Returns `base` raised to the power of `exp`

@@ -2071,11 +2071,12 @@ typedef enum _flag_status {
 
 // Original bg_lib.c's routines. Subsequent return values tend to be
 // heavily correlated. Removing, adding, and rearranging these
-// function calls may change game mechanics.
+// function calls may change game mechanics. Use irand() and flrand()
+// in new code to avoid this.
 void	id_srand( unsigned seed );
 int		id_rand( void );
 
-void Rand_Init(int seed);
+void Rand_Init(unsigned seed);
 float flrand(float min, float max);
 int irand(int min, int max);
 int Q_irand(int value1, int value2);
