@@ -28,7 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static int PM_irand_timesync(int val1, int val2)
 {
-	return val1 + Q_random(&pml.seed) * (val2 - val1);
+	int val = val1 + Q_random(&pml.seed) * (val2 - val1);
+	assert(val >= val1);
+	assert(val <= val2);
+	return val;
 }
 
 void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overrideAmt )

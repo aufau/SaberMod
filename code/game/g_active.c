@@ -81,7 +81,7 @@ void P_DamageFeedback( gentity_t *player ) {
 
 	// play an apropriate pain sound
 	if ( (level.time > player->pain_debounce_time) && !(player->flags & FL_GODMODE) ) {
-		int fakeHealth = (player->health / 25) * 25 + Q_irand(0, 25);
+		int fakeHealth = (player->health / 25) * 25 + irand(0, 24);
 
 		// don't do more than two pain sounds a second
 		if ( level.time - client->ps.painTime < 500 ) {
