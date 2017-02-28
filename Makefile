@@ -119,6 +119,11 @@ gameshared	: base/jk2mpgame_$(ARCH).so version
 cgameshared	: base/cgame_$(ARCH).so version
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
+assets : base/
+	$(echo_cmd) "CREATE assets.pk3"
+	$(Q)set -e; ${RM} base/assets.pk3; pushd assets; zip		\
+	../base/assets.pk3 $(cls_assets); zip -r ../base/assets.pk3	\
+	$(svs_assets); popd
 clientside : cgame ui | base/
 	$(echo_cmd) "CREATE $(name).pk3"
 	$(Q)set -e; pushd base; $(RM) $(cls_pk3); zip $(cls_pk3)		\
@@ -141,8 +146,9 @@ help	:
 	@echo '  shared         - Build shared libraries in base/'
 	@echo '  clientside     - Create clientside .pk3 release'
 	@echo '  serverside     - Create serverside .zip release'
+	@echo '  assets         - Create assets.pk3 for development'
 	@echo '  game/cgame/ui  - Build game/cgame/ui QVM target'
-	@echo '  gameshared/..  - Build game/.. shared libraries'
+	@echo '  gameshared/..  - Build game/cgame/ui shared libraries'
 	@echo '  tools          - Build q3asm and q3lcc in bin/'
 	@echo 'Cleaning targets:'
 	@echo '  clean          - Same as vmclean sharedclean'
