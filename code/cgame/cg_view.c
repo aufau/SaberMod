@@ -426,7 +426,6 @@ static void CG_UpdateThirdPersonTargetDamp(float dtime)
 	// Automatically get the ideal target, to avoid jittering.
 	CG_CalcIdealThirdPersonViewTarget();
 
-
 	if (cg_thirdPersonTargetDamp.value >= 1.0f)
 	{	// No damping.
 		VectorClear(cam.target.damp);
@@ -436,6 +435,10 @@ static void CG_UpdateThirdPersonTargetDamp(float dtime)
 		dampfactor = 1.0f - cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
 
 		CG_DampPosition(&cam.target, dampfactor, dtime);
+	}
+	else
+	{
+		VectorSubtract(cam.target.prevIdeal, cam.target.ideal, cam.target.damp);
 	}
 
 	// Now we trace to see if the new location is cool or not.
@@ -465,8 +468,8 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 	CG_CalcIdealThirdPersonViewLocation();
 
 	// First thing we do is calculate the appropriate damping factor for the camera.
-	dampfactor=0.0;
-	if (cg_thirdPersonCameraDamp.value != 0)
+	dampfactor = 0.0f;
+	if (cg_thirdPersonCameraDamp.value != 0.0f)
 	{
 		// Note that the camera pitch has already been capped off to 89.
 		// The higher the pitch, the larger the factor, so as you look up, it damps a lot less.
@@ -491,6 +494,10 @@ static void CG_UpdateThirdPersonCameraDamp(float dtime, float stiffFactor, float
 		dampfactor = 1.0f - dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
 
 		CG_DampPosition(&cam.loc, dampfactor, dtime);
+	}
+	else
+	{
+		VectorSubtract(cam.loc.prevIdeal, cam.loc.ideal, cam.loc.damp);
 	}
 
 	VectorAdd(cam.loc.ideal, cam.loc.damp, location);
