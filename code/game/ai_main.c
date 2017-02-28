@@ -1436,7 +1436,7 @@ void WPTouchRoutine(bot_state_t *bs)
 
 		if (gWPArray[lastNum] && gWPArray[lastNum]->inuse && gWPArray[lastNum]->index && bs->isCamping < level.time)
 		{
-			bs->isCamping = level.time + rand()%15000 + 30000;
+			bs->isCamping = level.time + id_rand()%15000 + 30000;
 			bs->wpCamping = bs->wpCurrent;
 			bs->wpCampingTo = gWPArray[lastNum];
 
@@ -4631,25 +4631,25 @@ void BotAimOffsetGoalAngles(bot_state_t *bs)
 		return;
 	}
 
-	if (rand()%10 <= 5)
+	if (id_rand()%10 <= 5)
 	{
-		bs->aimOffsetAmtYaw = rand()%(int)accVal;
+		bs->aimOffsetAmtYaw = id_rand()%(int)accVal;
 	}
 	else
 	{
-		bs->aimOffsetAmtYaw = -(rand()%(int)accVal);
+		bs->aimOffsetAmtYaw = -(id_rand()%(int)accVal);
 	}
 
-	if (rand()%10 <= 5)
+	if (id_rand()%10 <= 5)
 	{
-		bs->aimOffsetAmtPitch = rand()%(int)accVal;
+		bs->aimOffsetAmtPitch = id_rand()%(int)accVal;
 	}
 	else
 	{
-		bs->aimOffsetAmtPitch = -(rand()%(int)accVal);
+		bs->aimOffsetAmtPitch = -(id_rand()%(int)accVal);
 	}
 
-	bs->aimOffsetTime = level.time + rand()%500 + 200;
+	bs->aimOffsetTime = level.time + id_rand()%500 + 200;
 }
 
 int ShouldSecondaryFire(bot_state_t *bs)
@@ -4909,7 +4909,7 @@ int BotFallbackNavigation(bot_state_t *bs)
 	}
 	else
 	{
-		bs->goalAngles[YAW] = rand()%360;
+		bs->goalAngles[YAW] = id_rand()%360;
 	}
 
 	return 0;
@@ -5795,7 +5795,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		bs->wpSeenTime = 0;
 		bs->wpDirection = 0;
 
-		if (rand()%10 < 5 &&
+		if (id_rand()%10 < 5 &&
 			(!bs->doChat || bs->chatTime < level.time))
 		{
 			trap_EA_Attack(bs->client);
@@ -5976,7 +5976,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 
 	if (BotUseInventoryItem(bs))
 	{
-		if (rand()%10 < 5)
+		if (id_rand()%10 < 5)
 		{
 			trap_EA_Use(bs->client);
 		}
@@ -6938,7 +6938,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 
 	if (bs->cur_ps.saberLockTime > level.time)
 	{
-		if (rand()%10 < 5)
+		if (id_rand()%10 < 5)
 		{
 			bs->doAttack = 1;
 		}

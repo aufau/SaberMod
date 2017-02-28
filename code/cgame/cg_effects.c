@@ -50,7 +50,7 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing ) {
 	len = VectorNormalize (vec);
 
 	// advance a random amount first
-	i = rand() % (int)spacing;
+	i = id_rand() % (int)spacing;
 	VectorMA( move, i, vec, move );
 
 	VectorScale (vec, spacing, vec);
@@ -979,12 +979,12 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 	}
 
 	// skew the time a bit so they aren't all in sync
-	offset = rand() & 63;
+	offset = id_rand() & 63;
 
 	ex = CG_AllocLocalEntity();
 	if ( isSprite ) {
 		ex->leType = LE_SPRITE_EXPLOSION;
-		ex->refEntity.rotation = rand() % 360;
+		ex->refEntity.rotation = id_rand() % 360;
 		ex->radius = scale;
 		VectorScale( dir, 16, tmpVec );
 		VectorAdd( tmpVec, origin, newOrigin );
@@ -1000,7 +1000,7 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 		else
 		{
 			if ( !(flags & LEF_NO_RANDOM_ROTATE) )
-				ang = rand() % 360;
+				ang = id_rand() % 360;
 			VectorCopy( dir, ex->refEntity.axis[0] );
 			RotateAroundDirection( ex->refEntity.axis, ang );
 		}
@@ -1120,7 +1120,7 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	for ( i = 0; i < NUM_EXPLOSIONS-1; i ++)
 	{
 		VectorSet( new_org, (origin[0] + (16 + (crandom() * 8))*crandom()), (origin[1] + (16 + (crandom() * 8))*crandom()), (origin[2] + (16 + (crandom() * 8))*crandom()) );
-		le = CG_MakeExplosion( new_org, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 300 + (rand() & 99), qfalse, radius * 0.05f + (crandom() *0.3f), 0);
+		le = CG_MakeExplosion( new_org, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 300 + (id_rand() & 99), qfalse, radius * 0.05f + (crandom() *0.3f), 0);
 	}
 
 	//Shake the camera
@@ -1162,7 +1162,7 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 
 	VectorCopy ( origin, ex->refEntity.origin);
 	ex->refEntity.reType = RT_SPRITE;
-	ex->refEntity.rotation = rand() % 360;
+	ex->refEntity.rotation = id_rand() % 360;
 	ex->refEntity.radius = 24;
 
 	ex->refEntity.customShader = 0;//cgs.media.bloodExplosionShader;

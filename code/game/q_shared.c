@@ -1481,13 +1481,28 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	strcat (s, newi);
 }
 
+// Broken id Tech 3 rand() implementation of linear congruential
+// generator algorithm. Uses low order bits that have short
+// periods. eg (rand() & 1) produces (1, 0, 1, 0, 1, 0, ...).
+static int id_randSeed = 0;
+
+void	id_srand( unsigned seed ) {
+	id_randSeed = seed;
+}
+
+int		id_rand( void ) {
+	id_randSeed = (69069 * id_randSeed + 1);
+	return id_randSeed & 0x7fff;
+}
 
 //rww - convience function..
+//fau - returns integer in range [value1, value1 + value2) (if value2
+//is positive, otherwise undefined) unlike SP and JKA
 int Q_irand(int value1, int value2)
 {
 	int r;
 
-	r = rand()%value2;
+	r = id_rand()%value2;
 	r += value1;
 
 	return r;

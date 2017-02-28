@@ -5488,7 +5488,7 @@ qboolean ItemParse_asset_model( itemDef_t *item, int handle ) {
 		return qfalse;
 	}
 	item->asset = DC->registerModel(temp);
-	modelPtr->angle = rand() % 360;
+	modelPtr->angle = id_rand() % 360;
 	return qtrue;
 }
 

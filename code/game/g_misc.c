@@ -2540,7 +2540,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 
 				if (hasEnemyLOS && enDist < 512 && self->splashRadius < level.time)
 				{
-					if (rand()%10 <= 8)
+					if (id_rand()%10 <= 8)
 					{
 						if (self->splashMethodOfDeath)
 						{
@@ -2554,7 +2554,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 
 					if (self->watertype == ANIMENT_TYPE_RODIAN)
 					{ //these guys stand still more often because they are "snipers"
-						if (rand()%10 <= 7)
+						if (id_rand()%10 <= 7)
 						{
 							self->splashMethodOfDeath = 1;
 						}

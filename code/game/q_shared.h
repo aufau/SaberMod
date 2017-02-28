@@ -977,7 +977,7 @@ int		Q_rand( int *seed );
 float	Q_random( int *seed );
 float	Q_crandom( int *seed );
 
-#define random()	((rand () & 0x7fff) * (1.0f / 0x7fff))
+#define random()	(id_rand() * (1.0f / 0x7fff))
 #define crandom()	(2.0f * (random() - 0.5f))
 
 void vectoangles( const vec3_t value1, vec3_t angles);
@@ -2066,6 +2066,12 @@ typedef enum _flag_status {
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
+
+// Original bg_lib.c's routines. Subsequent return values tend to be
+// heavily correlated. Removing, adding, and rearranging these
+// function calls may change game mechanics.
+void	id_srand( unsigned seed );
+int		id_rand( void );
 
 void Rand_Init(int seed);
 float flrand(float min, float max);

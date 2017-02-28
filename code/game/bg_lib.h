@@ -65,6 +65,8 @@ typedef char *  va_list;
 #define M_SQRT2        1.41421356237309504880  /* sqrt(2) */
 #define M_SQRT1_2      0.70710678118654752440  /* 1/sqrt(2) */
 
+#define RAND_MAX	0x7fff
+
 #define isalnum(c)  (isalpha(c) || isdigit(c))
 #define isalpha(c)  (isupper(c) || islower(c))
 #define isascii(c)  ((c) > 0 && (c) <= 0x7f)

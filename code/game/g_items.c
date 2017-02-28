@@ -1357,7 +1357,7 @@ void RespawnItem( gentity_t *ent ) {
 		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
 			;
 
-		choice = rand() % count;
+		choice = id_rand() % count;
 
 		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++)
 			;

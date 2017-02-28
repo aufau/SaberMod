@@ -44,7 +44,7 @@ qboolean PM_SaberInBrokenParry( int move );
 qboolean PM_SaberInBounce( int move );
 
 float RandFloat(float min, float max) {
-	return ((rand() * (max - min)) / 32768.0F) + min;
+	return ((id_rand() * (max - min)) / 32768.0F) + min;
 }
 
 //#define DEBUG_SABER_BOX

@@ -447,7 +447,7 @@ gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 		return G_Find( NULL, FOFS(classname), "info_player_deathmatch");
 	}
 
-	selection = rand() % count;
+	selection = id_rand() % count;
 	return spots[ selection ];
 }
 #endif // UNUSED

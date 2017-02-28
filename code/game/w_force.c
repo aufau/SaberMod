@@ -1838,12 +1838,12 @@ void ForceDrainDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec3_t 
 				{
 					self->client->ps.fd.forceDrainTime = level.time + 20;
 				}
+				*/
 
 				if ( !Q_irand( 0, 2 ) )
 				{
-					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
+					// G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( "sound/weapons/force/lightninghit.wav" ) );
 				}
-				*/
 
 				//	traceEnt->s.powerups |= ( 1 << PW_DISINT_1 );
 

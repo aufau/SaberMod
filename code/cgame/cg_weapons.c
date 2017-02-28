@@ -743,7 +743,7 @@ Ghoul2 Insert End
 		CG_LightningBolt( nonPredictedCent, flashorigin );
 
 		if ( weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2] ) {
-			trap_R_AddLightToScene( flashorigin, 300 + (rand()&31), weapon->flashDlightColor[0],
+			trap_R_AddLightToScene( flashorigin, 300 + (id_rand()&31), weapon->flashDlightColor[0],
 				weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
 		}
 	}
@@ -1703,7 +1703,7 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 			}
 		}
 		if ( c > 0 ) {
-			c = rand() % c;
+			c = id_rand() % c;
 			if ( weap->altFlashSound[c] )
 			{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound[c] );
@@ -1723,7 +1723,7 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 			}
 		}
 		if ( c > 0 ) {
-			c = rand() % c;
+			c = id_rand() % c;
 			if ( weap->flashSound[c] )
 			{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound[c] );

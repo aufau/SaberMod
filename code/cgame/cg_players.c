@@ -1420,7 +1420,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 		{
 			if (cent->atstFootClang < cg.time)
 			{
-				if (rand() & 1)
+				if (id_rand() & 1)
 				{
 					trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/chars/atst/ATSTstep1.wav"));
 				}
@@ -1863,11 +1863,11 @@ skipCheck:
 	{
 	case FOOTSTEP_GENERIC:
 		trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY,
-			cgs.media.footsteps[ ci->footsteps ][rand()&3] );
+			cgs.media.footsteps[ ci->footsteps ][id_rand()&3] );
 		break;
 	case FOOTSTEP_METAL:
 		trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY,
-			cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
+			cgs.media.footsteps[ FOOTSTEP_METAL ][id_rand()&3] );
 		break;
 	default:
 		break;
@@ -3122,24 +3122,24 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 
 	// quad gives a dlight
 	if ( powerups & ( 1 << PW_QUAD ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1 );
 	}
 
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.redFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1.0, 0.2f, 0.2f );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 0.2f, 0.2f );
 	}
 
 	// blueflag
 	if ( powerups & ( 1 << PW_BLUEFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.blueFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0 );
 	}
 
 	// neutralflag
 	if ( powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1.0, 1.0, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 1.0, 1.0 );
 	}
 
 	// haste leaves smoke trails
@@ -4770,7 +4770,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 	VectorCopy(start, inOrg);
 	VectorCopy(end, outOrg);
 
-	if ( rand() & 1 )
+	if ( id_rand() & 1 )
 	{
 		outOrg[0] += Q_irand(0, 24);
 		inOrg[0] += Q_irand(0, 8);
@@ -4781,7 +4781,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 		inOrg[0] -= Q_irand(0, 8);
 	}
 
-	if ( rand() & 1 )
+	if ( id_rand() & 1 )
 	{
 		outOrg[1] += Q_irand(0, 24);
 		inOrg[1] += Q_irand(0, 8);
@@ -4792,7 +4792,7 @@ void CG_AddRandomLightning(vec3_t start, vec3_t end)
 		inOrg[1] -= Q_irand(0, 8);
 	}
 
-	if ( rand() & 1 )
+	if ( id_rand() & 1 )
 	{
 		outOrg[2] += Q_irand(0, 50);
 		inOrg[2] += Q_irand(0, 40);
@@ -4843,11 +4843,11 @@ skipCheck:
 	{
 	case FOOTSTEP_GENERIC:
 		trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY,
-			cgs.media.footsteps[ FOOTSTEP_NORMAL ][rand()&3] );
+			cgs.media.footsteps[ FOOTSTEP_NORMAL ][id_rand()&3] );
 		break;
 	case FOOTSTEP_METAL:
 		trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY,
-			cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
+			cgs.media.footsteps[ FOOTSTEP_METAL ][id_rand()&3] );
 		break;
 	default:
 		break;
@@ -5715,7 +5715,7 @@ void CG_G2Animated( centity_t *cent )
 			legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = brightness;
 			legs.shaderRGBA[3] = 255;
 
-			if ( rand() & 1 )
+			if ( id_rand() & 1 )
 			{
 				legs.customShader = cgs.media.electricBodyShader;
 			}
@@ -7342,7 +7342,7 @@ doEssentialThree:
 		legs.shaderRGBA[1] = legs.shaderRGBA[2] = 0;
 		legs.shaderRGBA[3] = 255;
 
-		if ( rand() & 1 )
+		if ( id_rand() & 1 )
 		{
 			legs.customShader = cgs.media.electricBodyShader;
 		}
@@ -7489,7 +7489,7 @@ doEssentialThree:
 			legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = brightness;
 			legs.shaderRGBA[3] = 255;
 
-			if ( rand() & 1 )
+			if ( id_rand() & 1 )
 			{
 				legs.customShader = cgs.media.electricBodyShader;
 			}

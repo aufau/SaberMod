@@ -1071,35 +1071,35 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_FOOTSTEP");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
-				cgs.media.footsteps[ ci->footsteps ][rand()&3] );
+				cgs.media.footsteps[ ci->footsteps ][id_rand()&3] );
 		}
 		break;
 	case EV_FOOTSTEP_METAL:
 		DEBUGNAME("EV_FOOTSTEP_METAL");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
-				cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
+				cgs.media.footsteps[ FOOTSTEP_METAL ][id_rand()&3] );
 		}
 		break;
 	case EV_FOOTSPLASH:
 		DEBUGNAME("EV_FOOTSPLASH");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
+				cgs.media.footsteps[ FOOTSTEP_SPLASH ][id_rand()&3] );
 		}
 		break;
 	case EV_FOOTWADE:
 		DEBUGNAME("EV_FOOTWADE");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
+				cgs.media.footsteps[ FOOTSTEP_SPLASH ][id_rand()&3] );
 		}
 		break;
 	case EV_SWIM:
 		DEBUGNAME("EV_SWIM");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
+				cgs.media.footsteps[ FOOTSTEP_SPLASH ][id_rand()&3] );
 		}
 		break;
 

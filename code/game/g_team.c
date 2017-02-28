@@ -1027,7 +1027,7 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 		return G_Find( NULL, FOFS(classname), classname);
 	}
 
-	selection = rand() % count;
+	selection = id_rand() % count;
 	return spots[ selection ];
 }
 

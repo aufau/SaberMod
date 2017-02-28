@@ -773,15 +773,15 @@ float tanf( float x ) {
 #endif
 
 
-static int randSeed = 0;
+static unsigned int randSeed = 0;
 
 void	srand( unsigned seed ) {
 	randSeed = seed;
 }
 
 int		rand( void ) {
-	randSeed = (69069 * randSeed + 1);
-	return randSeed & 0x7fff;
+	randSeed = (69069u * randSeed + 1);
+	return randSeed >> 17;
 }
 
 double atof( const char *string ) {

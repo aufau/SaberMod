@@ -1245,7 +1245,7 @@ void CG_ParticleSnowFlurry (qhandle_t pshader, centity_t *cent)
 
 	p->pshader = pshader;
 
-	if (rand()%100 > 90)
+	if (id_rand()%100 > 90)
 	{
 		p->height = 32;
 		p->width = 32;
@@ -1678,8 +1678,8 @@ void CG_ParticleImpactSmokePuff (qhandle_t pshader, vec3_t origin)
 	p->endtime = cg.time + 1000;
 	p->startfade = cg.time + 100;
 
-	p->width = rand()%4 + 8;
-	p->height = rand()%4 + 8;
+	p->width = id_rand()%4 + 8;
+	p->height = id_rand()%4 + 8;
 
 	p->endheight = p->height *2;
 	p->endwidth = p->width * 2;
@@ -1725,7 +1725,7 @@ void CG_Particle_Bleed (qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEn
 	p->width = 4;
 	p->height = 4;
 
-	p->endheight = 4+rand()%3;
+	p->endheight = 4+id_rand()%3;
 	p->endwidth = p->endheight;
 
 	p->type = P_SMOKE;
@@ -1738,7 +1738,7 @@ void CG_Particle_Bleed (qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEn
 
 	p->rotate = qfalse;
 
-	p->roll = rand()%179;
+	p->roll = id_rand()%179;
 
 	p->color = BLOODRED;
 	p->alpha = 0.75;
@@ -1802,7 +1802,7 @@ void CG_Particle_OilParticle (qhandle_t pshader, centity_t *cent)
 
 	p->rotate = qfalse;
 
-	p->roll = rand()%179;
+	p->roll = id_rand()%179;
 
 	p->alpha = 0.75;
 
@@ -1869,7 +1869,7 @@ void CG_Particle_OilSlick (qhandle_t pshader, centity_t *cent)
 
 	p->rotate = qfalse;
 
-	p->roll = rand()%179;
+	p->roll = id_rand()%179;
 
 	p->alpha = 0.75;
 
@@ -2002,7 +2002,7 @@ void CG_BloodPool (localEntity_t *le, qhandle_t pshader, trace_t *tr)
 
 	p->rotate = qfalse;
 
-	p->roll = rand()%179;
+	p->roll = id_rand()%179;
 
 	p->alpha = 0.75;
 
@@ -2078,7 +2078,7 @@ void CG_ParticleBloodCloud (centity_t *cent, vec3_t origin, vec3_t dir)
 
 		p->rotate = qfalse;
 
-		p->roll = rand()%179;
+		p->roll = id_rand()%179;
 
 		p->color = BLOODRED;
 
@@ -2224,7 +2224,7 @@ void CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir)
 
 		p->rotate = qfalse;
 
-		p->roll = rand()%179;
+		p->roll = id_rand()%179;
 
 		p->alpha = 0.75;
 
@@ -2250,7 +2250,7 @@ void CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 	p->time = cg.time;
 	p->alpha = 1.0;
 	p->alphavel = 0;
-	p->roll = rand()%179;
+	p->roll = id_rand()%179;
 
 	p->pshader = pshader;
 
