@@ -1492,7 +1492,7 @@ void	id_srand( unsigned seed ) {
 
 int		id_rand( void ) {
 	id_randSeed = (69069 * id_randSeed + 1);
-	return id_randSeed & 0x7fff;
+	return id_randSeed & ID_RAND_MAX;
 }
 
 //rww - convience function..

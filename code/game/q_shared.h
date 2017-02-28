@@ -977,8 +977,8 @@ int		Q_rand( int *seed );
 float	Q_random( int *seed );
 float	Q_crandom( int *seed );
 
-#define random()	(id_rand() * (1.0f / 0x7fff))
-#define crandom()	(2.0f * (random() - 0.5f))
+#define random()	(id_rand() * (1.0f / ID_RAND_MAX))
+#define crandom()	(id_rand() * (2.0f / ID_RAND_MAX) - 1.0f)
 
 void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
@@ -2066,6 +2066,8 @@ typedef enum _flag_status {
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
+
+#define ID_RAND_MAX 0x7fff
 
 // Original bg_lib.c's routines. Subsequent return values tend to be
 // heavily correlated. Removing, adding, and rearranging these
