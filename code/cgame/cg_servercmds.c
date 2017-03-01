@@ -138,6 +138,8 @@ static void CG_ParseTeamInfo( void ) {
 	int		client;
 
 	numSortedTeamPlayers = atoi( CG_Argv( 1 ) );
+	if ( numSortedTeamPlayers > TEAM_MAXOVERLAY )
+		numSortedTeamPlayers = TEAM_MAXOVERLAY;
 
 	for ( i = 0 ; i < numSortedTeamPlayers ; i++ ) {
 		client = atoi( CG_Argv( i * 6 + 2 ) );

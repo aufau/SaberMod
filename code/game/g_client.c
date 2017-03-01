@@ -1337,16 +1337,13 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 */
 
-	if (GT_Team(level.gametype)) {
+	s = Info_ValueForKey( userinfo, "teamoverlay" );
+	if ( ! *s || atoi( s ) != 0 ) {
 		client->pers.teamInfo = qtrue;
 	} else {
-		s = Info_ValueForKey( userinfo, "teamoverlay" );
-		if ( ! *s || atoi( s ) != 0 ) {
-			client->pers.teamInfo = qtrue;
-		} else {
-			client->pers.teamInfo = qfalse;
-		}
+		client->pers.teamInfo = qfalse;
 	}
+
 	/*
 	s = Info_ValueForKey( userinfo, "cg_pmove_fixed" );
 	if ( !*s || atoi( s ) == 0 ) {

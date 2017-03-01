@@ -2015,7 +2015,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 	// max player name width
 	pwidth = 0;
-	count = (numSortedTeamPlayers > 8) ? 8 : numSortedTeamPlayers;
+	count = numSortedTeamPlayers;
 	for (i = 0; i < count; i++) {
 		ci = cgs.clientinfo + sortedTeamPlayers[i];
 		if ( ci->infoValid && ci->team == (team_t)cg.snap->ps.persistant[PERS_TEAM]) {

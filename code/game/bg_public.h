@@ -709,7 +709,7 @@ typedef enum {
 #define TEAM_LOCATION_UPDATE_TIME		1000
 
 // How many players on the overlay
-#define TEAM_MAXOVERLAY		32
+#define TEAM_MAXOVERLAY		8
 
 //team task
 typedef enum {
