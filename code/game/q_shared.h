@@ -84,14 +84,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "bg_lib.h"
 
-#ifdef NDEBUG
-#define assert(exp)     ((void)0)
-#else
-#define assert(exp) \
-	if (!(exp)) \
-		trap_Print(__FILE__ ":" STR(__LINE__) ": Assertion `" STR(exp) "' failed.\n");
-#endif
-
 #else
 
 #include <assert.h>
