@@ -1417,8 +1417,8 @@ void CG_DrawInvenSelect( void )
 	int				sideLeftIconCnt,sideRightIconCnt;
 	int				count;
 	int				holdX,x,y,y2,pad;
-	int				height;
-	float			addX;
+//	int				height;
+//	float			addX;
 
 	// don't display if dead
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 )
@@ -1497,8 +1497,8 @@ void CG_DrawInvenSelect( void )
 	// Left side ICONS
 	// Work backwards from current icon
 	holdX = x - ((bigIconSize/2) + pad + smallIconSize);
-	height = smallIconSize * cg.iconHUDPercent;
-	addX = smallIconSize * 0.75f;
+//	height = smallIconSize * cg.iconHUDPercent;
+//	addX = smallIconSize * 0.75f;
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
@@ -1529,13 +1529,13 @@ void CG_DrawInvenSelect( void )
 	}
 
 	// Current Center Icon
-	height = bigIconSize * cg.iconHUDPercent;
+//	height = bigIconSize * cg.iconHUDPercent;
 	if (cgs.media.invenIcons[cg.itemSelect])
 	{
 		int itemNdex;
 		trap_R_SetColor(NULL);
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons[cg.itemSelect] );
-		addX = bigIconSize * 0.75f;
+//		addX = bigIconSize * 0.75f;
 		trap_R_SetColor(colorTable[CT_ICON_BLUE]);
 		/*CG_DrawNumField ((x-(bigIconSize/2)) + addX, y, 2, cg.snap->ps.inventory[cg.inventorySelect], 6, 12,
 			NUM_FONT_SMALL,qfalse);*/
@@ -1566,8 +1566,8 @@ void CG_DrawInvenSelect( void )
 	// Right side ICONS
 	// Work forwards from current icon
 	holdX = x + (bigIconSize/2) + pad;
-	height = smallIconSize * cg.iconHUDPercent;
-	addX = smallIconSize * 0.75f;
+//	height = smallIconSize * cg.iconHUDPercent;
+//	addX = smallIconSize * 0.75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
 		if (i> HI_NUM_HOLDABLE-1)
@@ -3723,7 +3723,6 @@ static void CG_DrawWarmup( void ) {
 	int			i;
 	float scale;
 	clientInfo_t	*ci1, *ci2;
-	int			cw;
 	const char	*s;
 
 	sec = cg.warmup;
@@ -3798,19 +3797,15 @@ static void CG_DrawWarmup( void ) {
 	scale = 0.45f;
 	switch ( cg.warmupCount ) {
 	case 0:
-		cw = 28;
 		scale = 1.25f;
 		break;
 	case 1:
-		cw = 24;
 		scale = 1.15f;
 		break;
 	case 2:
-		cw = 20;
 		scale = 1.05f;
 		break;
 	default:
-		cw = 16;
 		scale = 0.9f;
 		break;
 	}

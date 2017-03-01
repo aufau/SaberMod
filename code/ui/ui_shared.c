@@ -1818,12 +1818,10 @@ int Item_TextScroll_ThumbDrawPosition ( itemDef_t *item )
 int Item_TextScroll_OverLB ( itemDef_t *item, float x, float y )
 {
 	rectDef_t		r;
-	textScrollDef_t *scrollPtr;
 	int				thumbstart;
-	int				count;
-
-	scrollPtr = (textScrollDef_t*)item->typeData;
-	count     = scrollPtr->iLineCount;
+//	textScrollDef_t *scrollPtr;
+//	scrollPtr = (textScrollDef_t*)item->typeData;
+//	count     = scrollPtr->iLineCount;
 
 	r.x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 	r.y = item->window.rect.y + 1;
@@ -2108,12 +2106,11 @@ int Item_Slider_OverSlider(itemDef_t *item, float x, float y) {
 
 int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 	rectDef_t r;
-	listBoxDef_t *listPtr;
 	int thumbstart;
-	int count;
+//	listBoxDef_t *listPtr;
+//	count = DC->feederCount(item->special);
+//	listPtr = (listBoxDef_t*)item->typeData;
 
-	count = DC->feederCount(item->special);
-	listPtr = (listBoxDef_t*)item->typeData;
 	if (item->window.flags & WINDOW_HORIZONTAL) {
 		// check if on left arrow
 		r.x = item->window.rect.x + 1;
@@ -4146,10 +4143,10 @@ void BindingFromName(const char *cvar) {
 
 void Item_Slider_Paint(itemDef_t *item) {
 	vec4_t newColor, lowLight;
-	float x, y, value;
+	float x, y;
 	menuDef_t *parent = item->parent;
 
-	value = (item->cvar) ? DC->getCVarValue(item->cvar) : 0;
+//	value = (item->cvar) ? DC->getCVarValue(item->cvar) : 0;
 
 	if (item->window.flags & WINDOW_HASFOCUS) {
 		lowLight[0] = 0.8f * parent->focusColor[0];

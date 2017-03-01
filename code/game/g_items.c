@@ -692,7 +692,6 @@ void pas_think( gentity_t *ent )
 	qboolean	moved;
 	float		diffYaw, diffPitch;
 	vec3_t		enemyDir, org;
-	vec3_t		frontAngles, backAngles;
 	vec3_t		desiredAngles;
 	int			iEntityList[MAX_GENTITIES];
 	int			numListedEntities;
@@ -877,8 +876,8 @@ void pas_think( gentity_t *ent )
 	}
 
 	// the bone axes are messed up, so hence some dumbness here
-	VectorSet( frontAngles, -ent->random, 0.0f, 0.0f );
-	VectorSet( backAngles, 0.0f, 0.0f, ent->speed );
+	// VectorSet( frontAngles, -ent->random, 0.0f, 0.0f );
+	// VectorSet( backAngles, 0.0f, 0.0f, ent->speed );
 
 	if ( moved )
 	{

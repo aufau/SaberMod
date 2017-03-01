@@ -5547,7 +5547,6 @@ void CG_G2Animated( centity_t *cent )
 	int				renderfx = 0;
 	qboolean		shadow = qfalse;
 	float			shadowPlane = 0;
-	qboolean		dead = qfalse;
 	vec3_t			rootAngles;
 #ifdef SMOOTH_G2ANIM_LERPORIGIN
 	vec3_t			posDif;
@@ -5671,7 +5670,6 @@ void CG_G2Animated( centity_t *cent )
 
 	if (cent->currentState.eFlags & EF_DEAD)
 	{
-		dead = qtrue;
 		//rww - since our angles are fixed when we're dead this shouldn't be an issue anyway
 		//we need to render the dying/dead player because we are now spawning the body on respawn instead of death
 		//return;
@@ -6363,10 +6361,10 @@ doEssentialTwo:
 		int effectTimeLayerL = effectTimeLayer;
 
 		vec3_t axis[3];
-		vec3_t tAng, fAng, fxDir;
+		vec3_t fAng, fxDir;
 		int realForceLev = (cent->currentState.activeForcePass - FORCE_LEVEL_3);
 
-		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+		//VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
 
 		VectorSet( fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0 );
 
@@ -6414,8 +6412,8 @@ doEssentialTwo:
 		int effectTimeLayerL = effectTimeLayer;
 
 		vec3_t axis[3];
-		vec3_t tAng, fAng, fxDir;
-		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+		vec3_t fAng, fxDir;
+		//VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
 
 		VectorSet( fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0 );
 
@@ -6461,9 +6459,9 @@ doEssentialTwo:
 
 	if ( cent->currentState.powerups & (1 << PW_DISINT_4) )
 	{
-		vec3_t tAng;
+		//vec3_t tAng;
 		//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
-		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+		//VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
 
 		//trap_G2API_GetBoltMatrix(cent->ghoul2, 0, cgs.clientinfo[cent->currentState.number].bolt_lhand, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
 		if (!gotLHandMatrix)
@@ -6656,7 +6654,7 @@ doEssentialTwo:
 			vec3_t tAng, fxAng;
 			vec3_t axis[3];
 			int effectTimeLayerC = effectTimeLayer;
-			sharedBoltInterface_t fxObj;
+			//sharedBoltInterface_t fxObj;
 
 			//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
 			VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
@@ -6677,16 +6675,16 @@ doEssentialTwo:
  			axis[2][0] = boltMatrix.matrix[0][2];
  			axis[2][1] = boltMatrix.matrix[1][2];
 		 	axis[2][2] = boltMatrix.matrix[2][2];
-
-			VectorCopy(/*efOrg*/cent->lerpOrigin, fxObj.origin);
-			VectorCopy(/*fxAng*/tAng, fxObj.angles);
+			/*
+			VectorCopy(cent->lerpOrigin, fxObj.origin); // efOrg
+			VectorCopy(tAng, fxObj.angles); // fxAng
 			VectorCopy(cent->modelScale, fxObj.scale);
 			fxObj.ghoul2 = cent->ghoul2;
 			fxObj.isValid = 1;
 			fxObj.modelNum = 0;
 			fxObj.boltNum = cgs.clientinfo[cent->currentState.number].bolt_head;
 			fxObj.entNum = cent->currentState.number;
-
+			*/
 			while (effectTimeLayerC > 0)
 			{
 				trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);

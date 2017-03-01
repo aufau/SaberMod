@@ -2737,6 +2737,8 @@ static void PM_Footsteps( void ) {
 			// no sound when completely underwater
 		}
 	}
+
+	(void)footstep; // suppress warning
 }
 
 /*

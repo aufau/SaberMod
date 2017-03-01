@@ -562,7 +562,7 @@ static void CG_General( centity_t *cent ) {
 
 		if (!cent->ghoul2)
 		{
-			const char *limbBone;
+//			const char *limbBone;
 			const char *rotateBone;
 			const char *limbName;
 			const char *limbCapName;
@@ -588,7 +588,7 @@ static void CG_General( centity_t *cent ) {
 
 			if (cent->currentState.modelGhoul2 == G2_MODELPART_HEAD)
 			{
-				limbBone = "cervical";
+//				limbBone = "cervical";
 				rotateBone = "cranium";
 				limbName = "head";
 				limbCapName = "head_cap_torso_off";
@@ -599,7 +599,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_WAIST)
 			{
-				limbBone = "pelvis";
+//				limbBone = "pelvis";
 				rotateBone = "thoracic";
 				limbName = "torso";
 				limbCapName = "torso_cap_hips_off";
@@ -610,7 +610,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_LARM)
 			{
-				limbBone = "lhumerus";
+//				limbBone = "lhumerus";
 				rotateBone = "lradius";
 				limbName = "l_arm";
 				limbCapName = "l_arm_cap_torso_off";
@@ -621,7 +621,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_RARM)
 			{
-				limbBone = "rhumerus";
+//				limbBone = "rhumerus";
 				rotateBone = "rradius";
 				limbName = "r_arm";
 				limbCapName = "r_arm_cap_torso_off";
@@ -632,7 +632,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_RHAND)
 			{
-				limbBone = "rradiusX";
+//				limbBone = "rradiusX";
 				rotateBone = "rhand";
 				limbName = "r_hand";
 				limbCapName = "r_hand_cap_r_arm_off";
@@ -643,7 +643,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_LLEG)
 			{
-				limbBone = "lfemurYZ";
+//				limbBone = "lfemurYZ";
 				rotateBone = "ltibia";
 				limbName = "l_leg";
 				limbCapName = "l_leg_cap_hips_off";
@@ -654,7 +654,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else if (cent->currentState.modelGhoul2 == G2_MODELPART_RLEG)
 			{
-				limbBone = "rfemurYZ";
+//				limbBone = "rfemurYZ";
 				rotateBone = "rtibia";
 				limbName = "r_leg";
 				limbCapName = "r_leg_cap_hips_off";
@@ -665,7 +665,7 @@ static void CG_General( centity_t *cent ) {
 			}
 			else
 			{
-				limbBone = "rfemurYZ";
+//				limbBone = "rfemurYZ";
 				rotateBone = "rtibia";
 				limbName = "r_leg";
 				limbCapName = "r_leg_cap_hips_off";
@@ -2237,7 +2237,7 @@ Also called by client movement prediction code
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
 	centity_t	*cent;
 	vec3_t	oldOrigin, origin, deltaOrigin;
-	vec3_t	oldAngles, angles, deltaAngles;
+	vec3_t	oldAngles, angles;
 
 	if ( moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL ) {
 		VectorCopy( in, out );
@@ -2257,7 +2257,7 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 	BG_EvaluateTrajectory( &cent->currentState.apos, toTime, angles );
 
 	VectorSubtract( origin, oldOrigin, deltaOrigin );
-	VectorSubtract( angles, oldAngles, deltaAngles );
+//	VectorSubtract( angles, oldAngles, deltaAngles );
 
 	VectorAdd( in, deltaOrigin, out );
 

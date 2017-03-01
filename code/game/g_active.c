@@ -753,7 +753,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		event;
 	gclient_t *client;
 	int		damage;
-	vec3_t	dir;
 //	vec3_t	origin, angles;
 //	qboolean	fired;
 //	gitem_t *item;
@@ -795,7 +794,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 				damage = delta*0.16f; //good enough for now, I guess
 
-				VectorSet (dir, 0, 0, 1);
 				ent->pain_debounce_time = level.time + 200;	// no normal pain sound
 				G_Damage (ent, NULL, NULL, NULL, NULL, damage, DAMAGE_NO_ARMOR, MOD_FALLING);
 			}

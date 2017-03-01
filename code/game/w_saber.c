@@ -250,7 +250,6 @@ void G_G2ClientSpineAngles( gentity_t *ent, vec3_t viewAngles, const vec3_t angl
 
 void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	vec3_t		torsoAngles, headAngles;
-	float		dest;
 	static const int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed;
@@ -260,7 +259,6 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	float		dif;
 	float		degrees_negative = 0;
 	float		degrees_positive = 0;
-	qboolean	yawing = qfalse;
 	vec3_t		ulAngles, llAngles, viewAngles, angles, thoracicAngles;
 
 	VectorCopy( ent->client->ps.viewangles, headAngles );
@@ -271,11 +269,13 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
+	/*
 	if ((( ent->s.legsAnim & ~ANIM_TOGGLEBIT ) != BOTH_STAND1) ||
 			( ent->s.torsoAnim & ~ANIM_TOGGLEBIT ) != WeaponReadyAnim[ent->s.weapon]  )
 	{
 		yawing = qtrue;
 	}
+	*/
 
 	// adjust legs for movement dir
 	dir = ent->s.angles2[YAW];
@@ -288,11 +288,13 @@ void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles){
 	// --------- pitch -------------
 
 	// only show a fraction of the pitch angle in the torso
+	/*
 	if ( headAngles[PITCH] > 180 ) {
 		dest = (-360 + headAngles[PITCH]) * 0.75f;
 	} else {
 		dest = headAngles[PITCH] * 0.75f;
 	}
+	*/
 
 	torsoAngles[PITCH] = ent->client->ps.viewangles[PITCH];
 
@@ -468,7 +470,6 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLockMode_t lockMode )
 {
 	animNumber_t	attAnim, defAnim;
-	float	attStart = 0.5f;
 	float	idealDist = 48.0f;
 	vec3_t	attAngles, defAngles, defDir;
 	vec3_t	newOrg;
@@ -487,43 +488,36 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 	case LOCK_TOP:
 		attAnim = BOTH_BF2LOCK;
 		defAnim = BOTH_BF1LOCK;
-		attStart = 0.5f;
 		idealDist = LOCK_IDEAL_DIST_TOP;
 		break;
 	case LOCK_DIAG_TR:
 		attAnim = BOTH_CCWCIRCLELOCK;
 		defAnim = BOTH_CWCIRCLELOCK;
-		attStart = 0.5f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	case LOCK_DIAG_TL:
 		attAnim = BOTH_CWCIRCLELOCK;
 		defAnim = BOTH_CCWCIRCLELOCK;
-		attStart = 0.5f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	case LOCK_DIAG_BR:
 		attAnim = BOTH_CWCIRCLELOCK;
 		defAnim = BOTH_CCWCIRCLELOCK;
-		attStart = 0.85f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	case LOCK_DIAG_BL:
 		attAnim = BOTH_CCWCIRCLELOCK;
 		defAnim = BOTH_CWCIRCLELOCK;
-		attStart = 0.85f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	case LOCK_R:
 		attAnim = BOTH_CCWCIRCLELOCK;
 		defAnim = BOTH_CWCIRCLELOCK;
-		attStart = 0.75f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	case LOCK_L:
 		attAnim = BOTH_CWCIRCLELOCK;
 		defAnim = BOTH_CCWCIRCLELOCK;
-		attStart = 0.75f;
 		idealDist = LOCK_IDEAL_DIST_CIRCLE;
 		break;
 	default:
@@ -1282,6 +1276,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 	}
 
 	//Com_Printf("%i\n", totalDamage);
+	(void)peakDif; // suppress warning
 
 	return totalDamage;
 }
@@ -2395,11 +2390,10 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 
 void saberMoveBack( gentity_t *ent, qboolean goingBack )
 {
-	vec3_t		origin, oldOrg;
+	vec3_t		origin;
 
 	ent->s.pos.trType = TR_LINEAR;
 
-	VectorCopy( ent->r.currentOrigin, oldOrg );
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	//Get current angles?
@@ -2412,12 +2406,11 @@ void saberMoveBack( gentity_t *ent, qboolean goingBack )
 		float originalLength = 0;
 		int iCompensationLength = 32;
 		trace_t tr;
-		vec3_t mins, maxs;
+		static const vec3_t mins = { -24.0f, -24.0f, -8.0f );
+		static const vec3_t maxs = {  24.0f,  24.0f,  8.0f };
 		vec3_t calcComp, compensatedOrigin;
-		VectorSet( mins, -24.0f, -24.0f, -8.0f );
-		VectorSet( maxs, 24.0f, 24.0f, 8.0f );
 
-		VectorSubtract(origin, oldOrg, calcComp);
+		VectorSubtract(origin, ent->r.currentOrigin, calcComp);
 		originalLength = VectorLength(calcComp);
 
 		VectorNormalize(calcComp);

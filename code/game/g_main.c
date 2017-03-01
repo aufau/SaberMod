@@ -2744,7 +2744,7 @@ void G_RunFrame( int levelTime ) {
 	int			i;
 	gentity_t	*ent;
 	int			msec;
-	int start, end;
+	int 		start, end;
 
 	if (gDoSlowMoDuel) {
 		SlowMoDuelTimescale();
@@ -2905,6 +2905,11 @@ end = trap_Milliseconds();
 	}
 
 	g_LastFrameTime = level.time;
+
+	// suppress unused-but-set warnings
+	(void)start;
+	(void)end;
+	(void)msec;
 }
 
 const char *G_GetStripEdString(const char *refSection, const char *refName)

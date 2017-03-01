@@ -2055,8 +2055,6 @@ int ExampleAnimEntMove(gentity_t *self, vec3_t moveTo, float stepSize)
 			if (!tr.startsolid && !tr.allsolid && tr.fraction == 1)
 			{ //clear trace here, probably up a step
 				vec3_t trDown;
-				vec3_t trUp;
-				VectorCopy(tr.endpos, trUp);
 				VectorCopy(tr.endpos, trDown);
 				trDown[2] -= 16;
 

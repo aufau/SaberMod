@@ -4895,6 +4895,8 @@ powersetcheck:
 
 		self->client->ps.fd.forcePower = (prepower-dif);
 	}
+
+	(void)usingForce; // suppress warning
 }
 
 qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc )
