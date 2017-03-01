@@ -2627,7 +2627,7 @@ int BotGetFlagHome(bot_state_t *bs)
 	return 1;
 }
 
-void GetNewFlagPoint(wpobject_t *wp, gentity_t *flagEnt, int team)
+static void GetNewFlagPoint(wpobject_t *wp, gentity_t *flagEnt, team_t team)
 { //get the nearest possible waypoint to the flag since it's not in its original position
 	int i = 0;
 	vec3_t a, mins, maxs;

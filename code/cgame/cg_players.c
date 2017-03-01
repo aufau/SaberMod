@@ -3598,7 +3598,7 @@ Adds a piece with modifications or duplications for powerups
 Also called by CG_Missile for quad rockets, but nobody can tell...
 ===============
 */
-void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team ) {
+void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, team_t team ) {
 
 	if (CG_IsMindTricked(state->trickedentindex,
 		state->trickedentindex2,

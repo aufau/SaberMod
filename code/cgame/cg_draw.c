@@ -497,7 +497,7 @@ CG_DrawFlagModel
 Used for both the status bar and the scoreboard
 ================
 */
-void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D ) {
+void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean force2D ) {
 	qhandle_t		cm;
 	float			len;
 	vec3_t			origin, angles;
@@ -1641,7 +1641,7 @@ CG_DrawTeamBackground
 
 ================
 */
-void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team )
+void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, team_t team )
 {
 	vec4_t		hcolor;
 
@@ -3835,7 +3835,7 @@ void CG_DrawTimedMenus() {
 
 qboolean CG_OtherTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		int team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.blueflag == FLAG_TAKEN) {
@@ -3849,7 +3849,7 @@ qboolean CG_OtherTeamHasFlag(void) {
 
 qboolean CG_YourTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		int team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.redflag == FLAG_TAKEN) {
@@ -3865,7 +3865,7 @@ void CG_DrawFlagStatus()
 {
 	int myFlagTakenShader = 0;
 	int theirFlagShader = 0;
-	int team = 0;
+	team_t team = 0;
 	int startDrawPos = 2;
 	int ico_size = 32;
 

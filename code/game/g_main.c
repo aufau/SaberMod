@@ -2589,7 +2589,7 @@ void CheckTeamLeader( team_t team ) {
 CheckTeamVote
 ==================
 */
-void CheckTeamVote( int team ) {
+static void CheckTeamVote( team_t team ) {
 	int cs_offset;
 
 	if ( team == TEAM_RED )

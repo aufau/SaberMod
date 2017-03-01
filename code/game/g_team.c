@@ -73,7 +73,7 @@ const team_t otherTeam[TEAM_NUM_TEAMS] = {
 	TEAM_SPECTATOR
 };
 
-void Team_SetFlagStatus( int team, flagStatus_t status );
+static void Team_SetFlagStatus( team_t team, flagStatus_t status );
 
 void Team_InitGame( void ) {
 	memset(&teamgame, 0, sizeof teamgame);
@@ -274,7 +274,7 @@ team_t GetStrongerTeam( void )
 	return TEAM_SPECTATOR;
 }
 
-void Team_SetFlagStatus( int team, flagStatus_t status ) {
+static void Team_SetFlagStatus( team_t team, flagStatus_t status ) {
 	static const char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
 	qboolean modified = qfalse;
 
@@ -299,6 +299,9 @@ void Team_SetFlagStatus( int team, flagStatus_t status ) {
 			modified = qtrue;
 		}
 		break;
+	default:
+		assert(0);
+		return;
 	}
 
 	if( modified ) {
@@ -332,7 +335,7 @@ void Team_CheckDroppedItem( gentity_t *dropped ) {
 Team_ForceGesture
 ================
 */
-void Team_ForceGesture(int team) {
+static void Team_ForceGesture(team_t team) {
 	int i;
 	gentity_t *ent;
 
@@ -633,7 +636,7 @@ static void Team_ReturnFlagSound( gentity_t *ent, team_t team ) {
 	te->r.svFlags |= SVF_BROADCAST;
 }
 
-void Team_TakeFlagSound( gentity_t *ent, int team ) {
+static void Team_TakeFlagSound( gentity_t *ent, team_t team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
@@ -659,6 +662,8 @@ void Team_TakeFlagSound( gentity_t *ent, int team ) {
 			}
 			teamgame.redTakenTime = level.time;
 			break;
+		default:
+			return;
 	}
 
 	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND, ENTITYNUM_WORLD );
@@ -671,7 +676,7 @@ void Team_TakeFlagSound( gentity_t *ent, int team ) {
 	te->r.svFlags |= SVF_BROADCAST;
 }
 
-void Team_CaptureFlagSound( gentity_t *ent, int team ) {
+static void Team_CaptureFlagSound( gentity_t *ent, team_t team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
@@ -973,7 +978,7 @@ go to a random point that doesn't telefrag
 ================
 */
 #define	MAX_TEAM_SPAWN_POINTS	32
-gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
+static gentity_t *SelectRandomTeamSpawnPoint( playerTeamStateState_t teamstate, team_t team ) {
 	gentity_t	*spot;
 	int			count;
 	int			selection;
@@ -1037,7 +1042,7 @@ SelectCTFSpawnPoint
 
 ============
 */
-gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
+gentity_t *SelectCTFSpawnPoint ( team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 
 	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
@@ -1059,7 +1064,7 @@ SelectSagaSpawnPoint
 
 ============
 */
-gentity_t *SelectSagaSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
+gentity_t *SelectSagaSpawnPoint ( team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 
 	spot = SelectRandomTeamSpawnPoint ( teamstate, team );

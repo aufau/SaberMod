@@ -2311,7 +2311,7 @@ static qhandle_t CG_FeederItemImage(float feederID, int index) {
 static qboolean CG_FeederSelection(float feederID, int index) {
 	if ( GT_Team(cgs.gametype) ) {
 		int i, count;
-		int team = (feederID == FEEDER_REDTEAM_LIST) ? TEAM_RED : TEAM_BLUE;
+		team_t team = (feederID == FEEDER_REDTEAM_LIST) ? TEAM_RED : TEAM_BLUE;
 		count = 0;
 		for (i = 0; i < cg.numScores; i++) {
 			if (cg.scores[i].team == team) {
