@@ -5329,7 +5329,7 @@ typedef struct keywordHash_s
 } keywordHash_t;
 
 int KeywordHash_Key(const char *keyword) {
-	int register hash, i;
+	int hash, i;
 
 	hash = 0;
 	for (i = 0; keyword[i] != '\0'; i++) {
@@ -6526,7 +6526,7 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item )
 					// Special case, don't consider line breaking if you're on an asian punctuation char of
 					//	a language that doesn't use spaces...
 					//
-					uiLetter = uiLetter;	// breakpoint line only
+					(void)uiLetter;	// breakpoint line only
 				}
 				else
 				{

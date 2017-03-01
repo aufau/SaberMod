@@ -1949,7 +1949,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		killerName = "<world>";
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) ) {
+	if ( (unsigned)meansOfDeath >= ARRAY_LEN( modNames ) ) {
 		obit = "<bad obituary>";
 	} else {
 		obit = modNames[ meansOfDeath ];

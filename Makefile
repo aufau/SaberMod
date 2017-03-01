@@ -32,8 +32,9 @@ DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DJK2AWARDS
 VERSION		= $(shell git describe --always --tags --dirty)
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS)
-ALL_CFLAGS += -fPIC -Wl,--no-undefined -lm
-ALL_CFLAGS += -Wall -Wsign-compare -Wno-unknown-pragmas
+ALL_CFLAGS += -fPIC
+ALL_CFLAGS += -Wall -Wextra -Wno-unknown-pragmas		\
+-Wno-missing-field-initializers -Wno-unused-parameter
 LCC_CFLAGS := $(LCFLAGS) $(INCLUDES) $(DEFS)
 LCC_CFLAGS += -S -Wf-target=bytecode -Wf-g -DQ3_VM
 ifneq ($(DEBUG_VM), 1)

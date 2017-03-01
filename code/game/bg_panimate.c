@@ -1088,7 +1088,7 @@ void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int 
 	}
 
 	//NOTE: Setting blendTime here breaks actual blending..
-	blendTime = 0;
+	//blendTime = 0;
 
 	BG_SaberStartTransAnim(pm->ps->fd.saberAnimLevel, anim, &editAnimSpeed);
 

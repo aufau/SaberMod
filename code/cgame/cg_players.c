@@ -6548,10 +6548,6 @@ doEssentialTwo:
 				{
 					cent->grip_arm.shaderRGBA[0] = 30;
 				}
-				if (cent->grip_arm.shaderRGBA[0] > 255)
-				{
-					cent->grip_arm.shaderRGBA[0] = 255;
-				}
 				cent->grip_arm.shaderRGBA[1] = cent->grip_arm.shaderRGBA[2] = cent->grip_arm.shaderRGBA[0];
 
 				trap_R_AddRefEntityToScene( &cent->grip_arm );
@@ -7150,16 +7146,7 @@ stillDoSaber:
 
 				VectorSubtract(duelEnt->lerpOrigin, cg.snap->ps.origin, vecSub);
 				subLen = VectorLength(vecSub);
-
-				if (subLen < 1)
-				{
-					subLen = 1;
-				}
-
-				if (subLen > 1020)
-				{
-					subLen = 1020;
-				}
+				subLen = CLAMP(1, 1020, subLen);
 
 				legs.shaderRGBA[0] = 255 - subLen/4;
 				legs.shaderRGBA[1] = 255 - subLen/4;
@@ -7179,19 +7166,7 @@ stillDoSaber:
 				legs.shaderRGBA[1] = 255 - subLen/8;
 				legs.shaderRGBA[2] = 255 - subLen/8;
 
-				if (legs.shaderRGBA[2] < 1)
-				{
-					legs.shaderRGBA[2] = 1;
-				}
-				if (legs.shaderRGBA[2] > 255)
-				{
-					legs.shaderRGBA[2] = 255;
-				}
-
-				if (subLen <= 1024)
-				{
-					legs.renderfx |= RF_RGB_TINT;
-				}
+				legs.renderfx |= RF_RGB_TINT;
 			}
 		}
 	}

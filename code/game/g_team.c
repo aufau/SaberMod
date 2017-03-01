@@ -152,7 +152,7 @@ AddTeamScore
  for gametype GT_TEAM the level.teamScores is updated in AddScore in g_combat.c
 ==============
 */
-void AddTeamScore(vec3_t origin, int team, int score) {
+void AddTeamScore(vec3_t origin, team_t team, int score) {
 	gentity_t	*te;
 
 	te = G_TempEntity(origin, EV_GLOBAL_TEAM_SOUND, ENTITYNUM_WORLD );
@@ -364,20 +364,19 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 	int i;
 	gentity_t *ent;
 	int flag_pw, enemy_flag_pw;
-	team_t otherteam;
+	team_t team, otherteam;
 	int tokens;
 	gentity_t *flag, *carrier = NULL;
 	const char *c;
 	vec3_t v1, v2;
-	int team;
 
 	// no bonus for fragging yourself or team mates
 	if (!targ->client || !attacker->client || targ == attacker || OnSameTeam(targ, attacker))
 		return;
 
 	team = targ->client->sess.sessionTeam;
-	otherteam = otherTeam[targ->client->sess.sessionTeam];
-	if (otherteam < 0)
+	otherteam = otherTeam[team];
+	if (otherteam == team)
 		return; // whoever died isn't on a team
 
 	// same team, if the flag at base, check to he has the enemy flag
@@ -576,7 +575,7 @@ void Team_CheckHurtCarrier(gentity_t *targ, gentity_t *attacker)
 }
 
 
-gentity_t *Team_ResetFlag( int team ) {
+static gentity_t *Team_ResetFlag( team_t team ) {
 	const char *c;
 	gentity_t *ent, *rent = NULL;
 
@@ -609,14 +608,14 @@ gentity_t *Team_ResetFlag( int team ) {
 	return rent;
 }
 
-void Team_ResetFlags( void ) {
+static void Team_ResetFlags( void ) {
 	if( GT_Flag(level.gametype) ) {
 		Team_ResetFlag( TEAM_RED );
 		Team_ResetFlag( TEAM_BLUE );
 	}
 }
 
-void Team_ReturnFlagSound( gentity_t *ent, int team ) {
+static void Team_ReturnFlagSound( gentity_t *ent, team_t team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
@@ -690,7 +689,7 @@ void Team_CaptureFlagSound( gentity_t *ent, int team ) {
 	te->r.svFlags |= SVF_BROADCAST;
 }
 
-void Team_ReturnFlag( int team ) {
+void Team_ReturnFlag( team_t team ) {
 	Team_ReturnFlagSound(Team_ResetFlag(team), team);
 	if( team == TEAM_FREE ) {
 		//PrintMsg(NULL, "The flag has returned!\n" );
@@ -746,7 +745,7 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 Team_DroppedFlagThink
 ==============
 */
-int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
+static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	int			i;
 	gentity_t	*player;
 	gclient_t	*cl = other->client;
@@ -847,7 +846,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 	return 0; // Do not respawn this automatically
 }
 
-int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
+static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	gclient_t *cl = other->client;
 
 	//PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
