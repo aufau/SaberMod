@@ -1987,6 +1987,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		// no argument vote
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart" );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map Restart" );
+		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
