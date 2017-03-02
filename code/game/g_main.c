@@ -2436,6 +2436,16 @@ CheckVote
 void CheckVote( void ) {
 	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
 		level.voteExecuteTime = 0;
+
+		if (level.voteCmd == CV_POLL)
+		{
+			trap_SendServerCommand( -1, va( "cp \"%s\n\n"
+					S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
+					S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\"",
+					level.voteDisplayString, level.voteYes, level.voteNo ) );
+			return;
+		}
+
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
 
 		if (level.voteCmd == CV_GAMETYPE)

@@ -1813,10 +1813,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	else if ( !Q_stricmp( arg1, "mode" ) )         voteCmd = CV_MODE;
 	else if ( !Q_stricmp( arg1, "match" ) )        voteCmd = CV_MATCH;
 	else if ( !Q_stricmp( arg1, "capturelimit" ) ) voteCmd = CV_CAPTURELIMIT;
+	else if ( !Q_stricmp( arg1, "poll" ) )         voteCmd = CV_POLL;
 	else                                           voteCmd = CV_INVALID;
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>.\n\"" );
 		return;
 	}
 
@@ -1987,6 +1988,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		// no argument vote
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart" );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map Restart" );
+		break;
+	case CV_POLL:
+		if (arg2[0] == '\0') {
+			trap_SendServerCommand( ent-g_entities, "print \"Usage: callvote poll <question>\n\"" );
+		}
+		Q_strncpyz( level.voteDisplayString, arg2, sizeof( level.voteDisplayString ) );
 		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

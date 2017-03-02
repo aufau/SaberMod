@@ -47,6 +47,9 @@ nk [mode]
 wk
   With Kick - default JK2 rules.
 
+poll <question>
+  Ask an arbitrary question to players.
+
 remove <player>
   Remove `player` to spectator team.
 
@@ -165,7 +168,7 @@ g_allowVote <0|1|bitmask>
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
-  65536 - Capturelimit
+  65536 - Capturelimit   131072 - Poll
   =====================  =====================  =====================
 
 g_damagePlums <0|1>
