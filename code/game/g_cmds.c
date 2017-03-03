@@ -2914,7 +2914,7 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 #define CMD_ALIVE			0x04
 
 typedef struct {
-	const char	*name;
+	const char	*name;				// must be lower-case for comparing
 	void		(*function)(gentity_t *);
 	int			flags;				// allow during intermission
 } clientCommand_t;
@@ -2974,18 +2974,18 @@ void ClientCommand( int clientNum ) {
 		return;		// not fully in game yet
 	}
 
-
 	trap_Argv( 0, cmd, sizeof( cmd ) );
+	Q_strlwr( cmd );
 
 	//rww - redirect bot commands
-	if (strstr(cmd, "bot_") && AcceptBotCommand(cmd, ent))
+	if (Q_strncmp(cmd, "bot_", 4) && AcceptBotCommand(cmd, ent))
 	{
 		return;
 	}
 	//end rww
 
 	for ( i = 0; i < ARRAY_LEN(commands); i++ ) {
-		if ( !Q_stricmp( cmd, commands[i].name ) ) {
+		if ( !strcmp( cmd, commands[i].name ) ) {
 			command = &commands[i];
 			break;
 		}
