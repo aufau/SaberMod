@@ -100,7 +100,7 @@ typedef enum {
 	CV_MATCH,
 	CV_CAPTURELIMIT,
 	CV_POLL,
-	CV_MAX = 31 // WORD_BIT - 1
+	CV_MAX
 } voteCommand_t;
 
 // movers are things like doors, plats, buttons, etc

@@ -1767,11 +1767,60 @@ Cmd_CallVote_f
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
 	voteCommand_t	voteCmd;
+	const char		*voteName;
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
 	const char		*arg2;
 	const char		*errorMsg;
 	char			s[MAX_STRING_CHARS];
+
+	static const char *voteCanonicalName[CV_MAX] = {
+		"Invalid",		// CV_INVALID
+		"Map Restart",	// CV_MAP_RESTART
+		"Next Map",		// CV_NEXTMAP
+		"Map",			// CV_MAP
+		"Gametype",		// CV_GAMETYPE
+		"Kick",			// CV_KICK
+		"Unused",		// CV_UNUSED
+		"Do Warmup",	// CV_DOWARMUP
+		"Timelimit",	// CV_TIMELIMIT
+		"Fraglimit",	// CV_FRAGLIMIT
+		"Roundlimit",	// CV_ROUNDLIMIT
+		"Team Size",	// CV_TEAMSIZE
+		"Remove",		// CV_REMOVE
+		"Kick Mode",	// CV_KICK_MODE
+		"Mode",			// CV_MODE
+		"Match Mode",	// CV_MATCH
+		"Capturelimit",	// CV_CAPTURELIMIT
+		"Poll",			// CV_POLL
+	};
+
+	typedef struct {
+		const char		*alias;
+		voteCommand_t	voteCmd;
+	} voteAlias_t;
+
+	static const voteAlias_t voteAlias[] = {
+		{ "map_restart",	CV_MAP_RESTART },
+		{ "nextmap",		CV_NEXTMAP },
+		{ "map",			CV_MAP },
+		{ "g_gametype",		CV_GAMETYPE },
+		{ "gametype",		CV_GAMETYPE },
+		{ "kick",			CV_KICK },
+		{ "clientkick",		CV_KICK },
+		{ "g_dowarmup",		CV_DOWARMUP },
+		{ "timelimit",		CV_TIMELIMIT },
+		{ "fraglimit",		CV_FRAGLIMIT },
+		{ "roundlimit",		CV_ROUNDLIMIT },
+		{ "teamsize",		CV_TEAMSIZE },
+		{ "remove",			CV_REMOVE },
+		{ "nk",				CV_KICK_MODE },
+		{ "wk",				CV_KICK_MODE },
+		{ "mode",			CV_MODE },
+		{ "match",			CV_MATCH },
+		{ "capturelimit",	CV_CAPTURELIMIT },
+		{ "poll",			CV_POLL },
+	};
 
 	if ( !g_allowVote.integer ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE")) );
@@ -1795,26 +1844,16 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
 	arg2 = ConcatArgs( 2 );
 
-	if ( !Q_stricmp( arg1, "map_restart" ) )       voteCmd = CV_MAP_RESTART;
-	else if ( !Q_stricmp( arg1, "nextmap" ) )      voteCmd = CV_NEXTMAP;
-	else if ( !Q_stricmp( arg1, "map" ) )          voteCmd = CV_MAP;
-	else if ( !Q_stricmp( arg1, "g_gametype" ) )   voteCmd = CV_GAMETYPE;
-	else if ( !Q_stricmp( arg1, "gametype" ) )     voteCmd = CV_GAMETYPE;
-	else if ( !Q_stricmp( arg1, "kick" ) )         voteCmd = CV_KICK;
-	else if ( !Q_stricmp( arg1, "clientkick" ) )   voteCmd = CV_KICK;
-	else if ( !Q_stricmp( arg1, "g_doWarmup" ) )   voteCmd = CV_DOWARMUP;
-	else if ( !Q_stricmp( arg1, "timelimit" ) )    voteCmd = CV_TIMELIMIT;
-	else if ( !Q_stricmp( arg1, "fraglimit" ) )    voteCmd = CV_FRAGLIMIT;
-	else if ( !Q_stricmp( arg1, "roundlimit" ) )   voteCmd = CV_ROUNDLIMIT;
-	else if ( !Q_stricmp( arg1, "teamsize" ) )     voteCmd = CV_TEAMSIZE;
-	else if ( !Q_stricmp( arg1, "remove" ) )       voteCmd = CV_REMOVE;
-	else if ( !Q_stricmp( arg1, "nk" ) )           voteCmd = CV_KICK_MODE;
-	else if ( !Q_stricmp( arg1, "wk" ) )           voteCmd = CV_KICK_MODE;
-	else if ( !Q_stricmp( arg1, "mode" ) )         voteCmd = CV_MODE;
-	else if ( !Q_stricmp( arg1, "match" ) )        voteCmd = CV_MATCH;
-	else if ( !Q_stricmp( arg1, "capturelimit" ) ) voteCmd = CV_CAPTURELIMIT;
-	else if ( !Q_stricmp( arg1, "poll" ) )         voteCmd = CV_POLL;
-	else                                           voteCmd = CV_INVALID;
+	Q_strlwr( arg1 );
+
+	voteCmd = CV_INVALID;
+	for ( i = 0; i < (int)ARRAY_LEN(voteAlias); i++ ) {
+		if ( !strcmp( arg1, voteAlias[i].alias ) ) {
+			voteCmd = voteAlias[i].voteCmd;
+			break;
+		}
+	}
+
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>.\n\"" );
@@ -1832,6 +1871,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Vote string contains forbidden characters.\n\"" );
 		return;
 	}
+
+	voteName = voteCanonicalName[voteCmd];
 
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
@@ -1861,7 +1902,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		level.voteArg = i;
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "g_gametype %d", i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Gametype %s", gametypeLong[i] );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
+			voteName, gametypeLong[i] );
 		break;
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting
@@ -1882,7 +1924,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		} else {
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %s", arg1, arg2 );
 		}
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map %s", arg2 );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 		break;
 	case CV_KICK:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
@@ -1896,7 +1938,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		level.voteArg = i;
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
-		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "Kick %s", g_entities[i].client->pers.netname );
+		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
+			voteName, g_entities[i].client->pers.netname );
 		break;
 	case CV_NEXTMAP:
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
@@ -1905,7 +1948,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "vstr nextmap");
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Next Map" );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
 		break;
 	case CV_TEAMSIZE:
 		i = atoi( arg2 );
@@ -1916,7 +1959,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
 		break;
 	case CV_REMOVE:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
@@ -1927,8 +1970,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		}
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
-			"%s %s", arg1, g_entities[i].client->pers.netname );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
+			voteName, g_entities[i].client->pers.netname );
 		break;
 	case CV_KICK_MODE:
 		if ( !Q_stricmp( arg1, "nk" ) )
@@ -1970,7 +2013,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_FS_FCloseFile( f );
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "mode \"%s\"", arg2 );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Mode %s", arg2 );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 		break;
 	}
 	case CV_MATCH:
@@ -1987,7 +2030,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_MAP_RESTART:
 		// no argument vote
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart" );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Map Restart" );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
 		break;
 	case CV_POLL:
 		if (arg2[0] == '\0') {
@@ -1997,7 +2040,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 	}
 
 	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLCALLEDVOTE") ) );
