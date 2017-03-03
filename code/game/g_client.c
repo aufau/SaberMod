@@ -1667,20 +1667,26 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 ? qtrue : qfalse;
 	if (!client->pers.registered) {
 		if (gameversion[0] == '\0') {
-			trap_SendServerCommand( clientNum, "cp \"Please download " GAME_VERSION " clientside.\"");
+			trap_SendServerCommand( clientNum, "cp \"Please download\n" GAME_VERSION " clientside\"");
 		} else {
 			trap_SendServerCommand( clientNum, "cp \""
 				"Your game and this server run different versions of\n"
 				GAMEVERSION "\n"
-				"Please download " GAME_VERSION " clientside.\"");
+				"Please download " GAME_VERSION " clientside\"");
 		}
 
-		if (trap_Cvar_VariableIntegerValue("mv_allowDownload") ||
-			trap_Cvar_VariableIntegerValue("sv_allowDownload"))
+		if (trap_Cvar_VariableIntegerValue("mv_allowDownload") && Info_ValueForKey(userinfo, "JK2MV")[0])
 		{
 			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
-				"To update your clientside mod type `\\cl_allowdownload 1`, `\\mv_allowdownload 1` in the console and reconnect.\n\"" );
-		} else {
+				"To update your clientside mod type `\\mv_allowdownload 1` in the console and reconnect.\n\"" );
+		}
+		else if (trap_Cvar_VariableIntegerValue("sv_allowDownload"))
+		{
+			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
+				"To update your clientside mod type `\\cl_allowdownload 1` in the console and reconnect.\n\"" );
+		}
+		else
+		{
 			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
 				"Download " GAME_VERSION " clientside from https://github.com/aufau/SaberMod/releases\n\"" );
 		}
