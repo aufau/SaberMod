@@ -1002,7 +1002,7 @@ void Cmd_Team_f( gentity_t *ent ) {
 	if ( ent->client->prof.switchTeamTime > level.time ) {
 		if ( ent->client->prof.switchTeamTime - level.time > 5000 ) {
 			trap_SendServerCommand( ent-g_entities,
-				va("print \"You were removed. May not switch teams for %d seconds\n\"",
+				va("print \"You were removed. May not switch teams for %d more seconds.\n\"",
 					(ent->client->prof.switchTeamTime - level.time + 999) / 1000));
 		} else {
 			trap_SendServerCommand( ent-g_entities,
@@ -1809,6 +1809,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "kick",			CV_KICK },
 		{ "clientkick",		CV_KICK },
 		{ "g_dowarmup",		CV_DOWARMUP },
+		{ "dowarmup",		CV_DOWARMUP },
 		{ "timelimit",		CV_TIMELIMIT },
 		{ "fraglimit",		CV_FRAGLIMIT },
 		{ "roundlimit",		CV_ROUNDLIMIT },
@@ -1856,7 +1857,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, g_doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>.\n\"" );
 		return;
 	}
 
@@ -1953,13 +1954,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_TEAMSIZE:
 		i = atoi( arg2 );
 
-		if ( i != 0 && g_teamsizeMin.integer > 0 && i < g_teamsizeMin.integer ) {
+		if ( 0 < i && i < g_teamsizeMin.integer ) {
 			trap_SendServerCommand( ent-g_entities,
 				va("print \"teamsize must be greater than %d.\n\"",	g_teamsizeMin.integer - 1 ) );
 			return;
 		}
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %d", voteName, i );
 		break;
 	case CV_REMOVE:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
