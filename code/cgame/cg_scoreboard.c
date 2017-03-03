@@ -536,7 +536,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	// current rank
 	if ( !GT_Team(cgs.gametype) || cgs.gametype == GT_REDROVER ) {
-		if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR )
+		if (cg.snap->ps.pm_type != PM_SPECTATOR )
 		{
 			char sPlace[256];
 			char sOf[256];

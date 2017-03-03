@@ -3315,7 +3315,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	{
 		team = cgs.clientinfo[ cent->currentState.clientNum ].team;
 		if (!(cent->currentState.eFlags & EF_DEAD) &&
-			(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ||
+			(cg.snap->ps.pm_type == PM_SPECTATOR ||
 				cg.snap->ps.persistant[PERS_TEAM] == team))
 		{
 			if (team == TEAM_RED) {

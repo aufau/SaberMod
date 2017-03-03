@@ -677,14 +677,10 @@ void CG_PredictPlayerState( void ) {
 	cg_pmove.ps = &cg.predictedPlayerState;
 	cg_pmove.trace = CG_DuelTrace;
 	cg_pmove.pointcontents = CG_PointContents;
-	if ( cg_pmove.ps->pm_type == PM_DEAD ) {
+	if ( cg_pmove.ps->pm_type == PM_DEAD || cg_pmove.ps->pm_type == PM_SPECTATOR ) {
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
-	}
-	else {
+	} else {
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
-	}
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
 	}
 	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
 	cg_pmove.noKick = ( cgs.dmflags & DF_NO_KICK ) > 0;

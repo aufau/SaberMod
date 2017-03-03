@@ -333,7 +333,7 @@ const char *CG_GetKillerText(void) {
 const char *CG_GetGameStatusText(void) {
 	static const char *s = "";
 	if ( !GT_Team(cgs.gametype)) {
-		if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR )
+		if (cg.snap->ps.pm_type != PM_SPECTATOR )
 		{
 			char sPlaceWith[256];
 			trap_SP_GetStringTextString("INGAMETEXT_PLACE_WITH", sPlaceWith, sizeof(sPlaceWith));

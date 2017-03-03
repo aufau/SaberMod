@@ -1774,7 +1774,7 @@ static float CG_DrawEnemyInfo ( float y )
 		title = CG_GetStripEdString("INGAMETEXT", "DUELING");
 		clientNum = cg.snap->ps.duelIndex;
 	}
-	else if ( cgs.gametype == GT_TOURNAMENT && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+	else if ( cgs.gametype == GT_TOURNAMENT && cg.snap->ps.pm_type != PM_SPECTATOR)
 	{
 //		title = "Dueling";
 		title = CG_GetStripEdString("INGAMETEXT", "DUELING");
@@ -1852,7 +1852,7 @@ static float CG_DrawEnemyInfo ( float y )
 	y += 15;
 	CG_Text_Paint( 630 - CG_Text_Width ( title, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, title, 0, 0, 0, FONT_MEDIUM );
 
-	if ( cgs.gametype == GT_TOURNAMENT && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+	if ( cgs.gametype == GT_TOURNAMENT && cg.snap->ps.pm_type != PM_SPECTATOR)
 	{//also print their score
 		char text[1024];
 		y += 15;
@@ -2950,7 +2950,7 @@ static void CG_DrawHolocronIcons(void)
 		return;
 	}
 
-	if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type == PM_SPECTATOR)
 	{
 		return;
 	}
@@ -3005,7 +3005,7 @@ static void CG_DrawActivePowers(void)
 		return;
 	}
 
-	if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type == PM_SPECTATOR)
 	{
 		return;
 	}
@@ -3052,7 +3052,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 		return;
 	}
 
-	if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type == PM_SPECTATOR)
 	{
 		return;
 	}
@@ -3254,7 +3254,7 @@ static void CG_ScanForCrosshairEntity( void ) {
 		}
 	}
 
-	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type != PM_SPECTATOR)
 	{
 		if (trace.entityNum < /*MAX_CLIENTS*/ENTITYNUM_WORLD)
 		{
@@ -3965,7 +3965,7 @@ static void CG_Draw2D( void ) {
 		return;
 	}
 
-	if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type == PM_SPECTATOR)
 	{
 		cgRageTime = 0;
 		cgRageFadeTime = 0;
@@ -3997,7 +3997,7 @@ static void CG_Draw2D( void ) {
 		return;
 	}
 
-	if (cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+	if (cg.snap->ps.pm_type != PM_SPECTATOR)
 	{
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_RAGE))
 		{
@@ -4400,7 +4400,7 @@ static void CG_Draw2D( void ) {
 		return;
 	}
 */
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+	if ( cg.snap->ps.pm_type == PM_SPECTATOR ) {
 		CG_DrawSpectator();
 		CG_DrawCrosshair(NULL, 0);
 		CG_DrawCrosshairNames();
@@ -4560,7 +4560,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	}
 
 	// optionally draw the tournement scoreboard instead
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
+	if ( cg.snap->ps.pm_type == PM_SPECTATOR &&
 		( cg.snap->ps.pm_flags & PMF_SCOREBOARD ) ) {
 		CG_DrawTourneyScoreboard();
 		return;

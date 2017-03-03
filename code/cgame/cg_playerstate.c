@@ -493,8 +493,8 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 		cg.mapRestart = qfalse;
 	}
 
-	if ( cg.snap->ps.pm_type != PM_INTERMISSION
-		&& ps->persistant[PERS_TEAM] != TEAM_SPECTATOR ) {
+	if ( ps->pm_type != PM_INTERMISSION &&
+		ps->pm_type != PM_SPECTATOR ) {
 		CG_CheckLocalSounds( ps, ops );
 	}
 
