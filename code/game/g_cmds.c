@@ -891,6 +891,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 		// new players need to wait for next round
 		if ( level.round > 0 && level.gametype != GT_REDROVER && !level.roundQueued ) {
 			specState = SPECTATOR_FOLLOW;
+			ent->client->sess.spectatorClient = FOLLOW_TEAM;
 		}
 	} else {
 		team = TEAM_FREE;
@@ -922,11 +923,6 @@ to free floating spectator mode
 void StopFollowing( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 	int			i;
-
-	// don't allow team player free floating. sess.spectatorClient
-	// shall be fixed in SpectatorClientEndFrame
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR )
-		return;
 
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
@@ -1141,7 +1137,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 	// can't make yourself a following non-spectator here
 	team = client->sess.sessionTeam;
-	teamRestrict = ( client->sess.sessionTeam != TEAM_SPECTATOR );
+	teamRestrict = ( g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR );
 
 	original = clientnum;
 
@@ -1233,7 +1229,7 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 	}
 
 	// can't make yourself a following non-spectator here
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		teamRestrict = qtrue;
 		followTeam = client->sess.sessionTeam;
 	} else {
@@ -2021,10 +2017,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		i = atoi( arg2 );
 
 		if ( i == 0 ) {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "g_restrictChat 0; g_damagePlums 1" );
+			Com_sprintf( level.voteString, sizeof( level.voteString ),
+				"g_restrictChat 0; g_restrictSpectator 0; g_damagePlums 1" );
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Practice Mode" );
 		} else {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "g_restrictChat 1; g_damagePlums 0" );
+			Com_sprintf( level.voteString, sizeof( level.voteString ),
+				"g_restrictChat 1; g_restrictSpectator 1; g_damagePlums 0" );
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Match Mode" );
 		}
 		break;

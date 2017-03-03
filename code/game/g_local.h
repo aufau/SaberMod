@@ -373,6 +373,7 @@ typedef struct {
 // number, but instead follow the first two active players
 #define	FOLLOW_ACTIVE1	-1
 #define	FOLLOW_ACTIVE2	-2
+#define FOLLOW_TEAM		-3
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -1170,6 +1171,7 @@ extern	vmCvar_t	g_mode;
 extern	vmCvar_t	g_modeIdleTime;
 extern	vmCvar_t	g_modeDefault;
 extern  vmCvar_t	g_restrictChat;
+extern  vmCvar_t	g_restrictSpectator;
 extern	vmCvar_t	g_spawnItems;
 extern  vmCvar_t	g_spawnShield;
 extern	vmCvar_t	g_spawnWeapons;

@@ -1058,12 +1058,10 @@ void G_Respawn( gentity_t *ent ) {
 		respawn( ent );
 	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
 		team_t	team = client->sess.sessionTeam;
-		// follow whatever. sess.spectatorClient will be fixed
-		// in SpectatorClientEndFrame
 
 		// currently this is the only entry point for spactating while
 		// not in TEAM_SPECTATOR. The exit is in NextRound.
-		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, client->sess.spectatorClient );
+		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, FOLLOW_TEAM );
 	} else {
 		respawn( ent );
 	}
@@ -1910,9 +1908,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		clientNum = level.follow2;
 	}
 
-	// currently spectators outside of TEAM_SPECTATOR can only follow
-	// their teammates
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	// player in a team may only follow his teammates
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR &&
+		( g_restrictSpectator.integer || clientNum == FOLLOW_TEAM ) )
+	{
 		qboolean	found = qfalse;
 		team_t		team = client->sess.sessionTeam;
 		int			original;
@@ -1943,8 +1942,9 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		if ( found ) {
 			client->sess.spectatorState = SPECTATOR_FOLLOW;
 			client->sess.spectatorClient = clientNum;
-		} else {
-			// wait until the next round in whatever state we are
+		} else if ( client->sess.spectatorState == SPECTATOR_FOLLOW ) {
+			// allow spectating when last player disconnected or died
+			StopFollowing( ent );
 		}
 	}
 

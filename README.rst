@@ -215,6 +215,9 @@ g_restrictChat <0|1>
   Prevent spectators from speaking to players and all clients from
   speaking to dueling players.
 
+g_restrictSpectator <0|1>
+  Dead players may only follow their teammates.
+
 g_roundWarmup <seconds>
   How many seconds players get to reposition themselves at the start
   of a round.

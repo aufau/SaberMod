@@ -147,6 +147,7 @@ vmCvar_t	g_mode;
 vmCvar_t	g_modeIdleTime;
 vmCvar_t	g_modeDefault;
 vmCvar_t	g_restrictChat;
+vmCvar_t	g_restrictSpectator;
 vmCvar_t	g_spawnItems;
 vmCvar_t	g_spawnShield;
 vmCvar_t	g_spawnWeapons;
@@ -310,6 +311,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_modeDefault, "g_modeDefault", "", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_restrictSpectator, "g_restrictSpectator", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
