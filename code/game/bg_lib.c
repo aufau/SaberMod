@@ -1060,30 +1060,6 @@ float frexpf( float x, int *exp )
     return x;
 }
 
-static const float reciprocalf[21] = {
-	0.00000000f,	// should be infinity
-	1.00000000f,
-	0.50000000f,
-	0.33333333f,
-	0.25000000f,
-	0.20000000f,
-	0.16666667f,
-	0.14285714f,
-	0.12500000f,
-	0.11111111f,
-	0.10000000f,
-	0.09090909f,
-	0.08333333f,
-	0.07692308f,
-	0.07142857f,
-	0.06666667f,
-	0.06250000f,
-	0.05882353f,
-	0.05555556f,
-	0.05263158f,
-	0.05000000f,
-};
-
 float expf( float x )
 {
     qboolean	invert = qfalse;
@@ -1122,7 +1098,7 @@ float expf( float x )
 	sum = 0.0f;
 
 	for (i = 11; i > 0; i--)
-		sum = 1.0f + reciprocalf[i] * fracX * sum;
+		sum = 1.0f + fracX * sum / i;
 
     // results has 1 ULP accuracy too
     result *= sum;
@@ -1178,7 +1154,7 @@ float logf( float a )
 	// optimization: Horner's scheme for computing Taylor series
 
 	for (i = 16; i > 0; i--)
-		sum = z * (reciprocalf[i] - sum);
+		sum = z * ((1.0f / i) - sum);
 
 	return sum + log2a * (float) M_LN2;
 }
