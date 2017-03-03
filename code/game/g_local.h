@@ -370,9 +370,9 @@ typedef struct {
 } playerTeamState_t;
 
 // the auto following clients don't follow a specific client
-// number, but instead follow the first two active players
-#define	FOLLOW_ACTIVE1	-1
-#define	FOLLOW_ACTIVE2	-2
+// number, but instead follow two top scoring clients
+#define	FOLLOW_FIRST	-1
+#define	FOLLOW_SECOND	-2
 #define FOLLOW_TEAM		-3
 
 // client data that stays across multiple levels or tournament restarts

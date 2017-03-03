@@ -1902,9 +1902,9 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 	clientNum = client->sess.spectatorClient;
 
 	// team follow1 and team follow2 go to the score leader and runner up
-	if ( clientNum == -1 ) {
+	if ( clientNum == FOLLOW_FIRST ) {
 		clientNum = level.follow1;
-	} else if ( clientNum == -2 ) {
+	} else if ( clientNum == FOLLOW_SECOND ) {
 		clientNum = level.follow2;
 	}
 

@@ -1081,9 +1081,9 @@ void Cmd_Follow_f( gentity_t *ent ) {
 
 	trap_Argv( 1, arg, sizeof( arg ) );
 	if (!strcmp(arg, "-1") || !Q_stricmp(arg, "first")) {
-		i = -1;
+		i = FOLLOW_FIRST;
 	} else if (!strcmp(arg, "-2") || !Q_stricmp(arg, "second"))
-		i = -2;
+		i = FOLLOW_SECOND;
 	else {
 		i = G_ClientNumberFromString( arg, &errorMsg );
 		if ( i == -1 ) {
@@ -1126,9 +1126,9 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 	clientnum = client->sess.spectatorClient;
 
-	if (clientnum == -1) {
+	if (clientnum == FOLLOW_FIRST) {
 		clientnum = level.follow1;
-	} else if (clientnum == -2) {
+	} else if (clientnum == FOLLOW_SECOND) {
 		clientnum = level.follow2;
 	}
 	if ( clientnum < 0 || clientnum >= level.maxclients ) {
@@ -1208,9 +1208,9 @@ void Cmd_SmartFollowCycle_f( gentity_t *ent )
 		}
 	}
 
-	if (clientNum == -1) {
+	if (clientNum == FOLLOW_FIRST) {
 		clientNum = level.follow1;
-	} else if (clientNum == -2) {
+	} else if (clientNum == FOLLOW_SECOND) {
 		clientNum = level.follow2;
 	}
 
