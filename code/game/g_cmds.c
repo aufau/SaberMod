@@ -2978,7 +2978,7 @@ void ClientCommand( int clientNum ) {
 	Q_strlwr( cmd );
 
 	//rww - redirect bot commands
-	if (Q_strncmp(cmd, "bot_", 4) && AcceptBotCommand(cmd, ent))
+	if (strncmp(cmd, "bot_", 4) && AcceptBotCommand(cmd, ent))
 	{
 		return;
 	}

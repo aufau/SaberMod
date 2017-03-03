@@ -2624,7 +2624,7 @@ static void CheckTeamVote( team_t team ) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED")) );
 			//
-			if ( !Q_strncmp( "leader", level.teamVoteString[cs_offset], 6) ) {
+			if ( !strncmp( "leader", level.teamVoteString[cs_offset], 6) ) {
 				//set the team leader
 				SetLeader(team, atoi(level.teamVoteString[cs_offset] + 7));
 			}

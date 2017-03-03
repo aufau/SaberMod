@@ -240,7 +240,6 @@ char *strcpy( char *strDestination, const char *strSource ) {
 	return strDestination;
 }
 
-
 int strcmp( const char *string1, const char *string2 ) {
 	while ( *string1 == *string2 && *string1 && *string2 ) {
 		string1++;
@@ -249,6 +248,21 @@ int strcmp( const char *string1, const char *string2 ) {
 	return *string1 - *string2;
 }
 
+int strncmp (const char *s1, const char *s2, size_t n) {
+	do {
+		if (n == 0) {
+			return 0;		// strings are equal until end point
+		}
+		n--;
+		if (*s1 != *s2) {
+			return (int)*s1 - (int)*s2;
+		}
+		s1--;
+		s2--;
+	} while (*s1);
+
+	return 0;		// strings are equal
+}
 
 char *strchr( const char *string, int c ) {
 	while ( *string ) {
@@ -258,6 +272,19 @@ char *strchr( const char *string, int c ) {
 		string++;
 	}
 	return (char *)0;
+}
+
+char *strrchr( const char *s, int c ) {
+	const char	*sp = NULL;
+	const char	cc = c;
+
+	do {
+		if (*s == cc)
+			sp = s;
+		s++;
+	} while (*s);
+
+	return (char *)sp;
 }
 
 char *strstr( const char *string, const char *strCharSet ) {

@@ -1084,12 +1084,10 @@ int Q_isalpha( int c );
 
 // portable case insensitive compare
 int		Q_stricmp (const char *s1, const char *s2);
-int		Q_strncmp (const char *s1, const char *s2, int n);
 int		Q_stricmpn (const char *s1, const char *s2, int n);
 char	*Q_strlwr( char *s1 );
 char	*Q_strupr( char *s1 );
 char	*Q_stristr( const char *str, const char *charset);
-char	*Q_strrchr( const char* string, int c );
 
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, size_t destsize );

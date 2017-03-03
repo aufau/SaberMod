@@ -1069,7 +1069,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 			if (i == clientNum) {
 				continue;
 			}
-			if (!Q_strncmp(name, level.clients[i].pers.netname, MAX_NETNAME)) {
+			if (!strncmp(name, level.clients[i].pers.netname, MAX_NETNAME)) {
 				free = qfalse;
 				break;
 			}
@@ -1173,7 +1173,7 @@ void SetupGameGhoul2Model(gclient_t *client, const char *modelname)
 			return;
 		}
 		Q_strncpyz( afilename, GLAName, sizeof( afilename ));
-		slash = Q_strrchr( afilename, '/' );
+		slash = strrchr( afilename, '/' );
 		if ( slash )
 		{
 			Q_strncpyz(slash, "/animation.cfg", sizeof(afilename) - (slash - afilename));

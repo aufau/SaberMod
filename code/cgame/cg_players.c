@@ -350,7 +350,7 @@ retryModel:
 			return qtrue;
 		}
 		Q_strncpyz( afilename, GLAName, sizeof( afilename ));
-		slash = Q_strrchr( afilename, '/' );
+		slash = strrchr( afilename, '/' );
 		if ( slash )
 		{
 			Q_strncpyz(slash, "/animation.cfg", sizeof(afilename) - (slash - afilename));
