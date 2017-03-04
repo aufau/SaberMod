@@ -864,21 +864,21 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	int		count = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( i == ignoreClientNum ) {
+		if (level.clients[i].pers.connected == CON_DISCONNECTED ||
+			level.clients[i].sess.sessionTeam != team ||
+			i == ignoreClientNum ) {
 			continue;
 		}
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
+
 		if ( !dead ) {
 			if (level.clients[i].sess.spectatorState != SPECTATOR_NOT ||
-				level.clients[i].ps.stats[STAT_HEALTH] <= 0) {
+				level.clients[i].ps.stats[STAT_HEALTH] <= 0 ||
+				level.clients[i].ps.fallingToDeath) {
 				continue;
 			}
 		}
-		if ( level.clients[i].sess.sessionTeam == team ) {
-			count++;
-		}
+
+		count++;
 	}
 
 	return count;
