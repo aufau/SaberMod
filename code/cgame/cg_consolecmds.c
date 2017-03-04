@@ -459,7 +459,6 @@ static void CG_Players_f( void ) {
 	for (i = 0 ; i < cgs.maxclients ; i++) {
 		if (cgs.clientinfo[i].infoValid) {
 			char		name[MAX_NETNAME];
-			const char	*team;
 			const char	*flagColor[3] = { S_COLOR_WHITE, S_COLOR_WHITE, S_COLOR_WHITE };
 			int			flag[3] = { ' ', ' ', ' '};
 
@@ -475,20 +474,12 @@ static void CG_Players_f( void ) {
 				}
 			}
 
-			switch (cgs.clientinfo[i].team) {
-			case TEAM_FREE:			team = S_COLOR_WHITE "Free"; break;
-			case TEAM_RED:			team = S_COLOR_RED "Red "; break;
-			case TEAM_BLUE:			team = S_COLOR_BLUE "Blue"; break;
-			case TEAM_SPECTATOR:	team = S_COLOR_YELLOW "Spec"; break;
-			default:				team = S_COLOR_CYAN "Inv "; break;
-			}
-
 			Q_strncpyz(name, cgs.clientinfo[i].name, sizeof(name));
 			Q_CleanStr(name);
 
-			CG_Printf("%3d %s%c%s%c%s%c %s" S_COLOR_WHITE " %s\n", i,
+			CG_Printf("%3d %s%c%s%c%s%c " S_COLOR_WHITE "%-4.4s %s\n", i,
 				flagColor[0], flag[0], flagColor[1], flag[1], flagColor[2], flag[2],
-				team, name);
+				BG_TeamName(cgs.clientinfo[i].team, CASE_NORMAL), name);
 		}
 	}
 
