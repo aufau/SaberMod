@@ -2203,9 +2203,10 @@ void ClientSpawn(gentity_t *ent) {
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
-	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink( ent-g_entities );
+	client->ps.commandTime = client->pers.cmd.serverTime - 100;
+	if ( !(ent->r.svFlags & SVF_BOT) ) {
+		ClientThink_real( ent );
+	}
 
 	// positively link the client, even if the command times are weird
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {

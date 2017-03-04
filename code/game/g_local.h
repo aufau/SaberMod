@@ -930,6 +930,7 @@ void ClientCommand( int clientNum );
 //
 void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
+void ClientThink_real		( gentity_t *ent );
 void ClientEndFrame			( gentity_t *ent );
 void G_RunClient			( gentity_t *ent );
 void G_Respawn				( gentity_t *ent );
