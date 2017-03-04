@@ -1881,7 +1881,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 			gametypes[0] = '\0';
 			for (i = 0; i < GT_MAX_GAME_TYPE; i++) {
-				if (i != GT_SINGLE_PLAYER && i != GT_SAGA) {
+				if (GT_Valid(i)) {
 					if (printSep)
 						Q_strcat(gametypes, sizeof(gametypes), ", ");
 					Q_strcat(gametypes, sizeof(gametypes), gametypeShort[i]);
