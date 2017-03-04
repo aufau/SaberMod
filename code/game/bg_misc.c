@@ -196,6 +196,47 @@ const int WeaponAttackAnim[WP_NUM_WEAPONS] =
 	BOTH_ATTACK1//WP_TURRET,
 };
 
+/*
+================
+BG_TeamName
+
+Safe function returning team name
+================
+*/
+const char *BG_TeamName(team_t team, letterCase_t letterCase)
+{
+	static const char * const teamName[CASE_MAX][TEAM_NUM_TEAMS + 1] = {
+		{
+			"Free",
+			"Red",
+			"Blue",
+			"Spectator",
+			"Invalid"
+		},
+		{
+			"FREE",
+			"RED",
+			"BLUE",
+			"SPECTATOR",
+			"INVALID"
+		},
+		{
+			"free",
+			"red",
+			"blue",
+			"spectator",
+			"invalid"
+		}
+	};
+
+	if ((unsigned)team > TEAM_NUM_TEAMS) {
+		assert(0);
+		team = TEAM_NUM_TEAMS;
+	}
+
+	return teamName[letterCase][team];
+}
+
 
 /*
 ================

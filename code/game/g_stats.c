@@ -338,7 +338,7 @@ static void G_LogStatsRow(int clientNum)
 	}
 
 	G_LogPrintf(LOG_GAME_STATS, "%s %-4s %s\n", row,
-		teamNameUpperCase[client->sess.sessionTeam],
+		BG_TeamName(client->sess.sessionTeam, CASE_UPPER),
 		client->pers.netname);
 }
 

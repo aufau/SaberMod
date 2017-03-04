@@ -38,27 +38,6 @@ typedef struct teamgame_s {
 
 static teamgame_t teamgame;
 
-const char * const teamName[TEAM_NUM_TEAMS] = {
-	"Free",
-	"Red",
-	"Blue",
-	"Spectator"
-};
-
-const char * const teamNameUpperCase[TEAM_NUM_TEAMS] = {
-	"FREE",
-	"RED",
-	"BLUE",
-	"SPECTATOR"
-};
-
-const char * const teamNameLowerCase[TEAM_NUM_TEAMS] = {
-	"free",
-	"red",
-	"blue",
-	"spectator"
-};
-
 const char * const teamColorString[TEAM_NUM_TEAMS] = {
 	S_COLOR_WHITE,
 	S_COLOR_RED,
@@ -701,7 +680,7 @@ void Team_ReturnFlag( team_t team ) {
 	}
 	else { //flag should always have team in normal CTF
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %s: The %s flag has returned\n",
-			teamNameUpperCase[team], teamNameLowerCase[team]);
+			BG_TeamName(team, CASE_UPPER), BG_TeamName(team, CASE_LOWER));
 		PrintCTFMessage(-1, team, CTFMESSAGE_FLAG_RETURNED);
 	}
 }
@@ -765,8 +744,8 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if ( ent->flags & FL_DROPPED_ITEM ) {
 		// hey, its not home.  return it by teleporting it back
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %i %s: %s returned the %s flag\n",
-			other->s.number, teamNameUpperCase[otherTeam[team]], cl->pers.netname,
-			teamNameLowerCase[otherTeam[team]]);
+			other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER), cl->pers.netname,
+			BG_TeamName(otherTeam[team], CASE_LOWER));
 		PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_RETURNED_FLAG);
 
 		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
@@ -782,8 +761,8 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if (!cl->ps.powerups[enemy_flag])
 		return 0; // We don't have the flag
 	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag\n",
-		other->s.number, teamNameUpperCase[otherTeam[team]],
-		cl->pers.netname, teamNameLowerCase[otherTeam[team]]);
+		other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER),
+		cl->pers.netname, BG_TeamName(otherTeam[team], CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
 
 	cl->ps.powerups[enemy_flag] = 0;
@@ -857,8 +836,8 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	//PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
 	//	other->client->pers.netname, TeamName(team));
 	G_LogPrintf(LOG_FLAG, "FlagGrab: %i %s: %s got the %s flag\n", other->s.number,
-		teamNameUpperCase[otherTeam[team]], cl->pers.netname,
-		teamNameLowerCase[otherTeam[team]]);
+		BG_TeamName(otherTeam[team], CASE_UPPER), cl->pers.netname,
+		BG_TeamName(otherTeam[team], CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_GOT_FLAG);
 
 	if (team == TEAM_RED)

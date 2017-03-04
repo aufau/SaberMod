@@ -792,17 +792,6 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 	}
 }
 
-const char *CG_TeamName(int team)
-{
-	if (team==TEAM_RED)
-		return "RED";
-	else if (team==TEAM_BLUE)
-		return "BLUE";
-	else if (team==TEAM_SPECTATOR)
-		return "SPECTATOR";
-	return "FREE";
-}
-
 void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, int ctfMessage)
 {
 	char printMsg[1024];
@@ -905,7 +894,7 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 
 	if (teamIndex < 50)
 	{
-		teamName = CG_TeamName(teamIndex);
+		teamName = BG_TeamName(teamIndex, CASE_UPPER);
 	}
 
 	CG_PrintCTFMessage(ci, teamName, es->eventParm);

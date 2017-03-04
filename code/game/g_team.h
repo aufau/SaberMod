@@ -51,9 +51,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Prototypes
 
-extern const char * const teamName[TEAM_NUM_TEAMS];
-extern const char * const teamNameUpperCase[TEAM_NUM_TEAMS];
-extern const char * const teamNameLowerCase[TEAM_NUM_TEAMS];
 extern const char * const teamColorString[TEAM_NUM_TEAMS];
 extern const team_t otherTeam[TEAM_NUM_TEAMS];
 

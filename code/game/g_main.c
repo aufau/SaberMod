@@ -1725,7 +1725,7 @@ void LogExit( const char *string ) {
 	if ( GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 		G_LogPrintf( LOG_GAME, "Score: %i %i: %s %s\n",
 			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
-			teamName[TEAM_RED], teamName[TEAM_BLUE]);
+			BG_TeamName(TEAM_RED, CASE_NORMAL), BG_TeamName(TEAM_BLUE, CASE_NORMAL) );
 	} else {
 		for (i = 0; i < level.numPlayingClients; i++) {
 			gclient_t	*client = level.clients + level.sortedClients[i];
@@ -2135,7 +2135,7 @@ void CheckExitRules( void ) {
 					level.teamScores[winner]++;
 					trap_SendServerCommand( -1,
 						va("cp \"%s%s" S_COLOR_WHITE " team wins the round\"",
-							teamColorString[winner], teamName[winner]));
+							teamColorString[winner], BG_TeamName(winner, CASE_NORMAL)) );
 				}
 
 				LogRoundExit( "Timelimit hit." );

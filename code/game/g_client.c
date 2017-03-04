@@ -1698,8 +1698,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		gameversion = "UNKNOWN";
 
 	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s %s: %s joined the %s team\n",
-		clientNum, teamNameUpperCase[client->sess.sessionTeam], gameversion,
-		client->pers.netname, teamName[client->sess.sessionTeam] );
+		clientNum, BG_TeamName(client->sess.sessionTeam, CASE_UPPER), gameversion,
+		client->pers.netname, BG_TeamName(client->sess.sessionTeam, CASE_NORMAL) );
 
 	// locate ent at a spawn point
 	ClientSpawn( ent );
@@ -2173,9 +2173,9 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.legsAnim = WeaponReadyAnim[client->ps.weapon];
 
 	G_LogPrintf( LOG_SPAWN, "ClientSpawn: %d %s %d: %s spawned in the %s team as %s\n",
-		index, teamNameUpperCase[client->sess.sessionTeam],
+		index, BG_TeamName(client->sess.sessionTeam, CASE_UPPER),
 		client->sess.spectatorState, client->pers.netname,
-		teamName[client->sess.sessionTeam],
+		BG_TeamName(client->sess.sessionTeam, CASE_NORMAL),
 		(client->sess.spectatorState == SPECTATOR_NOT) ? "player" : "spectator" );
 
 	if ( level.intermissiontime ) {

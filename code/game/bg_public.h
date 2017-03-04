@@ -694,7 +694,12 @@ typedef enum {
 	GTS_TEAMS_ARE_TIED
 } global_team_sound_t;
 
-
+typedef enum {
+	CASE_NORMAL,
+	CASE_UPPER,
+	CASE_LOWER,
+	CASE_MAX
+} letterCase_t;
 
 typedef enum {
 	TEAM_FREE,
@@ -1054,6 +1059,8 @@ typedef struct
 } saberMoveData_t;
 
 extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
+
+const char *BG_TeamName(team_t team, letterCase_t letterCase);
 
 qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
 

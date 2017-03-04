@@ -484,7 +484,7 @@ void	Svcmd_LockTeam_f( qboolean lock )
 		if (level.teamLock[team] != lock) {
 			level.teamLock[team] = lock;
 			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " team was %slocked.\n\"",
-					teamColorString[team], teamName[team], prefix) );
+					teamColorString[team], BG_TeamName(team, CASE_NORMAL), prefix) );
 		}
 	}
 }

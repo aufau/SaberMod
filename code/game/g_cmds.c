@@ -903,7 +903,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 
 	if ( level.teamLock[team] ) {
 		trap_SendServerCommand( clientNum, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
-				teamColorString[team], teamName[team]) );
+				teamColorString[team], BG_TeamName(team, CASE_NORMAL)) );
 		return;
 	}
 
@@ -1075,7 +1075,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR && level.teamLock[TEAM_SPECTATOR] ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
-				teamColorString[TEAM_SPECTATOR], teamName[TEAM_SPECTATOR]) );
+				teamColorString[TEAM_SPECTATOR], BG_TeamName(TEAM_SPECTATOR, CASE_NORMAL)) );
 		return;
 	}
 
@@ -1363,7 +1363,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		break;
 	case SAY_TEAM:
 		G_LogPrintf( LOG_SAY_TEAM, "SayTeam: %i %s: %s: %s\n", ent->s.number,
-			teamNameUpperCase[ent->client->sess.sessionTeam], ent->client->pers.netname, chatText );
+			BG_TeamName(ent->client->sess.sessionTeam, CASE_UPPER), ent->client->pers.netname, chatText );
 		if (Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ",
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
