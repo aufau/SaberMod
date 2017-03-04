@@ -1334,7 +1334,7 @@ static void AddFloat( char **buf_p, char * const buf_end, float fval, int width,
 }
 
 
-static void AddString( char **buf_p, char * const buf_end, const char *string, int width, int prec ) {
+static void AddString( char **buf_p, char * const buf_end, const char *string, int width, int prec, int flags ) {
 	int		size;
 	char	*buf;
 
@@ -1358,6 +1358,15 @@ static void AddString( char **buf_p, char * const buf_end, const char *string, i
 
 	width -= size;
 
+	if ( !(flags & LADJUST) ) {
+		while( width-- > 0 ) {
+			if ( buf < buf_end ) {
+				*buf = ' ';
+			}
+			buf++;
+		}
+	}
+
 	while( size-- ) {
 		if ( buf < buf_end ) {
 			*buf = *string++;
@@ -1365,11 +1374,13 @@ static void AddString( char **buf_p, char * const buf_end, const char *string, i
 		buf++;
 	}
 
-	while( width-- > 0 ) {
-		if ( buf < buf_end ) {
-			*buf = ' ';
+	if ( flags & LADJUST ) {
+		while( width-- > 0 ) {
+			if ( buf < buf_end ) {
+				*buf = ' ';
+			}
+			buf++;
 		}
-		buf++;
 	}
 
 	*buf_p = buf;
@@ -1462,7 +1473,7 @@ reswitch:
 			AddFloat( &buf_p, buf_end, va_arg(ap, double), width, prec, flags );
 			break;
 		case 's':
-			AddString( &buf_p, buf_end, va_arg(ap, char *), width, prec );
+			AddString( &buf_p, buf_end, va_arg(ap, char *), width, prec, flags );
 			break;
 		case '%':
 			if ( buf_p < buf_end ) {
