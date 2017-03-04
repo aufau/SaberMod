@@ -352,29 +352,6 @@ const char *CG_GetGameStatusText(void) {
 	return s;
 }
 
-const char *CG_GameTypeString(void) {
-	if ( cgs.gametype == GT_FFA ) {
-		return "Free For All";
-	} else if ( cgs.gametype == GT_HOLOCRON ) {
-		return "Holocron FFA";
-	} else if ( cgs.gametype == GT_JEDIMASTER ) {
-		return "Jedi Master";
-	} else if ( cgs.gametype == GT_TEAM ) {
-		return "Team FFA";
-	} else if ( cgs.gametype == GT_SAGA ) {
-		return "N/A";
-	} else if ( cgs.gametype == GT_CTF ) {
-		return "Capture the Flag";
-	} else if ( cgs.gametype == GT_CTY ) {
-		return "Capture the Ysalamiri";
-    } else if ( cgs.gametype == GT_REDROVER ) {
-        return "Red Rover";
-    } else if ( cgs.gametype == GT_CLANARENA ) {
-		return "Clan Arena";
-	}
-	return "";
-}
-
 extern int MenuFontToHandle(int iMenuFont);
 
 // maxX param is initially an X limit, but is also used as feedback. 0 = text was clipped to fit within, else maxX = next pos

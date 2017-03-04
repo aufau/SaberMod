@@ -2340,7 +2340,7 @@ void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, 
 static int CG_OwnerDrawWidth(int ownerDraw, float scale) {
 	switch (ownerDraw) {
 	  case CG_GAME_TYPE:
-			return CG_Text_Width(CG_GameTypeString(), scale, FONT_MEDIUM);
+			return CG_Text_Width(gametypeLong[cgs.gametype], scale, FONT_MEDIUM);
 	  case CG_GAME_STATUS:
 			return CG_Text_Width(CG_GetGameStatusText(), scale, FONT_MEDIUM);
 			break;
