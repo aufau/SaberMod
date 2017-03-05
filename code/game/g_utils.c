@@ -646,7 +646,7 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( const vec3_t origin, int event, int blameEntityNum ) {
+gentity_t *G_TempEntity( const vec3_t origin, entity_event_t event, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
@@ -819,7 +819,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 G_PlayEffect
 =============
 */
-gentity_t *G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum)
+gentity_t *G_PlayEffect(effectTypes_t fxID, vec3_t org, vec3_t ang, int blameEntityNum)
 {
 	gentity_t	*te;
 

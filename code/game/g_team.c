@@ -89,7 +89,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 
 //plIndex used to print pl->client->pers.netname
 //teamIndex used to print team name
-void PrintCTFMessage(int plIndex, int teamIndex, int ctfMessage)
+static void PrintCTFMessage(int plIndex, int teamIndex, ctfMsg_t ctfMessage)
 {
 	gentity_t *te;
 

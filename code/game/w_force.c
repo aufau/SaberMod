@@ -41,7 +41,7 @@ static int ysalamiriLoopSound;
 
 int ForceShootDrain( gentity_t *self );
 
-gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum)
+gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum)
 {
 	gentity_t	*te;
 
@@ -4469,8 +4469,8 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	if (self->client->ps.forceHandExtend == HANDEXTEND_KNOCKDOWN &&
 		self->client->ps.forceHandExtendTime >= level.time)
 	{
-		self->client->ps.saberMove = 0;
-		self->client->ps.saberBlocking = 0;
+		self->client->ps.saberMove = LS_NONE;
+		self->client->ps.saberBlocking = BLK_NO;
 		self->client->ps.saberBlocked = 0;
 		self->client->ps.weaponTime = 0;
 	}

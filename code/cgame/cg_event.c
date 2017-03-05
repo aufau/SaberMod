@@ -104,7 +104,7 @@ CG_Obituary
 =============
 */
 static void CG_Obituary( entityState_t *ent ) {
-	int			mod;
+	meansOfDeath_t	mod;
 	int			target, attacker;
 	const char	*message;
 	const char	*targetInfo;
@@ -792,7 +792,7 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 	}
 }
 
-void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, int ctfMessage)
+void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, ctfMsg_t ctfMessage)
 {
 	char printMsg[1024];
 	const char *refName = NULL;
@@ -994,7 +994,7 @@ also called by CG_CheckPlayerstateEvents
 #define	DEBUGNAME(x) if(cg_debugEvents.integer){CG_Printf(x"\n");}
 void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	entityState_t	*es;
-	int				event;
+	entity_event_t	event;
 	vec3_t			dir;
 	const char		*s;
 	int				clientNum;
@@ -1004,7 +1004,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	centity_t		*cl_ent;
 
 	es = &cent->currentState;
-	event = es->event & ~EV_EVENT_BITS;
+	event = (entity_event_t)(es->event & ~EV_EVENT_BITS);
 
 	if ( cg_debugEvents.integer ) {
 		CG_Printf( "ent:%3i  event:%3i ", es->number, event );
@@ -1650,7 +1650,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{
 			int sID = -1;
 
-			switch (es->eventParm)
+			switch ((pdSounds_t)es->eventParm)
 			{
 			case PDSOUND_PROTECTHIT:
 				sID = trap_S_RegisterSound("sound/weapons/force/protecthit.mp3");
@@ -1789,7 +1789,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{
 			char *stripedref = NULL;
 
-			switch(es->eventParm)
+			switch((itemUseFail_t)es->eventParm)
 			{
 			case SENTRY_NOROOM:
 				stripedref = (char *)CG_GetStripEdString("INGAMETEXT", "SENTRY_NOROOM");
@@ -2012,7 +2012,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_PLAY_EFFECT:
 		DEBUGNAME("EV_PLAY_EFFECT");
-		switch(es->eventParm)
+		switch((effectTypes_t)es->eventParm)
 		{ //it isn't a hack, it's ingenuity!
 		case EFFECT_SMOKE:
 			eID = trap_FX_RegisterEffect("emplaced/dead_smoke.efx");

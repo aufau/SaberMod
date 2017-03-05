@@ -3575,7 +3575,7 @@ void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 }
 #endif // UNUSED
 
-int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolean projectile, int attackStr)
+int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, meansOfDeath_t mod, qboolean projectile, int attackStr)
 {
 	qboolean thrownSaber = qfalse;
 	float blockFactor = 0;

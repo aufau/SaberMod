@@ -696,8 +696,8 @@ void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
 void	G_InitGentity( gentity_t *e, int blameEntityNum );
 gentity_t	*G_Spawn ( int blameEntityNum );
-gentity_t *G_TempEntity( const vec3_t origin, int event, int blameEntityNum );
-gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
+gentity_t *G_TempEntity( const vec3_t origin, entity_event_t event, int blameEntityNum );
+gentity_t	*G_PlayEffect(effectTypes_t fxID, vec3_t org, vec3_t ang, int blameEntityNum);
 gentity_t *G_ScreenShake(const vec3_t org, gentity_t *target, float intensity, int duration, qboolean global);
 void	G_MuteSound( int entnum, int channel );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
@@ -981,11 +981,11 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
 // w_force.c / w_saber.c
-gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum);
+gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum);
 qboolean HasSetSaberOnly(void);
 void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower );
 void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd );
-int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolean projectile, int attackStr);
+int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, meansOfDeath_t mod, qboolean projectile, int attackStr);
 void WP_SaberInitBladeData( gentity_t *ent );
 void WP_InitForcePowers( gentity_t *ent );
 void WP_SpawnInitForcePowers( gentity_t *ent );
@@ -1191,7 +1191,7 @@ void	trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void	trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void	trap_FS_FCloseFile( fileHandle_t f );
 int		trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-void	trap_SendConsoleCommand( int exec_when, const char *text );
+void	trap_SendConsoleCommand( cbufExec_t exec_when, const char *text );
 void	trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void	trap_Cvar_Update( vmCvar_t *cvar );
 void	trap_Cvar_Set( const char *var_name, const char *value );

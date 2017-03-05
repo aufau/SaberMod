@@ -97,7 +97,7 @@ void	trap_FS_FCloseFile( fileHandle_t f ) {
 	syscall( G_FS_FCLOSE_FILE, f );
 }
 
-void	trap_SendConsoleCommand( int exec_when, const char *text ) {
+void	trap_SendConsoleCommand( cbufExec_t exec_when, const char *text ) {
 	syscall( G_SEND_CONSOLE_COMMAND, exec_when, text );
 }
 

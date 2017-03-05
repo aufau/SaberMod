@@ -150,7 +150,7 @@ const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 		//NUM_FORCE_POWERS
 };
 
-const int WeaponReadyAnim[WP_NUM_WEAPONS] =
+const animNumber_t WeaponReadyAnim[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
@@ -173,7 +173,7 @@ const int WeaponReadyAnim[WP_NUM_WEAPONS] =
 	TORSO_WEAPONREADY1//WP_TURRET,
 };
 
-const int WeaponAttackAnim[WP_NUM_WEAPONS] =
+const animNumber_t WeaponAttackAnim[WP_NUM_WEAPONS] =
 {
 	BOTH_ATTACK1,//WP_NONE, //(shouldn't happen)
 

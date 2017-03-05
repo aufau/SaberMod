@@ -1044,7 +1044,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	v = Info_ValueForKey( configstring, "c1" );
 	CG_ColorFromString( v, newInfo.color1 );
 
-	newInfo.icolor1 = atoi(v);
+	newInfo.icolor1 = (saber_colors_t)atoi(v);
 
 	v = Info_ValueForKey( configstring, "c2" );
 	CG_ColorFromString( v, newInfo.color2 );
@@ -3766,7 +3766,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 }
 #endif // UNUSED
 
-void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
+static void CG_DoSaber( vec3_t origin, vec3_t dir, float length, saber_colors_t color, int rfx )
 {
 	vec3_t		mid, rgb={1,1,1};
 	qhandle_t	blade = 0, glow = 0;
@@ -4187,7 +4187,7 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	mdxaBone_t	boltMatrix;
 	vec3_t futureAngles;
 	effectTrailArgStruct_t fx;
-	int scolor = 0;
+	saber_colors_t scolor = 0;
 	vec3_t otherPos, otherDir, otherEnd;
 	float dualLen = 0.7;
 

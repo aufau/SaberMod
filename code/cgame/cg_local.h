@@ -495,7 +495,7 @@ typedef struct {
 	vec3_t			color1;
 	vec3_t			color2;
 
-	int				icolor1;
+	saber_colors_t	icolor1;
 
 	int				score;			// updated by score servercmds
 	int				location;		// location index for team mode

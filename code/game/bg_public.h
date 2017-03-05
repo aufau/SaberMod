@@ -353,7 +353,8 @@ typedef enum {
 	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH					// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
+	STAT_MAX
 } statIndex_t;
 
 
@@ -377,7 +378,8 @@ typedef enum {
 	PERS_DEFEND_COUNT,				// defend awards
 	PERS_ASSIST_COUNT,				// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,		// kills with the guantlet
-	PERS_CAPTURES					// captures
+	PERS_CAPTURES,					// captures
+	PERS_MAX
 } persEnum_t;
 
 
@@ -811,8 +813,8 @@ typedef struct gitem_s {
 } const gitem_t;
 
 // included in both the game dll and the client
-extern	gitem_t	bg_itemlist[];
-extern	const int		bg_numItems;
+extern	gitem_t		bg_itemlist[];
+extern	const int	bg_numItems;
 
 float vectoyaw( const vec3_t vec );
 
@@ -1052,7 +1054,7 @@ typedef struct
 	saberQuadrant_t	endQuad;
 	unsigned animSetFlags;
 	int blendTime;
-	int blocking;
+	saberBlockType_t blocking;
 	saberMoveName_t chain_idle;			// What move to call if the attack button is not pressed at the end of this anim
 	saberMoveName_t chain_attack;		// What move to call if the attack button (and nothing else) is pressed
 	int trailLength;
@@ -1110,8 +1112,8 @@ void BG_TempFree( size_t size );
 char *BG_StringAlloc ( const char *source );
 qboolean BG_OutOfMemory ( void );
 
-extern const int WeaponReadyAnim[WP_NUM_WEAPONS];
-extern const int WeaponAttackAnim[WP_NUM_WEAPONS];
+extern const animNumber_t WeaponReadyAnim[WP_NUM_WEAPONS];
+extern const animNumber_t WeaponAttackAnim[WP_NUM_WEAPONS];
 
 extern const int forcePowerDarkLight[NUM_FORCE_POWERS];
 

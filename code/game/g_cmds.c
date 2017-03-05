@@ -955,7 +955,7 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberLockEnemy = 0;
 	client->ps.saberMove = LS_NONE;
 	client->ps.saberBlocked = 0;
-	client->ps.saberBlocking = 0;
+	client->ps.saberBlocking = BLK_NO;
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
 	for (i = 0; i < PW_NUM_POWERUPS; i++)
 		client->ps.powerups[i] = 0;
@@ -2851,7 +2851,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 				StandardSetBodyAnim(ent, BOTH_KISSER1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				ent->client->ps.saberMove = LS_NONE;
 				ent->client->ps.saberBlocked = 0;
-				ent->client->ps.saberBlocking = 0;
+				ent->client->ps.saberBlocking = BLK_NO;
 
 				VectorSubtract( ent->client->ps.origin, other->client->ps.origin, entDir );
 				VectorCopy( other->client->ps.viewangles, otherAngles );
@@ -2861,7 +2861,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 				StandardSetBodyAnim(other, BOTH_KISSEE1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				other->client->ps.saberMove = LS_NONE;
 				other->client->ps.saberBlocked = 0;
-				other->client->ps.saberBlocking = 0;
+				other->client->ps.saberBlocking = BLK_NO;
 			}
 		}
 	}
