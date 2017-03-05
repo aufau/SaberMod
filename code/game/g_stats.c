@@ -23,22 +23,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "g_local.h"
 
 typedef enum {
-	STAT_SCORE,
-	STAT_KILLS,
-	STAT_CAPS,
-	STAT_DEFEND,
-	STAT_ASSIST,
-	STAT_ACC,		// accuracy
-	STAT_IMPRESSIVE,
-	STAT_DMG,		// damage dealt to enemies
-	STAT_NET_DMG,	// netto damage
-	STAT_MAX_ASC = STAT_NET_DMG,
+	STATS_SCORE,
+	STATS_KILLS,
+	STATS_CAPS,
+	STATS_DEFEND,
+	STATS_ASSIST,
+	STATS_ACC,		// accuracy
+	STATS_IMPRESSIVE,
+	STATS_DMG,		// damage dealt to enemies
+	STATS_NET_DMG,	// netto damage
+	STATS_MAX_ASC = STATS_NET_DMG,
 	// following stats are 'better' when lower
-	STAT_KILLED,	// died
-	STAT_RCV,		// damage received from enemies
-	STAT_TDMG,		// damage dealt to teammates
-	STAT_TRCV,		// damage received from teammates
-	STAT_MAX
+	STATS_KILLED,	// died
+	STATS_RCV,		// damage received from enemies
+	STATS_TDMG,		// damage dealt to teammates
+	STATS_TRCV,		// damage received from teammates
+	STATS_MAX
 } playerStat_t;
 
 typedef struct {
@@ -48,10 +48,10 @@ typedef struct {
 	qboolean			disabled;
 } statColumn_t;
 
-#define STAT_COL_WIDTH 6
+#define STATS_COL_WIDTH 6
 
 // Keep this in the same order as playerStat_t
-static statColumn_t statCol[STAT_MAX] = {
+static statColumn_t statCol[STATS_MAX] = {
 	{ "Score",			"S", 4 },
 	{ "Kills",			"K", 3 },
 	{ "Captures",		"Cap", 3 },
@@ -68,38 +68,38 @@ static statColumn_t statCol[STAT_MAX] = {
 };
 
 static const playerStat_t logColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_IMPRESSIVE, STAT_ACC };
-// all other columns must end with STAT_MAX
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_DMG, STATS_RCV, STATS_TDMG, STATS_TRCV, STATS_IMPRESSIVE, STATS_ACC };
+// all other columns must end with STATS_MAX
 static const playerStat_t ffaColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_NET_DMG, STAT_ACC, STAT_MAX };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_DMG, STATS_RCV, STATS_NET_DMG, STATS_ACC, STATS_MAX };
 static const playerStat_t ctfColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_DMG, STAT_ACC, STAT_MAX };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_DMG, STATS_ACC, STATS_MAX };
 static const playerStat_t tffaColumns[] = // 47 characters
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_DMG, STAT_RCV, STAT_TDMG, STAT_TRCV, STAT_NET_DMG, STAT_ACC, STAT_MAX };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_DMG, STATS_RCV, STATS_TDMG, STATS_TRCV, STATS_NET_DMG, STATS_ACC, STATS_MAX };
 static const playerStat_t iffaColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_IMPRESSIVE, STAT_ACC, STAT_MAX };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_IMPRESSIVE, STATS_ACC, STATS_MAX };
 static const playerStat_t ictfColumns[] =
-{ STAT_SCORE, STAT_KILLS, STAT_KILLED, STAT_CAPS, STAT_DEFEND, STAT_ASSIST, STAT_IMPRESSIVE, STAT_ACC, STAT_MAX };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_IMPRESSIVE, STATS_ACC, STATS_MAX };
 
 static void GetStats( int *stats, gclient_t *cl )
 {
-	stats[STAT_SCORE] = cl->ps.persistant[PERS_SCORE];
-	stats[STAT_CAPS] = cl->ps.persistant[PERS_CAPTURES];
-	stats[STAT_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
-	stats[STAT_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
+	stats[STATS_SCORE] = cl->ps.persistant[PERS_SCORE];
+	stats[STATS_CAPS] = cl->ps.persistant[PERS_CAPTURES];
+	stats[STATS_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
+	stats[STATS_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
 	if (cl->pers.accuracy_shots > 0)
-		stats[STAT_ACC] = 100.0f * cl->pers.accuracy_hits / cl->pers.accuracy_shots;
+		stats[STATS_ACC] = 100.0f * cl->pers.accuracy_hits / cl->pers.accuracy_shots;
 	else
-		stats[STAT_ACC] = 0;
-	stats[STAT_IMPRESSIVE] = cl->ps.persistant[PERS_IMPRESSIVE_COUNT];
-	stats[STAT_KILLED] = cl->ps.persistant[PERS_KILLED];
-	stats[STAT_KILLS] = cl->ps.persistant[PERS_KILLS];
-	stats[STAT_NET_DMG] = cl->pers.totalDamageDealtToEnemies
+		stats[STATS_ACC] = 0;
+	stats[STATS_IMPRESSIVE] = cl->ps.persistant[PERS_IMPRESSIVE_COUNT];
+	stats[STATS_KILLED] = cl->ps.persistant[PERS_KILLED];
+	stats[STATS_KILLS] = cl->ps.persistant[PERS_KILLS];
+	stats[STATS_NET_DMG] = cl->pers.totalDamageDealtToEnemies
 		- cl->pers.totalDamageTakenFromEnemies;
-	stats[STAT_DMG] = cl->pers.totalDamageDealtToEnemies;
-	stats[STAT_RCV] = cl->pers.totalDamageTakenFromEnemies;
-	stats[STAT_TDMG] = cl->pers.totalDamageDealtToAllies;
-	stats[STAT_TRCV] = cl->pers.totalDamageTakenFromAllies;
+	stats[STATS_DMG] = cl->pers.totalDamageDealtToEnemies;
+	stats[STATS_RCV] = cl->pers.totalDamageTakenFromEnemies;
+	stats[STATS_TDMG] = cl->pers.totalDamageDealtToAllies;
+	stats[STATS_TRCV] = cl->pers.totalDamageTakenFromAllies;
 }
 
 static void PrintStatsHeader( const playerStat_t *columns )
@@ -113,7 +113,7 @@ static void PrintStatsHeader( const playerStat_t *columns )
 	pad = MAX_NAME_LEN - STRLEN("Name");
 	p += Com_sprintf(p, e - p, "Name%s", Spaces(pad));
 
-	for (i = 0; columns[i] != STAT_MAX; i++) {
+	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
 
 		if (statCol[stat].disabled)
@@ -136,7 +136,7 @@ static void PrintStatsSeparator( const playerStat_t *columns, const char *colorS
 
 	p += Com_sprintf(p, e - p, Dashes(MAX_NAME_LEN));
 
-	for (i = 0; columns[i] != STAT_MAX; i++) {
+	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
 
 		if (statCol[stat].disabled)
@@ -154,7 +154,7 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *b
 	char		line[2 * DEFAULT_CONSOLE_WIDTH + 1]; // extra space for color codes
 	char		*p = line;
 	const char	*e = line + sizeof(line);
-	int			stats[STAT_MAX];
+	int			stats[STATS_MAX];
 	size_t		pad;
 	int			i;
 
@@ -163,7 +163,7 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *b
 	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
 	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->pers.netname, Spaces(pad));
 
-	for (i = 0; columns[i] != STAT_MAX; i++) {
+	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
 		char *value = va("%i", stats[stat]);
 		int len = strlen(value);
@@ -194,9 +194,9 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *b
 void G_PrintStats(void) {
 	const playerStat_t	*columns;
 	gclient_t			*cl;
-	int					stats[STAT_MAX];
-	int					bestStats[STAT_MAX];
-	qboolean			reallyBest[STAT_MAX] = { qfalse };
+	int					stats[STATS_MAX];
+	int					bestStats[STATS_MAX];
+	qboolean			reallyBest[STATS_MAX] = { qfalse };
 	int					i, j;
 
 	if (level.numPlayingClients == 0) {
@@ -210,7 +210,7 @@ void G_PrintStats(void) {
 		cl = &level.clients[level.sortedClients[i]];
 		GetStats(stats, cl);
 
-		for (j = 0; j <= STAT_MAX_ASC; j++) {
+		for (j = 0; j <= STATS_MAX_ASC; j++) {
 			if (stats[j] != bestStats[j]) {
 				reallyBest[j] = qtrue;
 			}
@@ -218,7 +218,7 @@ void G_PrintStats(void) {
 				bestStats[j] = stats[j];
 			}
 		}
-		for (; j < STAT_MAX; j++) {
+		for (; j < STATS_MAX; j++) {
 			if (stats[j] != bestStats[j]) {
 				reallyBest[j] = qtrue;
 			}
@@ -229,7 +229,7 @@ void G_PrintStats(void) {
 	}
 
 	// Don't highlight the stat if it's the same for all players
-	for (j = 0; j < STAT_MAX; j++) {
+	for (j = 0; j < STATS_MAX; j++) {
 		if (!reallyBest[j]) {
 			bestStats[j] = INT_MAX;
 		}
@@ -238,8 +238,8 @@ void G_PrintStats(void) {
 	// disable stats irrelevant in current gametype. column arrays can
 	// be removed at this point, but i'd rather keep line length under
 	// firm control
-	statCol[STAT_ACC].disabled = HasSetSaberOnly();
-	statCol[STAT_IMPRESSIVE].disabled = (g_spawnWeapons.integer & WP_DISRUPTOR);
+	statCol[STATS_ACC].disabled = HasSetSaberOnly();
+	statCol[STATS_IMPRESSIVE].disabled = (g_spawnWeapons.integer & WP_DISRUPTOR);
 
 	trap_SendServerCommand(-1, "print \"\n\"");
 
@@ -297,7 +297,7 @@ void G_PrintStats(void) {
 static void G_LogStatsHeader(void)
 {
 	char header[STRLEN("SH: Num")
-		+ ARRAY_LEN(logColumns) * (STAT_COL_WIDTH + 1)
+		+ ARRAY_LEN(logColumns) * (STATS_COL_WIDTH + 1)
 		+ 1 + STRLEN("Team")
 		+ 1 + STRLEN("Name\n") + 1];
 	unsigned i;
@@ -307,14 +307,14 @@ static void G_LogStatsHeader(void)
 		const statColumn_t	*col = statCol + logColumns[i];
 		const char			*label;
 
-		if (col->label && strlen(col->label) <= STAT_COL_WIDTH) {
+		if (col->label && strlen(col->label) <= STATS_COL_WIDTH) {
 			label = col->label;
 		} else {
 			label = col->shortLabel;
 		}
 
 		Q_strcat(header, sizeof(header), va(" %s%s",
-				Spaces(STAT_COL_WIDTH - strlen(label)), label));
+				Spaces(STATS_COL_WIDTH - strlen(label)), label));
 	}
 	G_LogPrintf(LOG_GAME_STATS, "%s %s %s\n", header, "Team", "Name");
 }
@@ -322,10 +322,10 @@ static void G_LogStatsHeader(void)
 static void G_LogStatsRow(int clientNum)
 {
 	char row[STRLEN("SR: Num")
-		+ ARRAY_LEN(logColumns) * (STAT_COL_WIDTH + 1)
+		+ ARRAY_LEN(logColumns) * (STATS_COL_WIDTH + 1)
 		+ 1 + STRLEN("Team")
 		+ 1 + MAX_NETNAME + 1];
-	int			stats[STAT_MAX];
+	int			stats[STATS_MAX];
 	gclient_t	*client = level.clients + clientNum;
 	unsigned 	i;
 
@@ -334,7 +334,7 @@ static void G_LogStatsRow(int clientNum)
 	Com_sprintf(row, sizeof(row), "SR: %3i", clientNum);
 	for (i = 0; i < ARRAY_LEN(logColumns); i++) {
 		Q_strcat(row, sizeof(row),
-			va(" %" STR(STAT_COL_WIDTH) "i", stats[logColumns[i]]));
+			va(" %" STR(STATS_COL_WIDTH) "i", stats[logColumns[i]]));
 	}
 
 	G_LogPrintf(LOG_GAME_STATS, "%s %-4s %s\n", row,
