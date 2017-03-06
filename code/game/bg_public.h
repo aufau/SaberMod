@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "bg_weapons.h"
 #include "anims.h"
+#include "bg_net.h"
 
 // the "gameversion" client command will print this plus compile date
 #define	GAMEVERSION			"SaberMod"
