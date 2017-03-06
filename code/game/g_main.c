@@ -634,11 +634,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	char	serverinfo[MAX_INFO_STRING];
 	int		i;
 
-	// static assertions
-	assert( PERS_MAX <= MAX_PERSISTANT );
-	assert( STAT_MAX <= MAX_STATS );
-	assert( CV_MAX <= 31 );
-
 	B_InitAlloc(); //make sure everything is clean
 
 	G_Printf ("------- Game Initialization -------\n");

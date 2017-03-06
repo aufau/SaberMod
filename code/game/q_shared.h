@@ -63,6 +63,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PAD(base, alignment)	(((base)+(alignment)-1) & ~((alignment)-1))
 #define PADLEN(base, alignment)	(PAD((base), (alignment)) - (base))
 #define PADP(base, alignment)	((void *) PAD((intptr_t) (base), (alignment)))
+#define q_static_assert(expr)	static_assert(expr, STR(expr))
 
 /**********************************************************************
   VM Considerations
@@ -477,6 +478,8 @@ typedef enum
 	FP_SABERTHROW,
 	NUM_FORCE_POWERS
 } forcePowers_t;
+
+q_static_assert(NUM_FORCE_POWERS < 31);
 
 typedef enum
 {

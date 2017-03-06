@@ -103,6 +103,8 @@ typedef enum {
 	CV_MAX
 } voteCommand_t;
 
+q_static_assert(CV_MAX < 31);
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,

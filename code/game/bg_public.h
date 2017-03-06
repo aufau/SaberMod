@@ -358,6 +358,7 @@ typedef enum {
 	STAT_MAX
 } statIndex_t;
 
+q_static_assert(STAT_MAX <= MAX_STATS);
 
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
@@ -383,6 +384,7 @@ typedef enum {
 	PERS_MAX
 } persEnum_t;
 
+q_static_assert(PERS_MAX <= MAX_PERSISTANT);
 
 // entityState_t->eFlags
 #define	EF_DEAD				0x00000001		// don't draw a foe marker over players with EF_DEAD
