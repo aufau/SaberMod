@@ -27,6 +27,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // bg_net.h -- entityState_t and playerState_t with correct types
 
+#include "bg_weapons.h"
+
+typedef enum {
+	PM_NORMAL,		// can accelerate and turn
+	PM_FLOAT,		// float with no gravity in general direction of velocity (intended for gripping)
+	PM_NOCLIP,		// noclip movement
+	PM_SPECTATOR,	// still run into walls
+	PM_DEAD,		// no acceleration or turning, but free falling
+	PM_FREEZE,		// stuck in place with no control
+	PM_INTERMISSION,	// no movement or status bar
+	PM_SPINTERMISSION,	// no movement or status bar
+	PM_HARMLESS		// can't use weapons, items, force powers
+} pmtype_t;
+
+typedef enum {
+	WEAPON_READY,
+	WEAPON_RAISING,
+	WEAPON_DROPPING,
+	WEAPON_FIRING,
+	WEAPON_CHARGING,
+	WEAPON_CHARGING_ALT,
+	WEAPON_IDLE, //lowered		// NOTENOTE Added with saber
+} weaponstate_t;
+
+typedef enum {
+	HANDEXTEND_NONE = 0,
+	HANDEXTEND_FORCEPUSH,
+	HANDEXTEND_FORCEPULL,
+	HANDEXTEND_FORCEGRIP,
+	HANDEXTEND_SABERPULL,
+	HANDEXTEND_CHOKE, //use handextend priorities to choke someone being gripped
+	HANDEXTEND_WEAPONREADY,
+	HANDEXTEND_DODGE,
+	HANDEXTEND_KNOCKDOWN,
+	HANDEXTEND_DUELCHALLENGE,
+	HANDEXTEND_TAUNT
+} forceHandAnims_t;
+
 // playerState_t is the information needed by both the client and server
 // to predict player motion and actions
 // nothing outside of pmove should modify these, or some degree of prediction error
@@ -81,8 +119,8 @@ typedef struct playerState_s {
 	int				externalEventTime;
 
 	int				clientNum;		// ranges from 0 to MAX_CLIENTS-1
-	int				weapon;			// copied to entityState_t->weapon
-	int				weaponstate;
+	weapon_t		weapon;			// copied to entityState_t->weapon
+	weaponstate_t	weaponstate;
 
 	vec3_t			viewangles;		// for fixed views
 	int				viewheight;
@@ -201,7 +239,7 @@ typedef struct playerState_s {
 	float			otherSoundLen;
 
 	int				forceGripMoveInterval;
-	int				forceGripChangeMovetype;
+	pmtype_t		forceGripChangeMovetype;
 
 	int				forceKickFlip;
 

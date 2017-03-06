@@ -652,7 +652,7 @@ typedef struct voiceChat_s
 typedef struct voiceChatList_s
 {
 	char name[64];
-	int gender;
+	gender_t gender;
 	int numVoiceChats;
 	voiceChat_t voiceChats[MAX_VOICECHATS];
 } voiceChatList_t;

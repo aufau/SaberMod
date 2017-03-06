@@ -147,20 +147,6 @@ typedef enum {
 #define G2_MODEL_PART	50
 
 typedef enum {
-	HANDEXTEND_NONE = 0,
-	HANDEXTEND_FORCEPUSH,
-	HANDEXTEND_FORCEPULL,
-	HANDEXTEND_FORCEGRIP,
-	HANDEXTEND_SABERPULL,
-	HANDEXTEND_CHOKE, //use handextend priorities to choke someone being gripped
-	HANDEXTEND_WEAPONREADY,
-	HANDEXTEND_DODGE,
-	HANDEXTEND_KNOCKDOWN,
-	HANDEXTEND_DUELCHALLENGE,
-	HANDEXTEND_TAUNT
-} forceHandAnims_t;
-
-typedef enum {
 	GT_FFA,				// free for all
 	GT_HOLOCRON,		// holocron ffa
 	GT_JEDIMASTER,		// jedi master
@@ -220,30 +206,6 @@ extern animation_t		bgGlobalAnimations[MAX_TOTALANIMATIONS];
 // flip the togglebit every time an animation
 // changes so a restart of the same anim can be detected
 #define	ANIM_TOGGLEBIT		2048		// Maximum number of animation sequences is 2048 (0-2047).  12th bit is the toggle
-
-
-typedef enum {
-	PM_NORMAL,		// can accelerate and turn
-	PM_FLOAT,		// float with no gravity in general direction of velocity (intended for gripping)
-	PM_NOCLIP,		// noclip movement
-	PM_SPECTATOR,	// still run into walls
-	PM_DEAD,		// no acceleration or turning, but free falling
-	PM_FREEZE,		// stuck in place with no control
-	PM_INTERMISSION,	// no movement or status bar
-	PM_SPINTERMISSION,	// no movement or status bar
-	PM_HARMLESS		// can't use weapons, items, force powers
-} pmtype_t;
-
-typedef enum {
-	WEAPON_READY,
-	WEAPON_RAISING,
-	WEAPON_DROPPING,
-	WEAPON_FIRING,
-	WEAPON_CHARGING,
-	WEAPON_CHARGING_ALT,
-	WEAPON_IDLE, //lowered		// NOTENOTE Added with saber
-} weaponstate_t;
-
 
 enum {
 	FORCE_MASTERY_UNINITIATED,

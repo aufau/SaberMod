@@ -2867,12 +2867,14 @@ static qboolean PM_DoChargedWeapons( void )
 {
 	vec3_t		ang;
 	trace_t		tr;
-	qboolean	charging = qfalse,
+    qboolean    charging = qfalse,
 				altFire = qfalse;
 
 	// If you want your weapon to be a charging weapon, just set this bit up
 	switch( pm->ps->weapon )
 	{
+	default:
+		break;
 	//------------------
 	case WP_BRYAR_PISTOL:
 

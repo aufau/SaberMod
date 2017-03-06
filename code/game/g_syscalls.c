@@ -609,7 +609,7 @@ int trap_BotLoadChatFile(int chatstate, char *chatfile, char *chatname) {
 	return syscall( BOTLIB_AI_LOAD_CHAT_FILE, chatstate, chatfile, chatname );
 }
 
-void trap_BotSetChatGender(int chatstate, int gender) {
+void trap_BotSetChatGender(int chatstate, gender_t gender) {
 	syscall( BOTLIB_AI_SET_CHAT_GENDER, chatstate, gender );
 }
 

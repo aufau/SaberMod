@@ -1336,7 +1336,7 @@ void	trap_BotMatchVariable(void /* struct bot_match_s */ *match, int variable, c
 void	trap_UnifyWhiteSpaces(char *string);
 void	trap_BotReplaceSynonyms(char *string, unsigned long int context);
 int		trap_BotLoadChatFile(int chatstate, char *chatfile, char *chatname);
-void	trap_BotSetChatGender(int chatstate, int gender);
+void	trap_BotSetChatGender(int chatstate, gender_t gender);
 void	trap_BotSetChatName(int chatstate, char *name, int client);
 void	trap_BotResetGoalState(int goalstate);
 void	trap_BotRemoveFromAvoidGoals(int goalstate, int number);

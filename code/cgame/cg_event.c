@@ -555,11 +555,13 @@ static void CG_ItemPickup( int itemNum ) {
 		}
 		else if ( cg_autoswitch.integer == 1)
 		{ //only autoselect if not explosive ("safe")
-			if (bg_itemlist[itemNum].giTag != WP_TRIP_MINE &&
-				bg_itemlist[itemNum].giTag != WP_DET_PACK &&
-				bg_itemlist[itemNum].giTag != WP_THERMAL &&
-				bg_itemlist[itemNum].giTag != WP_ROCKET_LAUNCHER &&
-				bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
+			weapon_t weapon = (weapon_t)bg_itemlist[itemNum].giTag;
+
+			if (weapon != WP_TRIP_MINE &&
+				weapon != WP_DET_PACK &&
+				weapon != WP_THERMAL &&
+				weapon != WP_ROCKET_LAUNCHER &&
+				weapon > cg.snap->ps.weapon &&
 				cg.snap->ps.weapon != WP_SABER)
 			{
 				if (!cg.snap->ps.emplacedIndex)
@@ -571,7 +573,7 @@ static void CG_ItemPickup( int itemNum ) {
 		}
 		else if ( cg_autoswitch.integer == 2)
 		{ //autoselect if better
-			if (bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
+			if ((weapon_t)bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
 				cg.snap->ps.weapon != WP_SABER)
 			{
 				if (!cg.snap->ps.emplacedIndex)

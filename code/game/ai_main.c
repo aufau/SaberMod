@@ -5030,7 +5030,7 @@ int BotSelectIdealWeapon(bot_state_t *bs)
 		}
 	}
 
-	if (bestweight != -1 && bs->cur_ps.weapon != bestweapon && bs->virtualWeapon != bestweapon)
+	if (bestweight != -1 && (int)bs->cur_ps.weapon != bestweapon && bs->virtualWeapon != bestweapon)
 	{
 		bs->virtualWeapon = bestweapon;
 		BotSelectWeapon(bs->client, bestweapon);
@@ -5062,7 +5062,7 @@ int BotSelectChoiceWeapon(bot_state_t *bs, int weapon, int doselection)
 		i++;
 	}
 
-	if (hasit && bs->cur_ps.weapon != weapon && doselection && bs->virtualWeapon != weapon)
+	if (hasit && (int)bs->cur_ps.weapon != weapon && doselection && bs->virtualWeapon != weapon)
 	{
 		bs->virtualWeapon = weapon;
 		BotSelectWeapon(bs->client, weapon);
@@ -6653,7 +6653,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			}
 
 			if (bs->plantDecided > level.time && bs->forceWeaponSelect &&
-				bs->cur_ps.weapon == bs->forceWeaponSelect)
+				(int)bs->cur_ps.weapon == bs->forceWeaponSelect)
 			{
 				bs->doAttack = 1;
 				bs->plantDecided = 0;
