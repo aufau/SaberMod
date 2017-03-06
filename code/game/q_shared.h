@@ -1851,12 +1851,11 @@ typedef enum
 } ForceReload_e;
 
 
-enum {
-	FONT_NONE,
+typedef enum {
 	FONT_SMALL=1,
 	FONT_MEDIUM,
 	FONT_LARGE
-};
+} font_t;
 
 /*
 =====================================================================

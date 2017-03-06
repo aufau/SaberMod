@@ -617,7 +617,7 @@ void UI_DrawProportionalString( int x, int y, const char* str, int style, const 
 	//	is dumb, but for now...
 	//
 	int iStyle = 0;
-	int iMenuFont = (style & UI_SMALLFONT) ? FONT_SMALL : FONT_MEDIUM;
+	font_t iMenuFont = (style & UI_SMALLFONT) ? FONT_SMALL : FONT_MEDIUM;
 
 	switch (style & (UI_LEFT|UI_CENTER|UI_RIGHT))
 	{

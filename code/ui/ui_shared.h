@@ -275,7 +275,7 @@ typedef struct itemDef_s {
 	void		*typeData;					// type specific data ptr's
 	const char	*descText;					//	Description text
 	int			appearanceSlot;				// order of appearance
-	int			iMenuFont;					// FONT_SMALL,FONT_MEDIUM,FONT_LARGE	// changed from 'font' so I could see what didn't compile, and differentiate between font handles returned from RegisterFont -ste
+	font_t		iMenuFont;					// FONT_SMALL,FONT_MEDIUM,FONT_LARGE	// changed from 'font' so I could see what didn't compile, and differentiate between font handles returned from RegisterFont -ste
 } itemDef_t;
 
 struct menuDef_s {
@@ -357,9 +357,9 @@ typedef struct {
   void (*setColor) (const vec4_t v);
   void (*drawHandlePic) (float x, float y, float w, float h, qhandle_t asset);
   void (*drawStretchPic) (float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
-  void (*drawText) (float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
-  int (*textWidth) (const char *text, float scale, int iMenuFont);
-  int (*textHeight) (const char *text, float scale, int iMenuFont);
+  void (*drawText) (float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont);
+  int (*textWidth) (const char *text, float scale, font_t iMenuFont);
+  int (*textHeight) (const char *text, float scale, font_t iMenuFont);
   qhandle_t (*registerModel) (const char *p);
   void (*modelBounds) (qhandle_t model, vec3_t min, vec3_t max);
   void (*fillRect) ( float x, float y, float w, float h, const vec4_t color);
@@ -371,14 +371,14 @@ typedef struct {
   void (*renderScene) ( const refdef_t *fd );
 
 	qhandle_t (*RegisterFont)( const char *fontName );
-	int		(*Font_StrLenPixels) (const char *text, const int iFontIndex, const float scale);
+	int		(*Font_StrLenPixels) (const char *text, const qhandle_t iFontIndex, const float scale);
 	int		(*Font_StrLenChars) (const char *text);
-	int		(*Font_HeightPixels)(const int iFontIndex, const float scale);
+	int		(*Font_HeightPixels)(const qhandle_t iFontIndex, const float scale);
 	void	(*Font_DrawString)(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 	qboolean (*Language_IsAsian)(void);
 	qboolean (*Language_UsesSpaces)(void);
 	unsigned int (*AnyLanguage_ReadCharFromString)( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation/* = NULL*/ );
-  void (*ownerDrawItem) (float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int iMenuFont);
+  void (*ownerDrawItem) (float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle, font_t iMenuFont);
 	float (*getValue) (int ownerDraw);
 	qboolean (*ownerDrawVisible) (int flags);
   void (*runScript)(const char **p);
@@ -387,7 +387,7 @@ typedef struct {
   void (*getCVarString)(const char *cvar, char *buffer, int bufsize);
   float (*getCVarValue)(const char *cvar);
   void (*setCVar)(const char *cvar, const char *value);
-  void (*drawTextWithCursor)(float x, float y, float scale, const vec4_t color, const char *text, unsigned cursorPos, char cursor, unsigned limit, int style, int iFontIndex);
+  void (*drawTextWithCursor)(float x, float y, float scale, const vec4_t color, const char *text, unsigned cursorPos, char cursor, unsigned limit, int style, font_t iMenuFont);
   void (*setOverstrikeMode)(qboolean b);
   qboolean (*getOverstrikeMode)();
   void (*startLocalSound)( sfxHandle_t sfx, soundChannel_t channelNum );
@@ -495,9 +495,9 @@ int			trap_PC_SourceFileAndLine		( int handle, char *filename, int *line );
 int			trap_PC_LoadGlobalDefines		( const char* filename );
 void		trap_PC_RemoveAllGlobalDefines	( void );
 
-int			trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale);
+int			trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int			trap_R_Font_StrLenChars(const char *text);
-int			trap_R_Font_HeightPixels(const int iFontIndex, const float scale);
+int			trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
 void		trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 qboolean	trap_Language_IsAsian(void);
 qboolean	trap_Language_UsesSpaces(void);

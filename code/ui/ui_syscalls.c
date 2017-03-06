@@ -135,7 +135,7 @@ qhandle_t trap_R_RegisterFont( const char *fontName )
 	return syscall( UI_R_REGISTERFONT, fontName);
 }
 
-int	trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale)
+int	trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( UI_R_FONT_STRLENPIXELS, text, iFontIndex, PASSFLOAT(scale));
 }
@@ -145,7 +145,7 @@ int trap_R_Font_StrLenChars(const char *text)
 	return syscall( UI_R_FONT_STRLENCHARS, text);
 }
 
-int trap_R_Font_HeightPixels(const int iFontIndex, const float scale)
+int trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( UI_R_FONT_STRHEIGHTPIXELS, iFontIndex, PASSFLOAT(scale));
 }

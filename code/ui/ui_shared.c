@@ -146,7 +146,7 @@ NULL
 };
 */
 
-extern int MenuFontToHandle(int iMenuFont);
+extern int MenuFontToHandle(font_t iMenuFont);
 
 
 
@@ -6020,11 +6020,21 @@ qboolean ItemParse_cvar( itemDef_t *item, int handle )
 
 qboolean ItemParse_font( itemDef_t *item, int handle )
 {
+	int iFont;
+
 	Item_ValidateTypeData(item);
-	if (!PC_Int_Parse(handle, &item->iMenuFont))
+	if (!PC_Int_Parse(handle, &iFont))
 	{
 		return qfalse;
 	}
+
+	if (iFont != FONT_SMALL && iFont != FONT_MEDIUM && iFont != FONT_LARGE)
+	{
+		iFont = FONT_MEDIUM;
+	}
+
+	item->iMenuFont = (font_t)iFont;
+
 	return qtrue;
 }
 

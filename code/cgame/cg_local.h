@@ -1712,9 +1712,9 @@ void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, team_t team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font);
-void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
-int CG_Text_Width(const char *text, float scale, int iMenuFont);
-int CG_Text_Height(const char *text, float scale, int iMenuFont);
+void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont);
+int CG_Text_Width(const char *text, float scale, font_t iMenuFont);
+int CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
 
@@ -2028,9 +2028,9 @@ qhandle_t	trap_R_RegisterSkin( const char *name );			// returns all white if not
 qhandle_t	trap_R_RegisterShader( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterShaderNoMip( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterFont( const char *name );
-int			trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale);
+int			trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int			trap_R_Font_StrLenChars(const char *text);
-int			trap_R_Font_HeightPixels(const int iFontIndex, const float scale);
+int			trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
 void		trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 qboolean	trap_Language_IsAsian(void);
 qboolean	trap_Language_UsesSpaces(void);

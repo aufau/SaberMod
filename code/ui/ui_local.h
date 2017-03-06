@@ -970,9 +970,9 @@ qboolean		trap_VerifyCDKey( const char *key, const char *chksum);
 #endif // USE_CD_KEY
 
 qhandle_t		trap_R_RegisterFont( const char *name );
-int				trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale);
+int				trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int				trap_R_Font_StrLenChars(const char *text);
-int				trap_R_Font_HeightPixels(const int iFontIndex, const float scale);
+int				trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
 void			trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 qboolean		trap_Language_IsAsian(void);
 qboolean		trap_Language_UsesSpaces(void);

@@ -71,7 +71,7 @@ const char * const showPowersName[] =
 };
 
 
-int MenuFontToHandle(int iMenuFont)
+qhandle_t MenuFontToHandle(font_t iMenuFont)
 {
 #ifdef MISSIONPACK
 	switch (iMenuFont)
@@ -94,25 +94,25 @@ int MenuFontToHandle(int iMenuFont)
 #endif
 }
 
-int CG_Text_Width(const char *text, float scale, int iMenuFont)
+int CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
-int CG_Text_Height(const char *text, float scale, int iMenuFont)
+int CG_Text_Height(const char *text, float scale, font_t iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
 
 #include "../qcommon/qfiles.h"	// for STYLE_BLINK etc
-void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
+void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont)
 {
 	int iStyleOR = 0;
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = (int)MenuFontToHandle(iMenuFont);
 
 	switch (style)
 	{
