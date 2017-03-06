@@ -831,7 +831,7 @@ static qboolean PM_CheckJump( void )
 						{ //jump is already active (the anim has started)
 							if ( pm->ps->legsTimer < 1 )
 							{//not in the middle of a legsAnim
-								animNumber_t anim = (animNumber_t)(pm->ps->legsAnim&~ANIM_TOGGLEBIT);
+								animNumber_t anim = ANIM(pm->ps->legsAnim);
 								animNumber_t newAnim;
 								switch ( anim )
 								{
@@ -1089,7 +1089,7 @@ static qboolean PM_CheckJump( void )
 		}
 		else
 		{//in the air
-			animNumber_t legsAnim = (animNumber_t)(pm->ps->legsAnim&~ANIM_TOGGLEBIT);
+			animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
 			if ( legsAnim == BOTH_WALL_RUN_LEFT || legsAnim == BOTH_WALL_RUN_RIGHT )
 			{//running on a wall
 				vec3_t right, traceto, mins, maxs, fwdAngles;

@@ -38,7 +38,7 @@ BEGIN: Animation utility functions (sequence checking)
 //Called regardless of pm validity:
 qboolean BG_InSpecialJump( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -62,7 +62,7 @@ qboolean BG_InSpecialJump( int anim )
 
 qboolean BG_InSaberStandAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -77,7 +77,7 @@ qboolean BG_InSaberStandAnim( int anim )
 
 qboolean BG_DirectFlippingAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -146,7 +146,7 @@ qboolean BG_SaberInIdle( saberMoveName_t move )
 
 qboolean BG_FlippingAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -185,7 +185,7 @@ qboolean BG_FlippingAnim( int anim )
 
 qboolean BG_SpinningSaberAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -254,7 +254,7 @@ qboolean BG_SpinningSaberAnim( int anim )
 
 qboolean BG_SaberInSpecialAttack( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -342,7 +342,7 @@ saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move )
 
 qboolean BG_InRoll( playerState_t *ps, int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -361,7 +361,7 @@ qboolean BG_InRoll( playerState_t *ps, int anim )
 
 qboolean BG_InDeathAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -479,7 +479,7 @@ qboolean PM_SaberInReturn( saberMoveName_t move )
 
 qboolean PM_InSaberAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	if ( animN >= BOTH_A1_T__B_ && animN <= BOTH_H1_S1_BR )
 	{
@@ -490,7 +490,7 @@ qboolean PM_InSaberAnim( int anim )
 
 qboolean PM_InKnockDown( playerState_t *ps )
 {
-	animNumber_t animN = ps->legsAnim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(ps->legsAnim);
 
 	switch ( animN )
 	{
@@ -523,7 +523,7 @@ qboolean PM_InKnockDown( playerState_t *ps )
 
 qboolean PM_PainAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -554,7 +554,7 @@ qboolean PM_PainAnim( int anim )
 
 qboolean PM_JumpingAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -591,7 +591,7 @@ qboolean PM_JumpingAnim( int anim )
 
 qboolean PM_LandingAnim( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -625,7 +625,7 @@ qboolean PM_SpinningAnim( int anim )
 
 qboolean PM_InOnGroundAnim ( int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{
@@ -665,7 +665,7 @@ qboolean PM_InOnGroundAnim ( int anim )
 
 qboolean PM_InRollComplete( playerState_t *ps, int anim )
 {
-	animNumber_t animN = anim & ~ANIM_TOGGLEBIT;
+	animNumber_t animN = ANIM(anim);
 
 	switch ( animN )
 	{

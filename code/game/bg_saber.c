@@ -1407,8 +1407,7 @@ void PM_WeaponLightsaber(void)
 
 		if ((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) != (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT))
 		{
-			animNumber_t tempAnim = (animNumber_t)(pm->ps->legsAnim & ~ANIM_TOGGLEBIT);
-			PM_SetAnim(SETANIM_TORSO, tempAnim, SETANIM_FLAG_OVERRIDE, 100);
+			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
 
 		if (BG_InSaberStandAnim(pm->ps->torsoAnim))
@@ -1485,8 +1484,7 @@ void PM_WeaponLightsaber(void)
 	{
 		if ((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) != (pm->ps->legsAnim & ~ANIM_TOGGLEBIT))
 		{
-			animNumber_t tempAnim = (animNumber_t)(pm->ps->legsAnim & ~ANIM_TOGGLEBIT);
-			PM_SetAnim(SETANIM_TORSO, tempAnim, SETANIM_FLAG_OVERRIDE, 100);
+			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
 	}
 
@@ -1968,7 +1966,7 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 
 	if ( BG_InSaberStandAnim(anim) || anim == BOTH_STAND1 )
 	{
-		anim = (animNumber_t)(pm->ps->legsAnim & ~ANIM_TOGGLEBIT);
+		anim = ANIM(pm->ps->legsAnim);
 
 		if ((anim >= BOTH_STAND1 && anim <= BOTH_STAND4TOATTACK2) ||
 			(anim >= TORSO_DROPWEAP1 && anim <= TORSO_WEAPONIDLE12))

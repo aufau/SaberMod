@@ -207,6 +207,8 @@ extern animation_t		bgGlobalAnimations[MAX_TOTALANIMATIONS];
 // changes so a restart of the same anim can be detected
 #define	ANIM_TOGGLEBIT		2048		// Maximum number of animation sequences is 2048 (0-2047).  12th bit is the toggle
 
+#define ANIM(x) ((animNumber_t)((x) & ~ANIM_TOGGLEBIT))
+
 typedef enum {
 	FORCE_MASTERY_UNINITIATED,
 	FORCE_MASTERY_INITIATE,

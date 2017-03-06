@@ -1525,7 +1525,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 				if (clientLost->health < 1)
 				{
-					animNumber_t tempAnim = (animNumber_t)(clientLost->client->ps.legsAnim&~ANIM_TOGGLEBIT);
+					animNumber_t tempAnim = ANIM(clientLost->client->ps.legsAnim);
 					gGAvoidDismember = 2;
 					G_CheckForDismemberment(clientLost, clientLost->client->ps.origin, 999, tempAnim);
 				}

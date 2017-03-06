@@ -1904,7 +1904,7 @@ void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attac
 			self->s.pos.trDelta[1] -= Q_irand(10, 40);
 		}
 		self->s.pos.trDelta[2] += 100;
-		G_CheckForDismemberment(self, self->pos1, damage, self->s.torsoAnim&~ANIM_TOGGLEBIT);
+		G_CheckForDismemberment(self, self->pos1, damage, ANIM(self->s.torsoAnim));
 
 		VectorCopy(preDelta, self->s.pos.trDelta);
 	}
