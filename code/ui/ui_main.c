@@ -3046,10 +3046,10 @@ static qboolean UI_Effects_HandleKey(int flags, float *special, int key) {
 			uiInfo.effectsColor++;
 		}
 
-		if( uiInfo.effectsColor > 5 ) {
+		if( uiInfo.effectsColor >= NUM_SABER_COLORS ) {
 			uiInfo.effectsColor = 0;
 		} else if (uiInfo.effectsColor < 0) {
-			uiInfo.effectsColor = 5;
+			uiInfo.effectsColor = NUM_SABER_COLORS - 1;
 		}
 
 		trap_Cvar_SetValue( "color1", /*uitogamecode[uiInfo.effectsColor]*/uiInfo.effectsColor );
@@ -6606,7 +6606,7 @@ void _UI_Init( qboolean inGameLoad ) {
 	UI_InitForceShaders();
 
 	// sets defaults for ui temp cvars
-	uiInfo.effectsColor = /*gamecodetoui[*/(int)trap_Cvar_VariableValue("color1");//-1];
+	uiInfo.effectsColor = /*gamecodetoui[*/(saber_colors_t)trap_Cvar_VariableValue("color1");//-1];
 	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair");
 	trap_Cvar_Set("ui_mousePitch", (trap_Cvar_VariableValue("m_pitch") >= 0) ? "0" : "1");
 

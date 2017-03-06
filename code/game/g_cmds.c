@@ -757,7 +757,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
-		client->ps.fd.forceDoInit = 1;
+		client->ps.fd.forceDoInit = qtrue;
 		client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die (ent, ent, ent, 100000, MOD_LEAVE);
 	}
@@ -805,7 +805,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	}
 
 	// every time we change teams make sure our force powers are set right
-	client->ps.fd.forceDoInit = 1;
+	client->ps.fd.forceDoInit = qtrue;
 
 	client->sess.teamLeader = qfalse;
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
@@ -1035,7 +1035,7 @@ void Cmd_ForceChanged_f( gentity_t *ent )
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s%s\n\n\"", S_COLOR_GREEN, G_GetStripEdString("SVINGAME", "FORCEPOWERCHANGED")) );
 
-	ent->client->ps.fd.forceDoInit = 1;
+	ent->client->ps.fd.forceDoInit = qtrue;
 argCheck:
 	if (level.gametype == GT_TOURNAMENT)
 	{ //If this is duel, don't even bother changing team in relation to this.
@@ -2465,7 +2465,7 @@ void Cmd_ToggleSaber_f(gentity_t *ent)
 
 void Cmd_SaberAttackCycle_f(gentity_t *ent)
 {
-	int selectLevel = 0;
+	forceLevel_t selectLevel = 0;
 
 	if ( !ent || !ent->client )
 	{

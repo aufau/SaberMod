@@ -166,7 +166,7 @@ const float forceJumpStrength[NUM_FORCE_POWER_LEVELS] =
 	840
 };
 
-int PM_GetSaberStance(void)
+animNumber_t PM_GetSaberStance(void)
 {
 	if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2)
 	{ //medium

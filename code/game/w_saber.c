@@ -1549,7 +1549,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 		dmg = SABER_HITDAMAGE;
 
-		if (self->client->ps.fd.saberAnimLevel == 3)
+		if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_3)
 		{
 			//new damage-ramping system
 			if (!saberInSpecial && !inBackAttack)
@@ -1570,7 +1570,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				dmg = 100;
 			}
 		}
-		else if (self->client->ps.fd.saberAnimLevel == 2)
+		else if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_2)
 		{
 			if (saberInSpecial &&
 				(self->client->ps.saberMove == LS_A_FLIP_STAB || self->client->ps.saberMove == LS_A_FLIP_SLASH))
@@ -1586,7 +1586,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				dmg = 60;
 			}
 		}
-		else if (self->client->ps.fd.saberAnimLevel == 1)
+		else if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_1)
 		{
 			if (saberInSpecial &&
 				(self->client->ps.saberMove == LS_A_LUNGE))
@@ -1722,7 +1722,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 			{
 				int lockFactor = g_saberLockFactor.integer;
 
-				if ((g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK] - self->client->ps.fd.forcePowerLevel[FP_SABERATTACK]) > 1 &&
+				if (g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > 1 + self->client->ps.fd.forcePowerLevel[FP_SABERATTACK] &&
 					Q_irand(1, 10) < lockFactor*2)
 				{ //Just got blocked by someone with a decently higher attack level, so enter into a lock (where they have the advantage due to a higher attack lev)
 					if (!G_ClientIdleInWorld(&g_entities[tr.entityNum]))
@@ -1935,7 +1935,7 @@ blockStuff:
 			&& !PM_SaberInDeflect(otherOwner->client->ps.saberMove)
 			&& !PM_SaberInReflect(otherOwner->client->ps.saberMove)
 
-			&& (otherOwner->client->ps.fd.saberAnimLevel > FORCE_LEVEL_2 || ( otherOwner->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= 3 && Q_irand(0, otherOwner->client->ps.fd.saberAnimLevel) ))
+			&& (otherOwner->client->ps.fd.saberAnimLevel > FORCE_LEVEL_2 || ( otherOwner->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3 && Q_irand(0, otherOwner->client->ps.fd.saberAnimLevel) ))
 			&& !unblockable
 			&& !otherUnblockable
 			&& dmg > SABER_NONATTACK_DAMAGE
@@ -2839,7 +2839,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		(self->client->ps.weaponTime <= 0 || self->health < 1))
 	{ //we cycled attack levels while we were busy, so update now that we aren't (even if that means we're dead)
 		self->client->ps.fd.saberAnimLevel = self->client->saberCycleQueue;
-		self->client->saberCycleQueue = 0;
+		self->client->saberCycleQueue = FORCE_LEVEL_0;
 	}
 
 	if (!self ||

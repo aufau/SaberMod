@@ -79,6 +79,7 @@ void G_ReadSessionData( gclient_t *client ) {
 	int spectatorState;
 	int sessionTeam;
 	int setForce;
+	int saberLevel;
 
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
@@ -92,7 +93,7 @@ void G_ReadSessionData( gclient_t *client ) {
 		&client->sess.losses,
 		&teamLeader,                   // bk010221 - format
 		&setForce,
-		&client->sess.saberLevel,
+		&saberLevel,
 		&client->sess.selectedFP
 		);
 
@@ -101,6 +102,7 @@ void G_ReadSessionData( gclient_t *client ) {
 	client->sess.spectatorState = (spectatorState_t)spectatorState;
 	client->sess.teamLeader = (qboolean)teamLeader;
 	client->sess.setForce = (qboolean)setForce;
+	client->sess.saberLevel = (forceLevel_t)saberLevel;
 
 	client->ps.fd.saberAnimLevel = client->sess.saberLevel;
 	client->ps.fd.forcePowerSelected = client->sess.selectedFP;

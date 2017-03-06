@@ -1024,7 +1024,7 @@ static void G_SwitchTeam( gentity_t *ent ) {
 	}
 
 	client->sess.sessionTeam = team;
-	client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
+	client->ps.fd.forceDoInit = qtrue; // every time we change teams make sure our force powers are set right
 	client->sess.teamLeader = qfalse;
 	teamLeader = TeamLeader( team );
 	// if there is no team leader or the team leader is a bot and this client is not a bot

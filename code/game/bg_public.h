@@ -189,7 +189,7 @@ typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 extern const vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
 
-extern const int forcePowerSorted[NUM_FORCE_POWERS];
+extern const forcePowers_t forcePowerSorted[NUM_FORCE_POWERS];
 
 /*
 ===================================================================================
@@ -1083,7 +1083,7 @@ saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move );
 qboolean BG_InRoll( playerState_t *ps, int anim );
 qboolean BG_InDeathAnim( int anim );
 
-void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animSpeed );
+void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed );
 
 void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overrideAmt );
 

@@ -380,18 +380,18 @@ typedef struct {
 // time and reading them back at connection time.  Anything added here
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
-	team_t		sessionTeam;
-	int			spectatorTime;		// for determining next-in-line to play
+	team_t				sessionTeam;
+	int					spectatorTime;		// for determining next-in-line to play
 	spectatorState_t	spectatorState;
-	int			spectatorClient;	// for chasecam and follow mode
-	int			wins, losses;		// tournament stats
-	int			selectedFP;			// check against this, if doesn't match value in playerstate then update userinfo
-	int			saberLevel;			// similar to above method, but for current saber attack level
-	qboolean	setForce;			// set to true once player is given the chance to set force powers
-	int			updateUITime;		// only update userinfo for FP/SL if < level.time
-	qboolean	teamLeader;			// true when this client is a team leader
-	qipv4_t		ip;					// parsed "ip" info key
-	int			qport;				// parsed "qport" info key
+	int					spectatorClient;	// for chasecam and follow mode
+	int					wins, losses;		// tournament stats
+	int					selectedFP;			// check against this, if doesn't match value in playerstate then update userinfo
+	forceLevel_t		saberLevel;			// similar to above method, but for current saber attack level
+	qboolean			setForce;			// set to true once player is given the chance to set force powers
+	int					updateUITime;		// only update userinfo for FP/SL if < level.time
+	qboolean			teamLeader;			// true when this client is a team leader
+	qipv4_t				ip;					// parsed "ip" info key
+	int					qport;				// parsed "qport" info key
 } clientSession_t;
 
 //
@@ -445,7 +445,7 @@ struct gclient_s {
 
 	int			invulnerableTimer;
 
-	int			saberCycleQueue;
+	forceLevel_t	saberCycleQueue;
 
 	qboolean	readyToExit;		// wishes to leave the intermission
 

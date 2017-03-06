@@ -1338,7 +1338,7 @@ Ghoul2 Insert End
 
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE))
 		{
-			i = cg.snap->ps.fd.forcePowerLevel[FP_SEE];
+			i = (int)cg.snap->ps.fd.forcePowerLevel[FP_SEE];
 
 			while (i > 0)
 			{

@@ -105,7 +105,7 @@ int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	//NUM_FORCE_POWERS
 };
 
-const int forcePowerSorted[NUM_FORCE_POWERS] =
+const forcePowers_t forcePowerSorted[NUM_FORCE_POWERS] =
 { //rww - always use this order when drawing force powers for any reason
 	FP_TELEPATHY,
 	FP_HEAL,
@@ -1497,7 +1497,7 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 	return qtrue;
 }
 
-int BG_ProperForceIndex(int power)
+int BG_ProperForceIndex(forcePowers_t power)
 {
 	int i = 0;
 

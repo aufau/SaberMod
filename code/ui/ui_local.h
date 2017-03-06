@@ -820,7 +820,7 @@ typedef struct {
 	int				forceConfigDarkIndexBegin; //mark the index number dark configs start at
 	int				forceConfigLightIndexBegin; //mark the index number light configs start at
 
-	int effectsColor;
+	saber_colors_t	effectsColor;
 
 	qboolean inGameLoad;
 

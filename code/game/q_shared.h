@@ -478,14 +478,14 @@ typedef enum
 	NUM_FORCE_POWERS
 } forcePowers_t;
 
-enum
+typedef enum
 {
 	FORCE_LEVEL_0,
 	FORCE_LEVEL_1,
 	FORCE_LEVEL_2,
 	FORCE_LEVEL_3,
 	NUM_FORCE_POWER_LEVELS
-};
+} forceLevel_t;
 
 #define ATST_HEADSIZE		90
 #define ATST_MINS0			-40
@@ -1415,62 +1415,62 @@ typedef enum {
 #define TRACK_CHANNEL_MAX (NUM_TRACK_CHANNELS-50)
 
 typedef struct forcedata_s {
-	int			forcePowerDebounce[NUM_FORCE_POWERS];	//for effects that must have an interval
-	int			forcePowersKnown;
-	int			forcePowersActive;
-	int			forcePowerSelected;
-	int			forceButtonNeedRelease;
-	int			forcePowerDuration[NUM_FORCE_POWERS];
-	int			forcePower;
-	int			forcePowerMax;
-	int			forcePowerRegenDebounceTime;
-	int			forcePowerLevel[NUM_FORCE_POWERS];		//so we know the max forceJump power you have
-	int			forcePowerBaseLevel[NUM_FORCE_POWERS];
-	int			forceUsingAdded;
-	float		forceJumpZStart;					//So when you land, you don't get hurt as much
-	float		forceJumpCharge;					//you're current forceJump charge-up level, increases the longer you hold the force jump button down
-	int			forceJumpSound;
-	int			forceJumpAddTime;
-	int			forceGripEntityNum;					//what entity I'm gripping
-	int			forceGripDamageDebounceTime;		//debounce for grip damage
-	float		forceGripBeingGripped;				//if > level.time then client is in someone's grip
-	int			forceGripCripple;					//if != 0 then make it so this client can't move quickly (he's being gripped)
-	int			forceGripUseTime;					//can't use if > level.time
-	float		forceGripSoundTime;
-	float		forceGripStarted;					//level.time when the grip was activated
-	float		forceSpeedSmash;
-	float		forceSpeedDoDamage;
-	int			forceSpeedHitIndex;					//if we hit another player and got hurt, hurt them too
-	int			forceHealTime;
-	int			forceHealAmount;
+	int				forcePowerDebounce[NUM_FORCE_POWERS];	//for effects that must have an interval
+	int				forcePowersKnown;
+	int				forcePowersActive;
+	int				forcePowerSelected;
+	qboolean		forceButtonNeedRelease;
+	int				forcePowerDuration[NUM_FORCE_POWERS];
+	int				forcePower;
+	int				forcePowerMax;
+	int				forcePowerRegenDebounceTime;
+	forceLevel_t	forcePowerLevel[NUM_FORCE_POWERS];	//so we know the max forceJump power you have
+	forceLevel_t	forcePowerBaseLevel[NUM_FORCE_POWERS];
+	qboolean		forceUsingAdded;
+	float			forceJumpZStart;					//So when you land, you don't get hurt as much
+	float			forceJumpCharge;					//you're current forceJump charge-up level, increases the longer you hold the force jump button down
+	int				forceJumpSound;
+	int				forceJumpAddTime;
+	int				forceGripEntityNum;					//what entity I'm gripping
+	int				forceGripDamageDebounceTime;		//debounce for grip damage
+	float			forceGripBeingGripped;				//if > level.time then client is in someone's grip
+	qboolean		forceGripCripple;					//if != 0 then make it so this client can't move quickly (he's being gripped)
+	int				forceGripUseTime;					//can't use if > level.time
+	float			forceGripSoundTime;
+	float			forceGripStarted;					//level.time when the grip was activated
+	float			forceSpeedSmash;
+	float			forceSpeedDoDamage;
+	int				forceSpeedHitIndex;					//if we hit another player and got hurt, hurt them too
+	int				forceHealTime;
+	int				forceHealAmount;
 
 	//This hurts me somewhat to do, but there's no other real way to allow completely "dynamic" mindtricking.
-	int			forceMindtrickTargetIndex; //0-15
-	int			forceMindtrickTargetIndex2; //16-32
-	int			forceMindtrickTargetIndex3; //33-48
-	int			forceMindtrickTargetIndex4; //49-64
+	int				forceMindtrickTargetIndex; //0-15
+	int				forceMindtrickTargetIndex2; //16-32
+	int				forceMindtrickTargetIndex3; //33-48
+	int				forceMindtrickTargetIndex4; //49-64
 
-	int			forceRageRecoveryTime;
-	int			forceDrainEntNum;
-	float		forceDrainTime;
+	int				forceRageRecoveryTime;
+	int				forceDrainEntNum;
+	float			forceDrainTime;
 
-	int			forceDoInit;
+	qboolean		forceDoInit;
 
-	int			forceSide;
-	int			forceRank;
+	int				forceSide;
+	int				forceRank;
 
-	int			forceDeactivateAll;
+	qboolean		forceDeactivateAll;
 
-	int			killSoundEntIndex[TRACK_CHANNEL_MAX]; //this goes here so it doesn't get wiped over respawn
+	int				killSoundEntIndex[TRACK_CHANNEL_MAX]; //this goes here so it doesn't get wiped over respawn
 
-	qboolean	sentryDeployed;
+	qboolean		sentryDeployed;
 
-	int			saberAnimLevel;
-	int			saberDrawAnimLevel;
+	forceLevel_t	saberAnimLevel;
+	forceLevel_t	saberDrawAnimLevel;
 
-	int			suicides;
+	int				suicides;
 
-	int			privateDuelTime; // Not used anymore
+	int				privateDuelTime; // Not used anymore
 } forcedata_t;
 
 

@@ -916,14 +916,16 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 		// don't need to draw ammo, but we will draw the current saber style in this window
 		switch ( cg.predictedPlayerState.fd.saberDrawAnimLevel )
 		{
-		case 1://FORCE_LEVEL_1:
+		case FORCE_LEVEL_1:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle1 );
 			break;
-		case 2://FORCE_LEVEL_2:
+		case FORCE_LEVEL_2:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle2 );
 			break;
-		case 3://FORCE_LEVEL_3:
+		case FORCE_LEVEL_3:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle3 );
+			break;
+		default:
 			break;
 		}
 		return;
@@ -1234,7 +1236,7 @@ void CG_DrawHUD(centity_t	*cent)
 
 #define MAX_SHOWPOWERS NUM_FORCE_POWERS
 
-qboolean ForcePower_Valid(int i)
+static qboolean ForcePower_Valid(forcePowers_t i)
 {
 	if (i == FP_LEVITATION ||
 		i == FP_SABERATTACK ||
@@ -2972,7 +2974,7 @@ static void CG_DrawHolocronIcons(void)
 	}
 }
 
-static qboolean CG_IsDurationPower(int power)
+static qboolean CG_IsDurationPower(forcePowers_t power)
 {
 	if (power == FP_HEAL ||
 		power == FP_SPEED ||

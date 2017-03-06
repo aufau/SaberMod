@@ -1942,7 +1942,7 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 		 !BG_SaberInIdle( newMove ) && !PM_SaberInParry( newMove ) && !PM_SaberInKnockaway( newMove ) && !PM_SaberInBrokenParry( newMove ) && !PM_SaberInReflect( newMove ) && !BG_SaberInSpecial(newMove))
 	{//readies, parries and reflections have only 1 level
 		//increment the anim to the next level of saber anims
-		anim += (pm->ps->fd.saberAnimLevel-FORCE_LEVEL_1) * SABER_ANIM_GROUP_SIZE;
+		anim += ((int)pm->ps->fd.saberAnimLevel-FORCE_LEVEL_1) * SABER_ANIM_GROUP_SIZE;
 	}
 
 	// If the move does the same animation as the last one, we need to force a restart...

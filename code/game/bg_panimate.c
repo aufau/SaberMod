@@ -1052,7 +1052,7 @@ void PM_SetTorsoAnimTimer( int time )
 	}
 }
 
-void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animSpeed )
+void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed )
 {
 	assert( anim < MAX_TOTALANIMATIONS);
 

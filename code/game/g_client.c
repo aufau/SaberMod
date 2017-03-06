@@ -784,7 +784,7 @@ void ResetClientState( gentity_t *self )
 
 	BlowDetpacks(self); //blow detpacks if they're planted
 
-	self->client->ps.fd.forceDeactivateAll = 1;
+	self->client->ps.fd.forceDeactivateAll = qtrue;
 
 	self->s.weapon = WP_NONE;
 	self->s.powerups = 0;

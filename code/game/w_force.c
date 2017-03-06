@@ -235,7 +235,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	i = 0;
 	while (i < NUM_FORCE_POWERS)
 	{
-		ent->client->ps.fd.forcePowerLevel[i] = 0;
+		ent->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 		ent->client->ps.fd.forcePowersKnown &= ~(1 << i);
 		i++;
 	}
@@ -304,11 +304,21 @@ void WP_InitForcePowers( gentity_t *ent )
 	while (forcePowers[i] && forcePowers[i] != '\n' &&
 		i_r < NUM_FORCE_POWERS)
 	{
+		forceLevel_t forceLevel;
+
 		readBuf[0] = forcePowers[i];
 		readBuf[1] = 0;
 
-		ent->client->ps.fd.forcePowerLevel[i_r] = atoi(readBuf);
-		if (ent->client->ps.fd.forcePowerLevel[i_r])
+		forceLevel = (forceLevel_t)atoi(readBuf);
+
+		if ((unsigned)forceLevel >= NUM_FORCE_POWERS)
+		{
+			forceLevel = FORCE_LEVEL_0;
+		}
+
+		ent->client->ps.fd.forcePowerLevel[i_r] = forceLevel;
+
+		if (forceLevel)
 		{
 			ent->client->ps.fd.forcePowersKnown |= (1 << i_r);
 		}
@@ -461,7 +471,7 @@ void WP_InitForcePowers( gentity_t *ent )
 		ent->client->ps.fd.forcePowerBaseLevel[i] = ent->client->ps.fd.forcePowerLevel[i];
 		i++;
 	}
-	ent->client->ps.fd.forceUsingAdded = 0;
+	ent->client->ps.fd.forceUsingAdded = qfalse;
 }
 
 void WP_SpawnInitForcePowers( gentity_t *ent )
@@ -482,7 +492,7 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 		i++;
 	}
 
-	ent->client->ps.fd.forceDeactivateAll = 0;
+	ent->client->ps.fd.forceDeactivateAll = qfalse;
 
 	ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax = FORCE_POWER_MAX;
 	ent->client->ps.fd.forcePowerRegenDebounceTime = 0;
@@ -539,7 +549,7 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 	ent->client->ps.fd.forceJumpSound = 0;
 	ent->client->ps.fd.forceGripDamageDebounceTime = 0;
 	ent->client->ps.fd.forceGripBeingGripped = 0;
-	ent->client->ps.fd.forceGripCripple = 0;
+	ent->client->ps.fd.forceGripCripple = qfalse;
 	ent->client->ps.fd.forceGripUseTime = 0;
 	ent->client->ps.fd.forceGripSoundTime = 0;
 	ent->client->ps.fd.forceGripStarted = 0;
@@ -685,7 +695,7 @@ qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower )
 	return WP_ForcePowerAvailable( self, forcePower );
 }
 
-int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacker, int atPower, int atPowerLevel, int atForceSpent)
+int WP_AbsorbConversion(gentity_t *attacked, forceLevel_t atdAbsLevel, gentity_t *attacker, forcePowers_t atPower, forceLevel_t atPowerLevel, int atForceSpent)
 {
 	int getLevel = 0;
 	int addTot = 0;
@@ -700,7 +710,7 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 		return -1;
 	}
 
-	if (!atdAbsLevel)
+	if (atdAbsLevel == FORCE_LEVEL_0)
 	{ //looks like attacker doesn't have any absorb power
 		return -1;
 	}
@@ -711,8 +721,8 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 	}
 
 	//Subtract absorb power level from the offensive force power
-	getLevel = atPowerLevel;
-	getLevel -= atdAbsLevel;
+	getLevel = (int)atPowerLevel;
+	getLevel -= (int)atdAbsLevel;
 
 	if (getLevel < 0)
 	{
@@ -720,7 +730,7 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 	}
 
 	//let the attacker absorb an amount of force used in this attack based on his level of absorb
-	addTot = (atForceSpent/3)*attacked->client->ps.fd.forcePowerLevel[FP_ABSORB];
+	addTot = (atForceSpent/3)*(int)attacked->client->ps.fd.forcePowerLevel[FP_ABSORB];
 
 	if (addTot < 1 && atForceSpent >= 1)
 	{
@@ -779,7 +789,7 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 
 	//hearable and hearDist are merely for the benefit of bots, and not related to if a sound is actually played.
 	//If duration is set, the force power will assume to be timer-based.
-	switch( (int)forcePower )
+	switch( forcePower )
 	{
 	case FP_HEAL:
 		hearable = qtrue;
@@ -963,11 +973,11 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 
 	self->client->ps.fd.forcePowerDebounce[forcePower] = 0;
 
-	if ((int)forcePower == FP_SPEED && overrideAmt)
+	if (forcePower == FP_SPEED && overrideAmt)
 	{
 		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt*0.025 );
 	}
-	else if ((int)forcePower != FP_GRIP && (int)forcePower != FP_DRAIN)
+	else if (forcePower != FP_GRIP && forcePower != FP_DRAIN)
 	{ //grip and drain drain as damage is done
 		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt );
 	}
@@ -2565,7 +2575,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	int			i, e;
 	int			ent_count = 0;
 	int			radius = 1024; //since it's view-based now. //350;
-	int			powerLevel;
+	forceLevel_t	powerLevel;
 	int			visionArc;
 	int			pushPower;
 	int			pushPowerMod;
@@ -2923,15 +2933,16 @@ void ForceThrow( gentity_t *self, qboolean pull )
 		//method1:
 		for ( x = 0; x < ent_count; x++ )
 		{
-			int modPowerLevel = powerLevel;
-
+			forceLevel_t modPowerLevel = powerLevel;
 
 			if (push_list[x]->client)
 			{
-				modPowerLevel = WP_AbsorbConversion(push_list[x], push_list[x]->client->ps.fd.forcePowerLevel[FP_ABSORB], self, powerUse, powerLevel, forcePowerNeeded[self->client->ps.fd.forcePowerLevel[powerUse]][powerUse]);
-				if (modPowerLevel == -1)
+				int converted;
+
+				converted = WP_AbsorbConversion(push_list[x], push_list[x]->client->ps.fd.forcePowerLevel[FP_ABSORB], self, powerUse, powerLevel, forcePowerNeeded[self->client->ps.fd.forcePowerLevel[powerUse]][powerUse]);
+				if (converted > 0)
 				{
-					modPowerLevel = powerLevel;
+					modPowerLevel = (forceLevel_t)converted;
 				}
 			}
 
@@ -2948,7 +2959,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 
 			if ( push_list[x]->client )
 			{//FIXME: make enemy jedi able to hunker down and resist this?
-				int otherPushPower = push_list[x]->client->ps.fd.forcePowerLevel[powerUse];
+				forceLevel_t otherPushPower = push_list[x]->client->ps.fd.forcePowerLevel[powerUse];
 				qboolean canPullWeapon = qtrue;
 				float dirLen = 0;
 
@@ -2957,11 +2968,9 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				if (push_list[x]->client->pers.cmd.forwardmove ||
 					push_list[x]->client->pers.cmd.rightmove)
 				{ //if you are moving, you get one less level of defense
-					otherPushPower--;
-
-					if (otherPushPower < 0)
+					if (otherPushPower > 0)
 					{
-						otherPushPower = 0;
+						otherPushPower--;
 					}
 				}
 
@@ -2990,7 +2999,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 					}
 					else
 					{
-						int powerDif = (modPowerLevel - otherPushPower);
+						int powerDif = (int)modPowerLevel - (int)otherPushPower;
 
 						if (powerDif >= 3)
 						{
@@ -3060,7 +3069,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 					{
 						dirLen = VectorLength(pushDir);
 
-						if (dirLen <= (64*((modPowerLevel - otherPushPower)-1)))
+						if (dirLen <= 64 * ((int)modPowerLevel - (int)otherPushPower - 1))
 						{ //can only do a knockdown if fairly close
 							push_list[x]->client->ps.forceHandExtend = HANDEXTEND_KNOCKDOWN;
 							push_list[x]->client->ps.forceHandExtendTime = level.time + 700;
@@ -3874,7 +3883,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceHeal(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_LEVITATION:
 		//if leave the ground by some other means, cancel the force jump so we don't suddenly jump when we land.
@@ -3897,7 +3906,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceSpeed(self, 0);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_GRIP:
 		if (self->client->ps.fd.forceGripEntityNum == ENTITYNUM_NONE)
@@ -3928,7 +3937,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceThrow(self, qfalse);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_PULL:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3937,7 +3946,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceThrow(self, qtrue);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TELEPATHY:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3946,7 +3955,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTelepathy(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_RAGE:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3955,7 +3964,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceRage(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_PROTECT:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3964,7 +3973,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceProtect(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_ABSORB:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3973,7 +3982,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceAbsorb(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TEAM_HEAL:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3982,7 +3991,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTeamHeal(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TEAM_FORCE:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3991,7 +4000,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTeamForceReplenish(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_DRAIN:
 		ForceDrain(self);
@@ -4003,7 +4012,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceSeeing(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_SABERATTACK:
 		break;
@@ -4228,7 +4237,7 @@ void SeekerDroneUpdate(gentity_t *self)
 void HolocronUpdate(gentity_t *self)
 { //keep holocron status updated in holocron mode
 	int i = 0;
-	int noHRank = FORCE_LEVEL_0;
+	forceLevel_t noHRank = FORCE_LEVEL_0;
 	/*
 	if (noHRank < FORCE_LEVEL_0)
 	{
@@ -4251,7 +4260,7 @@ void HolocronUpdate(gentity_t *self)
 		}
 		else
 		{ //otherwise, make sure the power is cleared from us
-			self->client->ps.fd.forcePowerLevel[i] = 0;
+			self->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 			if (self->client->ps.holocronBits & (1 << i))
 			{
 				self->client->ps.holocronBits -= (1 << i);
@@ -4332,7 +4341,7 @@ void JediMasterUpdate(gentity_t *self)
 			  //relatively useless in comparison, because its main intent is not to heal, but rather to cripple others
 			  //by draining their force at the same time. And no one needs force in JM except the JM himself.
 				self->client->ps.fd.forcePowersKnown &= ~(1 << i);
-				self->client->ps.fd.forcePowerLevel[i] = 0;
+				self->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 			}
 
 			if (i == FP_TELEPATHY)
@@ -4547,7 +4556,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			i++;
 		}
 
-		self->client->ps.fd.forceDeactivateAll = 0;
+		self->client->ps.fd.forceDeactivateAll = qfalse;
 
 		if (self->client->ps.fd.forceJumpCharge)
 		{
@@ -4593,7 +4602,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 				i++;
 			}
 
-			self->client->ps.fd.forceUsingAdded = 1;
+			self->client->ps.fd.forceUsingAdded = qtrue;
 		}
 	}
 	else if (self->client->ps.fd.forceUsingAdded)
@@ -4615,7 +4624,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			i++;
 		}
 
-		self->client->ps.fd.forceUsingAdded = 0;
+		self->client->ps.fd.forceUsingAdded = qfalse;
 	}
 
 	i = 0;
@@ -4635,11 +4644,11 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 	if (self->client->ps.fd.forceGripBeingGripped > level.time)
 	{
-		self->client->ps.fd.forceGripCripple = 1;
+		self->client->ps.fd.forceGripCripple = qtrue;
 	}
 	else
 	{
-		self->client->ps.fd.forceGripCripple = 0;
+		self->client->ps.fd.forceGripCripple = qfalse;
 	}
 
 	if (self->client->ps.fd.forceJumpSound)
@@ -4802,7 +4811,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 	else
 	{
-		self->client->ps.fd.forceButtonNeedRelease = 0;
+		self->client->ps.fd.forceButtonNeedRelease = qfalse;
 	}
 
 	for ( i = 0; i < NUM_FORCE_POWERS; i++ )
@@ -4954,7 +4963,7 @@ qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, in
 
 	if (g_forceDodge.integer == 2)
 	{
-		if ( Q_irand( 1, 7 ) > self->client->ps.fd.forcePowerLevel[FP_SPEED] )
+		if ( Q_irand( 1, 7 ) > (int)self->client->ps.fd.forcePowerLevel[FP_SPEED] )
 		{//more likely to fail on lower force speed level
 			return qfalse;
 		}

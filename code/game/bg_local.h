@@ -83,7 +83,7 @@ qboolean PM_InOnGroundAnim ( int anim );
 qboolean PM_InRollComplete( playerState_t *ps, int anim );
 int PM_AnimLength( int index, animNumber_t anim );
 
-int PM_GetSaberStance(void);
+animNumber_t PM_GetSaberStance(void);
 float PM_GroundDistance(void);
 qboolean PM_SomeoneInFront(trace_t *tr);
 saberMoveName_t PM_SaberFlipOverAttackMove(trace_t *tr);

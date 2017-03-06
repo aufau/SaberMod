@@ -2124,7 +2124,7 @@ void		trap_Key_SetCatcher( int catcher );
 int			trap_Key_GetKey( const char *binding );
 
 void		BG_CycleInven(playerState_t *ps, int direction);
-int			BG_ProperForceIndex(int power);
+int			BG_ProperForceIndex(forcePowers_t power);
 void		BG_CycleForce(playerState_t *ps, int direction);
 
 
