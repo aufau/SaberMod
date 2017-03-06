@@ -207,7 +207,7 @@ extern animation_t		bgGlobalAnimations[MAX_TOTALANIMATIONS];
 // changes so a restart of the same anim can be detected
 #define	ANIM_TOGGLEBIT		2048		// Maximum number of animation sequences is 2048 (0-2047).  12th bit is the toggle
 
-enum {
+typedef enum {
 	FORCE_MASTERY_UNINITIATED,
 	FORCE_MASTERY_INITIATE,
 	FORCE_MASTERY_PADAWAN,
@@ -217,7 +217,7 @@ enum {
 	FORCE_MASTERY_JEDI_KNIGHT,
 	FORCE_MASTERY_JEDI_MASTER,
 	NUM_FORCE_MASTERY_LEVELS
-};
+} forceMastery_t;
 extern const char * const forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
 extern const int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
 
@@ -1030,7 +1030,7 @@ extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 
 const char *BG_TeamName(team_t team, letterCase_t letterCase);
 
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
 qboolean BG_InSpecialJump( int anim );

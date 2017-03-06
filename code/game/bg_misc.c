@@ -250,7 +250,7 @@ fpDisabled is actually only expected (needed) from the server, because the ui di
 force power selection anyway when force powers are disabled on the server.
 ================
 */
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled)
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled)
 {
 	char powerBuf[128];
 	char readBuf[128];
@@ -275,7 +275,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	}
 
 	//first of all, print the max rank into the string as the rank
-	Com_sprintf(powerOut, sizeof(powerOut), "%i-", maxRank);
+	Com_sprintf(powerOut, sizeof(powerOut), "%i-", (int)maxRank);
 
 	while (i < 128 && powerBuf[i] && powerBuf[i] != '-')
 	{

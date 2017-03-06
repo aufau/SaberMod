@@ -164,7 +164,7 @@ void WP_InitForcePowers( gentity_t *ent )
 {
 	int i;
 	int i_r;
-	int maxRank = g_maxForceRank.integer;
+	forceMastery_t maxRank = g_maxForceRank.integer;
 	qboolean warnClient = qfalse;
 	qboolean warnClientLimit = qfalse;
 	char userinfo[MAX_INFO_STRING];
@@ -374,7 +374,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 			te->r.svFlags |= SVF_BROADCAST;
 			te->s.trickedentindex = ent->s.number;
-			te->s.eventParm = maxRank;
+			te->s.eventParm = (int)maxRank;
 			te->s.bolt1 = 0;
 #endif
 			didEvent = qtrue;
@@ -403,7 +403,7 @@ void WP_InitForcePowers( gentity_t *ent )
 #else
 			//Event isn't very reliable, I made it a string. This way I can send it to just one
 			//client also, as opposed to making a broadcast event.
-			trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", maxRank, 1, ent->client->sess.sessionTeam));
+			trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", (int)maxRank, 1, ent->client->sess.sessionTeam));
 			//Arg1 is new max rank, arg2 is non-0 if force menu should be shown, arg3 is the current team
 #endif
 		}
@@ -417,11 +417,11 @@ void WP_InitForcePowers( gentity_t *ent )
 
 		te->r.svFlags |= SVF_BROADCAST;
 		te->s.trickedentindex = ent->s.number;
-		te->s.eventParm = maxRank;
+		te->s.eventParm = (int)maxRank;
 		te->s.bolt1 = 1;
 		te->s.bolt2 = ent->client->sess.sessionTeam;
 #else
-		trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", maxRank, 0, ent->client->sess.sessionTeam));
+		trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", (int)maxRank, 0, ent->client->sess.sessionTeam));
 #endif
 	}
 
