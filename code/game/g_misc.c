@@ -1852,7 +1852,7 @@ void ExampleAnimEntAlertOthers(gentity_t *self)
 
 void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod )
 {
-	self->s.torsoAnim = G_PickDeathAnim(self, self->pos1, damage, mod, HL_NONE);
+	self->s.torsoAnim = G_PickDeathAnim(self, self->pos1, mod, damage, HL_NONE);
 
 	if (self->s.torsoAnim <= 0 || self->s.torsoAnim >= MAX_TOTALANIMATIONS)
 	{ //?! (bad)
