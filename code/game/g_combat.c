@@ -159,7 +159,7 @@ int G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, vec3_t point 
 	return HL_NONE;
 }
 */
-int G_GetHitLocation(gentity_t *target, vec3_t ppoint)
+hitLoc_t G_GetHitLocation(gentity_t *target, vec3_t ppoint)
 {
 	vec3_t			point, point_dir;
 	vec3_t			forward, right, up;
@@ -954,7 +954,7 @@ qboolean G_InKnockDown( playerState_t *ps )
 	return qfalse;
 }
 
-static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hitLoc )
+static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage )
 {
 	int deathAnim = -1;
 
@@ -1446,9 +1446,9 @@ static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage, i
 	return deathAnim;
 }
 
-int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hitLoc )
+animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, meansOfDeath_t mod, hitLoc_t hitLoc )
 {//FIXME: play dead flop anims on body if in an appropriate _DEAD anim when this func is called
-	int deathAnim = -1;
+	int deathAnim = ANIM_INVALID;
 	int max_health;
 	int legAnim = 0;
 	vec3_t objVelocity;
@@ -1596,7 +1596,7 @@ int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hit
 	{
 		if (self->client)
 		{
-			deathAnim = G_CheckSpecialDeathAnim( self, point, damage, mod, hitLoc );
+			deathAnim = G_CheckSpecialDeathAnim( self, point, damage );
 		}
 
 		if (deathAnim == -1)
@@ -1993,8 +1993,8 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 
 static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t meansOfDeath, qboolean wasJediMaster )
 {
-	static int	i;
-	int			anim;
+	static int		i;
+	animNumber_t	anim;
 
 	// NOTENOTE No gib deaths right now, this is star wars.
 	/*
@@ -2614,7 +2614,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, g2ModelParts_t limbTy
 	}
 }
 
-void G_Dismember( gentity_t *ent, vec3_t point, g2ModelParts_t limbType, float limbRollBase, float limbPitchBase, int deathAnim )
+void G_Dismember( gentity_t *ent, vec3_t point, g2ModelParts_t limbType, float limbRollBase, float limbPitchBase, animNumber_t deathAnim )
 {
 	vec3_t	dir, newPoint, vel;
 	gentity_t *limb;
@@ -2855,9 +2855,9 @@ static g2ModelParts_t G_GetHitQuad( gentity_t *self, vec3_t hitloc )
 
 int gGAvoidDismember = 0;
 
-void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int deathAnim)
+void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, animNumber_t deathAnim)
 {
-	int hitLoc;
+	hitLoc_t hitLoc;
 	g2ModelParts_t hitLocUse = G2_MODELPART_INVALID;
 	vec3_t boltPoint;
 	int dismember = g_dismember.integer;

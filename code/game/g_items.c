@@ -1462,7 +1462,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		respawn = Pickup_Ammo(ent, other);
 		if (ent->item->giTag == AMMO_THERMAL || ent->item->giTag == AMMO_TRIPMINE || ent->item->giTag == AMMO_DETPACK)
 		{
-			int weapForAmmo = 0;
+			weapon_t weapForAmmo;
 
 			if (ent->item->giTag == AMMO_THERMAL)
 			{

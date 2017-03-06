@@ -419,9 +419,6 @@ static void WP_FireBlaster( gentity_t *ent, qboolean altFire )
 }
 
 
-
-int G_GetHitLocation(gentity_t *target, vec3_t ppoint);
-
 /*
 ======================================================================
 

@@ -127,7 +127,7 @@ typedef enum //# material_e
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-enum
+typedef enum
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,
@@ -153,7 +153,7 @@ enum
 	HL_GENERIC5,
 	HL_GENERIC6,
 	HL_MAX
-};
+} hitLoc_t;
 
 //============================================================================
 
@@ -780,7 +780,8 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
 void TossClientItems( gentity_t *self );
 void TossClientCubes( gentity_t *self );
 void ExplodeDeath( gentity_t *self );
-void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int deathAnim);
+void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, animNumber_t deathAnim);
+hitLoc_t G_GetHitLocation(gentity_t *target, vec3_t ppoint);
 extern int gGAvoidDismember;
 
 
@@ -1004,7 +1005,7 @@ void ForceTeamForceReplenish( gentity_t *self );
 void ForceSeeing( gentity_t *self );
 void ForceThrow( gentity_t *self, qboolean pull );
 void ForceTelepathy(gentity_t *self);
-qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc );
+qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, hitLoc_t hitLoc );
 
 // g_log.c
 void QDECL G_LogWeaponPickup(int client, int weaponid);

@@ -2813,9 +2813,9 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	vec3_t addVel;
 	vec3_t rawAngles;
 	float fVSpeed = 0;
-	int f;
-	int torsoAnim;
-	int legsAnim;
+	animNumber_t f;
+	animNumber_t torsoAnim;
+	animNumber_t legsAnim;
 	int returnAfterUpdate = 0;
 	float animSpeedScale = 1;
 	qboolean setTorso = qfalse;

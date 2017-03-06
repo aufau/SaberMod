@@ -206,9 +206,9 @@ typedef struct playerState_s {
 	int				holocronCantTouchTime; //for keeping track of the last holocron that just popped out of me (if any)
 	int				holocronBits;
 
-	int				legsAnimExecute;
-	int				torsoAnimExecute;
-	int				fullAnimExecute;
+	animNumber_t	legsAnimExecute;
+	animNumber_t	torsoAnimExecute;
+	int				fullAnimExecute;		// unused
 
 	int				electrifyTime;
 

@@ -1594,7 +1594,7 @@ static int gJanSound_Pain[JAN_PAIN_SOUNDS];
 static int gJanSound_Death[JAN_DEATH_SOUNDS];
 static int gJanSound_Alert[JAN_ALERT_SOUNDS];
 
-int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hitLoc );
+animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t damage, int mod, hitLoc_t hitLoc );
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
 int GetNearestVisibleWP(vec3_t org, int ignore);
 int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
@@ -1904,7 +1904,7 @@ void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attac
 			self->s.pos.trDelta[1] -= Q_irand(10, 40);
 		}
 		self->s.pos.trDelta[2] += 100;
-		G_CheckForDismemberment(self, self->pos1, damage, self->s.torsoAnim);
+		G_CheckForDismemberment(self, self->pos1, damage, self->s.torsoAnim&~ANIM_TOGGLEBIT);
 
 		VectorCopy(preDelta, self->s.pos.trDelta);
 	}
