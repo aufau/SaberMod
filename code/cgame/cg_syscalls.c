@@ -183,11 +183,11 @@ void	trap_S_MuteSound( int entityNum, int entchannel ) {
 	syscall( CG_S_MUTESOUND, entityNum, entchannel );
 }
 
-void	trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx ) {
+void	trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx ) {
 	syscall( CG_S_STARTSOUND, origin, entityNum, entchannel, sfx );
 }
 
-void	trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum ) {
+void	trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum ) {
 	syscall( CG_S_STARTLOCALSOUND, sfx, channelNum );
 }
 

@@ -3299,7 +3299,7 @@ static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	vec4_t		tcolor;
 	const char	*name;
-	int			baseColor;
+	ct_table_t	baseColor;
 
 	if ( !cg_drawCrosshair.integer ) {
 		return;

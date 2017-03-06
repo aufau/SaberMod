@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // these are here so the functions in q_shared.c can link
 #ifndef UI_HARD_LINKED
 
-Q_NORETURN void QDECL Com_Error( int level, const char *error, ... ) {
+Q_NORETURN void QDECL Com_Error( errorParm_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 

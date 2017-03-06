@@ -214,7 +214,7 @@ int trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int e
 	return syscall( UI_CM_LERPTAG, tag, mod, startFrame, endFrame, PASSFLOAT(frac), tagName );
 }
 
-void trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum ) {
+void trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum ) {
 	syscall( UI_S_STARTLOCALSOUND, sfx, channelNum );
 }
 

@@ -390,7 +390,7 @@ typedef struct {
   void (*drawTextWithCursor)(float x, float y, float scale, const vec4_t color, const char *text, unsigned cursorPos, char cursor, unsigned limit, int style, int iFontIndex);
   void (*setOverstrikeMode)(qboolean b);
   qboolean (*getOverstrikeMode)();
-  void (*startLocalSound)( sfxHandle_t sfx, int channelNum );
+  void (*startLocalSound)( sfxHandle_t sfx, soundChannel_t channelNum );
   qboolean (*ownerDrawHandleKey)(int ownerDraw, int flags, float *special, int key);
   int (*feederCount)(float feederID);
   const char *(*feederItemText)(float feederID, int index, int column, qhandle_t *handle1, qhandle_t *handle2, qhandle_t *handle3);
@@ -400,7 +400,7 @@ typedef struct {
 	void (*getBindingBuf)( int keynum, char *buf, int buflen );
 	void (*setBinding)( int keynum, const char *binding );
 	void (*executeText)(int exec_when, const char *text );
-	Q_NORETURN void (*Error)(int level, const char *error, ...);
+	Q_NORETURN void (*Error)(errorParm_t level, const char *error, ...);
 	void (*Print)(const char *msg, ...);
 	void (*Pause)(qboolean b);
 	int (*ownerDrawWidth)(int ownerDraw, float scale);

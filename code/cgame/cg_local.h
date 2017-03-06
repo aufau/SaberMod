@@ -2001,11 +2001,11 @@ int			trap_CM_MarkFragments( int numPoints, const vec3_t *points,
 // normal sounds will have their volume dynamically changed as their entity
 // moves and the listener moves
 void		trap_S_MuteSound( int entityNum, int entchannel );
-void		trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
+void		trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx );
 void		trap_S_StopLoopingSound(int entnum);
 
 // a local sound is always played full volume
-void		trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void		trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
 void		trap_S_ClearLoopingSounds( qboolean killall );
 void		trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void		trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );

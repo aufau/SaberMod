@@ -3041,15 +3041,17 @@ static qboolean UI_Effects_HandleKey(int flags, float *special, int key) {
 		}
 
 		if (key == A_MOUSE2) {
-			uiInfo.effectsColor--;
+			if ( uiInfo.effectsColor == 0 ) {
+				uiInfo.effectsColor = NUM_SABER_COLORS - 1;
+			} else {
+				uiInfo.effectsColor--;
+			}
 		} else {
-			uiInfo.effectsColor++;
-		}
-
-		if( uiInfo.effectsColor >= NUM_SABER_COLORS ) {
-			uiInfo.effectsColor = 0;
-		} else if (uiInfo.effectsColor < 0) {
-			uiInfo.effectsColor = NUM_SABER_COLORS - 1;
+			if ( uiInfo.effectsColor >= NUM_SABER_COLORS ) {
+				uiInfo.effectsColor = 0;
+			} else {
+				uiInfo.effectsColor++;
+			}
 		}
 
 		trap_Cvar_SetValue( "color1", /*uitogamecode[uiInfo.effectsColor]*/uiInfo.effectsColor );

@@ -867,7 +867,7 @@ gentity_t *G_ScreenShake(const vec3_t org, gentity_t *target, float intensity, i
 G_MuteSound
 =============
 */
-void G_MuteSound( int entnum, int channel )
+void G_MuteSound( int entnum, soundChannel_t channel )
 {
 	gentity_t	*te, *e;
 
@@ -923,7 +923,7 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 G_SoundAtLoc
 =============
 */
-void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum ) {
+void G_SoundAtLoc( vec3_t loc, soundChannel_t channel, int soundIndex, int blameEntityNum ) {
 	gentity_t	*te;
 
 	te = G_TempEntity( loc, EV_GENERAL_SOUND, blameEntityNum );
@@ -935,7 +935,7 @@ void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum )
 G_EntitySound
 =============
 */
-void G_EntitySound( gentity_t *ent, int channel, int soundIndex ) {
+void G_EntitySound( gentity_t *ent, soundChannel_t channel, int soundIndex ) {
 	gentity_t	*te;
 
 	te = G_TempEntity( ent->r.currentOrigin, EV_ENTITY_SOUND, ent->s.number );
