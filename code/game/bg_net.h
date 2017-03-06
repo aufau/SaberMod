@@ -185,7 +185,7 @@ typedef struct playerState_s {
 
 	forcedata_t		fd;
 	qboolean		forceJumpFlip;
-	int				forceHandExtend;
+	forceHandAnims_t	forceHandExtend;
 	int				forceHandExtendTime;
 
 	int				forceRageDrainTime;
