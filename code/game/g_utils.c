@@ -775,7 +775,7 @@ client side: jumppads and item pickups
 Adds an event+parm and twiddles the event counter
 ===============
 */
-void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
+void G_AddPredictableEvent( gentity_t *ent, entity_event_t event, int eventParm ) {
 	if ( !ent->client ) {
 		return;
 	}

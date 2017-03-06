@@ -197,11 +197,11 @@ PM_AddEvent
 
 ===============
 */
-void PM_AddEvent( int newEvent ) {
+void PM_AddEvent( entity_event_t newEvent ) {
 	BG_AddPredictableEventToPlayerstate( newEvent, 0, pm->ps );
 }
 
-void PM_AddEventWithParm( int newEvent, int parm )
+static void PM_AddEventWithParm( entity_event_t newEvent, int parm )
 {
 	BG_AddPredictableEventToPlayerstate( newEvent, parm, pm->ps );
 }
@@ -1818,7 +1818,7 @@ static int PM_FootstepForSurface( void )
 {
 	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS )
 	{
-		return 0;
+		return EV_NONE;
 	}
 	if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS )
 	{
