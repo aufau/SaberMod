@@ -2426,7 +2426,7 @@ static const char * const hitLocName[HL_MAX] =
 
 void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAngles);
 
-void G_GetDismemberLoc(gentity_t *self, vec3_t boltPoint, int limbType)
+static void G_GetDismemberLoc(gentity_t *self, vec3_t boltPoint, g2ModelParts_t limbType)
 { //Just get the general area without using server-side ghoul2
 	vec3_t fwd, right, up;
 
@@ -2498,7 +2498,7 @@ void G_GetDismemberLoc(gentity_t *self, vec3_t boltPoint, int limbType)
 	return;
 }
 
-void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
+void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, g2ModelParts_t limbType)
 {
 	int useBolt = self->bolt_Head;
 	vec3_t properOrigin, properAngles, addVel;
@@ -2614,7 +2614,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, int limbType)
 	}
 }
 
-void G_Dismember( gentity_t *ent, vec3_t point, int limbType, float limbRollBase, float limbPitchBase, int deathAnim )
+void G_Dismember( gentity_t *ent, vec3_t point, g2ModelParts_t limbType, float limbRollBase, float limbPitchBase, int deathAnim )
 {
 	vec3_t	dir, newPoint, vel;
 	gentity_t *limb;
@@ -2709,7 +2709,7 @@ void G_Dismember( gentity_t *ent, vec3_t point, int limbType, float limbRollBase
 	limb->s.apos.trTime = level.time;
 	limb->s.apos.trType = TR_LINEAR;
 
-	limb->s.modelGhoul2 = limbType;
+	limb->s.modelGhoul2 = (int)limbType;
 	limb->s.g2radius = 200;
 	if (ent->client)
 	{
@@ -2728,7 +2728,7 @@ void G_Dismember( gentity_t *ent, vec3_t point, int limbType, float limbRollBase
 #ifdef _DEBUG
 void DismembermentTest(gentity_t *self)
 {
-	int sect = G2_MODELPART_HEAD;
+	g2ModelParts_t sect = G2_MODELPART_HEAD;
 	vec3_t boltPoint;
 	G_GetDismemberBolt(self, boltPoint, sect);
 	G_Dismember( self, boltPoint, sect, 90, 0, BOTH_DEATH1 );
@@ -2736,7 +2736,7 @@ void DismembermentTest(gentity_t *self)
 
 void DismembermentByNum(gentity_t *self, int num)
 {
-	int sect = G2_MODELPART_HEAD;
+	g2ModelParts_t sect = G2_MODELPART_HEAD;
 	vec3_t boltPoint;
 
 	switch (num)
@@ -2771,13 +2771,13 @@ void DismembermentByNum(gentity_t *self, int num)
 }
 #endif // _DEBUG
 
-int G_GetHitQuad( gentity_t *self, vec3_t hitloc )
+static g2ModelParts_t G_GetHitQuad( gentity_t *self, vec3_t hitloc )
 {
 	vec3_t diff, fwdangles={0,0,0}, right;
 	vec3_t clEye;
 	float rightdot;
 	float zdiff;
-	int hitLoc = -1;
+	g2ModelParts_t hitLoc = G2_MODELPART_INVALID;
 
 	if (self->client)
 	{
@@ -2857,7 +2857,8 @@ int gGAvoidDismember = 0;
 
 void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int deathAnim)
 {
-	int hitLoc, hitLocUse = -1;
+	int hitLoc;
+	g2ModelParts_t hitLocUse = G2_MODELPART_INVALID;
 	vec3_t boltPoint;
 	int dismember = g_dismember.integer;
 
@@ -2934,7 +2935,7 @@ void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int death
 		break;
 	}
 
-	if (hitLocUse == -1)
+	if (hitLocUse == G2_MODELPART_INVALID)
 	{
 		return;
 	}

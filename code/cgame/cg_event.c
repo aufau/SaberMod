@@ -653,7 +653,7 @@ void CG_ReattachLimb(centity_t *source)
 	const char *limbName;
 	const char *stubCapName;
 
-	switch (source->torsoBolt)
+	switch ((g2ModelParts_t)source->torsoBolt)
 	{
 	case G2_MODELPART_HEAD:
 		limbName = "head";

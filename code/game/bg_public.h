@@ -134,6 +134,7 @@ Ghoul2 Insert End
 #define MAX_MODES				128
 
 typedef enum {
+	G2_MODELPART_INVALID = -1,
 	G2_MODELPART_HEAD = 10,
 	G2_MODELPART_WAIST,
 	G2_MODELPART_LARM,
