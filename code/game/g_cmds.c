@@ -596,7 +596,7 @@ void Cmd_Noclip_f( gentity_t *ent ) {
 	} else {
 		msg = "noclip ON\n";
 	}
-	ent->client->noclip = !ent->client->noclip;
+	ent->client->noclip = (qboolean)!ent->client->noclip;
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\"", msg));
 }
@@ -743,8 +743,8 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	client = ent->client;
 	clientNum = client - level.clients;
 	oldTeam = client->sess.sessionTeam;
-	oldSpec = ( client->sess.spectatorState != SPECTATOR_NOT );
-	newSpec = ( specState != SPECTATOR_NOT );
+	oldSpec = (qboolean)(client->sess.spectatorState != SPECTATOR_NOT);
+	newSpec = (qboolean)(specState != SPECTATOR_NOT);
 
 	assert( !(team == TEAM_SPECTATOR && specState == SPECTATOR_NOT) );
 
@@ -954,7 +954,7 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberLockFrame = 0;
 	client->ps.saberLockEnemy = 0;
 	client->ps.saberMove = LS_NONE;
-	client->ps.saberBlocked = 0;
+	client->ps.saberBlocked = BLOCKED_NONE;
 	client->ps.saberBlocking = BLK_NO;
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
 	for (i = 0; i < PW_NUM_POWERUPS; i++)
@@ -1137,7 +1137,11 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 	// can't make yourself a following non-spectator here
 	team = client->sess.sessionTeam;
-	teamRestrict = ( g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR );
+	if (g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR) {
+		teamRestrict = qtrue;
+	} else {
+		teamRestrict = qfalse;
+	}
 
 	original = clientnum;
 
@@ -2465,7 +2469,7 @@ void Cmd_ToggleSaber_f(gentity_t *ent)
 
 void Cmd_SaberAttackCycle_f(gentity_t *ent)
 {
-	forceLevel_t selectLevel = 0;
+	forceLevel_t selectLevel = FORCE_LEVEL_0;
 
 	if ( !ent || !ent->client )
 	{
@@ -2487,7 +2491,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 		selectLevel = ent->client->ps.fd.saberAnimLevel;
 	}
 
-	selectLevel++;
+	selectLevel = (forceLevel_t)(selectLevel + 1);
 	if ( selectLevel > ent->client->ps.fd.forcePowerLevel[FP_SABERATTACK] )
 	{
 		selectLevel = FORCE_LEVEL_1;

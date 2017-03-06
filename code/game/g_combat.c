@@ -593,7 +593,7 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 	vec3_t vel;
 	gitem_t *item;
 	gentity_t *launched;
-	weapon_t weapon = self->s.weapon;
+	weapon_t weapon = (weapon_t)self->s.weapon;
 	int ammoSub;
 
 	// don't toss starting weapons
@@ -650,8 +650,8 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
 	{
 		self->client->ps.stats[STAT_WEAPONS] &= ~(1 << weapon);
 
-		self->s.weapon = 0;
-		self->client->ps.weapon = 0;
+		self->s.weapon = WP_NONE;
+		self->client->ps.weapon = WP_NONE;
 
 		G_AddEvent(self, EV_NOAMMO, weapon);
 	}
@@ -666,7 +666,7 @@ Toss the weapon and powerups for the killed player
 */
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
-	int			weapon;
+	weapon_t	weapon;
 	int			dontDrop;
 	float		angle;
 	int			i;
@@ -680,7 +680,7 @@ void TossClientItems( gentity_t *self ) {
 	dontDrop |= (1 << WP_NONE) | ~LEGAL_WEAPONS;
 
 	// drop the weapon if not a gauntlet or machinegun
-	weapon = self->s.weapon;
+	weapon = (weapon_t)self->s.weapon;
 
 	// make a special check to see if they are changing to a new
 	// weapon that isn't the mg or gauntlet.  Without this, a client
@@ -688,14 +688,14 @@ void TossClientItems( gentity_t *self ) {
 	// their weapon change hasn't completed yet and they are still holding the MG.
 	if ( (1 << weapon) & dontDrop ) {
 		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
-			weapon = self->client->pers.cmd.weapon;
+			weapon = (weapon_t)self->client->pers.cmd.weapon;
 		}
 		if ( !( self->client->ps.stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
 			weapon = WP_NONE;
 		}
 	}
 
-	self->s.bolt2 = weapon;
+	self->s.bolt2 = (int)weapon;
 
 	if ( (1 << weapon) & ~dontDrop &&
 		self->client->ps.ammo[ weaponData[weapon].ammoIndex ] ) {
@@ -718,7 +718,7 @@ void TossClientItems( gentity_t *self ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
-				item = BG_FindItemForPowerup( i );
+				item = BG_FindItemForPowerup( (powerup_t)i );
 				if ( !item ) {
 					continue;
 				}
@@ -1457,7 +1457,7 @@ animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, meansOf
 	{
 		if (!self || self->s.eType != ET_GRAPPLE)
 		{ //g2animent
-			return 0;
+			return ANIM_INVALID;
 		}
 	}
 

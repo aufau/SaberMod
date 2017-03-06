@@ -474,7 +474,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		}
 		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
 		{
-			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR, qtrue, 0))
+			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
 				gentity_t *te;
 
@@ -656,7 +656,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		}
 		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
 		{
-			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR_SNIPER, qtrue, 0))
+			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
 				gentity_t *te;
 
@@ -3118,7 +3118,7 @@ void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 		oldWeapon = activator->s.weapon;
 
 		// swap the users weapon with the emplaced gun and add the ammo the gun has to the player
-		activator->client->ps.weapon = self->s.weapon;
+		activator->client->ps.weapon = (weapon_t)self->s.weapon;
 		activator->client->ps.weaponstate = WEAPON_READY;
 		activator->client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_EMPLACED_GUN );
 
@@ -3291,7 +3291,7 @@ void emplaced_gun_update(gentity_t *self)
 		}
 		//VectorCopy(self->s.origin2, self->activator->client->ps.origin);
 		oldWeap = self->activator->client->ps.weapon;
-		self->activator->client->ps.weapon = self->s.weapon;
+		self->activator->client->ps.weapon = (weapon_t)self->s.weapon;
 		self->s.weapon = oldWeap;
 		self->activator->r.ownerNum = ENTITYNUM_NONE;
 		self->activator->client->ps.emplacedTime = level.time + 1000;

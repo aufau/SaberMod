@@ -1971,7 +1971,7 @@ void ClearRegisteredItems( void ) {
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		if ( (1 << i) & weapons )
-			RegisterItem( BG_FindItemForWeapon( i ) );
+			RegisterItem( BG_FindItemForWeapon( (weapon_t)i ) );
 
 	// register holdable items players get on spawn
 	items = g_spawnItems.integer & LEGAL_ITEMS;
@@ -1979,7 +1979,7 @@ void ClearRegisteredItems( void ) {
 
 	while ( items ) {
 		if ( items & 1 )
-			RegisterItem( BG_FindItemForHoldable( i ) );
+			RegisterItem( BG_FindItemForHoldable( (holdable_t)i ) );
 
 		items >>= 1;
 		i++;

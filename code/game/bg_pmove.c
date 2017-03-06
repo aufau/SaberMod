@@ -500,7 +500,7 @@ qboolean PM_ForceJumpingUp(void)
 
 static void PM_JumpForDir( void )
 {
-	int anim = BOTH_JUMP1;
+	animNumber_t anim = BOTH_JUMP1;
 	if ( pm->cmd.forwardmove > 0 )
 	{
 		anim = BOTH_JUMP1;
@@ -699,7 +699,7 @@ static qboolean PM_CheckJump( void )
 
 	if (pm->ps->forceJumpFlip)
 	{ //Forced jump anim
-		int anim = BOTH_FORCEINAIR1;
+		animNumber_t anim = BOTH_FORCEINAIR1;
 		int	parts = SETANIM_BOTH;
 
 		if ( pm->cmd.forwardmove > 0 )
@@ -755,7 +755,7 @@ static qboolean PM_CheckJump( void )
 								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_R &&
 								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_L )
 							{
-								int anim = BOTH_FORCEINAIR1;
+								animNumber_t anim = BOTH_FORCEINAIR1;
 								int	parts = SETANIM_BOTH;
 
 								if ( pm->cmd.forwardmove > 0 )
@@ -784,7 +784,7 @@ static qboolean PM_CheckJump( void )
 							else if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
 							{
 								vec3_t facingFwd, facingRight, facingAngles;
-								int	anim = -1;
+								animNumber_t anim = ANIM_INVALID;
 								float dotR, dotF;
 
 								VectorSet(facingAngles, 0, pm->ps->viewangles[YAW], 0);
@@ -815,7 +815,7 @@ static qboolean PM_CheckJump( void )
 										anim = BOTH_FORCEJUMPBACK1;
 									}
 								}
-								if ( anim != -1 )
+								if ( anim != ANIM_INVALID )
 								{
 									int parts = SETANIM_BOTH;
 									if ( pm->ps->weaponTime )
@@ -831,8 +831,8 @@ static qboolean PM_CheckJump( void )
 						{ //jump is already active (the anim has started)
 							if ( pm->ps->legsTimer < 1 )
 							{//not in the middle of a legsAnim
-								int anim = (pm->ps->legsAnim&~ANIM_TOGGLEBIT);
-								int newAnim = -1;
+								animNumber_t anim = (animNumber_t)(pm->ps->legsAnim&~ANIM_TOGGLEBIT);
+								animNumber_t newAnim;
 								switch ( anim )
 								{
 								case BOTH_FORCEJUMP1:
@@ -847,8 +847,11 @@ static qboolean PM_CheckJump( void )
 								case BOTH_FORCEJUMPRIGHT1:
 									newAnim = BOTH_FORCELANDRIGHT1;//BOTH_FORCEINAIRRIGHT1;
 									break;
+								default:
+									newAnim = ANIM_INVALID;
+									break;
 								}
-								if ( newAnim != -1 )
+								if ( newAnim != ANIM_INVALID )
 								{
 									int parts = SETANIM_BOTH;
 									if ( pm->ps->weaponTime )
@@ -932,7 +935,7 @@ static qboolean PM_CheckJump( void )
 		if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 		{//on the ground
 			//check for left-wall and right-wall special jumps
-			int			anim = -1;
+			animNumber_t	anim = ANIM_INVALID;
 			float		vertPush = 0;
 			qboolean	didKick = qfalse;
 			if ( pm->cmd.rightmove > 0 && pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
@@ -971,12 +974,12 @@ static qboolean PM_CheckJump( void )
 
 			vertPush += 128; //give them an extra shove
 
-			if ( anim != -1 )
+			if ( anim != ANIM_INVALID )
 			{
 				vec3_t fwd, right, traceto, mins, maxs, fwdAngles;
 				vec3_t	idealNormal;
 				trace_t	trace;
-				qboolean doTrace = qfalse;
+				qboolean doTrace;
 				int contents = MASK_PLAYERSOLID;
 
 				VectorSet(mins, pm->mins[0],pm->mins[1],0);
@@ -990,6 +993,9 @@ static qboolean PM_CheckJump( void )
 				//trace-check for a wall, if necc.
 				switch ( anim )
 				{
+				default:
+					doTrace = qfalse;
+					break;
 				case BOTH_WALL_FLIP_LEFT:
 					//NOTE: purposely falls through to next case!
 				case BOTH_WALL_RUN_LEFT:
@@ -1083,12 +1089,12 @@ static qboolean PM_CheckJump( void )
 		}
 		else
 		{//in the air
-			int legsAnim = (pm->ps->legsAnim&~ANIM_TOGGLEBIT);
+			animNumber_t legsAnim = (animNumber_t)(pm->ps->legsAnim&~ANIM_TOGGLEBIT);
 			if ( legsAnim == BOTH_WALL_RUN_LEFT || legsAnim == BOTH_WALL_RUN_RIGHT )
 			{//running on a wall
 				vec3_t right, traceto, mins, maxs, fwdAngles;
 				trace_t	trace;
-				int		anim = -1;
+				animNumber_t anim = ANIM_INVALID;
 
 				VectorSet(mins, pm->mins[0], pm->mins[0], 0);
 				VectorSet(maxs, pm->maxs[0], pm->maxs[0], 24);
@@ -1100,7 +1106,7 @@ static qboolean PM_CheckJump( void )
 				{
 					if ( pm->ps->legsTimer > 400 )
 					{//not at the end of the anim
-						float animLen = PM_AnimLength( 0, (animNumber_t)BOTH_WALL_RUN_LEFT );
+						float animLen = PM_AnimLength( 0, BOTH_WALL_RUN_LEFT );
 						if ( pm->ps->legsTimer < animLen - 400 )
 						{//not at start of anim
 							VectorMA( pm->ps->origin, -16, right, traceto );
@@ -1112,7 +1118,7 @@ static qboolean PM_CheckJump( void )
 				{
 					if ( pm->ps->legsTimer > 400 )
 					{//not at the end of the anim
-						float animLen = PM_AnimLength( 0, (animNumber_t)BOTH_WALL_RUN_RIGHT );
+						float animLen = PM_AnimLength( 0, BOTH_WALL_RUN_RIGHT );
 						if ( pm->ps->legsTimer < animLen - 400 )
 						{//not at start of anim
 							VectorMA( pm->ps->origin, 16, right, traceto );
@@ -1120,7 +1126,7 @@ static qboolean PM_CheckJump( void )
 						}
 					}
 				}
-				if ( anim != -1 )
+				if ( anim != ANIM_INVALID )
 				{
 					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY );
 					if ( trace.fraction < 1.0f )
@@ -1814,7 +1820,7 @@ PM_FootstepForSurface
 Returns an event number apropriate for the groundsurface
 ================
 */
-static int PM_FootstepForSurface( void )
+static entity_event_t PM_FootstepForSurface( void )
 {
 	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS )
 	{
@@ -1827,23 +1833,23 @@ static int PM_FootstepForSurface( void )
 	return EV_FOOTSTEP;
 }
 
-static int PM_TryRoll( void )
+static animNumber_t PM_TryRoll( void )
 {
 	trace_t	trace;
-	int		anim = -1;
+	animNumber_t	anim = ANIM_INVALID;
 	vec3_t fwd, right, traceto, mins, maxs, fwdAngles;
 
 	if ( BG_SaberInAttack( pm->ps->saberMove ) || BG_SaberInSpecialAttack( pm->ps->torsoAnim )
 		|| BG_SpinningSaberAnim( pm->ps->legsAnim )
 		|| PM_SaberInStart( pm->ps->saberMove ) )
 	{//attacking or spinning (or, if player, starting an attack)
-		return 0;
+		return ANIM_INVALID;
 	}
 
 	if (pm->ps->weapon != WP_SABER || BG_HasYsalamiri(pm->gametype, pm->ps) ||
 		!BG_CanUseFPNow(pm->gametype, pm->ps, pm->cmd.serverTime, FP_LEVITATION))
 	{ //Not using saber, or can't use jump
-		return 0;
+		return ANIM_INVALID;
 	}
 
 	VectorSet(mins, pm->mins[0],pm->mins[1],pm->mins[2]+STEPSIZE);
@@ -1877,7 +1883,7 @@ static int PM_TryRoll( void )
 		VectorMA( pm->ps->origin, -64, right, traceto );
 	}
 
-	if ( anim != -1 )
+	if ( anim != ANIM_INVALID )
 	{ //We want to roll. Perform a trace to see if we can, and if so, send us into one.
 		pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID );
 		if ( trace.fraction >= 1.0f )
@@ -1886,7 +1892,7 @@ static int PM_TryRoll( void )
 			return anim;
 		}
 	}
-	return 0;
+	return ANIM_INVALID;
 }
 
 /*
@@ -1999,18 +2005,18 @@ static void PM_CrashLand( void ) {
 		if( delta >= 2 && !PM_InOnGroundAnim( pm->ps->legsAnim ) && !PM_InKnockDown( pm->ps ) && !BG_InRoll(pm->ps, pm->ps->legsAnim) &&
 			pm->ps->forceHandExtend == HANDEXTEND_NONE )
 		{//roll!
-			int anim = PM_TryRoll();
+			animNumber_t anim = PM_TryRoll();
 
 			if (PM_InRollComplete(pm->ps, pm->ps->legsAnim))
 			{
-				anim = 0;
+				anim = ANIM_INVALID;
 				pm->ps->legsTimer = 0;
 				pm->ps->legsAnim = 0;
 				PM_SetAnim(SETANIM_BOTH,BOTH_LAND1,SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 150);
 				pm->ps->legsTimer = TIMER_LAND;
 			}
 
-			if ( anim )
+			if ( anim != ANIM_INVALID )
 			{//absorb some impact
 				pm->ps->legsTimer = 0;
 				delta /= 3; // /= 2 just cancels out the above delta *= 2 when landing while crouched, the roll itself should absorb a little damage
@@ -2598,7 +2604,7 @@ static void PM_Footsteps( void ) {
 
 	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
-		int rolled = 0;
+		animNumber_t rolled = ANIM_INVALID;
 
 		bobmove = 0.5;	// ducked characters bob much faster
 
@@ -2606,7 +2612,7 @@ static void PM_Footsteps( void ) {
 		{//roll!
 			rolled = PM_TryRoll();
 		}
-		if ( !rolled )
+		if ( rolled == ANIM_INVALID )
 		{ //if the roll failed or didn't attempt, do standard crouching anim stuff.
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
 				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1WALKBACK)
@@ -2854,7 +2860,7 @@ void PM_FinishWeaponChange( void ) {
 	{
 		PM_StartTorsoAnim( TORSO_RAISEWEAP1);
 	}
-	pm->ps->weapon = weapon;
+	pm->ps->weapon = (weapon_t)weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->weaponTime += 250;
 }
@@ -3318,9 +3324,9 @@ static void PM_Weapon( void )
 	}
 	else if (pm->ps->forceHandExtend != HANDEXTEND_NONE)
 	{ //nothing else should be allowed to happen during this time, including weapon fire
-		int desiredAnim = 0;
+		animNumber_t desiredAnim;
 		qboolean seperateOnTorso = qfalse;
-		int desiredOnTorso = 0;
+		animNumber_t desiredOnTorso;
 
 		switch(pm->ps->forceHandExtend)
 		{
@@ -3340,7 +3346,7 @@ static void PM_Weapon( void )
 			desiredAnim = BOTH_CHOKE3; //left-handed choke
 			break;
 		case HANDEXTEND_DODGE:
-			desiredAnim = pm->ps->forceDodgeAnim;
+			desiredAnim = (animNumber_t)pm->ps->forceDodgeAnim;
 			break;
 		case HANDEXTEND_KNOCKDOWN:
 			if (pm->ps->forceDodgeAnim)
@@ -3387,7 +3393,7 @@ static void PM_Weapon( void )
 			desiredAnim = BOTH_ENGAGETAUNT;
 			break;
 		case HANDEXTEND_TAUNT:
-			desiredAnim = pm->ps->forceDodgeAnim;
+			desiredAnim = (animNumber_t)pm->ps->forceDodgeAnim;
 			break;
 			//Hmm... maybe use these, too?
 			//BOTH_FORCEHEAL_QUICK //quick heal (SP level 2 & 3)
@@ -3529,7 +3535,7 @@ static void PM_Weapon( void )
 				}
 
 				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-				PM_AddEvent( EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag );
+				PM_AddEvent( (entity_event_t)(EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag) );
 
 				if (bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag != HI_BINOCULARS)
 				{

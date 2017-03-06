@@ -697,9 +697,9 @@ static void InitShooter_Finish( gentity_t *ent ) {
 	ent->nextthink = 0;
 }
 
-void InitShooter( gentity_t *ent, int weapon ) {
+static void InitShooter( gentity_t *ent, weapon_t weapon ) {
 	ent->use = Use_Shooter;
-	ent->s.weapon = weapon;
+	ent->s.weapon = (int)weapon;
 
 	RegisterItem( BG_FindItemForWeapon( weapon ) );
 
@@ -1687,7 +1687,7 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 
 	if (!find)
 	{
-		find = BG_Alloc(sizeof(animentCustomInfo_t));
+		find = (animentCustomInfo_t *)BG_Alloc(sizeof(animentCustomInfo_t));
 
 		if (!find)
 		{ //careful not to exceed the BG_Alloc limit!
@@ -1700,8 +1700,8 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 		find->aeWeapon = weapon;
 		find->next = NULL;
 
-		find->modelPath = BG_Alloc(strlen(modelname)+1);
-		find->soundPath = BG_Alloc(strlen(soundpath)+1);
+		find->modelPath = (char *)BG_Alloc(strlen(modelname)+1);
+		find->soundPath = (char *)BG_Alloc(strlen(soundpath)+1);
 
 		if (!find->modelPath || !find->soundPath)
 		{

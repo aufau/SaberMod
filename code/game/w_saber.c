@@ -1053,20 +1053,20 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 			{
 				quadDiff = -4 + (quadDiff + 4);
 			}
-			newQuad = attQuadEnd + ceilf( quadDiff * 0.5f );
+			newQuad = (saberQuadrant_t)(attQuadEnd + ceilf( quadDiff * 0.5f ));
 			if ( newQuad < Q_BR )
 			{//less than zero wraps around
-				newQuad = Q_B + newQuad;
+				newQuad = (saberQuadrant_t)(Q_B + newQuad);
 			}
 			if ( newQuad == attQuadStart )
 			{//never come off at the same angle that we would have if the attack was not interrupted
 				if ( Q_irand(0, 1) )
 				{
-					newQuad--;
+					newQuad = (saberQuadrant_t)(newQuad - 1);
 				}
 				else
 				{
-					newQuad++;
+					newQuad = (saberQuadrant_t)(newQuad + 1);
 				}
 				if ( newQuad < Q_BR )
 				{
@@ -1616,7 +1616,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 		qboolean inBackAttack = G_SaberInBackAttack(self->client->ps.saberMove);
 
 		unblockable = qtrue;
-		self->client->ps.saberBlocked = 0;
+		self->client->ps.saberBlocked = BLOCKED_NONE;
 
 		if (!inBackAttack)
 		{
@@ -1707,7 +1707,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 		didHit = qtrue;
 
-		if (g_entities[tr.entityNum].client && !unblockable && WP_SaberCanBlock(&g_entities[tr.entityNum], tr.endpos, 0, MOD_SABER, qfalse, attackStr))
+		if (g_entities[tr.entityNum].client && !unblockable && WP_SaberCanBlock(&g_entities[tr.entityNum], tr.endpos, 0, qfalse, attackStr))
 		{
 			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, tr.entityNum );
 			if (dmg <= SABER_NONATTACK_DAMAGE)
@@ -1886,7 +1886,7 @@ blockStuff:
 		if (BG_SaberInSpecial(otherOwner->client->ps.saberMove))
 		{
 			otherUnblockable = qtrue;
-			otherOwner->client->ps.saberBlocked = 0;
+			otherOwner->client->ps.saberBlocked = BLOCKED_NONE;
 		}
 
 		if ( sabersClashed &&
@@ -2219,7 +2219,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 
 			if (tr.fraction == 1 || tr.entityNum == ent->s.number)
 			{ //Slice them
-				if (!saberOwner->client->ps.isJediMaster && WP_SaberCanBlock(ent, tr.endpos, 0, MOD_SABER, qfalse, 8))
+				if (!saberOwner->client->ps.isJediMaster && WP_SaberCanBlock(ent, tr.endpos, 0, qfalse, 8))
 				{ //they blocked it
 					WP_SaberBlockNonRandom(ent, tr.endpos, qfalse);
 
@@ -3575,7 +3575,7 @@ void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 }
 #endif // UNUSED
 
-int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, meansOfDeath_t mod, qboolean projectile, int attackStr)
+int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, qboolean projectile, int attackStr)
 {
 	qboolean thrownSaber = qfalse;
 	float blockFactor = 0;
@@ -3691,7 +3691,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, meansOfDeath_t m
 	}
 
 	if (self->client->ps.saberMove != LS_READY &&
-		!self->client->ps.saberBlocking)
+		self->client->ps.saberBlocking == BLK_NO)
 	{
 		return 0;
 	}

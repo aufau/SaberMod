@@ -968,6 +968,6 @@ qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, i
 {
 	return syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
 }
-qboolean trap_MVAPI_ControlFixes(mvfix_t fixes) {
+qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return syscall(MVAPI_CONTROL_FIXES, fixes);
 }

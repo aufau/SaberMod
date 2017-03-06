@@ -406,7 +406,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		ent->methodOfDeath != MOD_REPEATER_ALT &&
 		ent->methodOfDeath != MOD_FLECHETTE_ALT_SPLASH &&
 		other->client->ps.saberBlockTime < level.time &&
-		WP_SaberCanBlock(other, ent->r.currentOrigin, 0, 0, qtrue, 0))
+		WP_SaberCanBlock(other, ent->r.currentOrigin, 0, qtrue, 0))
 	{ //only block one projectile per 200ms (to prevent giant swarms of projectiles being blocked)
 		vec3_t fwd;
 		gentity_t *te;
@@ -426,7 +426,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		{
 			if (otherDefLevel > 0)
 			{
-				otherDefLevel--;
+				otherDefLevel = (forceLevel_t)(otherDefLevel - 1);
 			}
 		}
 
@@ -475,7 +475,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			forceLevel_t otherDefLevel = otherOwner->client->ps.fd.forcePowerLevel[FP_SABERDEFEND];
 
 			//in this case, deflect it even if we can't actually block it because it hit our saber
-			WP_SaberCanBlock(otherOwner, ent->r.currentOrigin, 0, 0, qtrue, 0);
+			WP_SaberCanBlock(otherOwner, ent->r.currentOrigin, 0, qtrue, 0);
 
 			te = G_TempEntity( ent->r.currentOrigin, EV_SABER_BLOCK, ent->r.ownerNum );
 			VectorCopy(ent->r.currentOrigin, te->s.origin);
@@ -490,7 +490,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			{
 				if (otherDefLevel > 0)
 				{
-					otherDefLevel--;
+					otherDefLevel = (forceLevel_t)(otherDefLevel - 1);
 				}
 			}
 

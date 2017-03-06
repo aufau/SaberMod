@@ -67,7 +67,7 @@ qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold 
 
 	dot = DotProduct( dir, forward );
 
-	return (dot > threshHold);
+	return (qboolean)(dot > threshHold);
 }
 
 #ifdef UNUSED
@@ -164,7 +164,7 @@ void WP_InitForcePowers( gentity_t *ent )
 {
 	int i;
 	int i_r;
-	forceMastery_t maxRank = g_maxForceRank.integer;
+	forceMastery_t maxRank = (forceMastery_t)g_maxForceRank.integer;
 	qboolean warnClient = qfalse;
 	qboolean warnClientLimit = qfalse;
 	char userinfo[MAX_INFO_STRING];
@@ -192,7 +192,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	}
 
 	// reset
-	ent->client->ps.fd.forceDoInit = 0;
+	ent->client->ps.fd.forceDoInit = qfalse;
 
 	ent->client->ps.fd.saberAnimLevel = ent->client->sess.saberLevel;
 
@@ -260,20 +260,20 @@ void WP_InitForcePowers( gentity_t *ent )
 	{
 		if (ent->client->sess.sessionTeam == TEAM_RED)
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_DARKSIDE, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_DARKSIDE, level.gametype, g_forcePowerDisable.integer));
 		}
 		else if (ent->client->sess.sessionTeam == TEAM_BLUE)
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_LIGHTSIDE, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_LIGHTSIDE, level.gametype, g_forcePowerDisable.integer));
 		}
 		else
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
 		}
 	}
 	else
 	{
-		warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+		warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
 	}
 
 	i_r = 0;
@@ -486,7 +486,7 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 	{
 		if (ent->client->ps.fd.forcePowersActive & (1 << i))
 		{
-			WP_ForcePowerStop(ent, i);
+			WP_ForcePowerStop(ent, (forcePowers_t)i);
 		}
 
 		i++;
@@ -2478,26 +2478,26 @@ void GEntity_UseFunc( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 qboolean CanCounterThrow(gentity_t *self, qboolean pull)
 {
-	int powerUse = 0;
+	forcePowers_t powerUse;
 
 	if (self->client->ps.forceHandExtend != HANDEXTEND_NONE)
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (self->client->ps.weaponTime > 0)
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if ( self->health <= 0 )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if ( self->client->ps.powerups[PW_DISINT_4] > level.time )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (pull)
@@ -2511,15 +2511,15 @@ qboolean CanCounterThrow(gentity_t *self, qboolean pull)
 
 	if ( !WP_ForcePowerUsable( self, powerUse ) )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (self->client->ps.groundEntityNum == ENTITYNUM_NONE)
 	{ //you cannot counter a push/pull if you're in the air
-		return 0;
+		return qfalse;
 	}
 
-	return 1;
+	return qtrue;
 }
 
 qboolean G_InGetUpAnim(playerState_t *ps)
@@ -2587,7 +2587,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	vec3_t		thispush_org;
 	vec3_t		tfrom, tto, fwd, a;
 //	float		knockback = pull?0:200;
-	int			powerUse = 0;
+	forcePowers_t	powerUse;
 
 	visionArc = 0;
 
@@ -2970,7 +2970,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				{ //if you are moving, you get one less level of defense
 					if (otherPushPower > 0)
 					{
-						otherPushPower--;
+						otherPushPower = (forceLevel_t)(otherPushPower - 1);
 					}
 				}
 
@@ -4225,7 +4225,7 @@ void SeekerDroneUpdate(gentity_t *self)
 				VectorSubtract(en->client->ps.origin, org, endir);
 				VectorNormalize(endir);
 
-				WP_FireGenericBlasterMissile(self, org, endir, 0, 15, 2000, MOD_BLASTER);
+				WP_FireGenericBlasterMissile(self, org, endir, qfalse, 15, 2000, MOD_BLASTER);
 				G_SoundAtLoc( org, CHAN_WEAPON, G_SoundIndex("sound/weapons/bryar/fire.wav"), self->s.number );
 
 				self->client->ps.droneFireTime = level.time + Q_irand(400, 700);
@@ -4273,7 +4273,7 @@ void HolocronUpdate(gentity_t *self)
 
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION && i != FP_SABERATTACK)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			if (i == FP_LEVITATION)
@@ -4360,7 +4360,7 @@ void JediMasterUpdate(gentity_t *self)
 
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			if (i == FP_LEVITATION)
@@ -4480,7 +4480,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	{
 		self->client->ps.saberMove = LS_NONE;
 		self->client->ps.saberBlocking = BLK_NO;
-		self->client->ps.saberBlocked = 0;
+		self->client->ps.saberBlocked = BLOCKED_NONE;
 		self->client->ps.weaponTime = 0;
 	}
 	else if (self->client->ps.forceHandExtend != HANDEXTEND_NONE &&
@@ -4550,7 +4550,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		{
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			i++;
@@ -4571,9 +4571,9 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		while (i < NUM_FORCE_POWERS)
 		{
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION &&
-				!BG_CanUseFPNow(level.gametype, &self->client->ps, level.time, i))
+				!BG_CanUseFPNow(level.gametype, &self->client->ps, level.time, (forcePowers_t)i))
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			i++;
@@ -4616,7 +4616,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			{
 				if (self->client->ps.fd.forcePowersActive & (1 << i))
 				{
-					WP_ForcePowerStop(self, i);
+					WP_ForcePowerStop(self, (forcePowers_t)i);
 				}
 				self->client->ps.fd.forcePowersKnown &= ~(1 << i);
 			}

@@ -1926,7 +1926,7 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 
 // MVAPI
 
-qboolean	trap_MVAPI_ControlFixes(mvfix_t fixes);
+qboolean	trap_MVAPI_ControlFixes(int fixes);
 
 //
 // system traps

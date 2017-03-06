@@ -565,7 +565,7 @@ gitem_t	bg_itemlist[] =
 /* icon */		NULL,		// icon
 /* pickup */	//NULL,		// pickup_name
 		0,					// quantity
-		0,					// giType (IT_*)
+		IT_BAD,				// giType (IT_*)
 		0,					// giTag
 /* precache */ "",			// precaches
 /* sounds */ ""				// sounds
@@ -2462,12 +2462,12 @@ char *BG_StringAlloc ( const char *source )
 	char *dest;
 	size_t len = strlen ( source ) + 1;
 
-	dest = BG_AllocUnaligned ( len );
+	dest = (char *)BG_AllocUnaligned ( len );
 	strncpy ( dest, source, len );
 	return dest;
 }
 
 qboolean BG_OutOfMemory ( void )
 {
-	return bg_poolSize >= MAX_POOL_SIZE;
+	return (qboolean)(bg_poolSize >= MAX_POOL_SIZE);
 }

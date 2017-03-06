@@ -1494,7 +1494,7 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	if( isBot ) {
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
-		if( !G_BotConnect( clientNum, !firstTime ) ) {
+		if( !G_BotConnect( clientNum, (qboolean)!firstTime ) ) {
 			return "BotConnectfailed";
 		}
 	}
@@ -1622,7 +1622,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	{
 		if (ent->client->ps.fd.forcePowersActive & (1 << i))
 		{
-			WP_ForcePowerStop(ent, i);
+			WP_ForcePowerStop(ent, (forcePowers_t)i);
 		}
 		i++;
 	}
@@ -2047,7 +2047,7 @@ void ClientSpawn(gentity_t *ent) {
 			client->ps.weapon = WP_NONE;
 			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
 				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-					client->ps.weapon = i;
+					client->ps.weapon = (weapon_t)i;
 					break;
 				}
 			}
@@ -2194,7 +2194,7 @@ void ClientSpawn(gentity_t *ent) {
 			client->ps.weapon = WP_NONE;
 			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
 				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-					client->ps.weapon = i;
+					client->ps.weapon = (weapon_t)i;
 					break;
 				}
 			}
@@ -2261,7 +2261,7 @@ void ClientDisconnect( int clientNum ) {
 	{
 		if (ent->client->ps.fd.forcePowersActive & (1 << i))
 		{
-			WP_ForcePowerStop(ent, i);
+			WP_ForcePowerStop(ent, (forcePowers_t)i);
 		}
 		i++;
 	}

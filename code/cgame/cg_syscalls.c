@@ -805,6 +805,6 @@ void trap_CG_RegisterSharedMemory(char *memory)
 Ghoul2 Insert End
 */
 
-qboolean trap_MVAPI_ControlFixes(mvfix_t fixes) {
+qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return syscall(MVAPI_CONTROL_FIXES, fixes);
 }

@@ -361,7 +361,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		G_ShutdownGame( arg0 );
 		return 0;
 	case GAME_CLIENT_CONNECT:
-		return (intptr_t)ClientConnect( arg0, arg1, arg2 );
+		return (intptr_t)ClientConnect( arg0, (qboolean)arg1, (qboolean)arg2 );
 	case GAME_CLIENT_THINK:
 		ClientThink( arg0 );
 		return 0;
@@ -1105,8 +1105,8 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	ca = &level.clients[*a];
 	cb = &level.clients[*b];
 
-	ta = ca->pers.connected == CON_DISCONNECTED;
-	tb = cb->pers.connected == CON_DISCONNECTED;
+	ta = (qboolean)(ca->pers.connected == CON_DISCONNECTED);
+	tb = (qboolean)(cb->pers.connected == CON_DISCONNECTED);
 	if (ta || tb) {
 		return ta - tb;
 	}
@@ -1116,22 +1116,22 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	// if ( tb )       return -1;
 
 	// sort special clients last
-	ta = ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0;
-	tb = cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0;
+	ta = (qboolean)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0);
+	tb = (qboolean)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then connecting clients
-	ta = ca->pers.connected == CON_CONNECTING;
-	tb = cb->pers.connected == CON_CONNECTING;
+	ta = (qboolean)(ca->pers.connected == CON_CONNECTING);
+	tb = (qboolean)(cb->pers.connected == CON_CONNECTING);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then spectators
-	ta = ca->sess.sessionTeam == TEAM_SPECTATOR;
-	tb = cb->sess.sessionTeam == TEAM_SPECTATOR;
+	ta = (qboolean)(ca->sess.sessionTeam == TEAM_SPECTATOR);
+	tb = (qboolean)(cb->sess.sessionTeam == TEAM_SPECTATOR);
 	if (ta && tb) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
@@ -1488,7 +1488,7 @@ static qboolean Parity( int i )
 	qboolean parity = qtrue;
 
 	while (i) {
-		parity = !parity;
+		parity = (qboolean)!parity;
 		i &= i - 1;
 	}
 
@@ -1749,7 +1749,7 @@ void LogExit( const char *string ) {
 				}
 			}
 		} else if (GT_Flag(level.gametype)) {
-			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
+			won = (qboolean)(level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]);
 		}
 
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
@@ -1971,13 +1971,13 @@ qboolean ScoreIsTied( void ) {
 	}
 
 	if ( GT_Team(level.gametype) ) {
-		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
+		return (qboolean)(level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]);
 	}
 
 	a = level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE];
 	b = level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE];
 
-	return a == b;
+	return (qboolean)(a == b);
 }
 
 /*
@@ -2145,7 +2145,7 @@ void CheckExitRules( void ) {
 	}
 
 	if ( GT_Round(level.gametype) ) {
-		qboolean	countDead = ( level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5 );
+		qboolean	countDead = (qboolean)(level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5);
 		int			redCount = TeamCount( -1, TEAM_RED, countDead );
 		int			blueCount = TeamCount( -1, TEAM_BLUE, countDead );
 

@@ -165,7 +165,7 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *b
 
 	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
-		char *value = va("%i", stats[stat]);
+		const char *value = va("%i", stats[stat]);
 		int len = strlen(value);
 
 		if (statCol[stat].disabled)
@@ -239,7 +239,7 @@ void G_PrintStats(void) {
 	// be removed at this point, but i'd rather keep line length under
 	// firm control
 	statCol[STATS_ACC].disabled = HasSetSaberOnly();
-	statCol[STATS_IMPRESSIVE].disabled = (g_spawnWeapons.integer & WP_DISRUPTOR);
+	statCol[STATS_IMPRESSIVE].disabled = (qboolean)!!(g_spawnWeapons.integer & WP_DISRUPTOR);
 
 	trap_SendServerCommand(-1, "print \"\n\"");
 

@@ -289,7 +289,7 @@ const weaponData_t weaponData[WP_NUM_WEAPONS] =
 	},
 	{	// WP_EMPLCACED_GUN
 //		"Emplaced Gun",			//	char	classname[32];		// Spawning name
-		/*AMMO_BLASTER*/0,			//	int		ammoIndex;			// Index to proper ammo slot
+		/*AMMO_BLASTER*/AMMO_NONE,	//	int		ammoIndex;			// Index to proper ammo slot
 		/*5*/0,						//	int		ammoLow;			// Count when ammo is low
 		/*2*/0,						//	int		energyPerShot;		// Amount of energy used per shot
 		100,					//	int		fireTime;			// Amount of time between firings
