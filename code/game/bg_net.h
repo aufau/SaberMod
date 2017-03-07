@@ -495,7 +495,7 @@ typedef struct entityState_s {
 
 	qboolean		saberInFlight;
 	int				saberEntityNum;
-	int				saberMove;
+	saberMoveName_t	saberMove;
 	int				forcePowersActive;
 
 	qboolean		isJediMaster;
