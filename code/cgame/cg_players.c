@@ -1067,7 +1067,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// team
 	v = Info_ValueForKey( configstring, "t" );
-	newInfo.team = atoi( v );
+	newInfo.team = (team_t)atoi( v );
 
 	// team task
 	v = Info_ValueForKey( configstring, "tt" );
@@ -1075,7 +1075,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// team leader
 	v = Info_ValueForKey( configstring, "tl" );
-	newInfo.teamLeader = atoi(v);
+	newInfo.teamLeader = (qboolean)!!atoi(v);
 
 	v = Info_ValueForKey( configstring, "g_redteam" );
 	Q_strncpyz(newInfo.redTeam, v, MAX_TEAMNAME);
@@ -1201,7 +1201,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	if ( !CG_ScanForExistingClientInfo( &newInfo, clientNum ) ) {
 		qboolean	forceDefer;
 
-		forceDefer = trap_MemoryRemaining() < 4000000;
+		forceDefer = (qboolean)(trap_MemoryRemaining() < 4000000);
 
 		// if we are defering loads, just have it pick the first valid
 		if (cg.snap && cg.snap->ps.clientNum == clientNum && !forceDefer)
@@ -1612,7 +1612,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		animSpeed *= animSpeedMult;
 
-		BG_SaberStartTransAnim(cent->currentState.fireflag, newAnimation, &animSpeed);
+		BG_SaberStartTransAnim((forceLevel_t)cent->currentState.fireflag, (animNumber_t)newAnimation, &animSpeed);
 
 		if (torsoOnly)
 		{
@@ -4197,7 +4197,7 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	mdxaBone_t	boltMatrix;
 	vec3_t futureAngles;
 	effectTrailArgStruct_t fx;
-	saber_colors_t scolor = 0;
+	saber_colors_t scolor;
 	vec3_t otherPos, otherDir, otherEnd;
 	float dualLen = 0.7;
 

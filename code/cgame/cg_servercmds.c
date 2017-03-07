@@ -111,7 +111,7 @@ static void CG_ParseScores( void ) {
 		cg.scores[i].defendCount = atoi(CG_Argv(i * 14 + 14));
 		cg.scores[i].assistCount = atoi(CG_Argv(i * 14 + 15));
 
-		cg.scores[i].dead = atoi(CG_Argv(i * 14 + 16));
+		cg.scores[i].dead = (qboolean)atoi(CG_Argv(i * 14 + 16));
 		cg.scores[i].captures = atoi(CG_Argv(i * 14 + 17));
 
 		if ( cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS ) {
@@ -167,14 +167,15 @@ static void CG_ParseServerinfo( const char *info ) {
 	const char	*mapname;
 	int			val;
 
-	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	if ( !GT_Valid( cgs.gametype ) ) {
+	val = atoi( Info_ValueForKey( info, "g_gametype" ) );
+	if ( !GT_Valid( val ) ) {
 		Com_Printf( "WARNING: Unrecognised gametype, defaulting to %s\n", gametypeShort[GT_FFA] );
-		cgs.gametype = GT_FFA;
+		val = GT_FFA;
 	}
+	cgs.gametype = (gametype_t)val;
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
-	cgs.needpass = atoi( Info_ValueForKey( info, "needpass" ) );
-	cgs.jediVmerc = atoi( Info_ValueForKey( info, "g_jediVmerc" ) );
+	cgs.needpass = (qboolean)atoi( Info_ValueForKey( info, "needpass" ) );
+	cgs.jediVmerc = (qboolean)atoi( Info_ValueForKey( info, "g_jediVmerc" ) );
 	cgs.wDisable = atoi( Info_ValueForKey( info, "wdisable" ) );
 	cgs.fDisable = atoi( Info_ValueForKey( info, "fdisable" ) );
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
@@ -185,8 +186,8 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-	cgs.privateDuel = atoi( Info_ValueForKey( info, "g_privateDuel" ) );
-	cgs.instagib = atoi( Info_ValueForKey( info, "g_instagib" ) );
+	cgs.privateDuel = (qboolean)atoi( Info_ValueForKey( info, "g_privateDuel" ) );
+	cgs.instagib = (qboolean)atoi( Info_ValueForKey( info, "g_instagib" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 
 
@@ -315,7 +316,7 @@ void CG_UpdateConfigString( int num, qboolean init )
 	}
 	else if ( num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS )
 	{
-		CG_NewClientInfo( num - CS_PLAYERS, !init);
+		CG_NewClientInfo( num - CS_PLAYERS, (qboolean)!init);
 #ifdef MISSIONPACK
 		CG_BuildSpectatorString();
 #endif
@@ -328,7 +329,7 @@ void CG_UpdateConfigString( int num, qboolean init )
 	{
 		switch ( num ) {
 		case CS_MUSIC:
-			CG_StartMusic( !init );
+			CG_StartMusic( (qboolean)!init );
 			break;
 		case CS_SERVERINFO:
 			CG_ParseServerinfo( str );
@@ -419,7 +420,7 @@ void CG_UpdateConfigString( int num, qboolean init )
 			Q_strncpyz( cgs.teamVoteString[num-CS_TEAMVOTE_STRING], str, sizeof( cgs.teamVoteString ) );
 			break;
 		case CS_INTERMISSION:
-			cg.intermissionStarted = atoi( str );
+			cg.intermissionStarted = (qboolean)atoi( str );
 			break;
 		case CS_FLAGSTATUS:
 			if( GT_Flag(cgs.gametype) ) {

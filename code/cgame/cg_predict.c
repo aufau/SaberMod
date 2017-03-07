@@ -78,7 +78,7 @@ void CG_BuildSolidList( void ) {
 			{
 				// special case(s) for non-symmetric bbox
 				int solid = cent->nextState.time2;
-				qboolean xaxis = (solid >> 24) & 1;
+				qboolean xaxis = (qboolean)((solid >> 24) & 1);
 				int height = (solid >> 16) & 255;
 				int posWidth = (solid >> 8) & 255;
 				int negWidth = solid & 255;
@@ -456,7 +456,7 @@ static void CG_TouchTriggerPrediction( void ) {
 		return;
 	}
 
-	spectator = ( cg.predictedPlayerState.pm_type == PM_SPECTATOR );
+	spectator = (qboolean)(cg.predictedPlayerState.pm_type == PM_SPECTATOR);
 
 	if ( cg.predictedPlayerState.pm_type != PM_NORMAL && cg.predictedPlayerState.pm_type != PM_FLOAT && !spectator ) {
 		return;
@@ -560,7 +560,7 @@ void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 	ps->emplacedIndex = s->otherEntityNum2;
 
 	ps->saberHolstered = s->shouldtarget; //reuse bool in entitystate for players differently
-	ps->usingATST = s->teamowner;
+	ps->usingATST = (qboolean)!!s->teamowner;
 
 	/*
 	if (ps->genericEnemyIndex != -1)
@@ -598,7 +598,7 @@ void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 	*/
 	//Eh.
 
-	ps->weapon = s->weapon;
+	ps->weapon = (weapon_t)s->weapon;
 	ps->groundEntityNum = s->groundEntityNum;
 
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
@@ -682,9 +682,9 @@ void CG_PredictPlayerState( void ) {
 	} else {
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	}
-	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
-	cg_pmove.noKick = ( cgs.dmflags & DF_NO_KICK ) > 0;
-	cg_pmove.noYDFA = ( cgs.dmflags & DF_NO_YDFA ) > 0;
+	cg_pmove.noFootsteps = (qboolean)((cgs.dmflags & DF_NO_FOOTSTEPS) > 0);
+	cg_pmove.noKick = (qboolean)((cgs.dmflags & DF_NO_KICK) > 0);
+	cg_pmove.noYDFA = (qboolean)((cgs.dmflags & DF_NO_YDFA) > 0);
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;

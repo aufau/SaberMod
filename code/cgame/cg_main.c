@@ -185,7 +185,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	case CG_CONSOLE_COMMAND:
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
-		CG_DrawActiveFrame( arg0, arg1, arg2 );
+		CG_DrawActiveFrame( arg0, (stereoFrame_t)arg1, (qboolean)arg2 );
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
@@ -762,7 +762,7 @@ void CG_RegisterCvars( void ) {
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
-	cgs.localServer = atoi( var );
+	cgs.localServer = (qboolean)!!atoi( var );
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
@@ -1879,7 +1879,7 @@ void CG_StartMusic( qboolean bForceStart ) {
 	Q_strncpyz( parm1, COM_Parse( (const char **)&s ), sizeof( parm1 ) );
 	Q_strncpyz( parm2, COM_Parse( (const char **)&s ), sizeof( parm2 ) );
 
-	trap_S_StartBackgroundTrack( parm1, parm2, !bForceStart );
+	trap_S_StartBackgroundTrack( parm1, parm2, (qboolean)!bForceStart );
 }
 
 #ifdef MISSIONPACK

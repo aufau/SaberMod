@@ -298,7 +298,7 @@ static void CG_DrawZoomMask( void )
 
 		if ( random() > 0.98f && ( cg.time & 1024 ))
 		{
-			flip = !flip;
+			flip = (qboolean)!flip;
 		}
 	}
 	else if ( cg.predictedPlayerState.zoomMode)
@@ -1290,7 +1290,7 @@ void CG_DrawForceSelect( void )
 
 	for (i=0;i < NUM_FORCE_POWERS;++i)
 	{
-		if (ForcePower_Valid(i))
+		if (ForcePower_Valid((forcePowers_t)i))
 		{
 			count++;
 		}
@@ -2138,7 +2138,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			for (j = 0; j < PW_NUM_POWERUPS; j++) {
 				if (ci->powerups & (1 << j)) {
 
-					item = BG_FindItemForPowerup( j );
+					item = BG_FindItemForPowerup( (powerup_t)j );
 
 					if (item) {
 						CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
@@ -2181,7 +2181,7 @@ static void CG_DrawPowerupIcons(int y)
 		{
 			int secondsleft = (cg.snap->ps.powerups[j] - cg.time)/1000;
 
-			item = BG_FindItemForPowerup( j );
+			item = BG_FindItemForPowerup( (powerup_t)j );
 
 			if (item)
 			{
@@ -3837,7 +3837,7 @@ void CG_DrawTimedMenus() {
 
 qboolean CG_OtherTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		team_t team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.blueflag == FLAG_TAKEN) {
@@ -3851,7 +3851,7 @@ qboolean CG_OtherTeamHasFlag(void) {
 
 qboolean CG_YourTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		team_t team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.redflag == FLAG_TAKEN) {
@@ -3867,7 +3867,7 @@ void CG_DrawFlagStatus()
 {
 	int myFlagTakenShader = 0;
 	int theirFlagShader = 0;
-	team_t team = 0;
+	team_t team;
 	int startDrawPos = 2;
 	int ico_size = 32;
 
@@ -3881,7 +3881,7 @@ void CG_DrawFlagStatus()
 		return;
 	}
 
-	team = cg.snap->ps.persistant[PERS_TEAM];
+	team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 
 	if (cgs.gametype == GT_CTY)
 	{

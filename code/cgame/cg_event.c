@@ -116,7 +116,7 @@ static void CG_Obituary( entityState_t *ent ) {
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
-	mod = ent->eventParm;
+	mod = (meansOfDeath_t)ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS ) {
 		CG_Error( "CG_Obituary: target out of range" );
@@ -896,10 +896,10 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 
 	if (teamIndex < 50)
 	{
-		teamName = BG_TeamName(teamIndex, CASE_UPPER);
+		teamName = BG_TeamName((team_t)teamIndex, CASE_UPPER);
 	}
 
-	CG_PrintCTFMessage(ci, teamName, es->eventParm);
+	CG_PrintCTFMessage(ci, teamName, (ctfMsg_t)es->eventParm);
 }
 
 void DoFall(centity_t *cent, entityState_t *es, int clientNum)
@@ -2210,16 +2210,16 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_ENTITY_SOUND");
 		//somewhat of a hack - weapon is the caller entity's index, trickedentindex is the proper sound channel
 		if ( cgs.gameSounds[ es->eventParm ] ) {
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
+			trap_S_StartSound (NULL, es->weapon, (soundChannel_t)es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
 		} else {
 			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, CG_CustomSound( es->weapon, s ) );
+			trap_S_StartSound (NULL, es->weapon, (soundChannel_t)es->trickedentindex, CG_CustomSound( es->weapon, s ) );
 		}
 		break;
 
 	case EV_PLAY_ROFF:
 		DEBUGNAME("EV_PLAY_ROFF");
-		trap_ROFF_Play(es->weapon, es->eventParm, es->trickedentindex);
+		trap_ROFF_Play(es->weapon, es->eventParm, (qboolean)!!es->trickedentindex);
 		break;
 
 	case EV_GLASS_SHATTER:
