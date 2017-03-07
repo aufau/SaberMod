@@ -457,6 +457,7 @@ typedef enum
 
 typedef enum
 {
+	FP_NONE = -1,
 	FP_FIRST = 0,//marker
 	FP_HEAL = 0,//instant
 	FP_LEVITATION,//hold/duration

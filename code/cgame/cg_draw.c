@@ -1241,7 +1241,8 @@ static qboolean ForcePower_Valid(forcePowers_t i)
 	if (i == FP_LEVITATION ||
 		i == FP_SABERATTACK ||
 		i == FP_SABERDEFEND ||
-		i == FP_SABERTHROW)
+		i == FP_SABERTHROW ||
+		i == FP_NONE)
 	{
 		return qfalse;
 	}
@@ -1374,7 +1375,7 @@ void CG_DrawForceSelect( void )
 	i = BG_ProperForceIndex(cg.forceSelect) + 1;
 	if (i >= MAX_SHOWPOWERS)
 	{
-		i = 0;
+		i = FP_FIRST;
 	}
 
 	// Work forwards from current icon
@@ -1383,7 +1384,7 @@ void CG_DrawForceSelect( void )
 	{
 		if (i >= MAX_SHOWPOWERS)
 		{
-			i = 0;
+			i = FP_FIRST;
 		}
 
 		if (!ForcePower_Valid(forcePowerSorted[i]))	// Does he have this power?

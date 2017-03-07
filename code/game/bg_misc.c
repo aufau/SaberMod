@@ -1505,13 +1505,13 @@ int BG_ProperForceIndex(forcePowers_t power)
 	{
 		if (forcePowerSorted[i] == power)
 		{
-			return i;
+			return (forcePowers_t)i;
 		}
 
 		i++;
 	}
 
-	return -1;
+	return FP_NONE;
 }
 
 void BG_CycleForce(playerState_t *ps, int direction)
@@ -1522,7 +1522,7 @@ void BG_CycleForce(playerState_t *ps, int direction)
 	int foundnext = -1;
 
 	if (x >= NUM_FORCE_POWERS ||
-		x < 0 ||
+		x < FP_FIRST ||
 		!(ps->fd.forcePowersKnown & (1 << x)))
 	{ //apparently we have no valid force powers
 		return;
@@ -1544,7 +1544,7 @@ void BG_CycleForce(playerState_t *ps, int direction)
 	{ //cycled off the end.. cycle around to the first
 		x = 0;
 	}
-	if (x < 0)
+	if (x < FP_FIRST)
 	{ //cycled off the beginning.. cycle around to the last
 		x = NUM_FORCE_POWERS-1;
 	}

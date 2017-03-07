@@ -2535,7 +2535,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	cg.clientNum = clientNum;
 	cg.itemSelect = -1;
-	cg.forceSelect = -1;
+	cg.forceSelect = FP_NONE;
 	cg.weaponSelect = WP_BRYAR_PISTOL;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -2646,7 +2646,7 @@ void CG_NextForcePower_f( void )
 	}
 
 //	BG_CycleForce(&cg.snap->ps, 1);
-	if (cg.forceSelect != -1)
+	if (cg.forceSelect != FP_NONE)
 	{
 		cg.snap->ps.fd.forcePowerSelected = cg.forceSelect;
 	}
@@ -2678,7 +2678,7 @@ void CG_PrevForcePower_f( void )
 	}
 
 //	BG_CycleForce(&cg.snap->ps, -1);
-	if (cg.forceSelect != -1)
+	if (cg.forceSelect != FP_NONE)
 	{
 		cg.snap->ps.fd.forcePowerSelected = cg.forceSelect;
 	}
