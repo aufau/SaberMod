@@ -891,7 +891,7 @@ qboolean BG_SaberInSpecialAttack( int anim );
 saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
 saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
 saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move );
-qboolean BG_InRoll( playerState_t *ps, int anim );
+qboolean BG_InRoll( const playerState_t *ps, int anim );
 qboolean BG_InDeathAnim( int anim );
 
 void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed );

@@ -183,7 +183,9 @@ animNumber_t PM_GetSaberStance(void)
 
 qboolean PM_DoSlowFall(void)
 {
-	if ( ( (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT || (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_LEFT ) && pm->ps->legsTimer > 500 )
+	animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
+
+	if ( ( legsAnim == BOTH_WALL_RUN_RIGHT || legsAnim == BOTH_WALL_RUN_LEFT ) && pm->ps->legsTimer > 500 )
 	{
 		return qtrue;
 	}
@@ -745,15 +747,17 @@ static qboolean PM_CheckJump( void )
 					{//passed normal jump height  *2?
 						if ( !(pm->ps->fd.forcePowersActive&(1<<FP_LEVITATION)) )//haven't started forcejump yet
 						{
+							animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
+
 							//start force jump
 							pm->ps->fd.forcePowersActive |= (1<<FP_LEVITATION);
 							pm->ps->fd.forceJumpSound = 1;
 							//play flip
 							if ((pm->cmd.forwardmove || pm->cmd.rightmove) && //pushing in a dir
-								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_F &&//not already flipping
-								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_B &&
-								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_R &&
-								(pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_FLIP_L )
+								legsAnim != BOTH_FLIP_F &&//not already flipping
+								legsAnim != BOTH_FLIP_B &&
+								legsAnim != BOTH_FLIP_R &&
+								legsAnim != BOTH_FLIP_L )
 							{
 								animNumber_t anim = BOTH_FORCEINAIR1;
 								int	parts = SETANIM_BOTH;
@@ -2525,18 +2529,19 @@ static void PM_Footsteps( void ) {
 	int			old;
 	qboolean	footstep;
 	int			setAnimFlags = 0;
+	animNumber_t	legsAnim = ANIM(pm->ps->legsAnim);
 
-	if ( (PM_InSaberAnim( (pm->ps->legsAnim&~ANIM_TOGGLEBIT) ) && !BG_SpinningSaberAnim( (pm->ps->legsAnim&~ANIM_TOGGLEBIT) ))
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_STAND1
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_STAND1TO2
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_STAND2TO1
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_STAND2
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_SABERFAST_STANCE
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_SABERSLOW_STANCE
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_BUTTON_HOLD
-		|| (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_BUTTON_RELEASE
-		|| PM_LandingAnim( (pm->ps->legsAnim&~ANIM_TOGGLEBIT) )
-		|| PM_PainAnim( (pm->ps->legsAnim&~ANIM_TOGGLEBIT) ))
+	if ( (PM_InSaberAnim(legsAnim) && !BG_SpinningSaberAnim(legsAnim))
+		|| legsAnim == BOTH_STAND1
+		|| legsAnim == BOTH_STAND1TO2
+		|| legsAnim == BOTH_STAND2TO1
+		|| legsAnim == BOTH_STAND2
+		|| legsAnim == BOTH_SABERFAST_STANCE
+		|| legsAnim == BOTH_SABERSLOW_STANCE
+		|| legsAnim == BOTH_BUTTON_HOLD
+		|| legsAnim == BOTH_BUTTON_RELEASE
+		|| PM_LandingAnim(legsAnim)
+		|| PM_PainAnim(legsAnim))
 	{//legs are in a saber anim, and not spinning, be sure to override it
 		setAnimFlags |= SETANIM_FLAG_OVERRIDE;
 	}
@@ -4314,6 +4319,8 @@ PmoveSingle
 void trap_SnapVector( float *v );
 
 void PmoveSingle (pmove_t *pmove) {
+	animNumber_t	legsAnim;
+
 	pm = pmove;
 
 	gPMDoSlowFall = PM_DoSlowFall();
@@ -4372,20 +4379,22 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.upmove = 0;
 	}
 
-	if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_A2_STABBACK1) ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_ATTACK_BACK) ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_CROUCHATTACKBACK1) ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_FORCELEAP2_T__B_) ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_JUMPFLIPSTABDOWN) ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == (BOTH_JUMPFLIPSLASHDOWN1))
+	legsAnim = ANIM(pm->ps->legsAnim);
+
+	if (legsAnim == BOTH_A2_STABBACK1 ||
+		legsAnim == BOTH_ATTACK_BACK ||
+		legsAnim == BOTH_CROUCHATTACKBACK1 ||
+		legsAnim == BOTH_FORCELEAP2_T__B_ ||
+		legsAnim == BOTH_JUMPFLIPSTABDOWN ||
+		legsAnim == BOTH_JUMPFLIPSLASHDOWN1)
 	{
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
 		pm->cmd.upmove = 0;
 	}
 
-	if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_KISSER1LOOP ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_KISSEE1LOOP)
+	if (legsAnim == BOTH_KISSER1LOOP ||
+	    legsAnim== BOTH_KISSEE1LOOP)
 	{
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
@@ -4487,8 +4496,8 @@ void PmoveSingle (pmove_t *pmove) {
 		PM_SetPMViewAngle(pm->ps, pm->ps->viewangles, &pm->cmd);
 	}
 
-	if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_KISSER1LOOP ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_KISSEE1LOOP)
+	if (legsAnim == BOTH_KISSER1LOOP ||
+		legsAnim == BOTH_KISSEE1LOOP)
 	{
 		pm->ps->viewangles[PITCH] = 0;
 		PM_SetPMViewAngle(pm->ps, pm->ps->viewangles, &pm->cmd);

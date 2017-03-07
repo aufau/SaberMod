@@ -2524,7 +2524,7 @@ qboolean CanCounterThrow(gentity_t *self, qboolean pull)
 
 qboolean G_InGetUpAnim(playerState_t *ps)
 {
-	switch( (ps->legsAnim&~ANIM_TOGGLEBIT) )
+	switch( ANIM(ps->legsAnim) )
 	{
 	case BOTH_GETUP1:
 	case BOTH_GETUP2:
@@ -2539,9 +2539,11 @@ qboolean G_InGetUpAnim(playerState_t *ps)
 	case BOTH_FORCE_GETUP_B4:
 	case BOTH_FORCE_GETUP_B5:
 		return qtrue;
+	default:
+		break;
 	}
 
-	switch( (ps->torsoAnim&~ANIM_TOGGLEBIT) )
+	switch( ANIM(ps->torsoAnim) )
 	{
 	case BOTH_GETUP1:
 	case BOTH_GETUP2:
@@ -2556,6 +2558,8 @@ qboolean G_InGetUpAnim(playerState_t *ps)
 	case BOTH_FORCE_GETUP_B4:
 	case BOTH_FORCE_GETUP_B5:
 		return qtrue;
+	default:
+		break;
 	}
 
 	return qfalse;

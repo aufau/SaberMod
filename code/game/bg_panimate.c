@@ -340,7 +340,7 @@ saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move )
 	//return LS_NONE;
 }
 
-qboolean BG_InRoll( playerState_t *ps, int anim )
+qboolean BG_InRoll( const playerState_t *ps, int anim )
 {
 	animNumber_t animN = ANIM(anim);
 

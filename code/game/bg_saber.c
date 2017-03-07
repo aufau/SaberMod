@@ -781,8 +781,11 @@ static void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
 //	int loseAnim = BOTH_STAND1;
 	qboolean punishLoser = qfalse;
 
-	switch ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) )
+	switch ( ANIM(pm->ps->torsoAnim) )
 	{
+	default:
+		winAnim = BOTH_STAND1;
+		break;
 	case BOTH_BF2LOCK:
 		pm->ps->saberMove = LS_A_T2B;
 		winAnim = BOTH_A3_T__B_;
@@ -911,6 +914,8 @@ static void PM_SaberLocked( void )
 	playerState_t	*genemy;
 	int				remaining = 0;
 	int				enemy = pm->ps->saberLockEnemy;
+	animNumber_t	torsoAnim;
+	animNumber_t	torsoAnimEnemy;
 
 	if ( enemy < 0 || enemy >= MAX_CLIENTS )
 	{
@@ -919,15 +924,17 @@ static void PM_SaberLocked( void )
 
 	genemy = pm->bgClients[pm->ps->saberLockEnemy];
 
-	if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK )
-		&& ( (genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK )
-		)
+	torsoAnim = ANIM(pm->ps->torsoAnim);
+	torsoAnimEnemy = ANIM(genemy->torsoAnim);
+
+	if (  ( torsoAnim == BOTH_BF2LOCK ||
+			torsoAnim == BOTH_BF1LOCK ||
+			torsoAnim == BOTH_CWCIRCLELOCK ||
+			torsoAnim == BOTH_CCWCIRCLELOCK ) &&
+		  ( torsoAnimEnemy == BOTH_BF2LOCK ||
+			torsoAnimEnemy == BOTH_BF1LOCK ||
+			torsoAnimEnemy == BOTH_CWCIRCLELOCK ||
+			torsoAnimEnemy == BOTH_CCWCIRCLELOCK ) )
 	{
 		float dist = 0;
 
@@ -1363,12 +1370,13 @@ void PM_WeaponLightsaber(void)
 	}
 	else
 	{
-		if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
-				pm->ps->saberLockFrame )
-			)
+		animNumber_t torsoAnim = ANIM(pm->ps->torsoAnim);
+
+		if ( torsoAnim == BOTH_BF2LOCK ||
+			torsoAnim == BOTH_BF1LOCK ||
+			torsoAnim == BOTH_CWCIRCLELOCK ||
+			torsoAnim == BOTH_CCWCIRCLELOCK ||
+			pm->ps->saberLockFrame )
 		{
 			if (pm->ps->saberLockEnemy < MAX_CLIENTS &&
 				pm->ps->saberLockEnemy >= 0)
@@ -1384,17 +1392,9 @@ void PM_WeaponLightsaber(void)
 				}
 			}
 
-			if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
-					pm->ps->saberLockFrame )
-				)
-			{
-				pm->ps->torsoTimer = 0;
-				PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
-				pm->ps->saberLockFrame = 0;
-			}
+			pm->ps->torsoTimer = 0;
+			PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
+			pm->ps->saberLockFrame = 0;
 		}
 	}
 

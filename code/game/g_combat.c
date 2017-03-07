@@ -927,7 +927,7 @@ void CheckAlmostCapture( gentity_t *self, gentity_t *attacker ) {
 
 qboolean G_InKnockDown( playerState_t *ps )
 {
-	switch ( (ps->legsAnim&~ANIM_TOGGLEBIT) )
+	switch ( ANIM(ps->legsAnim) )
 	{
 	case BOTH_KNOCKDOWN1:
 	case BOTH_KNOCKDOWN2:
@@ -950,8 +950,9 @@ qboolean G_InKnockDown( playerState_t *ps )
 	case BOTH_FORCE_GETUP_B5:
 		return qtrue;
 		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage )

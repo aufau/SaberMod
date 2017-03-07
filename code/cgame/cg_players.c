@@ -2372,6 +2372,11 @@ qboolean CG_InKnockDown( int anim )
 
 void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t angles, vec3_t thoracicAngles, vec3_t ulAngles, vec3_t llAngles )
 {
+	animNumber_t torsoAnim = ANIM(cent->currentState.torsoAnim);
+	animNumber_t legsAnim = ANIM(cent->currentState.legsAnim);
+	animNumber_t torsoAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].torsoAnim);
+	animNumber_t legsAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].legsAnim);
+
 //	float legDif;
 //	cent->pe.torso.pitchAngle = viewAngles[PITCH];
 	viewAngles[YAW] = AngleDelta( cent->lerpAngles[YAW], angles[YAW] );
@@ -2385,37 +2390,37 @@ void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t an
 		&& !BG_SaberInSpecial(cent->currentState.saberMove)
 		&& cent->currentState.legsAnim != cent->currentState.torsoAnim )//NOTE: presumes your legs & torso are on the same frame, though they *should* be because PM_SetAnimFinal tries to keep them in synch
 	*/
-	if ( !BG_FlippingAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InDeathAnim(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
-		!BG_InDeathAnim(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		!CG_InRoll(cent) &&
-		!CG_InRollAnim(cent) &&
-		!BG_SaberInSpecial(cent->currentState.saberMove) &&
-		!BG_SaberInSpecialAttack(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
+	if ( !BG_FlippingAnim( legsAnim ) &&
+		!BG_SpinningSaberAnim( legsAnim ) &&
+		!BG_SpinningSaberAnim( torsoAnim ) &&
+		!BG_InSpecialJump( legsAnim ) &&
+		!BG_InSpecialJump( torsoAnim ) &&
+		!BG_InDeathAnim( legsAnim ) &&
+		!BG_InDeathAnim( torsoAnim ) &&
+		!CG_InRoll( cent ) &&
+		!CG_InRollAnim( cent ) &&
+		!BG_SaberInSpecial( cent->currentState.saberMove ) &&
+		!BG_SaberInSpecialAttack( torsoAnim ) &&
+		!BG_SaberInSpecialAttack( legsAnim ) &&
 
-		!CG_InKnockDown(cent->currentState.torsoAnim) &&
-		!CG_InKnockDown(cent->currentState.legsAnim) &&
-		!CG_InKnockDown(cgs.clientinfo[cent->currentState.number].torsoAnim) &&
-		!CG_InKnockDown(cgs.clientinfo[cent->currentState.number].legsAnim) &&
+		!CG_InKnockDown( torsoAnim ) &&
+		!CG_InKnockDown( legsAnim ) &&
+		!CG_InKnockDown( torsoAnimInfo ) &&
+		!CG_InKnockDown( legsAnimInfo ) &&
 
-		!BG_FlippingAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
-		!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
+		!BG_FlippingAnim( legsAnimInfo ) &&
+		!BG_SpinningSaberAnim( legsAnimInfo ) &&
+		!BG_SpinningSaberAnim( torsoAnimInfo ) &&
+		!BG_InSpecialJump( legsAnimInfo ) &&
+		!BG_InSpecialJump( torsoAnimInfo ) &&
+		!BG_InDeathAnim( legsAnimInfo ) &&
+		!BG_InDeathAnim( torsoAnimInfo ) &&
+		!BG_SaberInSpecialAttack( torsoAnimInfo ) &&
+		!BG_SaberInSpecialAttack( legsAnimInfo ) &&
 
 		!(cent->currentState.eFlags & EF_DEAD) &&
-		(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) != (cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) != (cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT))
+		legsAnim != torsoAnim &&
+		legsAnimInfo != torsoAnimInfo)
 	{//FIXME: no need to do this if legs and torso on are same frame
 		//adjust for motion offset
 		mdxaBone_t	boltMatrix;
@@ -2794,28 +2799,33 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 		if (cg_duelHeadAngles.integer && !(cent->currentState.eFlags & EF_DEAD))
 		{
-			if ( !BG_FlippingAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InDeathAnim(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
-				!BG_InDeathAnim(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-				!CG_InRoll(cent) &&
-				!CG_InRollAnim(cent) &&
-				!BG_SaberInSpecial(cent->currentState.saberMove) &&
-				!BG_SaberInSpecialAttack(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
+			animNumber_t torsoAnim = ANIM(cent->currentState.torsoAnim);
+			animNumber_t legsAnim = ANIM(cent->currentState.legsAnim);
+			animNumber_t torsoAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].torsoAnim);
+			animNumber_t legsAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].legsAnim);
 
-				!BG_FlippingAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
-				!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) )
+			if ( !BG_FlippingAnim( legsAnim ) &&
+				!BG_SpinningSaberAnim( legsAnim ) &&
+				!BG_SpinningSaberAnim( torsoAnim ) &&
+				!BG_InSpecialJump( legsAnim ) &&
+				!BG_InSpecialJump( torsoAnim ) &&
+				!BG_InDeathAnim( legsAnim ) &&
+				!BG_InDeathAnim( torsoAnim ) &&
+				!CG_InRoll( cent ) &&
+				!CG_InRollAnim( cent ) &&
+				!BG_SaberInSpecial( cent->currentState.saberMove ) &&
+				!BG_SaberInSpecialAttack( torsoAnim ) &&
+				!BG_SaberInSpecialAttack( legsAnim ) &&
+
+				!BG_FlippingAnim( legsAnimInfo ) &&
+				!BG_SpinningSaberAnim( legsAnimInfo ) &&
+				!BG_SpinningSaberAnim( torsoAnimInfo ) &&
+				!BG_InSpecialJump( legsAnimInfo ) &&
+				!BG_InSpecialJump( torsoAnimInfo ) &&
+				!BG_InDeathAnim( legsAnimInfo ) &&
+				!BG_InDeathAnim( torsoAnimInfo ) &&
+				!BG_SaberInSpecialAttack( torsoAnimInfo ) &&
+				!BG_SaberInSpecialAttack( legsAnimInfo ) )
 			{ //use similar check to spine correction, these are the "safe" anims to be in for twisting around
 				vec3_t headAngles;
 				int duelClient = -1;
