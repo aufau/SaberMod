@@ -532,7 +532,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
 		// return to pos1 after a delay
 		ent->think = ReturnToPos1;
-		ent->nextthink = level.time + ent->wait;
+		ent->nextthink = level.time + (int)ent->wait;
 
 		if (ent->delay)
 		{
@@ -611,7 +611,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	// if all the way up, just delay before coming down
 	if ( ent->moverState == MOVER_POS2 && other && other->client ) {
 		//rww - don't delay if we're not being used by a player
-		ent->nextthink = level.time + ent->wait;
+		ent->nextthink = level.time + (int)ent->wait;
 		return;
 	}
 
@@ -1370,7 +1370,7 @@ void Reached_Train( gentity_t *ent ) {
 
 	// if there is a "wait" value on the target, don't start moving yet
 	if ( next->wait ) {
-		ent->nextthink = level.time + next->wait * 1000;
+		ent->nextthink = level.time + (int)(next->wait * 1000);
 		ent->think = Think_BeginMoving;
 		ent->s.pos.trType = TR_STATIONARY;
 	}
@@ -1740,7 +1740,7 @@ void BreakableBrushUse(gentity_t *self, gentity_t *other, gentity_t *activator)
 	self->enemy = other;
 
 	self->think = BrushThink;
-	self->nextthink = level.time + self->wait;
+	self->nextthink = level.time + (int)self->wait;
 }
 
 /*QUAKED func_breakable (0 .5 .8) ? INVINCIBLE
@@ -2078,7 +2078,7 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 		if ( self->wait )
 		{
 			self->think = func_usable_think;
-			self->nextthink = level.time + ( self->wait * 1000 );
+			self->nextthink = level.time + (int)( self->wait * 1000 );
 		}
 
 		return;

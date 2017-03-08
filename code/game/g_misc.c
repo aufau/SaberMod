@@ -1415,7 +1415,7 @@ void fx_runner_think( gentity_t *ent )
 	// call the effect with the desired position and orientation
 	G_AddEvent( ent, EV_PLAY_EFFECT_ID, ent->bolt_Head );
 
-	ent->nextthink = level.time + ent->delay + random() * ent->random;
+	ent->nextthink = level.time + ent->delay + (int)(random() * ent->random);
 
 	if ( ent->target )
 	{

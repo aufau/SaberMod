@@ -106,7 +106,7 @@ void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator ) 
 	{ //Leave me alone, I am thinking.
 		return;
 	}
-	ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
+	ent->nextthink = level.time + (int)( ( ent->wait + ent->random * crandom() ) * 1000 );
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
 }
