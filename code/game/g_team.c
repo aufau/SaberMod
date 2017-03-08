@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 typedef struct teamgame_s {
-	float			last_flag_capture;
+	int				last_flag_capture;
 	int				last_capture_team;
 	flagStatus_t	redStatus;	// CTF
 	flagStatus_t	blueStatus;	// CTF

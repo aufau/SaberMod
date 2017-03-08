@@ -339,7 +339,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	int i = 0;
 	int othercarrying = 0;
-	float time_lowest = 0;
+	int time_lowest = 0;
 	int index_lowest = -1;
 	int hasall = 1;
 	// int forceReselect = WP_NONE;
@@ -1599,7 +1599,7 @@ animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t dama
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
 int GetNearestVisibleWP(vec3_t org, int ignore);
 int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
-extern float gBotEdit;
+extern qboolean gBotEdit;
 
 #define ANIMENT_ALIGNED_UNKNOWN		0
 #define ANIMENT_ALIGNED_BAD			1

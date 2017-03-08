@@ -316,8 +316,8 @@ typedef struct particle_s
 {
 	struct particle_s	*next;
 
-	float		time;
-	float		endtime;
+	int			time;
+	int			endtime;
 
 	vec3_t		org;
 	vec3_t		vel;
@@ -400,7 +400,7 @@ qboolean		initparticles = qfalse;
 vec3_t			pvforward, pvright, pvup;
 vec3_t			rforward, rright, rup;
 
-float			oldtime;
+static int		oldtime;
 
 /*
 ===============

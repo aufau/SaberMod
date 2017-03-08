@@ -620,9 +620,6 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		altMissileHitSound;
 
 	sfxHandle_t		readySound;
-	float			trailRadius;
-	float			wiTrailTime;
-
 } weaponInfo_t;
 
 
@@ -837,11 +834,11 @@ typedef struct {
 	int			weaponAnimationTime;
 
 	// blend blobs
-	float		damageTime;
+	int			damageTime;
 	float		damageX, damageY, damageValue;
 
 	// view movement
-	float		v_dmg_time;
+	int			v_dmg_time;
 	float		v_dmg_pitch;
 	float		v_dmg_roll;
 
@@ -852,7 +849,7 @@ typedef struct {
 	float		bobfracsin;
 	int			bobcycle;
 	float		xyspeed;
-	int     nextOrbitTime;
+	int     	nextOrbitTime;
 
 	//qboolean cameraMode;		// if rendering from a loaded camera
 	int			loadLCARSStage;

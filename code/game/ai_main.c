@@ -1948,7 +1948,7 @@ void UpdateEventTracker(void)
 			gBotEventTracker[i].eventSequence = level.clients[i].ps.eventSequence;
 			gBotEventTracker[i].events[0] = level.clients[i].ps.events[0];
 			gBotEventTracker[i].events[1] = level.clients[i].ps.events[1];
-			gBotEventTracker[i].eventTime = level.time + 0.5;
+			gBotEventTracker[i].eventTime = level.time;
 		}
 
 		i++;
@@ -4678,7 +4678,7 @@ int ShouldSecondaryFire(bot_state_t *bs)
 
 		if (rTime > 0)
 		{
-			dif = ( level.time - rTime ) / ( 1200.0f / 16.0f );
+			dif = ( level.time - rTime ) / ( 1200 / 16 );
 
 			if (dif >= 10)
 			{
@@ -5698,7 +5698,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 	int doingFallback = 0;
 	int fjHalt;
 	vec3_t a, ang, headlevel, eorg, noz_x, noz_y, dif, a_fo;
-	float reaction;
+	int reaction;
 	float bLeadAmount;
 	int meleestrafe = 0;
 	int useTheForce = 0;

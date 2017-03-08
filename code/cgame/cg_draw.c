@@ -3944,9 +3944,9 @@ CG_Draw2D
 =================
 */
 static void CG_Draw2D( void ) {
-	float			inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
-	float			wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
-	float			bestTime;
+	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
+	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
+	int				bestTime;
 	int				drawSelect = 0;
 	float			fallTime, rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
 	vec4_t			hcolor;
