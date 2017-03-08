@@ -1841,7 +1841,7 @@ void ExampleAnimEntAlertOthers(gentity_t *self)
 				ExampleAnimEntAlignment(self) == ExampleAnimEntAlignment(&g_entities[i]))
 			{
 				g_entities[i].bolt_Motion = self->bolt_Motion;
-				g_entities[i].speed = level.time + 4000; //4 seconds til we forget about the enemy
+				g_entities[i].timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 				g_entities[i].bolt_RArm = level.time + Q_irand(500, 1000);
 			}
 		}
@@ -1966,7 +1966,7 @@ void ExampleAnimEnt_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		if (attacker->s.number >= MAX_CLIENTS || (ExampleAnimEntAlignment(self) != ANIMENT_ALIGNED_GOOD && !(attacker->r.svFlags & SVF_BOT)))
 		{
 			self->bolt_Motion = attacker->s.number;
-			self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+			self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 			ExampleAnimEntAlertOthers(self);
 			self->bolt_RArm = level.time + Q_irand(500, 1000);
 		}
@@ -2405,7 +2405,7 @@ void ExampleAnimEntEnemyHandling(gentity_t *self, float enDist)
 	{
 		self->bolt_Motion = bestIndex;
 		enDist = minDist;
-		self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+		self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 		ExampleAnimEntAlertOthers(self);
 		self->bolt_RArm = level.time + Q_irand(500, 1000);
 
@@ -2593,7 +2593,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 				g_entities[self->bolt_Motion].inuse &&
 				g_entities[self->bolt_Motion].client)
 			{
-				if (self->speed < level.time || g_entities[self->bolt_Motion].health < 1)
+				if (self->timestamp < level.time || g_entities[self->bolt_Motion].health < 1)
 				{
 					self->bolt_Motion = ENTITYNUM_NONE;
 				}
@@ -2612,7 +2612,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 				g_entities[self->bolt_Motion].inuse &&
 				g_entities[self->bolt_Motion].s.eType == ET_GRAPPLE)
 			{
-				if (self->speed < level.time || g_entities[self->bolt_Motion].health < 1)
+				if (self->timestamp < level.time || g_entities[self->bolt_Motion].health < 1)
 				{
 					self->bolt_Motion = ENTITYNUM_NONE;
 				}
@@ -2684,7 +2684,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					{
 						self->boltpoint4 = 1;
 					}
-					self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+					self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 				}
 				else
 				{
