@@ -154,7 +154,7 @@ void ThrowSaberToAttacker(gentity_t *self, gentity_t *attacker)
 		VectorCopy(ent->s.origin2, ent->s.pos.trBase);
 		VectorCopy(ent->s.origin2, ent->s.origin);
 		VectorCopy(ent->s.origin2, ent->r.currentOrigin);
-		ent->pos2[0] = 0;
+		ent->boltpoint1 = 0;
 		trap_LinkEntity(ent);
 		return;
 	}
@@ -194,21 +194,20 @@ void JMSaberThink(gentity_t *ent)
 			ent->s.eType = ET_MISSILE;
 			ent->enemy = NULL;
 
-			ent->pos2[0] = 1;
-			ent->pos2[1] = 0; //respawn next think
+			ent->boltpoint1 = level.time; //respawn next think
 			trap_LinkEntity(ent);
 		}
 		else
 		{
-			ent->pos2[1] = level.time + JMSABER_RESPAWN_TIME;
+			ent->boltpoint1 = level.time + JMSABER_RESPAWN_TIME;
 		}
 	}
-	else if (ent->pos2[0] && ent->pos2[1] < level.time)
+	else if (ent->boltpoint1 && ent->boltpoint1 < level.time)
 	{
 		VectorCopy(ent->s.origin2, ent->s.pos.trBase);
 		VectorCopy(ent->s.origin2, ent->s.origin);
 		VectorCopy(ent->s.origin2, ent->r.currentOrigin);
-		ent->pos2[0] = 0;
+		ent->boltpoint1 = 0;
 		trap_LinkEntity(ent);
 	}
 
@@ -284,8 +283,7 @@ void JMSaberTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		i++;
 	}
 
-	self->pos2[0] = 1;
-	self->pos2[1] = level.time + JMSABER_RESPAWN_TIME;
+	self->boltpoint1 = level.time + JMSABER_RESPAWN_TIME;
 
 	self->s.modelindex = 0;
 	self->s.eFlags |= EF_NODRAW;

@@ -2458,7 +2458,7 @@ void SaberBounceSound( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void DeadSaberThink(gentity_t *saberent)
 {
-	if (saberent->speed < level.time)
+	if (saberent->timestamp < level.time)
 	{
 		saberent->think = G_FreeEntity;
 		saberent->nextthink = level.time;
@@ -2527,7 +2527,7 @@ void MakeDeadSaber(gentity_t *ent)
 	saberent->s.eType = ET_MISSILE;
 	saberent->s.weapon = WP_SABER;
 
-	saberent->speed = level.time + 4000;
+	saberent->timestamp = level.time + 4000;
 
 	saberent->bounceCount = 12;
 
@@ -2586,7 +2586,7 @@ void saberBackToOwner(gentity_t *saberent)
 
 	ownerLen = VectorLength(dir);
 
-	if (saberent->speed < level.time)
+	if (saberent->timestamp < level.time)
 	{
 		VectorNormalize(dir);
 
@@ -2598,18 +2598,18 @@ void saberBackToOwner(gentity_t *saberent)
 			if (g_entities[saberent->r.ownerNum].client->buttons & BUTTON_ATTACK)
 			{
 				VectorScale(dir, 1200, saberent->s.pos.trDelta );
-				saberent->speed = level.time + 50;
+				saberent->timestamp = level.time + 50;
 			}
 			else
 			{
 				VectorScale(dir, 700, saberent->s.pos.trDelta );
-				saberent->speed = level.time + 200;
+				saberent->timestamp = level.time + 200;
 			}
 		}
 		else
 		{
 			VectorScale(dir, 700, saberent->s.pos.trDelta );
-			saberent->speed = level.time + 200;
+			saberent->timestamp = level.time + 200;
 		}
 		saberent->s.pos.trTime = level.time;
 	}
@@ -2682,7 +2682,7 @@ void thrownSaberTouch (gentity_t *saberent, gentity_t *other, trace_t *trace)
 
 	CheckThrownSaberDamaged(saberent, &g_entities[saberent->r.ownerNum], hitEnt, 256, 0);
 
-	saberent->speed = 0;
+	saberent->timestamp = 0;
 }
 
 #define SABER_MAX_THROW_DISTANCE 700
@@ -2763,7 +2763,7 @@ void saberFirstThrown(gentity_t *saberent)
 	}
 
 	if (saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] >= FORCE_LEVEL_2 &&
-		saberent->speed < level.time)
+		saberent->timestamp < level.time)
 	{ //if owner is rank 3 in saber throwing, the saber goes where he points
 		vec3_t fwd, traceFrom, traceTo, dir;
 		trace_t tr;
@@ -2799,11 +2799,11 @@ void saberFirstThrown(gentity_t *saberent)
 
 		if (saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] >= FORCE_LEVEL_3)
 		{ //we'll treat them to a quicker update rate if their throw rank is high enough
-			saberent->speed = level.time + 100;
+			saberent->timestamp = level.time + 100;
 		}
 		else
 		{
-			saberent->speed = level.time + 400;
+			saberent->timestamp = level.time + 400;
 		}
 	}
 
