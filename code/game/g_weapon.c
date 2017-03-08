@@ -35,7 +35,7 @@ static	vec3_t	muzzle;
 //--------
 #define BRYAR_PISTOL_VEL			1600
 #define BRYAR_PISTOL_DAMAGE			10
-#define BRYAR_CHARGE_UNIT			200.0f	// bryar charging gives us one more unit every 200ms--if you change this, you'll have to do the same in bg_pmove
+#define BRYAR_CHARGE_UNIT			200	// bryar charging gives us one more unit every 200ms--if you change this, you'll have to do the same in bg_pmove
 #define BRYAR_ALT_SIZE				1.0f
 
 // E11 Blaster
@@ -52,7 +52,7 @@ static	vec3_t	muzzle;
 #define DISRUPTOR_ALT_DAMAGE			100 //125
 #define DISRUPTOR_NPC_ALT_DAMAGE_CUT	0.2f
 #define DISRUPTOR_ALT_TRACES			3		// can go through a max of 3 damageable(sp?) entities
-#define DISRUPTOR_CHARGE_UNIT			50.0f	// distruptor charging gives us one more unit every 50ms--if you change this, you'll have to do the same in bg_pmove
+#define DISRUPTOR_CHARGE_UNIT			50	// distruptor charging gives us one more unit every 50ms--if you change this, you'll have to do the same in bg_pmove
 
 // Wookiee Bowcaster
 //----------
@@ -64,7 +64,7 @@ static	vec3_t	muzzle;
 
 #define BOWCASTER_ALT_SPREAD		5.0f
 #define BOWCASTER_VEL_RANGE			0.3f
-#define BOWCASTER_CHARGE_UNIT		200.0f	// bowcaster charging gives us one more unit every 200ms--if you change this, you'll have to do the same in bg_pmove
+#define BOWCASTER_CHARGE_UNIT		200	// bowcaster charging gives us one more unit every 200ms--if you change this, you'll have to do the same in bg_pmove
 
 // Heavy Repeater
 //----------
@@ -85,7 +85,7 @@ static	vec3_t	muzzle;
 #define	DEMP2_SIZE					2		// half of bbox size
 
 #define DEMP2_ALT_DAMAGE			8 //12		// does 12, 36, 84 at each of the 3 charge levels.
-#define DEMP2_CHARGE_UNIT			700.0f	// demp2 charging gives us one more unit every 700ms--if you change this, you'll have to do the same in bg_weapons
+#define DEMP2_CHARGE_UNIT			700	// demp2 charging gives us one more unit every 700ms--if you change this, you'll have to do the same in bg_weapons
 #define DEMP2_ALT_RANGE				4096
 #define DEMP2_ALT_SPLASHRADIUS		256
 
@@ -1081,7 +1081,7 @@ void DEMP2_AltRadiusDamage( gentity_t *ent )
 
 	radius = frac * 200.0f; // 200 is max radius...the model is aprox. 100 units tall...the fx draw code mults. this by 2.
 
-	fact = ent->count*0.6;
+	fact = ent->count*0.6f;
 
 	if (fact < 1)
 	{
@@ -1230,7 +1230,7 @@ static void WP_DEMP2_AltFire( gentity_t *ent )
 		count = 3;
 	}
 
-	fact = count*0.8;
+	fact = count*0.8f;
 	if (fact < 1)
 	{
 		fact = 1;
@@ -1607,7 +1607,7 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 		{
 			rTime = ent->client->ps.rocketLastValidTime;
 		}
-		dif = ( level.time - rTime ) / ( 1200.0f / 16.0f );
+		dif = ( level.time - rTime ) / ( 1200 / 16 );
 
 		if (dif < 0)
 		{
@@ -3358,7 +3358,7 @@ void SP_emplaced_gun( gentity_t *ent )
 
 	if (ent->spawnflags & EMPLACED_CANRESPAWN)
 	{ //make it somewhat easier to kill if it can respawn
-		ent->health *= 0.4;
+		ent->health *= 0.4f;
 	}
 
 	ent->boltpoint4 = 0;

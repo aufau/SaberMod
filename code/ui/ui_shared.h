@@ -480,7 +480,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint);
 void Menu_SetFeederSelection(menuDef_t *menu, int feeder, int index, const char *name);
 void Display_CacheAll();
 
-void *UI_Alloc( int size );
+void *UI_Alloc( size_t size );
 void UI_InitMemory( void );
 qboolean UI_OutOfMemory();
 

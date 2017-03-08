@@ -536,7 +536,7 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 	//This is a rare exception, you should never really call PM_ utility functions from game or cgame (despite the fact that it's technically possible)
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, attAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
-	attacker->client->ps.saberLockFrame = bgGlobalAnimations[attAnim].firstFrame+(bgGlobalAnimations[attAnim].numFrames*0.5);
+	attacker->client->ps.saberLockFrame = bgGlobalAnimations[attAnim].firstFrame+(bgGlobalAnimations[attAnim].numFrames*0.5f);
 
 	pmv.ps = &defender->client->ps;
 	pmv.animations = bgGlobalAnimations;
@@ -544,7 +544,7 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, defAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
-	defender->client->ps.saberLockFrame = bgGlobalAnimations[defAnim].firstFrame+(bgGlobalAnimations[defAnim].numFrames*0.5);
+	defender->client->ps.saberLockFrame = bgGlobalAnimations[defAnim].firstFrame+(bgGlobalAnimations[defAnim].numFrames*0.5f);
 
 	attacker->client->ps.saberLockHits = 0;
 	defender->client->ps.saberLockHits = 0;
@@ -1765,14 +1765,14 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 		{
 			if (g_entities[tr.entityNum].client && g_entities[tr.entityNum].client->ps.usingATST)
 			{
-				dmg *= 0.1;
+				dmg *= 0.1f;
 			}
 
 			if (g_entities[tr.entityNum].client && !g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK])
 			{ //not a "jedi", so make them suffer more
 				if (dmg > SABER_NONATTACK_DAMAGE)
 				{ //don't bother increasing just for idle touch damage
-					dmg *= 1.5;
+					dmg *= 1.5f;
 				}
 			}
 
@@ -1782,11 +1782,11 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				{ //don't reduce damage if it's only 1, or if this is an unblockable attack
 					if (dmg == SABER_HITDAMAGE)
 					{ //level 1 attack
-						dmg *= 0.7;
+						dmg *= 0.7f;
 					}
 					else
 					{
-						dmg *= 0.5;
+						dmg *= 0.5f;
 					}
 				}
 			}

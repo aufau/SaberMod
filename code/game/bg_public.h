@@ -41,8 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
-#define ARMOR_PROTECTION		0.50 // Shields only stop 50% of armor-piercing dmg
-#define ARMOR_REDUCTION_FACTOR	0.50 // Certain damage doesn't take off armor as efficiently
+#define ARMOR_PROTECTION		0.5f // Shields only stop 50% of armor-piercing dmg
+#define ARMOR_REDUCTION_FACTOR	0.5f // Certain damage doesn't take off armor as efficiently
 
 #define	JUMP_VELOCITY		225//270
 

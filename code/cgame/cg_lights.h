@@ -32,6 +32,7 @@ typedef struct
 	union {
 		color4ub_t		b;
 		uint32_t		ui;
+		int				i;
 	} value;
 	color4ub_t		map[MAX_QPATH];
 } clightstyle_t;

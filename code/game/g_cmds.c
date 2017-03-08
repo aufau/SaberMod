@@ -2682,7 +2682,7 @@ static void Cmd_AddBot_f(gentity_t *ent)
 	trap_SendServerCommand( ent-g_entities, va("print \"%s.\n\"", G_GetStripEdString("SVINGAME", "ONLY_ADD_BOTS_AS_SERVER")));
 }
 
-void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
+void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 
 #ifdef _DEBUG
 void ScorePlum( int clientNum, vec3_t origin, int score );
@@ -2733,7 +2733,6 @@ static void Cmd_DebugSetSaberMove_f(gentity_t *self)
 
 static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 {
-	int flags = SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD;
 	int argNum = trap_Argc();
 	char arg[MAX_STRING_CHARS];
 	int i = 0;
@@ -2775,7 +2774,7 @@ static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 	pmv.gametype = level.gametype;
 
 	pm = &pmv;
-	PM_SetAnim(SETANIM_BOTH, i, flags, 0);
+	PM_SetAnim(SETANIM_BOTH, i, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
 
 	Com_Printf("Set body anim to %s\n", arg);
 }
@@ -2794,7 +2793,7 @@ static void Cmd_HeadExplodey_f(gentity_t *ent)
 	}
 }
 
-static void StandardSetBodyAnim(gentity_t *self, int anim, int flags)
+static void StandardSetBodyAnim(gentity_t *self, int anim, unsigned flags)
 {
 	pmove_t pmv;
 

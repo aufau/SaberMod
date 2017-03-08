@@ -1451,7 +1451,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 			if (fVel > 250)
 			{
-				animSpeedMult = 1.2;
+				animSpeedMult = 1.2f;
 			}
 			else if (fVel > 200)
 			{
@@ -1459,11 +1459,11 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 			}
 			else if (fVel > 100)
 			{
-				animSpeedMult = 0.9;
+				animSpeedMult = 0.9f;
 			}
 			else if (fVel > 0)
 			{
-				animSpeedMult = 0.8;
+				animSpeedMult = 0.8f;
 			}
 			else
 			{
@@ -1887,7 +1887,8 @@ static void CG_RunLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf,
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
-		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		lf->oldFrame = lf->frame = 0;
+		lf->backlerp = 0;
 		return;
 	}
 
@@ -2079,11 +2080,11 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	if (cent->currentState.forcePowersActive & (1 << FP_RAGE))
 	{
-		speedScale = 1.3;
+		speedScale = 1.3f;
 	}
 	else if (cent->currentState.forcePowersActive & (1 << FP_SPEED))
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 	else
 	{
@@ -2105,7 +2106,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	}
 	else
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
@@ -2552,7 +2553,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 	} else {
 		dest = headAngles[PITCH] * 0.75f;
 	}
-	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
+	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
 
 	// --------- roll -------------
@@ -2674,7 +2675,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 	if (cent->isATST)
 	{
-		cent->pe.legs.yawSwingDif = CG_SwingAnglesATST( cent, legsAngles[YAW], 40, 360, /*cg_swingSpeed.value*/ 0.05, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+		cent->pe.legs.yawSwingDif = CG_SwingAnglesATST( cent, legsAngles[YAW], 40, 360, /*cg_swingSpeed.value*/ 0.05f, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 	}
 	else
 	{
@@ -2684,7 +2685,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 		}
 		else
 		{
-			CG_SwingAngles( legsAngles[YAW], 40, 90, /*cg_swingSpeed.value*/ 0.3, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+			CG_SwingAngles( legsAngles[YAW], 40, 90, /*cg_swingSpeed.value*/ 0.3f, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 		}
 	}
 	legsAngles[YAW] = cent->pe.legs.yawAngle;
@@ -3131,24 +3132,24 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 
 	// quad gives a dlight
 	if ( powerups & ( 1 << PW_QUAD ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0f );
 	}
 
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.redFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 0.2f, 0.2f );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0f, 0.2f, 0.2f );
 	}
 
 	// blueflag
 	if ( powerups & ( 1 << PW_BLUEFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.blueFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0f );
 	}
 
 	// neutralflag
 	if ( powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 1.0, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0f, 1.0f, 1.0f );
 	}
 
 	// haste leaves smoke trails
@@ -4199,7 +4200,7 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	effectTrailArgStruct_t fx;
 	saber_colors_t scolor;
 	vec3_t otherPos, otherDir, otherEnd;
-	float dualLen = 0.7;
+	float dualLen = 0.7f;
 
 	saberEnt = &cg_entities[cent->currentState.saberEntityNum];
 
@@ -5027,7 +5028,8 @@ static void CG_G2EntRunLerpFrame( centity_t *cent, lerpFrame_t *lf, int newAnima
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
-		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		lf->oldFrame = lf->frame = 0;
+		lf->backlerp = 0;
 		return;
 	}
 
@@ -5197,11 +5199,11 @@ static void CG_G2EntAnimation( centity_t *cent, int *legsOld, int *legs, float *
 
 	if (cent->currentState.forcePowersActive & (1 << FP_RAGE))
 	{
-		speedScale = 1.3;
+		speedScale = 1.3f;
 	}
 	else if (cent->currentState.forcePowersActive & (1 << FP_SPEED))
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 	else
 	{
@@ -5216,7 +5218,7 @@ static void CG_G2EntAnimation( centity_t *cent, int *legsOld, int *legs, float *
 	}
 	else
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
@@ -5343,7 +5345,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 	} else {
 		dest = headAngles[PITCH] * 0.75f;
 	}
-	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
+	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
 
 	if ( speed ) {
@@ -5712,7 +5714,7 @@ void CG_G2Animated( centity_t *cent )
 
 			if ( dif < 500 )
 			{
-				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = (dif - 500) * (255.0f / 500);
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
@@ -5740,7 +5742,7 @@ void CG_G2Animated( centity_t *cent )
 
 	if (cent->currentState.genericenemyindex > cg.time)
 	{
-		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysalimariShader );
+		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 	}
 }
 //rww - here ends the majority of my g2animent stuff.
@@ -5978,7 +5980,7 @@ void CG_Player( centity_t *cent ) {
 	{
 		if (cent->trickAlpha > 1)
 		{
-			cent->trickAlpha -= (cg.time - cent->trickAlphaTime)*0.5;
+			cent->trickAlpha -= (cg.time - cent->trickAlphaTime)*0.5f;
 			cent->trickAlphaTime = cg.time;
 
 			if (cent->trickAlpha < 0)
@@ -6855,35 +6857,35 @@ doEssentialTwo:
 	{
 		if (cgs.gametype == GT_CTY && (cent->currentState.powerups & (1 << PW_REDFLAG)))
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysaliredShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysaliredShader );
 		}
 		else if (cgs.gametype == GT_CTY && (cent->currentState.powerups & (1 << PW_BLUEFLAG)))
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysaliblueShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysaliblueShader );
 		}
 		else
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysalimariShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 		}
 	}
 
 	if (cent->currentState.powerups & (1 << PW_FORCE_BOON))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.boonShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.boonShader );
 	}
 
 	if (cent->currentState.powerups & (1 << PW_FORCE_ENLIGHTENED_DARK))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.endarkenmentShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.endarkenmentShader );
 	}
 	else if (cent->currentState.powerups & (1 << PW_FORCE_ENLIGHTENED_LIGHT))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.enlightenmentShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.enlightenmentShader );
 	}
 
 	if (cent->currentState.eFlags & EF_INVULNERABLE)
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.invulnerabilityShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.invulnerabilityShader );
 	}
 stillDoSaber:
 	if (cent->currentState.weapon == WP_SABER && !cent->currentState.shouldtarget)
@@ -6983,7 +6985,7 @@ stillDoSaber:
 				{
 					if (cent->bolt3 < 90)
 					{
-						cent->bolt3 += (cg.time - cent->bolt2)*0.5;
+						cent->bolt3 += (cg.time - cent->bolt2) / 2;
 
 						if (cent->bolt3 > 90)
 						{
@@ -6992,7 +6994,7 @@ stillDoSaber:
 					}
 					else if (cent->bolt3 > 90)
 					{
-						cent->bolt3 -= (cg.time - cent->bolt2)*0.5;
+						cent->bolt3 -= (cg.time - cent->bolt2) / 2;
 
 						if (cent->bolt3 < 90)
 						{
@@ -7461,7 +7463,7 @@ doEssentialThree:
 
 			if ( dif < 500 )
 			{
-				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = (dif - 500) * (255.0f / 500);
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;

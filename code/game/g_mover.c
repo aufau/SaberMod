@@ -457,14 +457,14 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 	case MOVER_1TO2:
 		VectorCopy( ent->pos1, ent->s.pos.trBase );
 		VectorSubtract( ent->pos2, ent->pos1, delta );
-		f = 1000.0 / ent->s.pos.trDuration;
+		f = 1000.0f / ent->s.pos.trDuration;
 		VectorScale( delta, f, ent->s.pos.trDelta );
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	case MOVER_2TO1:
 		VectorCopy( ent->pos2, ent->s.pos.trBase );
 		VectorSubtract( ent->pos1, ent->pos2, delta );
-		f = 1000.0 / ent->s.pos.trDuration;
+		f = 1000.0f / ent->s.pos.trDuration;
 		VectorScale( delta, f, ent->s.pos.trDelta );
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;

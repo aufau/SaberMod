@@ -374,10 +374,10 @@ typedef struct bot_state_s
 	//end rww
 } bot_state_t;
 
-void *B_TempAlloc(int size);
-void B_TempFree(int size);
+void *B_TempAlloc(size_t size);
+void B_TempFree(size_t size);
 
-void *B_Alloc(int size);
+void *B_Alloc(size_t size);
 void B_Free(void *ptr);
 
 //resets the whole bot state

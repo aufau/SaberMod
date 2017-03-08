@@ -85,7 +85,7 @@ void CG_RunLightStyles (void)
 			ls->value.b[2] = ls->map[ofs%ls->length][2];
 			ls->value.b[3] = 255; //ls->map[ofs%ls->length][3];
 		}
-		trap_R_SetLightStyle(i, ls->value.ui);
+		trap_R_SetLightStyle(i, ls->value.i);
 	}
 }
 

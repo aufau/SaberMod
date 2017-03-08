@@ -972,8 +972,8 @@ int		Q_rand( int *seed );
 float	Q_random( int *seed );
 float	Q_crandom( int *seed );
 
-#define random()	(id_rand() * (1.0f / ID_RAND_MAX))
-#define crandom()	(id_rand() * (2.0f / ID_RAND_MAX) - 1.0f)
+#define random()	((float)id_rand() * (1.0f / ID_RAND_MAX))
+#define crandom()	((float)id_rand() * (2.0f / ID_RAND_MAX) - 1.0f)
 
 void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );

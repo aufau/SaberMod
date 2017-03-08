@@ -1110,7 +1110,7 @@ static qboolean PM_CheckJump( void )
 				{
 					if ( pm->ps->legsTimer > 400 )
 					{//not at the end of the anim
-						float animLen = PM_AnimLength( 0, BOTH_WALL_RUN_LEFT );
+						int animLen = PM_AnimLength( 0, BOTH_WALL_RUN_LEFT );
 						if ( pm->ps->legsTimer < animLen - 400 )
 						{//not at start of anim
 							VectorMA( pm->ps->origin, -16, right, traceto );
@@ -1122,7 +1122,7 @@ static qboolean PM_CheckJump( void )
 				{
 					if ( pm->ps->legsTimer > 400 )
 					{//not at the end of the anim
-						float animLen = PM_AnimLength( 0, BOTH_WALL_RUN_RIGHT );
+						int animLen = PM_AnimLength( 0, BOTH_WALL_RUN_RIGHT );
 						if ( pm->ps->legsTimer < animLen - 400 )
 						{//not at start of anim
 							VectorMA( pm->ps->origin, 16, right, traceto );
@@ -1230,7 +1230,7 @@ static qboolean PM_CheckJump( void )
 		{//not in an anim we shouldn't interrupt
 			//see if it's not too late to start a special jump-attack
 			//SDKBUG: PM_AnimLength doesn't remove ANIM_TOGGLEBIT
-			float animLength = PM_AnimLength( 0, (animNumber_t)pm->ps->torsoAnim );
+			int animLength = PM_AnimLength( 0, (animNumber_t)pm->ps->torsoAnim );
 			if ( animLength - pm->ps->torsoTimer < 500 )
 			{//just started the saberMove
 				//check for special-case jump attacks
@@ -1677,7 +1677,7 @@ static void PM_WalkMove( void ) {
 	if ( pm->waterlevel ) {
 		float	waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
+		waterScale = pm->waterlevel / 3.0f;
 		waterScale = 1.0f - ( 1.0f - pm_swimScale ) * waterScale;
 		if ( wishspeed > pm->ps->speed * waterScale ) {
 			wishspeed = pm->ps->speed * waterScale;
@@ -2064,7 +2064,7 @@ static void PM_CrashLand( void ) {
 							dmgLess = 0;
 						}
 
-						delta_send -= (dmgLess*0.3);
+						delta_send -= (dmgLess*0.3f);
 
 						if (delta_send < 8)
 						{
@@ -2528,7 +2528,7 @@ static void PM_Footsteps( void ) {
 	float		bobmove;
 	int			old;
 	qboolean	footstep;
-	int			setAnimFlags = 0;
+	unsigned	setAnimFlags = 0;
 	animNumber_t	legsAnim = ANIM(pm->ps->legsAnim);
 
 	if ( (PM_InSaberAnim(legsAnim) && !BG_SpinningSaberAnim(legsAnim))
@@ -3117,10 +3117,6 @@ rest:
 
 	return qfalse; // continue with the rest of the weapon code
 }
-
-
-#define BOWCASTER_CHARGE_UNIT	200.0f	// bowcaster charging gives us one more unit every 200ms--if you change this, you'll have to do the same in g_weapon
-#define BRYAR_CHARGE_UNIT		200.0f	// bryar charging gives us one more unit every 200ms--if you change this, you'll have to do the same in g_weapon
 
 int PM_ItemUsable(playerState_t *ps, int forcedUse)
 {
@@ -3794,16 +3790,16 @@ static void PM_Weapon( void )
 	}
 
 	if ( pm->ps->powerups[PW_HASTE] ) {
-		addTime /= 1.3;
+		addTime /= 1.3f;
 	}
 
 	if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
 	{
-		addTime *= 0.75;
+		addTime *= 0.75f;
 	}
 	else if (pm->ps->fd.forceRageRecoveryTime > pm->cmd.serverTime)
 	{
-		addTime *= 1.5;
+		addTime *= 1.5f;
 	}
 
 	pm->ps->weaponTime += addTime;
@@ -4212,26 +4208,26 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 
 	if (ps->fd.forcePowersActive & (1 << FP_RAGE))
 	{
-		ps->speed *= 1.3;
+		ps->speed *= 1.3f;
 	}
 	else if (ps->fd.forceRageRecoveryTime > svTime)
 	{
-		ps->speed *= 0.75;
+		ps->speed *= 0.75f;
 	}
 
 	if (ps->fd.forceGripCripple)
 	{
 		if (ps->fd.forcePowersActive & (1 << FP_RAGE))
 		{
-			ps->speed *= 0.9;
+			ps->speed *= 0.9f;
 		}
 		else if (ps->fd.forcePowersActive & (1 << FP_SPEED))
 		{ //force speed will help us escape
-			ps->speed *= 0.8;
+			ps->speed *= 0.8f;
 		}
 		else
 		{
-			ps->speed *= 0.2;
+			ps->speed *= 0.2f;
 		}
 	}
 
@@ -4296,11 +4292,11 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 		BG_CmdForRoll( ps->legsAnim, cmd );
 		if ((ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_ROLL_B)
 		{ //backwards roll is pretty fast, should also be slower
-			ps->speed = ps->legsTimer/2.5;
+			ps->speed = ps->legsTimer / 2.5f;
 		}
 		else
 		{
-			ps->speed = ps->legsTimer/1.5;//450;
+			ps->speed = ps->legsTimer / 1.5f;//450;
 		}
 		if (ps->speed > 600)
 		{
@@ -4485,7 +4481,7 @@ void PmoveSingle (pmove_t *pmove) {
 	// save old velocity for crashlanding
 	VectorCopy (pm->ps->velocity, pml.previous_velocity);
 
-	pml.frametime = pml.msec * 0.001;
+	pml.frametime = pml.msec * 0.001f;
 
 	PM_AdjustAngleForWallRun(pm->ps, &pm->cmd, qtrue);
 
@@ -4591,7 +4587,7 @@ void PmoveSingle (pmove_t *pmove) {
 
 	if (gPMDoSlowFall)
 	{
-		pm->ps->gravity *= 0.5;
+		pm->ps->gravity *= 0.5f;
 	}
 
 	// set watertype, and waterlevel

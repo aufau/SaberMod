@@ -971,7 +971,7 @@ static void PM_SaberLocked( void )
 				if ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
 					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK )
 				{
-					curFrame = floorf( currentFrame )-strength;
+					curFrame = currentFrame - strength;
 					//drop my frame one
 					if ( curFrame <= anim->firstFrame )
 					{//I won!  Break out
@@ -986,7 +986,7 @@ static void PM_SaberLocked( void )
 				}
 				else
 				{
-					curFrame = ceilf( currentFrame )+strength;
+					curFrame = currentFrame + strength;
 					//advance my frame one
 					if ( curFrame >= anim->firstFrame+anim->numFrames )
 					{//I won!  Break out

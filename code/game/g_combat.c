@@ -3054,7 +3054,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_RAGE)))
 	{
-		damage *= 0.5;
+		damage *= 0.5f;
 	}
 
 	// the intermission has allready been qualified for, so don't
@@ -3178,7 +3178,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TRIP_MINE_SPLASH:
 			case MOD_TIMED_MINE_SPLASH:
 			case MOD_DET_PACK_SPLASH:
-				damage *= 0.75;
+				damage *= 0.75f;
 				break;
 			default:
 				break;
@@ -3292,7 +3292,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( ( dflags & DAMAGE_RADIUS ) || ( mod == MOD_FALLING ) ) {
 			return;
 		}
-		damage *= 0.5;
+		damage *= 0.5f;
 	}
 
 	// add to the attacker's hit counter (if the target isn't a general entity like a prox mine)
@@ -3314,7 +3314,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
 	if ( targ == attacker) {
-		damage *= 0.5;
+		damage *= 0.5f;
 	}
 
 	if ( damage < 1 ) {
@@ -3406,7 +3406,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			if (targ->client->ps.fd.forcePowerLevel[FP_PROTECT] == FORCE_LEVEL_1)
 			{
 				famt = 1;
-				hamt = 0.40;
+				hamt = 0.4f;
 
 				if (maxtake > 100)
 				{
@@ -3415,8 +3415,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 			else if (targ->client->ps.fd.forcePowerLevel[FP_PROTECT] == FORCE_LEVEL_2)
 			{
-				famt = 0.5;
-				hamt = 0.60;
+				famt = 0.5f;
+				hamt = 0.6f;
 
 				if (maxtake > 200)
 				{
@@ -3425,8 +3425,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 			else if (targ->client->ps.fd.forcePowerLevel[FP_PROTECT] == FORCE_LEVEL_3)
 			{
-				famt = 0.25;
-				hamt = 0.80;
+				famt = 0.25f;
+				hamt = 0.80f;
 
 				if (maxtake > 400)
 				{

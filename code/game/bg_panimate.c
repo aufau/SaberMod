@@ -1134,7 +1134,7 @@ void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int 
 
 			if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
 			{
-				pm->ps->torsoTimer /= 1.7;
+				pm->ps->torsoTimer /= 1.7f;
 			}
 		}
 	}
@@ -1182,11 +1182,11 @@ setAnimLegs:
 
 			if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
 			{
-				pm->ps->legsTimer /= 1.3;
+				pm->ps->legsTimer /= 1.3f;
 			}
 			else if (pm->ps->fd.forcePowersActive & (1 << FP_SPEED))
 			{
-				pm->ps->legsTimer /= 1.7;
+				pm->ps->legsTimer /= 1.7f;
 			}
 		}
 	}
@@ -1198,7 +1198,7 @@ setAnimDone:
 
 
 // Imported from single-player, this function is mainly intended to make porting from SP easier.
-void PM_SetAnim(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime)
+void PM_SetAnim(int setAnimParts, animNumber_t anim, unsigned setAnimFlags, int blendTime)
 {
 	assert( anim < MAX_TOTALANIMATIONS);
 	assert(	bgGlobalAnimations[anim].firstFrame != 0 ||

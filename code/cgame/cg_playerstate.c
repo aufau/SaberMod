@@ -120,7 +120,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 	if ( health < 40 ) {
 		scale = 1;
 	} else {
-		scale = 40.0 / health;
+		scale = 40.0f / health;
 	}
 	kick = damage * scale;
 
@@ -137,8 +137,8 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		cg.v_dmg_pitch = -kick;
 	} else {
 		// positional
-		pitch = pitchByte / 255.0 * 360;
-		yaw = yawByte / 255.0 * 360;
+		pitch = pitchByte * (360.0f / 255);
+		yaw = yawByte * (360.0f / 255);
 
 		angles[PITCH] = pitch;
 		angles[YAW] = yaw;

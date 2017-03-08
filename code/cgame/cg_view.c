@@ -1068,7 +1068,7 @@ static int CG_CalcFov( void ) {
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
-		phase = cg.time / (float) (1000.0 * WAVE_FREQUENCY * M_PI * 2);
+		phase = cg.time / (float) (1000 * WAVE_FREQUENCY * M_PI * 2);
 		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
@@ -1585,11 +1585,11 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// let the client system know what our weapon and zoom settings are
 	if (cg.snap && cg.snap->ps.saberLockTime > cg.time)
 	{
-		trap_SetUserCmdValue( cg.weaponSelect, 0.01, cg.forceSelect, cg.itemSelect );
+		trap_SetUserCmdValue( cg.weaponSelect, 0.01f, cg.forceSelect, cg.itemSelect );
 	}
 	else if (cg.snap && cg.snap->ps.usingATST)
 	{
-		trap_SetUserCmdValue( cg.weaponSelect, 0.2, cg.forceSelect, cg.itemSelect );
+		trap_SetUserCmdValue( cg.weaponSelect, 0.2f, cg.forceSelect, cg.itemSelect );
 	}
 	else
 	{

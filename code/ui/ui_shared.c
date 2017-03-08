@@ -93,7 +93,8 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item );
 #endif
 
 static char		memoryPool[MEM_POOL_SIZE];
-static int		allocPoint, outOfMemory;
+static size_t	allocPoint;
+static qboolean	outOfMemory;
 
 
 typedef struct  itemFlagsDef_s {
@@ -156,7 +157,7 @@ extern int MenuFontToHandle(font_t iMenuFont);
 UI_Alloc
 ===============
 */
-void *UI_Alloc( int size ) {
+void *UI_Alloc( size_t size ) {
 	char	*p;
 
 	if ( allocPoint + size > MEM_POOL_SIZE ) {
@@ -196,7 +197,7 @@ typedef struct stringDef_s {
 	const char *str;
 } stringDef_t;
 
-static int strPoolIndex = 0;
+static size_t strPoolIndex = 0;
 static char strPool[STRING_POOL_SIZE];
 
 static int strHandleCount = 0;
@@ -204,7 +205,7 @@ static stringDef_t *strHandle[HASH_TABLE_SIZE];
 
 
 const char *String_Alloc(const char *p) {
-	int len;
+	size_t len;
 	unsigned hash;
 	stringDef_t *str, *last;
 	static const char *staticNULL = "";
@@ -229,7 +230,7 @@ const char *String_Alloc(const char *p) {
 
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
-		int ph = strPoolIndex;
+		size_t ph = strPoolIndex;
 		strncpy(&strPool[strPoolIndex], p, len + 1);
 		strPoolIndex += len + 1;
 
@@ -260,11 +261,11 @@ void String_Report() {
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE);
+	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)strPoolIndex, STRING_POOL_SIZE);
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE);
+	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)allocPoint, MEM_POOL_SIZE);
 }
 
 /*

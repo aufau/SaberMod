@@ -975,7 +975,7 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 
 	if (forcePower == FP_SPEED && overrideAmt)
 	{
-		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt*0.025 );
+		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt*0.025f );
 	}
 	else if (forcePower != FP_GRIP && forcePower != FP_DRAIN)
 	{ //grip and drain drain as damage is done
@@ -3007,15 +3007,15 @@ void ForceThrow( gentity_t *self, qboolean pull )
 
 						if (powerDif >= 3)
 						{
-							pushPowerMod -= pushPowerMod*0.2;
+							pushPowerMod -= pushPowerMod*0.2f;
 						}
 						else if (powerDif == 2)
 						{
-							pushPowerMod -= pushPowerMod*0.4;
+							pushPowerMod -= pushPowerMod*0.4f;
 						}
 						else if (powerDif == 1)
 						{
-							pushPowerMod -= pushPowerMod*0.8;
+							pushPowerMod -= pushPowerMod*0.8f;
 						}
 
 						if (pushPowerMod < 0)

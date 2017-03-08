@@ -1205,14 +1205,14 @@ void CG_DrawHUD(centity_t	*cent)
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
 	}
-	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
+	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.gametype == GT_REDROVER && cgs.roundlimit)
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
 		else
 			scoreStr = va("Round: %i", cgs.round);
-		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
+		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 	}
 #ifdef MISSIONPACK
 	menuHUD = Menus_FindByName("righthud");
@@ -2723,33 +2723,33 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 					cgs.clientinfo[crossEnt->currentState.number].team == cgs.clientinfo[cg.snap->ps.clientNum].team )
 				{
 					//Allies are green
-					ecolor[0] = 0.0;//R
-					ecolor[1] = 1.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 0;//R
+					ecolor[1] = 1;//G
+					ecolor[2] = 0;//B
 				}
 				else
 				{
 					//Enemies are red
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 
 				if (cg.snap->ps.duelInProgress)
 				{
 					if (crossEnt->currentState.number != cg.snap->ps.duelIndex)
 					{ //grey out crosshair for everyone but your foe if you're in a duel
-						ecolor[0] = 0.4;
-						ecolor[1] = 0.4;
-						ecolor[2] = 0.4;
+						ecolor[0] = 0.4f;
+						ecolor[1] = 0.4f;
+						ecolor[2] = 0.4f;
 					}
 				}
 				else if (crossEnt->currentState.bolt1)
 				{ //this fellow is in a duel. We just checked if we were in a duel above, so
 				  //this means we aren't and he is. Which of course means our crosshair greys out over him.
-					ecolor[0] = 0.4;
-					ecolor[1] = 0.4;
-					ecolor[2] = 0.4;
+					ecolor[0] = 0.4f;
+					ecolor[1] = 0.4f;
+					ecolor[2] = 0.4f;
 				}
 			}
 			else if (crossEnt->currentState.shouldtarget)
@@ -2767,27 +2767,27 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 					(GT_Team(cgs.gametype) &&
 						(team_t)crossEnt->currentState.teamowner ==	cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
-					ecolor[0] = 0.0;//R
-					ecolor[1] = 1.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 0;//R
+					ecolor[1] = 1;//G
+					ecolor[2] = 0;//B
 				}
 				else if (crossEnt->currentState.teamowner == 16 ||
 					(GT_Team(cgs.gametype) && crossEnt->currentState.teamowner &&
 						(team_t)crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 				else if (crossEnt->currentState.eType == ET_GRAPPLE)
 				{
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 			}
 
-			ecolor[3] = 1.0;
+			ecolor[3] = 1;
 
 			trap_R_SetColor( ecolor );
 		}
@@ -3046,7 +3046,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 	static	int oldDif = 0;
 	centity_t *cent = &cg_entities[lockEntNum];
 	vec4_t color={0.0f,0.0f,0.0f,0.0f};
-	int dif = ( cg.time - cg.snap->ps.rocketLockTime ) / ( 1200.0f / /*8.0f*/16.0f );
+	int dif = ( cg.time - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
 	int i;
 
 	if (!cg.snap->ps.rocketLockTime)
@@ -3404,14 +3404,14 @@ static void CG_DrawSpectator(void)
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		if ( cgs.clientinfo[cgs.duelist1].modelIcon )
 		{
-			CG_DrawPic( 10, SCREEN_HEIGHT-(size*1.5), size, size, cgs.clientinfo[cgs.duelist1].modelIcon );
+			CG_DrawPic( 10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist1].modelIcon );
 		}
 		if ( cgs.clientinfo[cgs.duelist2].modelIcon )
 		{
-			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
+			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
 		}
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist1].score, cgs.fraglimit );
-		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5f) + 64, text, UI_CENTER, colorWhite );
 
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist2].score, cgs.fraglimit );
 		UI_DrawProportionalString( SCREEN_WIDTH - size + 22, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
@@ -4092,7 +4092,7 @@ static void CG_Draw2D( void ) {
 					hcolor[3] = 0.15f;
 					hcolor[0] = 0.2f;
 					hcolor[1] = 0.2f;
-					hcolor[2] = 0.2;
+					hcolor[2] = 0.2f;
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;

@@ -362,7 +362,7 @@ so message texts can be multi-line
 */
 char *G_NewString( const char *string ) {
 	char	*newb, *new_p;
-	int		i,l;
+	size_t	i,l;
 
 	l = strlen(string) + 1;
 
