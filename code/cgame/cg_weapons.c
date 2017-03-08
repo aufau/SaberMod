@@ -877,9 +877,9 @@ void CG_DrawIconBackground(void)
 {
 	int				height,xAdd,x2,y2,t;
 	int				prongLeftX,prongRightX;
-	float			inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
-	float			wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
-	float			fpTime = cg.forceSelectTime+WEAPON_SELECT_TIME;
+	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
+	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
+	int				fpTime = cg.forceSelectTime+WEAPON_SELECT_TIME;
 	qhandle_t		background;
 	int				drawType = cgs.media.weaponIconBackground;
 	int				prongsOn = cgs.media.weaponProngsOn;

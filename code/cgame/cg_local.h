@@ -861,14 +861,14 @@ typedef struct {
 	qboolean		testGun;
 
 	// HUD stuff
-	float			HUDTickFlashTime;
+	int				HUDTickFlashTime;
 	qboolean		HUDArmorFlag;
 	qboolean		HUDHealthFlag;
 	qboolean		iconHUDActive;
 	float			iconHUDPercent;
-	float			iconSelectTime;
-	float			invenSelectTime;
-	float			forceSelectTime;
+	int				iconSelectTime;
+	int				invenSelectTime;
+	int				forceSelectTime;
 
 	vec3_t			lastFPFlashPoint;
 
