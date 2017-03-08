@@ -220,7 +220,7 @@ void CG_ReflectVelocity( localEntity_t *le, trace_t *trace ) {
 	int		hitTime;
 
 	// reflect the velocity on the trace plane
-	hitTime = cg.time - cg.frametime + cg.frametime * trace->fraction;
+	hitTime = cg.time - cg.frametime + (int)(cg.frametime * trace->fraction);
 	BG_EvaluateTrajectoryDelta( &le->pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2*dot, trace->plane.normal, le->pos.trDelta );

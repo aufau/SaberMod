@@ -1388,7 +1388,7 @@ static void CG_Speaker( centity_t *cent ) {
 
 	//	ent->s.frame = ent->wait * 10;
 	//	ent->s.clientNum = ent->random * 10;
-	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
+	cent->miscTime = cg.time + cent->currentState.frame * 100 + (int)(cent->currentState.clientNum * 100 * crandom());
 }
 
 static qboolean CG_GreyItem(int type, int tag, forceSide_t plSide)
@@ -1522,7 +1522,7 @@ Ghoul2 Insert End
 			ent.shaderRGBA[0] = 200;
 			ent.shaderRGBA[1] = 200;
 			ent.shaderRGBA[2] = 200;
-			ent.shaderRGBA[3] = 150 + sinf(cg.time*0.01)*30;
+			ent.shaderRGBA[3] = 150 + sinf(cg.time * 0.01f) * 30;
 		}
 		else
 		{
@@ -1752,8 +1752,7 @@ Ghoul2 Insert End
 
 		alpha = (float)msec / ITEM_SCALEUP_TIME;
 		a = alpha * 255;
-		if (a <= 0)
-			a=1;
+		a = CLAMP(1, 255, a);
 
 		ent.shaderRGBA[3] = a;
 		if (item->giType != IT_POWERUP || item->giTag != PW_FORCE_BOON)
@@ -1808,9 +1807,9 @@ Ghoul2 Insert End
 		if (item->giType == IT_TEAM &&
 			(item->giTag == PW_REDFLAG || item->giTag == PW_BLUEFLAG))
 		{
-			ent.modelScale[0] = 0.7;
-			ent.modelScale[1] = 0.7;
-			ent.modelScale[2] = 0.7;
+			ent.modelScale[0] = 0.7f;
+			ent.modelScale[1] = 0.7f;
+			ent.modelScale[2] = 0.7f;
 			ScaleModelAxis(&ent);
 		}
 		trap_R_AddRefEntityToScene(&ent);
