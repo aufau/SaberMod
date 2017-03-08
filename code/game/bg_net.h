@@ -338,9 +338,9 @@ typedef struct playerState_s {
 	int				saberEventFlags;
 
 	int				rocketLockIndex;
-	float			rocketLastValidTime;
-	float			rocketLockTime;
-	float			rocketTargetTime;
+	int				rocketLastValidTime;
+	int				rocketLockTime;
+	int				rocketTargetTime;
 
 	int				emplacedIndex;
 	int				emplacedTime;

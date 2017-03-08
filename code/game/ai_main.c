@@ -4651,7 +4651,7 @@ int ShouldSecondaryFire(bot_state_t *bs)
 {
 	int weap;
 	int dif;
-	float rTime;
+	int rTime;
 
 	weap = bs->cur_ps.weapon;
 
@@ -4662,7 +4662,7 @@ int ShouldSecondaryFire(bot_state_t *bs)
 
 	if (bs->cur_ps.weaponstate == WEAPON_CHARGING_ALT && bs->cur_ps.weapon == WP_ROCKET_LAUNCHER)
 	{
-		float heldTime = (level.time - bs->cur_ps.weaponChargeTime);
+		int heldTime = (level.time - bs->cur_ps.weaponChargeTime);
 
 		rTime = bs->cur_ps.rocketLockTime;
 
