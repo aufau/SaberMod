@@ -2028,7 +2028,7 @@ void ClientSpawn(gentity_t *ent) {
 	// initial weapon selection
 	//
 
-	if ((wSpawn & client->ps.weapon) &&
+	if ((wSpawn & (1 << client->ps.weapon)) &&
 		client->ps.weapon != WP_NONE)
 	{
 		// spawn player with last selected weapon if it's available
