@@ -1100,13 +1100,13 @@ SortRanks
 */
 int QDECL SortRanks( const int *a, const int *b ) {
 	gclient_t	*ca, *cb;
-	qboolean	ta, tb;
+	int			ta, tb;
 
 	ca = &level.clients[*a];
 	cb = &level.clients[*b];
 
-	ta = (qboolean)(ca->pers.connected == CON_DISCONNECTED);
-	tb = (qboolean)(cb->pers.connected == CON_DISCONNECTED);
+	ta = (int)(ca->pers.connected == CON_DISCONNECTED);
+	tb = (int)(cb->pers.connected == CON_DISCONNECTED);
 	if (ta || tb) {
 		return ta - tb;
 	}
@@ -1116,22 +1116,22 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	// if ( tb )       return -1;
 
 	// sort special clients last
-	ta = (qboolean)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0);
-	tb = (qboolean)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0);
+	ta = (int)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0);
+	tb = (int)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then connecting clients
-	ta = (qboolean)(ca->pers.connected == CON_CONNECTING);
-	tb = (qboolean)(cb->pers.connected == CON_CONNECTING);
+	ta = (int)(ca->pers.connected == CON_CONNECTING);
+	tb = (int)(cb->pers.connected == CON_CONNECTING);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then spectators
-	ta = (qboolean)(ca->sess.sessionTeam == TEAM_SPECTATOR);
-	tb = (qboolean)(cb->sess.sessionTeam == TEAM_SPECTATOR);
+	ta = (int)(ca->sess.sessionTeam == TEAM_SPECTATOR);
+	tb = (int)(cb->sess.sessionTeam == TEAM_SPECTATOR);
 	if (ta && tb) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
