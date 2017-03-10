@@ -1505,74 +1505,42 @@ int BG_ProperForceIndex(forcePowers_t power)
 	{
 		if (forcePowerSorted[i] == power)
 		{
-			return (forcePowers_t)i;
+			return i;
 		}
 
 		i++;
 	}
 
-	return FP_NONE;
+	return -1;
 }
 
 void BG_CycleForce(playerState_t *ps, int direction)
 {
-	int i = ps->fd.forcePowerSelected;
-	int x = i;
-	int presel = i;
-	int foundnext = -1;
+	forcePowers_t selected = ps->fd.forcePowerSelected;
+	forcePowers_t foundnext = FP_NONE;
+	int presel;
+	int x;
 
-	if (x >= NUM_FORCE_POWERS ||
-		x < FP_FIRST ||
-		!(ps->fd.forcePowersKnown & (1 << x)))
+	assert(direction == 1 || direction == -1);
+
+	if (selected >= NUM_FORCE_POWERS ||
+		selected < FP_FIRST ||
+		!(ps->fd.forcePowersKnown & (1 << selected)))
 	{ //apparently we have no valid force powers
 		return;
 	}
 
-	x = BG_ProperForceIndex(x);
+	x = BG_ProperForceIndex(selected);
+	if (x < 0)
+	{
+		return;
+	}
+
 	presel = x;
 
-	if (direction == 1)
-	{ //get the next power
-		x++;
-	}
-	else
-	{ //get the previous power
-		x--;
-	}
-
-	if (x >= NUM_FORCE_POWERS)
-	{ //cycled off the end.. cycle around to the first
-		x = 0;
-	}
-	if (x < FP_FIRST)
-	{ //cycled off the beginning.. cycle around to the last
-		x = NUM_FORCE_POWERS-1;
-	}
-
-	i = forcePowerSorted[x]; //the "sorted" value of this power
-
-	while (x != presel)
+	do
 	{ //loop around to the current force power
-		if (ps->fd.forcePowersKnown & (1 << i) && i != ps->fd.forcePowerSelected)
-		{ //we have the force power
-			if (i != FP_LEVITATION &&
-				i != FP_SABERATTACK &&
-				i != FP_SABERDEFEND &&
-				i != FP_SABERTHROW)
-			{ //it's selectable
-				foundnext = i;
-				break;
-			}
-		}
-
-		if (direction == 1)
-		{ //next
-			x++;
-		}
-		else
-		{ //previous
-			x--;
-		}
+		x += direction;
 
 		if (x >= NUM_FORCE_POWERS)
 		{ //loop around
@@ -1583,10 +1551,21 @@ void BG_CycleForce(playerState_t *ps, int direction)
 			x = NUM_FORCE_POWERS-1;
 		}
 
-		i = forcePowerSorted[x]; //set to the sorted value again
-	}
+		selected = forcePowerSorted[x]; //the "sorted" value of this power
 
-	if (foundnext != -1)
+		if (ps->fd.forcePowersKnown & (1 << selected) &&
+			ps->fd.forcePowerSelected != selected)
+		{ //we have the force power
+			if (FP_Selectable(selected))
+			{ //it's selectable
+				foundnext = selected;
+				break;
+			}
+		}
+
+	} while (x != presel);
+
+	if (foundnext != FP_NONE)
 	{ //found one, select it
 		ps->fd.forcePowerSelected = foundnext;
 	}

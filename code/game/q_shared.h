@@ -482,6 +482,8 @@ typedef enum
 
 q_static_assert(NUM_FORCE_POWERS < 31);
 
+#define FP_Selectable(x) ((x) >= FP_FIRST && (x) < FP_SABERATTACK && (x) != FP_LEVITATION)
+
 typedef enum
 {
 	FORCE_LEVEL_0,
