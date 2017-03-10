@@ -301,9 +301,9 @@ struct menuDef_s {
 	vec4_t		descColor;					// description text color for items
 	int			descAlignment;				// Description of alignment
 	float		descScale;					// Description scale
-	float		appearanceTime;				//	when next item should appear
+	int			appearanceTime;				//	when next item should appear
 	int			appearanceCnt;				//	current item displayed
-	float		appearanceIncrement;		//
+	int			appearanceIncrement;		//
 };
 
 typedef struct {

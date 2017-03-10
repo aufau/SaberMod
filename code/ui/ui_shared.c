@@ -7087,11 +7087,14 @@ MenuParse_focuscolor
 qboolean MenuParse_appearanceIncrement( itemDef_t *item, int handle )
 {
 	menuDef_t *menu = (menuDef_t*)item;
+	float appearanceIncrement;
 
-	if (!PC_Float_Parse(handle, &menu->appearanceIncrement))
+	if (!PC_Float_Parse(handle, &appearanceIncrement))
 	{
 		return qfalse;
 	}
+
+	menu->appearanceIncrement = appearanceIncrement;
 	return qtrue;
 }
 
