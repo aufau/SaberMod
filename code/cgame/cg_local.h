@@ -1385,8 +1385,8 @@ typedef struct {
 	int				duelWinner;
 	int				duelist1;
 	int				duelist2;
-	int				redflag, blueflag;		// flag status from configstrings
-	int				flagStatus;
+	flagStatus_t	redflag, blueflag;		// flag status from configstrings
+	flagStatus_t	flagStatus;
 
 	qboolean  newHud;
 

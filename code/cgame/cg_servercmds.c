@@ -425,8 +425,8 @@ void CG_UpdateConfigString( int num, qboolean init )
 		case CS_FLAGSTATUS:
 			if( GT_Flag(cgs.gametype) ) {
 				// format is rb where its red/blue, 0 is at base, 1 is taken, 2 is dropped
-				cgs.redflag = str[0] - '0';
-				cgs.blueflag = str[1] - '0';
+				cgs.redflag = (flagStatus_t)(str[0] - '0');
+				cgs.blueflag = (flagStatus_t)(str[1] - '0');
 			}
 			break;
 		case CS_SHADERSTATE:
