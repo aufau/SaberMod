@@ -494,7 +494,7 @@ void UI_ReadLegalForce(void)
 	int iBuf = 0;
 	int forcePowerRank = 0;
 	int currank = 0;
-	int forceTeam = 0;
+	forceSide_t forceTeam = FORCE_ANY;
 	gametype_t gametype = GT_FFA;
 	qboolean updateForceLater = qfalse;
 
@@ -1138,7 +1138,7 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	char fcfBuffer[8192];
 	char singleBuf[64];
 	char info[MAX_INFO_VALUE];
-	int forceTeam = 0;
+	forceSide_t forceTeam = FORCE_ANY;
 	gametype_t gametype;
 
 	if (oldindex == 0)

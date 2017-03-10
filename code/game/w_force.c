@@ -242,7 +242,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 	ent->client->ps.fd.forcePowerSelected = FP_NONE;
 
-	ent->client->ps.fd.forceSide = 0;
+	ent->client->ps.fd.forceSide = FORCE_ANY;
 
 	trap_GetUserinfo( ent->s.number, userinfo, sizeof( userinfo ) );
 
@@ -268,12 +268,12 @@ void WP_InitForcePowers( gentity_t *ent )
 		}
 		else
 		{
-			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_ANY, level.gametype, g_forcePowerDisable.integer));
 		}
 	}
 	else
 	{
-		warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+		warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_ANY, level.gametype, g_forcePowerDisable.integer));
 	}
 
 	i_r = 0;
@@ -297,7 +297,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	}
 	readBuf[i_r] = 0;
 	//THE SIDE
-	ent->client->ps.fd.forceSide = atoi(readBuf);
+	ent->client->ps.fd.forceSide = (forceSide_t)atoi(readBuf);
 	i++;
 
 	i_r = 0;

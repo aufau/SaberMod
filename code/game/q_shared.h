@@ -1418,6 +1418,12 @@ typedef enum {
 	NUM_TRACK_CHANNELS
 } trackchan_t;
 
+typedef enum {
+	FORCE_ANY,
+	FORCE_LIGHTSIDE,
+	FORCE_DARKSIDE,
+} forceSide_t;
+
 #define TRACK_CHANNEL_MAX (NUM_TRACK_CHANNELS-50)
 
 typedef struct forcedata_s {
@@ -1462,7 +1468,7 @@ typedef struct forcedata_s {
 
 	qboolean		forceDoInit;
 
-	int				forceSide;
+	forceSide_t		forceSide;
 	int				forceRank;
 
 	qboolean		forceDeactivateAll;
@@ -1496,9 +1502,6 @@ typedef enum {
 #define	MAX_PS_EVENTS			2
 
 #define PS_PMOVEFRAMECOUNTBITS	6
-
-#define FORCE_LIGHTSIDE			1
-#define FORCE_DARKSIDE			2
 
 #define MAX_FORCE_RANK			7
 

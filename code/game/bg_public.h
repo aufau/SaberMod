@@ -876,7 +876,7 @@ extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 
 const char *BG_TeamName(team_t team, letterCase_t letterCase);
 
-qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
 qboolean BG_InSpecialJump( int anim );
@@ -927,7 +927,7 @@ qboolean BG_OutOfMemory ( void );
 extern const animNumber_t WeaponReadyAnim[WP_NUM_WEAPONS];
 extern const animNumber_t WeaponAttackAnim[WP_NUM_WEAPONS];
 
-extern const int forcePowerDarkLight[NUM_FORCE_POWERS];
+extern const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS];
 
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024

@@ -127,13 +127,13 @@ const forcePowers_t forcePowerSorted[NUM_FORCE_POWERS] =
 	FP_SABERTHROW
 };
 
-const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
+const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 { //nothing should be usable at rank 0..
 	FORCE_LIGHTSIDE,//FP_HEAL,//instant
-	0,//FP_LEVITATION,//hold/duration
-	0,//FP_SPEED,//duration
-	0,//FP_PUSH,//hold/duration
-	0,//FP_PULL,//hold/duration
+	FORCE_ANY,//FP_LEVITATION,//hold/duration
+	FORCE_ANY,//FP_SPEED,//duration
+	FORCE_ANY,//FP_PUSH,//hold/duration
+	FORCE_ANY,//FP_PULL,//hold/duration
 	FORCE_LIGHTSIDE,//FP_TELEPATHY,//instant
 	FORCE_DARKSIDE,//FP_GRIP,//hold/duration
 	FORCE_DARKSIDE,//FP_LIGHTNING,//hold/duration
@@ -143,10 +143,10 @@ const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 	FORCE_LIGHTSIDE,//FP_TEAM_HEAL,//instant
 	FORCE_DARKSIDE,//FP_TEAM_FORCE,//instant
 	FORCE_DARKSIDE,//FP_DRAIN,//hold/duration
-	0,//FP_SEE,//duration
-	0,//FP_SABERATTACK,
-	0,//FP_SABERDEFEND,
-	0//FP_SABERTHROW,
+	FORCE_ANY,//FP_SEE,//duration
+	FORCE_ANY,//FP_SABERATTACK,
+	FORCE_ANY,//FP_SABERDEFEND,
+	FORCE_ANY//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 };
 
@@ -250,7 +250,7 @@ fpDisabled is actually only expected (needed) from the server, because the ui di
 force power selection anyway when force powers are disabled on the server.
 ================
 */
-qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled)
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled)
 {
 	char powerBuf[128];
 	char readBuf[128];
@@ -260,7 +260,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolea
 	int allowedPoints = 0;
 	int usedPoints = 0;
 
-	int final_Side;
+	forceSide_t final_Side;
 	int final_Powers[NUM_FORCE_POWERS] = { 0 };
 
 	if (strlen(powerOut) >= sizeof(powerBuf))
@@ -291,7 +291,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolea
 	readBuf[c] = 0;
 	i++;
 	//at this point, readBuf contains the intended side
-	final_Side = atoi(readBuf);
+	final_Side = (forceSide_t)atoi(readBuf);
 
 	if (final_Side != FORCE_LIGHTSIDE &&
 		final_Side != FORCE_DARKSIDE)
@@ -330,7 +330,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolea
 	while (i < NUM_FORCE_POWERS)
 	{ //if this power doesn't match the side we're on, then 0 it now.
 		if (final_Powers[i] &&
-			forcePowerDarkLight[i] &&
+			forcePowerDarkLight[i] != FORCE_ANY &&
 			forcePowerDarkLight[i] != final_Side)
 		{
 			final_Powers[i] = 0;
@@ -513,7 +513,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolea
 	//We finally have all the force powers legalized and stored locally.
 	//Put them all into the string and return the result. We already have
 	//the rank there, so print the side and the powers now.
-	Q_strcat(powerOut, 128, va("%i-", final_Side));
+	Q_strcat(powerOut, 128, va("%i-", (int)final_Side));
 
 	i = strlen(powerOut);
 	c = 0;

@@ -1391,7 +1391,7 @@ static void CG_Speaker( centity_t *cent ) {
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
-qboolean CG_GreyItem(int type, int tag, int plSide)
+static qboolean CG_GreyItem(int type, int tag, forceSide_t plSide)
 {
 	if (type == IT_POWERUP &&
 		(tag == PW_FORCE_ENLIGHTENED_LIGHT || tag == PW_FORCE_ENLIGHTENED_DARK))
