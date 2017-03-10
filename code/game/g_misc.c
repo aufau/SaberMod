@@ -342,7 +342,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	float time_lowest = 0;
 	int index_lowest = -1;
 	int hasall = 1;
-	int forceReselect = WP_NONE;
+	// int forceReselect = WP_NONE;
 
 	if (trace)
 	{
@@ -398,11 +398,12 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		//G_Printf("You deserve a pat on the back.\n");
 	}
 
-	if (!(other->client->ps.fd.forcePowersActive & (1 << other->client->ps.fd.forcePowerSelected)))
+	if (other->client->ps.fd.forcePowerSelected == FP_NONE ||
+		!(other->client->ps.fd.forcePowersActive & (1 << other->client->ps.fd.forcePowerSelected)))
 	{ //If the player isn't using his currently selected force power, select this one
-		if (self->count != FP_SABERATTACK && self->count != FP_SABERDEFEND && self->count != FP_SABERTHROW && self->count != FP_LEVITATION)
+		if (FP_Selectable(self->count))
 		{
-			other->client->ps.fd.forcePowerSelected = self->count;
+			other->client->ps.fd.forcePowerSelected = (forcePowers_t)self->count;
 		}
 	}
 
@@ -446,12 +447,12 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 			forceReselect = WP_STUN_BATON;
 		}
 	}
-	*/
 
 	if (forceReselect != WP_NONE)
 	{
 		G_AddEvent(other, EV_NOAMMO, forceReselect);
 	}
+	*/
 
 	//G_Printf("DON'T TOUCH ME\n");
 }

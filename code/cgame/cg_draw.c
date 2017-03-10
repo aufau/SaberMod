@@ -1238,16 +1238,8 @@ void CG_DrawHUD(centity_t	*cent)
 
 static qboolean ForcePower_Valid(forcePowers_t i)
 {
-	if (i == FP_LEVITATION ||
-		i == FP_SABERATTACK ||
-		i == FP_SABERDEFEND ||
-		i == FP_SABERTHROW ||
-		i == FP_NONE)
-	{
-		return qfalse;
-	}
-
-	if (cg.snap->ps.fd.forcePowersKnown & (1 << i))
+	if (FP_Selectable(i) &&
+		cg.snap->ps.fd.forcePowersKnown & (1 << i))
 	{
 		return qtrue;
 	}

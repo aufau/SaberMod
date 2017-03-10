@@ -4637,9 +4637,11 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_GroundTrace();
 	PM_SetWaterLevel();
 
-	if (pm->ps->fd.forcePowersKnown & (1 << pm->cmd.forcesel))
+	// if it was FP_NONE (-1) in cgame, it's 0xff now
+	if (FP_Selectable(pm->cmd.forcesel) &&
+		pm->ps->fd.forcePowersKnown & (1 << pm->cmd.forcesel))
 	{
-		pm->ps->fd.forcePowerSelected = pm->cmd.forcesel;
+		pm->ps->fd.forcePowerSelected = (forcePowers_t)pm->cmd.forcesel;
 	}
 	if (pm->ps->stats[STAT_HOLDABLE_ITEMS] & (1 << pm->cmd.invensel))
 	{

@@ -1261,14 +1261,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 
 				//Show the player their force selection bar in case picking the holocron up changed the current selection
-				if (index != FP_SABERATTACK && index != FP_SABERDEFEND && index != FP_SABERTHROW &&
-					index != FP_LEVITATION &&
+				if (FP_Selectable(index) &&
 					es->number == cg.snap->ps.clientNum &&
 					(index == cg.snap->ps.fd.forcePowerSelected || !(cg.snap->ps.fd.forcePowersActive & (1 << cg.snap->ps.fd.forcePowerSelected))))
 				{
 					if (cg.forceSelect != index)
 					{
-						cg.forceSelect = index;
+						cg.forceSelect = (forcePowers_t)index;
 						newindex = qtrue;
 					}
 				}

@@ -1523,8 +1523,7 @@ void BG_CycleForce(playerState_t *ps, int direction)
 
 	assert(direction == 1 || direction == -1);
 
-	if (selected >= NUM_FORCE_POWERS ||
-		selected < FP_FIRST ||
+	if (!FP_Selectable(selected) ||
 		!(ps->fd.forcePowersKnown & (1 << selected)))
 	{ //apparently we have no valid force powers
 		return;

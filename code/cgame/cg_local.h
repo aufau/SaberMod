@@ -732,7 +732,7 @@ typedef struct {
 	// input state sent to server
 	int			weaponSelect;
 
-	int			forceSelect;
+	forcePowers_t	forceSelect;		// FP_NONE or selectable force (see FP_Selectable macro)
 	int			itemSelect;
 
 	// auto rotating items

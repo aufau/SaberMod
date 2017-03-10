@@ -1424,7 +1424,7 @@ typedef struct forcedata_s {
 	int				forcePowerDebounce[NUM_FORCE_POWERS];	//for effects that must have an interval
 	int				forcePowersKnown;
 	int				forcePowersActive;
-	int				forcePowerSelected;
+	forcePowers_t	forcePowerSelected;					//FP_INVALID or selectable force (see FP_Selectable macro)
 	qboolean		forceButtonNeedRelease;
 	int				forcePowerDuration[NUM_FORCE_POWERS];
 	int				forcePower;

@@ -170,7 +170,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	char userinfo[MAX_INFO_STRING];
 	char forcePowers[256];
 	char readBuf[256];
-	int lastFPKnown = -1;
+	forcePowers_t lastFPKnown = FP_NONE;
 	qboolean didEvent = qfalse;
 
 	if (!maxRank)
@@ -240,7 +240,7 @@ void WP_InitForcePowers( gentity_t *ent )
 		i++;
 	}
 
-	ent->client->ps.fd.forcePowerSelected = -1;
+	ent->client->ps.fd.forcePowerSelected = FP_NONE;
 
 	ent->client->ps.fd.forceSide = 0;
 
@@ -440,30 +440,25 @@ void WP_InitForcePowers( gentity_t *ent )
 		}
 		else
 		{
-			if (i != FP_LEVITATION && i != FP_SABERATTACK && i != FP_SABERDEFEND && i != FP_SABERTHROW)
+			if (FP_Selectable(i))
 			{
-				lastFPKnown = i;
+				lastFPKnown = (forcePowers_t)i;
 			}
 		}
 
 		i++;
 	}
 
-	if (ent->client->ps.fd.forcePowersKnown & ent->client->sess.selectedFP)
+	if (FP_Selectable(ent->client->sess.selectedFP) &&
+		ent->client->ps.fd.forcePowersKnown & (1 << ent->client->sess.selectedFP))
 	{
 		ent->client->ps.fd.forcePowerSelected = ent->client->sess.selectedFP;
 	}
 
-	if (!(ent->client->ps.fd.forcePowersKnown & (1 << ent->client->ps.fd.forcePowerSelected)))
+	if (ent->client->ps.fd.forcePowerSelected == FP_NONE ||
+		!(ent->client->ps.fd.forcePowersKnown & (1 << ent->client->ps.fd.forcePowerSelected)))
 	{
-		if (lastFPKnown != -1)
-		{
-			ent->client->ps.fd.forcePowerSelected = lastFPKnown;
-		}
-		else
-		{
-			ent->client->ps.fd.forcePowerSelected = 0;
-		}
+		ent->client->ps.fd.forcePowerSelected = lastFPKnown;
 	}
 
 	while (i < NUM_FORCE_POWERS)
@@ -4449,22 +4444,12 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		self->client->ps.fd.forcePowerLevel[FP_LEVITATION] = FORCE_LEVEL_1;
 	}
 
-	if (self->client->ps.fd.forcePowerSelected < 0)
-	{ //bad
-		self->client->ps.fd.forcePowerSelected = 0;
-	}
-
 	if ( ((self->client->sess.selectedFP != self->client->ps.fd.forcePowerSelected) ||
 		(self->client->sess.saberLevel != self->client->ps.fd.saberAnimLevel)) &&
 		!(self->r.svFlags & SVF_BOT) )
 	{
-		if (self->client->sess.updateUITime < level.time)
-		{ //a bit hackish, but we don't want the client to flood with userinfo updates if they rapidly cycle
-		  //through their force powers or saber attack levels
-
-			self->client->sess.selectedFP = self->client->ps.fd.forcePowerSelected;
-			self->client->sess.saberLevel = self->client->ps.fd.saberAnimLevel;
-		}
+		self->client->sess.selectedFP = self->client->ps.fd.forcePowerSelected;
+		self->client->sess.saberLevel = self->client->ps.fd.saberAnimLevel;
 	}
 
 	if (!g_LastFrameTime)
