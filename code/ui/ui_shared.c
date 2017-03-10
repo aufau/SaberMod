@@ -3559,13 +3559,13 @@ void Item_TextColor(itemDef_t *item, vec4_t *newColor) {
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
 		lowLight[3] = 0.8f * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else if (item->textStyle == ITEM_TEXTSTYLE_BLINK && !((DC->realTime/BLINK_DIVISOR) & 1)) {
 		lowLight[0] = 0.8f * item->window.foreColor[0];
 		lowLight[1] = 0.8f * item->window.foreColor[1];
 		lowLight[2] = 0.8f * item->window.foreColor[2];
 		lowLight[3] = 0.8f * item->window.foreColor[3];
-		LerpColor(item->window.foreColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(item->window.foreColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else {
 		Vector4Copy(item->window.foreColor, *newColor);
 		// items can be enabled and disabled based on cvars
@@ -3802,7 +3802,7 @@ void Item_TextField_Paint(itemDef_t *item) {
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
 		lowLight[3] = 0.8f * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else {
 		Vector4Copy(item->window.foreColor, newColor);
 	}
@@ -3831,7 +3831,7 @@ void Item_YesNo_Paint(itemDef_t *item) {
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
 		lowLight[3] = 0.8f * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else {
 		Vector4Copy(item->window.foreColor, newColor);
 	}
@@ -3860,7 +3860,7 @@ void Item_Multi_Paint(itemDef_t *item) {
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
 		lowLight[3] = 0.8f * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else {
 		Vector4Copy(item->window.foreColor, newColor);
 	}
@@ -4154,7 +4154,7 @@ void Item_Slider_Paint(itemDef_t *item) {
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
 		lowLight[3] = 0.8f * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	} else {
 		Vector4Copy(item->window.foreColor, newColor);
 	}
@@ -4208,7 +4208,7 @@ void Item_Bind_Paint(itemDef_t *item)
 			lowLight[2] = 0.8f * parent->focusColor[2];
 			lowLight[3] = 0.8f * parent->focusColor[3];
 		}
-		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 	}
 	else
 	{
@@ -4733,13 +4733,13 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 			lowLight[1] = 0.8f * parent->focusColor[1];
 			lowLight[2] = 0.8f * parent->focusColor[2];
 			lowLight[3] = 0.8f * parent->focusColor[3];
-			LerpColor(parent->focusColor,lowLight,color,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+			LerpColor(parent->focusColor,lowLight,color,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 		} else if (item->textStyle == ITEM_TEXTSTYLE_BLINK && !((DC->realTime/BLINK_DIVISOR) & 1)) {
 			lowLight[0] = 0.8f * item->window.foreColor[0];
 			lowLight[1] = 0.8f * item->window.foreColor[1];
 			lowLight[2] = 0.8f * item->window.foreColor[2];
 			lowLight[3] = 0.8f * item->window.foreColor[3];
-			LerpColor(item->window.foreColor,lowLight,color,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
+			LerpColor(item->window.foreColor,lowLight,color,0.5f+0.5f*sinf(DC->clientTime / PULSE_DIVISOR));
 		}
 
 		if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {

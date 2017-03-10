@@ -482,6 +482,7 @@ void _UI_Refresh( int realtime )
 	//}
 
 	uiInfo.uiDC.frameTime = realtime - uiInfo.uiDC.realTime;
+	uiInfo.uiDC.clientTime += uiInfo.uiDC.frameTime;
 	uiInfo.uiDC.realTime = realtime;
 
 	previousTimes[index % UI_FPS_FRAMES] = uiInfo.uiDC.frameTime;
@@ -2466,7 +2467,7 @@ static void UI_DrawServerRefreshDate(rectDef_t *rect, float scale, vec4_t color,
 		lowLight[1] = 0.8f * color[1];
 		lowLight[2] = 0.8f * color[2];
 		lowLight[3] = 0.8f * color[3];
-		LerpColor(color,lowLight,newColor,0.5f+0.5f*sinf(uiInfo.uiDC.realTime / PULSE_DIVISOR));
+		LerpColor(color,lowLight,newColor,0.5f+0.5f*sinf(uiInfo.uiDC.clientTime / PULSE_DIVISOR));
 
 		trap_SP_GetStringTextString("INGAMETEXT_GETTINGINFOFORSERVERS", holdSPString, sizeof(holdSPString));
 		Text_Paint(rect->x, rect->y, scale, newColor, va((char *) holdSPString, trap_LAN_GetServerCount(ui_netSource.integer)), 0, 0, textStyle, iMenuFont);

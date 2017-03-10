@@ -419,6 +419,7 @@ typedef struct {
   float			bias;
   int				realTime;
   int				frameTime;
+	int				clientTime;
 	int				cursorx;
 	int				cursory;
 	qboolean	debug;
