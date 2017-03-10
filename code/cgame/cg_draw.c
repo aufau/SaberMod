@@ -1431,16 +1431,16 @@ void CG_DrawInvenSelect( void )
 		return;
 	}
 
-	if (cg.itemSelect == -1)
+	if (cg.itemSelect == HI_NONE)
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 	}
 
 //const int bits = cg.snap->ps.stats[ STAT_ITEMS ];
 
 	// count the number of items owned
 	count = 0;
-	for ( i = 0 ; i < HI_NUM_HOLDABLE ; i++ )
+	for ( i = HI_NONE + 1 ; i < HI_NUM_HOLDABLE ; i++ )
 	{
 		if (/*CG_InventorySelectable(i) && inv_icons[i]*/
 			(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) )
@@ -1476,8 +1476,8 @@ void CG_DrawInvenSelect( void )
 		sideRightIconCnt = holdCount - sideLeftIconCnt;
 	}
 
-	i = cg.itemSelect - 1;
-	if (i<0)
+	i = (int)cg.itemSelect - 1;
+	if (i <= HI_NONE)
 	{
 		i = HI_NUM_HOLDABLE-1;
 	}
@@ -1497,12 +1497,12 @@ void CG_DrawInvenSelect( void )
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
-		if (i<0)
+		if (i <= HI_NONE)
 		{
 			i = HI_NUM_HOLDABLE-1;
 		}
 
-		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == cg.itemSelect )
+		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == (int)cg.itemSelect )
 		{
 			continue;
 		}
@@ -1553,9 +1553,9 @@ void CG_DrawInvenSelect( void )
 	}
 
 	i = cg.itemSelect + 1;
-	if (i> HI_NUM_HOLDABLE-1)
+	if (i > HI_NUM_HOLDABLE-1)
 	{
-		i = 0;
+		i = HI_NONE + 1;
 	}
 
 	// Right side ICONS
@@ -1565,12 +1565,12 @@ void CG_DrawInvenSelect( void )
 //	addX = smallIconSize * 0.75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
-		if (i> HI_NUM_HOLDABLE-1)
+		if (i > HI_NUM_HOLDABLE)
 		{
-			i = 0;
+			i = HI_NONE + 1;
 		}
 
-		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == cg.itemSelect )
+		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == (int)cg.itemSelect )
 		{
 			continue;
 		}

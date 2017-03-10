@@ -2534,7 +2534,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	cg.clientNum = clientNum;
-	cg.itemSelect = -1;
+	cg.itemSelect = HI_NONE;
 	cg.forceSelect = FP_NONE;
 	cg.weaponSelect = WP_BRYAR_PISTOL;
 
@@ -2706,7 +2706,7 @@ void CG_NextInventory_f(void)
 		return;
 	}
 
-	if (cg.itemSelect != -1)
+	if (cg.itemSelect != HI_NONE)
 	{
 		cg.snap->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
 	}
@@ -2714,7 +2714,7 @@ void CG_NextInventory_f(void)
 
 	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM])
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
 	}
 }
@@ -2731,7 +2731,7 @@ void CG_PrevInventory_f(void)
 		return;
 	}
 
-	if (cg.itemSelect != -1)
+	if (cg.itemSelect != HI_NONE)
 	{
 		cg.snap->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
 	}
@@ -2739,7 +2739,7 @@ void CG_PrevInventory_f(void)
 
 	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM])
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
 	}
 }

@@ -525,7 +525,7 @@ static void CG_UseItem( centity_t *cent ) {
 	if (cg.snap && cg.snap->ps.clientNum == cent->currentState.number && itemNum != HI_BINOCULARS)
 	{ //if not using binoculars, we just used that item up, so switch
 		BG_CycleInven(&cg.snap->ps, 1);
-		cg.itemSelect = -1; //update the client-side selection display
+		cg.itemSelect = HI_NONE; //update the client-side selection display
 	}
 }
 

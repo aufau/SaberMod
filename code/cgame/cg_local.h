@@ -733,7 +733,7 @@ typedef struct {
 	int			weaponSelect;
 
 	forcePowers_t	forceSelect;		// FP_NONE or selectable force (see FP_Selectable macro)
-	int			itemSelect;
+	holdable_t		itemSelect;
 
 	// auto rotating items
 	vec3_t		autoAngles;
