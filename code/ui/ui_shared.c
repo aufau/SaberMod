@@ -93,7 +93,7 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item );
 #endif
 
 static char		memoryPool[MEM_POOL_SIZE];
-static size_t	allocPoint;
+static char		*allocPoint = memoryPool;
 static qboolean	outOfMemory;
 
 
@@ -158,16 +158,14 @@ UI_Alloc
 ===============
 */
 void *UI_Alloc( size_t size ) {
-	char	*p;
+	char	*p = PADP(allocPoint, sizeof(void *));
 
-	if ( allocPoint + size > MEM_POOL_SIZE ) {
+	allocPoint = p + size;
+
+	if ( (unsigned)(allocPoint - memoryPool) > MEM_POOL_SIZE ) {
 		outOfMemory = qtrue;
 		DC->Error(ERR_DROP, "UI_Alloc: Failure. Out of memory!");
 	}
-
-	p = &memoryPool[allocPoint];
-
-	allocPoint += ( size + 15 ) & ~15;
 
 	return p;
 }
@@ -178,7 +176,7 @@ UI_InitMemory
 ===============
 */
 void UI_InitMemory( void ) {
-	allocPoint = 0;
+	allocPoint = memoryPool;
 	outOfMemory = qfalse;
 }
 
@@ -262,10 +260,10 @@ void String_Report() {
 	f /= STRING_POOL_SIZE;
 	f *= 100;
 	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)strPoolIndex, STRING_POOL_SIZE);
-	f = allocPoint;
+	f = allocPoint - memoryPool;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)allocPoint, MEM_POOL_SIZE);
+	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)(allocPoint - memoryPool), MEM_POOL_SIZE);
 }
 
 /*
