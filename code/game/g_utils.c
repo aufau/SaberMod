@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef struct {
   char oldShader[MAX_QPATH];
   char newShader[MAX_QPATH];
-  float timeOffset;
+  int timeOffset;
 } shaderRemap_t;
 
 #define MAX_SHADER_REMAPS 128
@@ -37,7 +37,7 @@ typedef struct {
 static int remapCount = 0;
 static shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
-void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
+void AddRemap(const char *oldShader, const char *newShader, int timeOffset) {
 	int i;
 
 	for (i = 0; i < remapCount; i++) {
@@ -58,12 +58,16 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 
 const char *BuildShaderStateConfig(void) {
 	static char	buff[MAX_STRING_CHARS*4];
-	char out[(MAX_QPATH * 2) + 5];
+	char out[MAX_QPATH * 2 + 15];
 	int i;
 
 	memset(buff, 0, MAX_STRING_CHARS);
 	for (i = 0; i < remapCount; i++) {
-		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
+		Com_sprintf(out, sizeof(out), "%s=%s:%d.%03d@",
+			remappedShaders[i].oldShader,
+			remappedShaders[i].newShader,
+			remappedShaders[i].timeOffset / 1000,
+			remappedShaders[i].timeOffset % 1000);
 		Q_strcat( buff, sizeof( buff ), out);
 	}
 	return buff;
@@ -326,8 +330,7 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 	}
 
 	if (ent->targetShaderName && ent->targetShaderNewName) {
-		float f = level.time * 0.001;
-		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
+		AddRemap(ent->targetShaderName, ent->targetShaderNewName, level.time);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 

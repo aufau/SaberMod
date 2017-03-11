@@ -726,7 +726,7 @@ char	*vtos( const vec3_t v );
 void G_AddPredictableEvent( gentity_t *ent, entity_event_t event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
-void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
+void AddRemap(const char *oldShader, const char *newShader, int timeOffset);
 const char *BuildShaderStateConfig(void);
 /*
 Ghoul2 Insert Start
