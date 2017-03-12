@@ -2537,17 +2537,17 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					hasEnemyLOS = ExampleAnimEntClearLOS(self, enemyOrigin);
 				}
 
-				if (hasEnemyLOS && enDist < 512 && self->splashRadius < level.time)
+				if (hasEnemyLOS && enDist < 512 && self->boltpoint2 < level.time)
 				{
 					if (id_rand()%10 <= 8)
 					{
-						if (self->splashMethodOfDeath)
+						if (self->boltpoint1)
 						{
-							self->splashMethodOfDeath = 0;
+							self->boltpoint1 = 0;
 						}
 						else
 						{
-							self->splashMethodOfDeath = 1;
+							self->boltpoint1 = 1;
 						}
 					}
 
@@ -2555,14 +2555,14 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					{ //these guys stand still more often because they are "snipers"
 						if (id_rand()%10 <= 7)
 						{
-							self->splashMethodOfDeath = 1;
+							self->boltpoint1 = 1;
 						}
 					}
 
-					self->splashRadius = level.time + Q_irand(2000, 5000);
+					self->boltpoint2 = level.time + Q_irand(2000, 5000);
 				}
 
-				if (hasEnemyLOS && (enDist < 512 || self->watertype == ANIMENT_TYPE_RODIAN) && self->splashMethodOfDeath)
+				if (hasEnemyLOS && (enDist < 512 || self->watertype == ANIMENT_TYPE_RODIAN) && self->boltpoint1)
 				{
 					VectorCopy(self->r.currentOrigin, goalPos);
 				}
@@ -2937,8 +2937,8 @@ void G_SpawnExampleAnimEnt(vec3_t pos, int aeType, animentCustomInfo_t *aeInfo)
 	//initialize the "AI" values
 	animEnt->bolt_Waist = -1; //the waypoint index
 	animEnt->bolt_Motion = ENTITYNUM_NONE; //the enemy index
-	animEnt->splashMethodOfDeath = 0; //don't stand still while you have an enemy
-	animEnt->splashRadius = 0; //timer for randomly deciding to stand still
+	animEnt->boltpoint1 = 0; //don't stand still while you have an enemy
+	animEnt->boltpoint2 = 0; //timer for randomly deciding to stand still
 	animEnt->boltpoint3 = 0; //running forward on the trail
 }
 
