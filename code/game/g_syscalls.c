@@ -97,7 +97,7 @@ void	trap_FS_FCloseFile( fileHandle_t f ) {
 	syscall( G_FS_FCLOSE_FILE, f );
 }
 
-void	trap_SendConsoleCommand( int exec_when, const char *text ) {
+void	trap_SendConsoleCommand( cbufExec_t exec_when, const char *text ) {
 	syscall( G_SEND_CONSOLE_COMMAND, exec_when, text );
 }
 
@@ -609,7 +609,7 @@ int trap_BotLoadChatFile(int chatstate, char *chatfile, char *chatname) {
 	return syscall( BOTLIB_AI_LOAD_CHAT_FILE, chatstate, chatfile, chatname );
 }
 
-void trap_BotSetChatGender(int chatstate, int gender) {
+void trap_BotSetChatGender(int chatstate, gender_t gender) {
 	syscall( BOTLIB_AI_SET_CHAT_GENDER, chatstate, gender );
 }
 
@@ -968,6 +968,6 @@ qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, i
 {
 	return syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
 }
-qboolean trap_MVAPI_ControlFixes(mvfix_t fixes) {
+qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return syscall(MVAPI_CONTROL_FIXES, fixes);
 }

@@ -187,7 +187,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, 
 {
 	clientInfo_t	*ci = &cgs.clientinfo[score->client];
 	float			s = scale * columnData[field].scale;
-	qboolean		spectator = (ci->team == TEAM_SPECTATOR);
+	qboolean		spectator = (qboolean)(ci->team == TEAM_SPECTATOR);
 
 	y += scale * columnData[field].drop;
 
@@ -417,7 +417,8 @@ static int CG_TeamScoreboard( int y, const sbColumn_t *columns, team_t team, flo
 
 		if ( !countOnly )
 		{
-			CG_DrawClientScore( y + lineHeight * count, columns, score, color, fade, lineHeight == SB_NORMAL_HEIGHT );
+			qboolean largeFormat = (qboolean)(lineHeight == SB_NORMAL_HEIGHT);
+			CG_DrawClientScore( y + lineHeight * count, columns, score, color, fade, largeFormat );
 		}
 
 		count++;

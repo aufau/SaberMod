@@ -352,17 +352,17 @@ const char *CG_GetGameStatusText(void) {
 	return s;
 }
 
-extern int MenuFontToHandle(int iMenuFont);
+extern int MenuFontToHandle(font_t iMenuFont);
 
 // maxX param is initially an X limit, but is also used as feedback. 0 = text was clipped to fit within, else maxX = next pos
 //
-static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t color, const char* text, float adjust, int limit, int iMenuFont)
+static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t color, const char* text, float adjust, int limit, font_t iMenuFont)
 {
 	qboolean bIsTrailingPunctuation;
 
 	// this is kinda dirty, but...
 	//
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	//float fMax = *maxX;
 	int iPixelLen = trap_R_Font_StrLenPixels(text, iFontIndex, scale);
@@ -660,7 +660,7 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 
 
 //
-void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font) {
+void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle, font_t font) {
 
 //Ignore all this, at least for now. May put some stat stuff back in menu files later.
 #if 0

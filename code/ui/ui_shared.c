@@ -93,7 +93,8 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item );
 #endif
 
 static char		memoryPool[MEM_POOL_SIZE];
-static int		allocPoint, outOfMemory;
+static size_t	allocPoint;
+static qboolean	outOfMemory;
 
 
 typedef struct  itemFlagsDef_s {
@@ -146,7 +147,7 @@ NULL
 };
 */
 
-extern int MenuFontToHandle(int iMenuFont);
+extern int MenuFontToHandle(font_t iMenuFont);
 
 
 
@@ -156,7 +157,7 @@ extern int MenuFontToHandle(int iMenuFont);
 UI_Alloc
 ===============
 */
-void *UI_Alloc( int size ) {
+void *UI_Alloc( size_t size ) {
 	char	*p;
 
 	if ( allocPoint + size > MEM_POOL_SIZE ) {
@@ -196,7 +197,7 @@ typedef struct stringDef_s {
 	const char *str;
 } stringDef_t;
 
-static int strPoolIndex = 0;
+static size_t strPoolIndex = 0;
 static char strPool[STRING_POOL_SIZE];
 
 static int strHandleCount = 0;
@@ -204,7 +205,7 @@ static stringDef_t *strHandle[HASH_TABLE_SIZE];
 
 
 const char *String_Alloc(const char *p) {
-	int len;
+	size_t len;
 	unsigned hash;
 	stringDef_t *str, *last;
 	static const char *staticNULL = "";
@@ -229,7 +230,7 @@ const char *String_Alloc(const char *p) {
 
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
-		int ph = strPoolIndex;
+		size_t ph = strPoolIndex;
 		strncpy(&strPool[strPoolIndex], p, len + 1);
 		strPoolIndex += len + 1;
 
@@ -240,7 +241,7 @@ const char *String_Alloc(const char *p) {
 			str = str->next;
 		}
 
-		str  = UI_Alloc(sizeof(stringDef_t));
+		str  = (stringDef_t *)UI_Alloc(sizeof(stringDef_t));
 		str->next = NULL;
 		str->str = &strPool[ph];
 		if (last) {
@@ -260,11 +261,11 @@ void String_Report() {
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE);
+	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)strPoolIndex, STRING_POOL_SIZE);
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE);
+	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, (int)allocPoint, MEM_POOL_SIZE);
 }
 
 /*
@@ -931,7 +932,7 @@ itemDef_t *Menu_ClearFocus(menuDef_t *menu) {
 }
 
 qboolean IsVisible(int flags) {
-  return (flags & WINDOW_VISIBLE && !(flags & WINDOW_FADINGOUT));
+  return (qboolean)(flags & WINDOW_VISIBLE && !(flags & WINDOW_FADINGOUT));
 }
 
 qboolean Rect_ContainsPoint(rectDef_t *rect, float x, float y) {
@@ -2695,7 +2696,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 			}
 
 			if ( key == A_INSERT || key == A_KP_0 ) {
-				DC->setOverstrikeMode(!DC->getOverstrikeMode());
+				DC->setOverstrikeMode((qboolean)!DC->getOverstrikeMode());
 				return qtrue;
 			}
 		}
@@ -3403,7 +3404,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 
 		case A_F11:
 			if (DC->getCVarValue("developer")) {
-				debugMode ^= 1;
+				debugMode = (qboolean)!debugMode;
 			}
 			break;
 
@@ -6020,11 +6021,21 @@ qboolean ItemParse_cvar( itemDef_t *item, int handle )
 
 qboolean ItemParse_font( itemDef_t *item, int handle )
 {
+	int iFont;
+
 	Item_ValidateTypeData(item);
-	if (!PC_Int_Parse(handle, &item->iMenuFont))
+	if (!PC_Int_Parse(handle, &iFont))
 	{
 		return qfalse;
 	}
+
+	if (iFont != FONT_SMALL && iFont != FONT_MEDIUM && iFont != FONT_LARGE)
+	{
+		iFont = FONT_MEDIUM;
+	}
+
+	item->iMenuFont = (font_t)iFont;
+
 	return qtrue;
 }
 
@@ -7058,7 +7069,7 @@ qboolean MenuParse_fadeCycle( itemDef_t *item, int handle ) {
 qboolean MenuParse_itemDef( itemDef_t *item, int handle ) {
 	menuDef_t *menu = (menuDef_t*)item;
 	if (menu->itemCount < MAX_MENUITEMS) {
-		menu->items[menu->itemCount] = UI_Alloc(sizeof(itemDef_t));
+		menu->items[menu->itemCount] = (itemDef_t *)UI_Alloc(sizeof(itemDef_t));
 		Item_Init(menu->items[menu->itemCount]);
 		if (!Item_Parse(handle, menu->items[menu->itemCount])) {
 			return qfalse;
@@ -7209,8 +7220,8 @@ void Menu_PaintAll() {
 
 	if (debugMode) {
 		static const vec4_t v = {1, 1, 1, 1};
-		DC->drawText(5, 25, .5, v, va("fps: %f", DC->FPS), 0, 0, 0, 0);
-		DC->drawText(5, 45, .5, v, va("x: %d  y:%d", DC->cursorx,DC->cursory), 0, 0, 0, 0);
+		DC->drawText(5, 25, .5, v, va("fps: %f", DC->FPS), 0, 0, 0, FONT_SMALL);
+		DC->drawText(5, 45, .5, v, va("x: %d  y:%d", DC->cursorx,DC->cursory), 0, 0, 0, FONT_SMALL);
 	}
 }
 
@@ -7222,7 +7233,7 @@ displayContextDef_t *Display_GetContext() {
 	return DC;
 }
 
-void *Display_CaptureItem(int x, int y) {
+menuDef_t *Display_CaptureItem(int x, int y) {
 	int i;
 
 	for (i = 0; i < menuCount; i++) {
@@ -7237,9 +7248,8 @@ void *Display_CaptureItem(int x, int y) {
 
 
 // FIXME:
-qboolean Display_MouseMove(void *p, int x, int y) {
+qboolean Display_MouseMove(menuDef_t *menu, int x, int y) {
 	int i;
-	menuDef_t *menu = (menuDef_t *)p;
 
 	if (menu == NULL) {
 		menu = Menu_GetFocused();

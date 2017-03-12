@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // these are here so the functions in q_shared.c can link
 #ifndef UI_HARD_LINKED
 
-Q_NORETURN void QDECL Com_Error( int level, const char *error, ... ) {
+Q_NORETURN void QDECL Com_Error( errorParm_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
@@ -250,7 +250,7 @@ static void UI_CalcPostGameStats() {
 	newInfo.score *= newInfo.skillBonus;
 
 	// see if the score is higher for this one
-	newHigh = (newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
+	newHigh = (qboolean)(newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
 
 	if  (newHigh) {
 		// if so write out the new one

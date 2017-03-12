@@ -596,7 +596,7 @@ void Cmd_Noclip_f( gentity_t *ent ) {
 	} else {
 		msg = "noclip ON\n";
 	}
-	ent->client->noclip = !ent->client->noclip;
+	ent->client->noclip = (qboolean)!ent->client->noclip;
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\"", msg));
 }
@@ -743,8 +743,8 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	client = ent->client;
 	clientNum = client - level.clients;
 	oldTeam = client->sess.sessionTeam;
-	oldSpec = ( client->sess.spectatorState != SPECTATOR_NOT );
-	newSpec = ( specState != SPECTATOR_NOT );
+	oldSpec = (qboolean)(client->sess.spectatorState != SPECTATOR_NOT);
+	newSpec = (qboolean)(specState != SPECTATOR_NOT);
 
 	assert( !(team == TEAM_SPECTATOR && specState == SPECTATOR_NOT) );
 
@@ -757,7 +757,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
-		client->ps.fd.forceDoInit = 1;
+		client->ps.fd.forceDoInit = qtrue;
 		client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die (ent, ent, ent, 100000, MOD_LEAVE);
 	}
@@ -805,7 +805,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	}
 
 	// every time we change teams make sure our force powers are set right
-	client->ps.fd.forceDoInit = 1;
+	client->ps.fd.forceDoInit = qtrue;
 
 	client->sess.teamLeader = qfalse;
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
@@ -954,8 +954,8 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberLockFrame = 0;
 	client->ps.saberLockEnemy = 0;
 	client->ps.saberMove = LS_NONE;
-	client->ps.saberBlocked = 0;
-	client->ps.saberBlocking = 0;
+	client->ps.saberBlocked = BLOCKED_NONE;
+	client->ps.saberBlocking = BLK_NO;
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
 	for (i = 0; i < PW_NUM_POWERUPS; i++)
 		client->ps.powerups[i] = 0;
@@ -1035,7 +1035,7 @@ void Cmd_ForceChanged_f( gentity_t *ent )
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s%s\n\n\"", S_COLOR_GREEN, G_GetStripEdString("SVINGAME", "FORCEPOWERCHANGED")) );
 
-	ent->client->ps.fd.forceDoInit = 1;
+	ent->client->ps.fd.forceDoInit = qtrue;
 argCheck:
 	if (level.gametype == GT_TOURNAMENT)
 	{ //If this is duel, don't even bother changing team in relation to this.
@@ -1137,7 +1137,11 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 
 	// can't make yourself a following non-spectator here
 	team = client->sess.sessionTeam;
-	teamRestrict = ( g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR );
+	if (g_restrictSpectator.integer && client->sess.sessionTeam != TEAM_SPECTATOR) {
+		teamRestrict = qtrue;
+	} else {
+		teamRestrict = qfalse;
+	}
 
 	original = clientnum;
 
@@ -2465,7 +2469,7 @@ void Cmd_ToggleSaber_f(gentity_t *ent)
 
 void Cmd_SaberAttackCycle_f(gentity_t *ent)
 {
-	int selectLevel = 0;
+	forceLevel_t selectLevel = FORCE_LEVEL_0;
 
 	if ( !ent || !ent->client )
 	{
@@ -2487,7 +2491,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 		selectLevel = ent->client->ps.fd.saberAnimLevel;
 	}
 
-	selectLevel++;
+	selectLevel = (forceLevel_t)(selectLevel + 1);
 	if ( selectLevel > ent->client->ps.fd.forcePowerLevel[FP_SABERATTACK] )
 	{
 		selectLevel = FORCE_LEVEL_1;
@@ -2678,7 +2682,7 @@ static void Cmd_AddBot_f(gentity_t *ent)
 	trap_SendServerCommand( ent-g_entities, va("print \"%s.\n\"", G_GetStripEdString("SVINGAME", "ONLY_ADD_BOTS_AS_SERVER")));
 }
 
-void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
+void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 
 #ifdef _DEBUG
 void ScorePlum( int clientNum, vec3_t origin, int score );
@@ -2729,7 +2733,6 @@ static void Cmd_DebugSetSaberMove_f(gentity_t *self)
 
 static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 {
-	int flags = SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD;
 	int argNum = trap_Argc();
 	char arg[MAX_STRING_CHARS];
 	int i = 0;
@@ -2771,7 +2774,7 @@ static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 	pmv.gametype = level.gametype;
 
 	pm = &pmv;
-	PM_SetAnim(SETANIM_BOTH, i, flags, 0);
+	PM_SetAnim(SETANIM_BOTH, i, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
 
 	Com_Printf("Set body anim to %s\n", arg);
 }
@@ -2790,7 +2793,7 @@ static void Cmd_HeadExplodey_f(gentity_t *ent)
 	}
 }
 
-static void StandardSetBodyAnim(gentity_t *self, int anim, int flags)
+static void StandardSetBodyAnim(gentity_t *self, int anim, unsigned flags)
 {
 	pmove_t pmv;
 
@@ -2851,7 +2854,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 				StandardSetBodyAnim(ent, BOTH_KISSER1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				ent->client->ps.saberMove = LS_NONE;
 				ent->client->ps.saberBlocked = 0;
-				ent->client->ps.saberBlocking = 0;
+				ent->client->ps.saberBlocking = BLK_NO;
 
 				VectorSubtract( ent->client->ps.origin, other->client->ps.origin, entDir );
 				VectorCopy( other->client->ps.viewangles, otherAngles );
@@ -2861,7 +2864,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 				StandardSetBodyAnim(other, BOTH_KISSEE1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				other->client->ps.saberMove = LS_NONE;
 				other->client->ps.saberBlocked = 0;
-				other->client->ps.saberBlocking = 0;
+				other->client->ps.saberBlocking = BLK_NO;
 			}
 		}
 	}

@@ -103,6 +103,8 @@ typedef enum {
 	CV_MAX
 } voteCommand_t;
 
+q_static_assert(CV_MAX < 31);
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
@@ -125,7 +127,7 @@ typedef enum //# material_e
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-enum
+typedef enum
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,
@@ -151,7 +153,7 @@ enum
 	HL_GENERIC5,
 	HL_GENERIC6,
 	HL_MAX
-};
+} hitLoc_t;
 
 //============================================================================
 
@@ -380,18 +382,17 @@ typedef struct {
 // time and reading them back at connection time.  Anything added here
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
-	team_t		sessionTeam;
-	int			spectatorTime;		// for determining next-in-line to play
+	team_t				sessionTeam;
+	int					spectatorTime;		// for determining next-in-line to play
 	spectatorState_t	spectatorState;
-	int			spectatorClient;	// for chasecam and follow mode
-	int			wins, losses;		// tournament stats
-	int			selectedFP;			// check against this, if doesn't match value in playerstate then update userinfo
-	int			saberLevel;			// similar to above method, but for current saber attack level
-	qboolean	setForce;			// set to true once player is given the chance to set force powers
-	int			updateUITime;		// only update userinfo for FP/SL if < level.time
-	qboolean	teamLeader;			// true when this client is a team leader
-	qipv4_t		ip;					// parsed "ip" info key
-	int			qport;				// parsed "qport" info key
+	int					spectatorClient;	// for chasecam and follow mode
+	int					wins, losses;		// tournament stats
+	forcePowers_t		selectedFP;			// check against this, if doesn't match value in playerstate then update userinfo
+	forceLevel_t		saberLevel;			// similar to above method, but for current saber attack level
+	qboolean			setForce;			// set to true once player is given the chance to set force powers
+	qboolean			teamLeader;			// true when this client is a team leader
+	qipv4_t				ip;					// parsed "ip" info key
+	int					qport;				// parsed "qport" info key
 } clientSession_t;
 
 //
@@ -445,7 +446,7 @@ struct gclient_s {
 
 	int			invulnerableTimer;
 
-	int			saberCycleQueue;
+	forceLevel_t	saberCycleQueue;
 
 	qboolean	readyToExit;		// wishes to leave the intermission
 
@@ -696,13 +697,13 @@ void	G_SetAngles( gentity_t *ent, vec3_t angles );
 
 void	G_InitGentity( gentity_t *e, int blameEntityNum );
 gentity_t	*G_Spawn ( int blameEntityNum );
-gentity_t *G_TempEntity( const vec3_t origin, int event, int blameEntityNum );
-gentity_t	*G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum);
+gentity_t *G_TempEntity( const vec3_t origin, entity_event_t event, int blameEntityNum );
+gentity_t	*G_PlayEffect(effectTypes_t fxID, vec3_t org, vec3_t ang, int blameEntityNum);
 gentity_t *G_ScreenShake(const vec3_t org, gentity_t *target, float intensity, int duration, qboolean global);
-void	G_MuteSound( int entnum, int channel );
+void	G_MuteSound( int entnum, soundChannel_t channel );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
-void	G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum );
-void	G_EntitySound( gentity_t *ent, int channel, int soundIndex );
+void	G_SoundAtLoc( vec3_t loc, soundChannel_t channel, int soundIndex, int blameEntityNum );
+void	G_EntitySound( gentity_t *ent, soundChannel_t channel, int soundIndex );
 void	TryUse( gentity_t *ent );
 void	G_SendG2KillQueue(void);
 void	G_KillG2Queue(int entNum);
@@ -722,7 +723,7 @@ extern void G_RunObject			( gentity_t *ent );
 float	*tv (float x, float y, float z);
 char	*vtos( const vec3_t v );
 
-void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
+void G_AddPredictableEvent( gentity_t *ent, entity_event_t event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
@@ -778,7 +779,8 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
 void TossClientItems( gentity_t *self );
 void TossClientCubes( gentity_t *self );
 void ExplodeDeath( gentity_t *self );
-void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, int deathAnim);
+void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, animNumber_t deathAnim);
+hitLoc_t G_GetHitLocation(gentity_t *target, vec3_t ppoint);
 extern int gGAvoidDismember;
 
 
@@ -981,11 +983,11 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
 // w_force.c / w_saber.c
-gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum);
+gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum);
 qboolean HasSetSaberOnly(void);
 void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower );
 void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd );
-int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolean projectile, int attackStr);
+int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, qboolean projectile, int attackStr);
 void WP_SaberInitBladeData( gentity_t *ent );
 void WP_InitForcePowers( gentity_t *ent );
 void WP_SpawnInitForcePowers( gentity_t *ent );
@@ -1002,7 +1004,7 @@ void ForceTeamForceReplenish( gentity_t *self );
 void ForceSeeing( gentity_t *self );
 void ForceThrow( gentity_t *self, qboolean pull );
 void ForceTelepathy(gentity_t *self);
-qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc );
+qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, hitLoc_t hitLoc );
 
 // g_log.c
 void QDECL G_LogWeaponPickup(int client, int weaponid);
@@ -1191,7 +1193,7 @@ void	trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void	trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void	trap_FS_FCloseFile( fileHandle_t f );
 int		trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-void	trap_SendConsoleCommand( int exec_when, const char *text );
+void	trap_SendConsoleCommand( cbufExec_t exec_when, const char *text );
 void	trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void	trap_Cvar_Update( vmCvar_t *cvar );
 void	trap_Cvar_Set( const char *var_name, const char *value );
@@ -1334,7 +1336,7 @@ void	trap_BotMatchVariable(void /* struct bot_match_s */ *match, int variable, c
 void	trap_UnifyWhiteSpaces(char *string);
 void	trap_BotReplaceSynonyms(char *string, unsigned long int context);
 int		trap_BotLoadChatFile(int chatstate, char *chatfile, char *chatname);
-void	trap_BotSetChatGender(int chatstate, int gender);
+void	trap_BotSetChatGender(int chatstate, gender_t gender);
 void	trap_BotSetChatName(int chatstate, char *name, int client);
 void	trap_BotResetGoalState(int goalstate);
 void	trap_BotRemoveFromAvoidGoals(int goalstate, int number);
@@ -1403,4 +1405,4 @@ qboolean	trap_ROFF_Purge_Ent( int entID );
 qboolean	trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message);
 qboolean	trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t);
 qboolean	trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize);
-qboolean	trap_MVAPI_ControlFixes(mvfix_t fixes);
+qboolean	trap_MVAPI_ControlFixes(int fixes);

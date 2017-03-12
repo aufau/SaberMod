@@ -342,7 +342,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	float time_lowest = 0;
 	int index_lowest = -1;
 	int hasall = 1;
-	int forceReselect = WP_NONE;
+	// int forceReselect = WP_NONE;
 
 	if (trace)
 	{
@@ -398,11 +398,12 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		//G_Printf("You deserve a pat on the back.\n");
 	}
 
-	if (!(other->client->ps.fd.forcePowersActive & (1 << other->client->ps.fd.forcePowerSelected)))
+	if (other->client->ps.fd.forcePowerSelected == FP_NONE ||
+		!(other->client->ps.fd.forcePowersActive & (1 << other->client->ps.fd.forcePowerSelected)))
 	{ //If the player isn't using his currently selected force power, select this one
-		if (self->count != FP_SABERATTACK && self->count != FP_SABERDEFEND && self->count != FP_SABERTHROW && self->count != FP_LEVITATION)
+		if (FP_Selectable(self->count))
 		{
-			other->client->ps.fd.forcePowerSelected = self->count;
+			other->client->ps.fd.forcePowerSelected = (forcePowers_t)self->count;
 		}
 	}
 
@@ -446,12 +447,12 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 			forceReselect = WP_STUN_BATON;
 		}
 	}
-	*/
 
 	if (forceReselect != WP_NONE)
 	{
 		G_AddEvent(other, EV_NOAMMO, forceReselect);
 	}
+	*/
 
 	//G_Printf("DON'T TOUCH ME\n");
 }
@@ -697,9 +698,9 @@ static void InitShooter_Finish( gentity_t *ent ) {
 	ent->nextthink = 0;
 }
 
-void InitShooter( gentity_t *ent, int weapon ) {
+static void InitShooter( gentity_t *ent, weapon_t weapon ) {
 	ent->use = Use_Shooter;
-	ent->s.weapon = weapon;
+	ent->s.weapon = (int)weapon;
 
 	RegisterItem( BG_FindItemForWeapon( weapon ) );
 
@@ -1594,7 +1595,7 @@ static int gJanSound_Pain[JAN_PAIN_SOUNDS];
 static int gJanSound_Death[JAN_DEATH_SOUNDS];
 static int gJanSound_Alert[JAN_ALERT_SOUNDS];
 
-int G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, int mod, int hitLoc );
+animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t damage, int mod, hitLoc_t hitLoc );
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
 int GetNearestVisibleWP(vec3_t org, int ignore);
 int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
@@ -1687,7 +1688,7 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 
 	if (!find)
 	{
-		find = BG_Alloc(sizeof(animentCustomInfo_t));
+		find = (animentCustomInfo_t *)BG_Alloc(sizeof(animentCustomInfo_t));
 
 		if (!find)
 		{ //careful not to exceed the BG_Alloc limit!
@@ -1700,8 +1701,8 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 		find->aeWeapon = weapon;
 		find->next = NULL;
 
-		find->modelPath = BG_Alloc(strlen(modelname)+1);
-		find->soundPath = BG_Alloc(strlen(soundpath)+1);
+		find->modelPath = (char *)BG_Alloc(strlen(modelname)+1);
+		find->soundPath = (char *)BG_Alloc(strlen(soundpath)+1);
 
 		if (!find->modelPath || !find->soundPath)
 		{
@@ -1852,7 +1853,7 @@ void ExampleAnimEntAlertOthers(gentity_t *self)
 
 void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod )
 {
-	self->s.torsoAnim = G_PickDeathAnim(self, self->pos1, damage, mod, HL_NONE);
+	self->s.torsoAnim = G_PickDeathAnim(self, self->pos1, mod, damage, HL_NONE);
 
 	if (self->s.torsoAnim <= 0 || self->s.torsoAnim >= MAX_TOTALANIMATIONS)
 	{ //?! (bad)
@@ -1904,7 +1905,7 @@ void ExampleAnimEnt_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attac
 			self->s.pos.trDelta[1] -= Q_irand(10, 40);
 		}
 		self->s.pos.trDelta[2] += 100;
-		G_CheckForDismemberment(self, self->pos1, damage, self->s.torsoAnim);
+		G_CheckForDismemberment(self, self->pos1, damage, ANIM(self->s.torsoAnim));
 
 		VectorCopy(preDelta, self->s.pos.trDelta);
 	}
@@ -2536,17 +2537,17 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					hasEnemyLOS = ExampleAnimEntClearLOS(self, enemyOrigin);
 				}
 
-				if (hasEnemyLOS && enDist < 512 && self->splashRadius < level.time)
+				if (hasEnemyLOS && enDist < 512 && self->boltpoint2 < level.time)
 				{
 					if (id_rand()%10 <= 8)
 					{
-						if (self->splashMethodOfDeath)
+						if (self->boltpoint1)
 						{
-							self->splashMethodOfDeath = 0;
+							self->boltpoint1 = 0;
 						}
 						else
 						{
-							self->splashMethodOfDeath = 1;
+							self->boltpoint1 = 1;
 						}
 					}
 
@@ -2554,14 +2555,14 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					{ //these guys stand still more often because they are "snipers"
 						if (id_rand()%10 <= 7)
 						{
-							self->splashMethodOfDeath = 1;
+							self->boltpoint1 = 1;
 						}
 					}
 
-					self->splashRadius = level.time + Q_irand(2000, 5000);
+					self->boltpoint2 = level.time + Q_irand(2000, 5000);
 				}
 
-				if (hasEnemyLOS && (enDist < 512 || self->watertype == ANIMENT_TYPE_RODIAN) && self->splashMethodOfDeath)
+				if (hasEnemyLOS && (enDist < 512 || self->watertype == ANIMENT_TYPE_RODIAN) && self->boltpoint1)
 				{
 					VectorCopy(self->r.currentOrigin, goalPos);
 				}
@@ -2936,8 +2937,8 @@ void G_SpawnExampleAnimEnt(vec3_t pos, int aeType, animentCustomInfo_t *aeInfo)
 	//initialize the "AI" values
 	animEnt->bolt_Waist = -1; //the waypoint index
 	animEnt->bolt_Motion = ENTITYNUM_NONE; //the enemy index
-	animEnt->splashMethodOfDeath = 0; //don't stand still while you have an enemy
-	animEnt->splashRadius = 0; //timer for randomly deciding to stand still
+	animEnt->boltpoint1 = 0; //don't stand still while you have an enemy
+	animEnt->boltpoint2 = 0; //timer for randomly deciding to stand still
 	animEnt->boltpoint3 = 0; //running forward on the trail
 }
 

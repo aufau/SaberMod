@@ -185,7 +185,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	case CG_CONSOLE_COMMAND:
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
-		CG_DrawActiveFrame( arg0, arg1, arg2 );
+		CG_DrawActiveFrame( arg0, (stereoFrame_t)arg1, (qboolean)arg2 );
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
@@ -762,7 +762,7 @@ void CG_RegisterCvars( void ) {
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
-	cgs.localServer = atoi( var );
+	cgs.localServer = (qboolean)!!atoi( var );
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
@@ -935,7 +935,7 @@ Q_NORETURN void QDECL CG_Error( const char *msg, ... ) {
 #ifndef CGAME_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link (FIXME)
 
-Q_NORETURN void QDECL Com_Error( int level, const char *error, ... ) {
+Q_NORETURN void QDECL Com_Error( errorParm_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
@@ -1879,7 +1879,7 @@ void CG_StartMusic( qboolean bForceStart ) {
 	Q_strncpyz( parm1, COM_Parse( (const char **)&s ), sizeof( parm1 ) );
 	Q_strncpyz( parm2, COM_Parse( (const char **)&s ), sizeof( parm2 ) );
 
-	trap_S_StartBackgroundTrack( parm1, parm2, !bForceStart );
+	trap_S_StartBackgroundTrack( parm1, parm2, (qboolean)!bForceStart );
 }
 
 #ifdef MISSIONPACK
@@ -2333,7 +2333,7 @@ static float CG_Cvar_Get(const char *cvar) {
 	return atof(buff);
 }
 
-void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont) {
+static void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, font_t iMenuFont) {
 	CG_Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 }
 
@@ -2534,18 +2534,16 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	cg.clientNum = clientNum;
-	cg.itemSelect = -1;
-	cg.forceSelect = -1;
+	cg.itemSelect = HI_NONE;
+	cg.forceSelect = FP_NONE;
 	cg.weaponSelect = WP_BRYAR_PISTOL;
 
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;
-	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
-	cgs.flagStatus = -1;
 
 	trap_GetGlconfig( &cgs.glconfig );
-	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0;
-	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0;
+	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0f;
+	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
 
 	trap_GetGameState( &cgs.gameState );
 
@@ -2648,14 +2646,15 @@ void CG_NextForcePower_f( void )
 	}
 
 //	BG_CycleForce(&cg.snap->ps, 1);
-	if (cg.forceSelect != -1)
+	if (cg.forceSelect != FP_NONE)
 	{
 		cg.snap->ps.fd.forcePowerSelected = cg.forceSelect;
 	}
 
 	BG_CycleForce(&cg.snap->ps, 1);
 
-	if (cg.snap->ps.fd.forcePowersKnown & (1 << cg.snap->ps.fd.forcePowerSelected))
+	if (cg.snap->ps.fd.forcePowerSelected != FP_NONE &&
+		cg.snap->ps.fd.forcePowersKnown & (1 << cg.snap->ps.fd.forcePowerSelected))
 	{
 		cg.forceSelect = cg.snap->ps.fd.forcePowerSelected;
 		cg.forceSelectTime = cg.time;
@@ -2680,14 +2679,15 @@ void CG_PrevForcePower_f( void )
 	}
 
 //	BG_CycleForce(&cg.snap->ps, -1);
-	if (cg.forceSelect != -1)
+	if (cg.forceSelect != FP_NONE)
 	{
 		cg.snap->ps.fd.forcePowerSelected = cg.forceSelect;
 	}
 
 	BG_CycleForce(&cg.snap->ps, -1);
 
-	if (cg.snap->ps.fd.forcePowersKnown & (1 << cg.snap->ps.fd.forcePowerSelected))
+	if (cg.snap->ps.fd.forcePowerSelected != FP_NONE &&
+		cg.snap->ps.fd.forcePowersKnown & (1 << cg.snap->ps.fd.forcePowerSelected))
 	{
 		cg.forceSelect = cg.snap->ps.fd.forcePowerSelected;
 		cg.forceSelectTime = cg.time;
@@ -2706,7 +2706,7 @@ void CG_NextInventory_f(void)
 		return;
 	}
 
-	if (cg.itemSelect != -1)
+	if (cg.itemSelect != HI_NONE)
 	{
 		cg.snap->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
 	}
@@ -2714,7 +2714,7 @@ void CG_NextInventory_f(void)
 
 	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM])
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
 	}
 }
@@ -2731,7 +2731,7 @@ void CG_PrevInventory_f(void)
 		return;
 	}
 
-	if (cg.itemSelect != -1)
+	if (cg.itemSelect != HI_NONE)
 	{
 		cg.snap->ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
 	}
@@ -2739,7 +2739,7 @@ void CG_PrevInventory_f(void)
 
 	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM])
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
 	}
 }

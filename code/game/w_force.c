@@ -41,7 +41,7 @@ static int ysalamiriLoopSound;
 
 int ForceShootDrain( gentity_t *self );
 
-gentity_t *G_PreDefSound(vec3_t org, int pdSound, int blameEntityNum)
+gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum)
 {
 	gentity_t	*te;
 
@@ -67,7 +67,7 @@ qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold 
 
 	dot = DotProduct( dir, forward );
 
-	return (dot > threshHold);
+	return (qboolean)(dot > threshHold);
 }
 
 #ifdef UNUSED
@@ -164,13 +164,13 @@ void WP_InitForcePowers( gentity_t *ent )
 {
 	int i;
 	int i_r;
-	int maxRank = g_maxForceRank.integer;
+	forceMastery_t maxRank = (forceMastery_t)g_maxForceRank.integer;
 	qboolean warnClient = qfalse;
 	qboolean warnClientLimit = qfalse;
 	char userinfo[MAX_INFO_STRING];
 	char forcePowers[256];
 	char readBuf[256];
-	int lastFPKnown = -1;
+	forcePowers_t lastFPKnown = FP_NONE;
 	qboolean didEvent = qfalse;
 
 	if (!maxRank)
@@ -192,7 +192,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	}
 
 	// reset
-	ent->client->ps.fd.forceDoInit = 0;
+	ent->client->ps.fd.forceDoInit = qfalse;
 
 	ent->client->ps.fd.saberAnimLevel = ent->client->sess.saberLevel;
 
@@ -235,14 +235,14 @@ void WP_InitForcePowers( gentity_t *ent )
 	i = 0;
 	while (i < NUM_FORCE_POWERS)
 	{
-		ent->client->ps.fd.forcePowerLevel[i] = 0;
+		ent->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 		ent->client->ps.fd.forcePowersKnown &= ~(1 << i);
 		i++;
 	}
 
-	ent->client->ps.fd.forcePowerSelected = -1;
+	ent->client->ps.fd.forcePowerSelected = FP_NONE;
 
-	ent->client->ps.fd.forceSide = 0;
+	ent->client->ps.fd.forceSide = FORCE_ANY;
 
 	trap_GetUserinfo( ent->s.number, userinfo, sizeof( userinfo ) );
 
@@ -260,20 +260,20 @@ void WP_InitForcePowers( gentity_t *ent )
 	{
 		if (ent->client->sess.sessionTeam == TEAM_RED)
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_DARKSIDE, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_DARKSIDE, level.gametype, g_forcePowerDisable.integer));
 		}
 		else if (ent->client->sess.sessionTeam == TEAM_BLUE)
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_LIGHTSIDE, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_LIGHTSIDE, level.gametype, g_forcePowerDisable.integer));
 		}
 		else
 		{
-			warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+			warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_ANY, level.gametype, g_forcePowerDisable.integer));
 		}
 	}
 	else
 	{
-		warnClient = !(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), 0, level.gametype, g_forcePowerDisable.integer));
+		warnClient = (qboolean)!(BG_LegalizedForcePowers(forcePowers, maxRank, HasSetSaberOnly(), FORCE_ANY, level.gametype, g_forcePowerDisable.integer));
 	}
 
 	i_r = 0;
@@ -297,18 +297,28 @@ void WP_InitForcePowers( gentity_t *ent )
 	}
 	readBuf[i_r] = 0;
 	//THE SIDE
-	ent->client->ps.fd.forceSide = atoi(readBuf);
+	ent->client->ps.fd.forceSide = (forceSide_t)atoi(readBuf);
 	i++;
 
 	i_r = 0;
 	while (forcePowers[i] && forcePowers[i] != '\n' &&
 		i_r < NUM_FORCE_POWERS)
 	{
+		forceLevel_t forceLevel;
+
 		readBuf[0] = forcePowers[i];
 		readBuf[1] = 0;
 
-		ent->client->ps.fd.forcePowerLevel[i_r] = atoi(readBuf);
-		if (ent->client->ps.fd.forcePowerLevel[i_r])
+		forceLevel = (forceLevel_t)atoi(readBuf);
+
+		if ((unsigned)forceLevel >= NUM_FORCE_POWERS)
+		{
+			forceLevel = FORCE_LEVEL_0;
+		}
+
+		ent->client->ps.fd.forcePowerLevel[i_r] = forceLevel;
+
+		if (forceLevel)
 		{
 			ent->client->ps.fd.forcePowersKnown |= (1 << i_r);
 		}
@@ -364,7 +374,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 			te->r.svFlags |= SVF_BROADCAST;
 			te->s.trickedentindex = ent->s.number;
-			te->s.eventParm = maxRank;
+			te->s.eventParm = (int)maxRank;
 			te->s.bolt1 = 0;
 #endif
 			didEvent = qtrue;
@@ -393,7 +403,7 @@ void WP_InitForcePowers( gentity_t *ent )
 #else
 			//Event isn't very reliable, I made it a string. This way I can send it to just one
 			//client also, as opposed to making a broadcast event.
-			trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", maxRank, 1, ent->client->sess.sessionTeam));
+			trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", (int)maxRank, 1, ent->client->sess.sessionTeam));
 			//Arg1 is new max rank, arg2 is non-0 if force menu should be shown, arg3 is the current team
 #endif
 		}
@@ -407,11 +417,11 @@ void WP_InitForcePowers( gentity_t *ent )
 
 		te->r.svFlags |= SVF_BROADCAST;
 		te->s.trickedentindex = ent->s.number;
-		te->s.eventParm = maxRank;
+		te->s.eventParm = (int)maxRank;
 		te->s.bolt1 = 1;
 		te->s.bolt2 = ent->client->sess.sessionTeam;
 #else
-		trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", maxRank, 0, ent->client->sess.sessionTeam));
+		trap_SendServerCommand(ent->s.number, va("nfr %i %i %i", (int)maxRank, 0, ent->client->sess.sessionTeam));
 #endif
 	}
 
@@ -430,30 +440,25 @@ void WP_InitForcePowers( gentity_t *ent )
 		}
 		else
 		{
-			if (i != FP_LEVITATION && i != FP_SABERATTACK && i != FP_SABERDEFEND && i != FP_SABERTHROW)
+			if (FP_Selectable(i))
 			{
-				lastFPKnown = i;
+				lastFPKnown = (forcePowers_t)i;
 			}
 		}
 
 		i++;
 	}
 
-	if (ent->client->ps.fd.forcePowersKnown & ent->client->sess.selectedFP)
+	if (FP_Selectable(ent->client->sess.selectedFP) &&
+		ent->client->ps.fd.forcePowersKnown & (1 << ent->client->sess.selectedFP))
 	{
 		ent->client->ps.fd.forcePowerSelected = ent->client->sess.selectedFP;
 	}
 
-	if (!(ent->client->ps.fd.forcePowersKnown & (1 << ent->client->ps.fd.forcePowerSelected)))
+	if (ent->client->ps.fd.forcePowerSelected == FP_NONE ||
+		!(ent->client->ps.fd.forcePowersKnown & (1 << ent->client->ps.fd.forcePowerSelected)))
 	{
-		if (lastFPKnown != -1)
-		{
-			ent->client->ps.fd.forcePowerSelected = lastFPKnown;
-		}
-		else
-		{
-			ent->client->ps.fd.forcePowerSelected = 0;
-		}
+		ent->client->ps.fd.forcePowerSelected = lastFPKnown;
 	}
 
 	while (i < NUM_FORCE_POWERS)
@@ -461,7 +466,7 @@ void WP_InitForcePowers( gentity_t *ent )
 		ent->client->ps.fd.forcePowerBaseLevel[i] = ent->client->ps.fd.forcePowerLevel[i];
 		i++;
 	}
-	ent->client->ps.fd.forceUsingAdded = 0;
+	ent->client->ps.fd.forceUsingAdded = qfalse;
 }
 
 void WP_SpawnInitForcePowers( gentity_t *ent )
@@ -476,13 +481,13 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 	{
 		if (ent->client->ps.fd.forcePowersActive & (1 << i))
 		{
-			WP_ForcePowerStop(ent, i);
+			WP_ForcePowerStop(ent, (forcePowers_t)i);
 		}
 
 		i++;
 	}
 
-	ent->client->ps.fd.forceDeactivateAll = 0;
+	ent->client->ps.fd.forceDeactivateAll = qfalse;
 
 	ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax = FORCE_POWER_MAX;
 	ent->client->ps.fd.forcePowerRegenDebounceTime = 0;
@@ -539,7 +544,7 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 	ent->client->ps.fd.forceJumpSound = 0;
 	ent->client->ps.fd.forceGripDamageDebounceTime = 0;
 	ent->client->ps.fd.forceGripBeingGripped = 0;
-	ent->client->ps.fd.forceGripCripple = 0;
+	ent->client->ps.fd.forceGripCripple = qfalse;
 	ent->client->ps.fd.forceGripUseTime = 0;
 	ent->client->ps.fd.forceGripSoundTime = 0;
 	ent->client->ps.fd.forceGripStarted = 0;
@@ -685,7 +690,7 @@ qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower )
 	return WP_ForcePowerAvailable( self, forcePower );
 }
 
-int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacker, int atPower, int atPowerLevel, int atForceSpent)
+int WP_AbsorbConversion(gentity_t *attacked, forceLevel_t atdAbsLevel, gentity_t *attacker, forcePowers_t atPower, forceLevel_t atPowerLevel, int atForceSpent)
 {
 	int getLevel = 0;
 	int addTot = 0;
@@ -700,7 +705,7 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 		return -1;
 	}
 
-	if (!atdAbsLevel)
+	if (atdAbsLevel == FORCE_LEVEL_0)
 	{ //looks like attacker doesn't have any absorb power
 		return -1;
 	}
@@ -711,8 +716,8 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 	}
 
 	//Subtract absorb power level from the offensive force power
-	getLevel = atPowerLevel;
-	getLevel -= atdAbsLevel;
+	getLevel = (int)atPowerLevel;
+	getLevel -= (int)atdAbsLevel;
 
 	if (getLevel < 0)
 	{
@@ -720,7 +725,7 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 	}
 
 	//let the attacker absorb an amount of force used in this attack based on his level of absorb
-	addTot = (atForceSpent/3)*attacked->client->ps.fd.forcePowerLevel[FP_ABSORB];
+	addTot = (atForceSpent/3)*(int)attacked->client->ps.fd.forcePowerLevel[FP_ABSORB];
 
 	if (addTot < 1 && atForceSpent >= 1)
 	{
@@ -779,7 +784,7 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 
 	//hearable and hearDist are merely for the benefit of bots, and not related to if a sound is actually played.
 	//If duration is set, the force power will assume to be timer-based.
-	switch( (int)forcePower )
+	switch( forcePower )
 	{
 	case FP_HEAL:
 		hearable = qtrue;
@@ -963,11 +968,11 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 
 	self->client->ps.fd.forcePowerDebounce[forcePower] = 0;
 
-	if ((int)forcePower == FP_SPEED && overrideAmt)
+	if (forcePower == FP_SPEED && overrideAmt)
 	{
-		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt*0.025 );
+		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt*0.025f );
 	}
-	else if ((int)forcePower != FP_GRIP && (int)forcePower != FP_DRAIN)
+	else if (forcePower != FP_GRIP && forcePower != FP_DRAIN)
 	{ //grip and drain drain as damage is done
 		BG_ForcePowerDrain( &self->client->ps, forcePower, overrideAmt );
 	}
@@ -2468,26 +2473,26 @@ void GEntity_UseFunc( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 qboolean CanCounterThrow(gentity_t *self, qboolean pull)
 {
-	int powerUse = 0;
+	forcePowers_t powerUse;
 
 	if (self->client->ps.forceHandExtend != HANDEXTEND_NONE)
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (self->client->ps.weaponTime > 0)
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if ( self->health <= 0 )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if ( self->client->ps.powerups[PW_DISINT_4] > level.time )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (pull)
@@ -2501,20 +2506,20 @@ qboolean CanCounterThrow(gentity_t *self, qboolean pull)
 
 	if ( !WP_ForcePowerUsable( self, powerUse ) )
 	{
-		return 0;
+		return qfalse;
 	}
 
 	if (self->client->ps.groundEntityNum == ENTITYNUM_NONE)
 	{ //you cannot counter a push/pull if you're in the air
-		return 0;
+		return qfalse;
 	}
 
-	return 1;
+	return qtrue;
 }
 
 qboolean G_InGetUpAnim(playerState_t *ps)
 {
-	switch( (ps->legsAnim&~ANIM_TOGGLEBIT) )
+	switch( ANIM(ps->legsAnim) )
 	{
 	case BOTH_GETUP1:
 	case BOTH_GETUP2:
@@ -2529,9 +2534,11 @@ qboolean G_InGetUpAnim(playerState_t *ps)
 	case BOTH_FORCE_GETUP_B4:
 	case BOTH_FORCE_GETUP_B5:
 		return qtrue;
+	default:
+		break;
 	}
 
-	switch( (ps->torsoAnim&~ANIM_TOGGLEBIT) )
+	switch( ANIM(ps->torsoAnim) )
 	{
 	case BOTH_GETUP1:
 	case BOTH_GETUP2:
@@ -2546,6 +2553,8 @@ qboolean G_InGetUpAnim(playerState_t *ps)
 	case BOTH_FORCE_GETUP_B4:
 	case BOTH_FORCE_GETUP_B5:
 		return qtrue;
+	default:
+		break;
 	}
 
 	return qfalse;
@@ -2565,7 +2574,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	int			i, e;
 	int			ent_count = 0;
 	int			radius = 1024; //since it's view-based now. //350;
-	int			powerLevel;
+	forceLevel_t	powerLevel;
 	int			visionArc;
 	int			pushPower;
 	int			pushPowerMod;
@@ -2577,7 +2586,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	vec3_t		thispush_org;
 	vec3_t		tfrom, tto, fwd, a;
 //	float		knockback = pull?0:200;
-	int			powerUse = 0;
+	forcePowers_t	powerUse;
 
 	visionArc = 0;
 
@@ -2923,15 +2932,16 @@ void ForceThrow( gentity_t *self, qboolean pull )
 		//method1:
 		for ( x = 0; x < ent_count; x++ )
 		{
-			int modPowerLevel = powerLevel;
-
+			forceLevel_t modPowerLevel = powerLevel;
 
 			if (push_list[x]->client)
 			{
-				modPowerLevel = WP_AbsorbConversion(push_list[x], push_list[x]->client->ps.fd.forcePowerLevel[FP_ABSORB], self, powerUse, powerLevel, forcePowerNeeded[self->client->ps.fd.forcePowerLevel[powerUse]][powerUse]);
-				if (modPowerLevel == -1)
+				int converted;
+
+				converted = WP_AbsorbConversion(push_list[x], push_list[x]->client->ps.fd.forcePowerLevel[FP_ABSORB], self, powerUse, powerLevel, forcePowerNeeded[self->client->ps.fd.forcePowerLevel[powerUse]][powerUse]);
+				if (converted > 0)
 				{
-					modPowerLevel = powerLevel;
+					modPowerLevel = (forceLevel_t)converted;
 				}
 			}
 
@@ -2948,7 +2958,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 
 			if ( push_list[x]->client )
 			{//FIXME: make enemy jedi able to hunker down and resist this?
-				int otherPushPower = push_list[x]->client->ps.fd.forcePowerLevel[powerUse];
+				forceLevel_t otherPushPower = push_list[x]->client->ps.fd.forcePowerLevel[powerUse];
 				qboolean canPullWeapon = qtrue;
 				float dirLen = 0;
 
@@ -2957,11 +2967,9 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				if (push_list[x]->client->pers.cmd.forwardmove ||
 					push_list[x]->client->pers.cmd.rightmove)
 				{ //if you are moving, you get one less level of defense
-					otherPushPower--;
-
-					if (otherPushPower < 0)
+					if (otherPushPower > 0)
 					{
-						otherPushPower = 0;
+						otherPushPower = (forceLevel_t)(otherPushPower - 1);
 					}
 				}
 
@@ -2990,19 +2998,19 @@ void ForceThrow( gentity_t *self, qboolean pull )
 					}
 					else
 					{
-						int powerDif = (modPowerLevel - otherPushPower);
+						int powerDif = (int)modPowerLevel - (int)otherPushPower;
 
 						if (powerDif >= 3)
 						{
-							pushPowerMod -= pushPowerMod*0.2;
+							pushPowerMod -= pushPowerMod*0.2f;
 						}
 						else if (powerDif == 2)
 						{
-							pushPowerMod -= pushPowerMod*0.4;
+							pushPowerMod -= pushPowerMod*0.4f;
 						}
 						else if (powerDif == 1)
 						{
-							pushPowerMod -= pushPowerMod*0.8;
+							pushPowerMod -= pushPowerMod*0.8f;
 						}
 
 						if (pushPowerMod < 0)
@@ -3060,7 +3068,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 					{
 						dirLen = VectorLength(pushDir);
 
-						if (dirLen <= (64*((modPowerLevel - otherPushPower)-1)))
+						if (dirLen <= 64 * ((int)modPowerLevel - (int)otherPushPower - 1))
 						{ //can only do a knockdown if fairly close
 							push_list[x]->client->ps.forceHandExtend = HANDEXTEND_KNOCKDOWN;
 							push_list[x]->client->ps.forceHandExtendTime = level.time + 700;
@@ -3874,7 +3882,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceHeal(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_LEVITATION:
 		//if leave the ground by some other means, cancel the force jump so we don't suddenly jump when we land.
@@ -3897,7 +3905,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceSpeed(self, 0);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_GRIP:
 		if (self->client->ps.fd.forceGripEntityNum == ENTITYNUM_NONE)
@@ -3928,7 +3936,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceThrow(self, qfalse);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_PULL:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3937,7 +3945,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceThrow(self, qtrue);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TELEPATHY:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3946,7 +3954,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTelepathy(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_RAGE:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3955,7 +3963,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceRage(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_PROTECT:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3964,7 +3972,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceProtect(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_ABSORB:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3973,7 +3981,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceAbsorb(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TEAM_HEAL:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3982,7 +3990,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTeamHeal(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_TEAM_FORCE:
 		powerSucceeded = 0; //always 0 for nonhold powers
@@ -3991,7 +3999,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceTeamForceReplenish(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_DRAIN:
 		ForceDrain(self);
@@ -4003,7 +4011,7 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 			break;
 		}
 		ForceSeeing(self);
-		self->client->ps.fd.forceButtonNeedRelease = 1;
+		self->client->ps.fd.forceButtonNeedRelease = qtrue;
 		break;
 	case FP_SABERATTACK:
 		break;
@@ -4216,7 +4224,7 @@ void SeekerDroneUpdate(gentity_t *self)
 				VectorSubtract(en->client->ps.origin, org, endir);
 				VectorNormalize(endir);
 
-				WP_FireGenericBlasterMissile(self, org, endir, 0, 15, 2000, MOD_BLASTER);
+				WP_FireGenericBlasterMissile(self, org, endir, qfalse, 15, 2000, MOD_BLASTER);
 				G_SoundAtLoc( org, CHAN_WEAPON, G_SoundIndex("sound/weapons/bryar/fire.wav"), self->s.number );
 
 				self->client->ps.droneFireTime = level.time + Q_irand(400, 700);
@@ -4228,7 +4236,7 @@ void SeekerDroneUpdate(gentity_t *self)
 void HolocronUpdate(gentity_t *self)
 { //keep holocron status updated in holocron mode
 	int i = 0;
-	int noHRank = FORCE_LEVEL_0;
+	forceLevel_t noHRank = FORCE_LEVEL_0;
 	/*
 	if (noHRank < FORCE_LEVEL_0)
 	{
@@ -4251,7 +4259,7 @@ void HolocronUpdate(gentity_t *self)
 		}
 		else
 		{ //otherwise, make sure the power is cleared from us
-			self->client->ps.fd.forcePowerLevel[i] = 0;
+			self->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 			if (self->client->ps.holocronBits & (1 << i))
 			{
 				self->client->ps.holocronBits -= (1 << i);
@@ -4264,7 +4272,7 @@ void HolocronUpdate(gentity_t *self)
 
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION && i != FP_SABERATTACK)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			if (i == FP_LEVITATION)
@@ -4332,7 +4340,7 @@ void JediMasterUpdate(gentity_t *self)
 			  //relatively useless in comparison, because its main intent is not to heal, but rather to cripple others
 			  //by draining their force at the same time. And no one needs force in JM except the JM himself.
 				self->client->ps.fd.forcePowersKnown &= ~(1 << i);
-				self->client->ps.fd.forcePowerLevel[i] = 0;
+				self->client->ps.fd.forcePowerLevel[i] = FORCE_LEVEL_0;
 			}
 
 			if (i == FP_TELEPATHY)
@@ -4351,7 +4359,7 @@ void JediMasterUpdate(gentity_t *self)
 
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			if (i == FP_LEVITATION)
@@ -4436,22 +4444,12 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		self->client->ps.fd.forcePowerLevel[FP_LEVITATION] = FORCE_LEVEL_1;
 	}
 
-	if (self->client->ps.fd.forcePowerSelected < 0)
-	{ //bad
-		self->client->ps.fd.forcePowerSelected = 0;
-	}
-
 	if ( ((self->client->sess.selectedFP != self->client->ps.fd.forcePowerSelected) ||
 		(self->client->sess.saberLevel != self->client->ps.fd.saberAnimLevel)) &&
 		!(self->r.svFlags & SVF_BOT) )
 	{
-		if (self->client->sess.updateUITime < level.time)
-		{ //a bit hackish, but we don't want the client to flood with userinfo updates if they rapidly cycle
-		  //through their force powers or saber attack levels
-
-			self->client->sess.selectedFP = self->client->ps.fd.forcePowerSelected;
-			self->client->sess.saberLevel = self->client->ps.fd.saberAnimLevel;
-		}
+		self->client->sess.selectedFP = self->client->ps.fd.forcePowerSelected;
+		self->client->sess.saberLevel = self->client->ps.fd.saberAnimLevel;
 	}
 
 	if (!g_LastFrameTime)
@@ -4469,9 +4467,9 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	if (self->client->ps.forceHandExtend == HANDEXTEND_KNOCKDOWN &&
 		self->client->ps.forceHandExtendTime >= level.time)
 	{
-		self->client->ps.saberMove = 0;
-		self->client->ps.saberBlocking = 0;
-		self->client->ps.saberBlocked = 0;
+		self->client->ps.saberMove = LS_NONE;
+		self->client->ps.saberBlocking = BLK_NO;
+		self->client->ps.saberBlocked = BLOCKED_NONE;
 		self->client->ps.weaponTime = 0;
 	}
 	else if (self->client->ps.forceHandExtend != HANDEXTEND_NONE &&
@@ -4541,13 +4539,13 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		{
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION)
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			i++;
 		}
 
-		self->client->ps.fd.forceDeactivateAll = 0;
+		self->client->ps.fd.forceDeactivateAll = qfalse;
 
 		if (self->client->ps.fd.forceJumpCharge)
 		{
@@ -4562,9 +4560,9 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		while (i < NUM_FORCE_POWERS)
 		{
 			if ((self->client->ps.fd.forcePowersActive & (1 << i)) && i != FP_LEVITATION &&
-				!BG_CanUseFPNow(level.gametype, &self->client->ps, level.time, i))
+				!BG_CanUseFPNow(level.gametype, &self->client->ps, level.time, (forcePowers_t)i))
 			{
-				WP_ForcePowerStop(self, i);
+				WP_ForcePowerStop(self, (forcePowers_t)i);
 			}
 
 			i++;
@@ -4593,7 +4591,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 				i++;
 			}
 
-			self->client->ps.fd.forceUsingAdded = 1;
+			self->client->ps.fd.forceUsingAdded = qtrue;
 		}
 	}
 	else if (self->client->ps.fd.forceUsingAdded)
@@ -4607,7 +4605,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			{
 				if (self->client->ps.fd.forcePowersActive & (1 << i))
 				{
-					WP_ForcePowerStop(self, i);
+					WP_ForcePowerStop(self, (forcePowers_t)i);
 				}
 				self->client->ps.fd.forcePowersKnown &= ~(1 << i);
 			}
@@ -4615,7 +4613,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			i++;
 		}
 
-		self->client->ps.fd.forceUsingAdded = 0;
+		self->client->ps.fd.forceUsingAdded = qfalse;
 	}
 
 	i = 0;
@@ -4635,11 +4633,11 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 	if (self->client->ps.fd.forceGripBeingGripped > level.time)
 	{
-		self->client->ps.fd.forceGripCripple = 1;
+		self->client->ps.fd.forceGripCripple = qtrue;
 	}
 	else
 	{
-		self->client->ps.fd.forceGripCripple = 0;
+		self->client->ps.fd.forceGripCripple = qfalse;
 	}
 
 	if (self->client->ps.fd.forceJumpSound)
@@ -4802,7 +4800,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 	else
 	{
-		self->client->ps.fd.forceButtonNeedRelease = 0;
+		self->client->ps.fd.forceButtonNeedRelease = qfalse;
 	}
 
 	for ( i = 0; i < NUM_FORCE_POWERS; i++ )
@@ -4899,7 +4897,7 @@ powersetcheck:
 	(void)usingForce; // suppress warning
 }
 
-qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc )
+qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, hitLoc_t hitLoc )
 {
 	int	dodgeAnim = -1;
 
@@ -4954,7 +4952,7 @@ qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, in
 
 	if (g_forceDodge.integer == 2)
 	{
-		if ( Q_irand( 1, 7 ) > self->client->ps.fd.forcePowerLevel[FP_SPEED] )
+		if ( Q_irand( 1, 7 ) > (int)self->client->ps.fd.forcePowerLevel[FP_SPEED] )
 		{//more likely to fail on lower force speed level
 			return qfalse;
 		}

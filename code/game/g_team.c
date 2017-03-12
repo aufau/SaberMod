@@ -89,7 +89,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 
 //plIndex used to print pl->client->pers.netname
 //teamIndex used to print team name
-void PrintCTFMessage(int plIndex, int teamIndex, int ctfMessage)
+static void PrintCTFMessage(int plIndex, int teamIndex, ctfMsg_t ctfMessage)
 {
 	gentity_t *te;
 
@@ -707,7 +707,7 @@ Flags are unique in that if they are dropped, the base flag must be respawned wh
 ==============
 */
 void Team_DroppedFlagThink(gentity_t *ent) {
-	int		team = TEAM_FREE;
+	team_t	team = TEAM_FREE;
 
 	if( ent->item->giTag == PW_REDFLAG ) {
 		team = TEAM_RED;

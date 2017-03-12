@@ -104,7 +104,7 @@ CG_Obituary
 =============
 */
 static void CG_Obituary( entityState_t *ent ) {
-	int			mod;
+	meansOfDeath_t	mod;
 	int			target, attacker;
 	const char	*message;
 	const char	*targetInfo;
@@ -116,7 +116,7 @@ static void CG_Obituary( entityState_t *ent ) {
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
-	mod = ent->eventParm;
+	mod = (meansOfDeath_t)ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS ) {
 		CG_Error( "CG_Obituary: target out of range" );
@@ -525,7 +525,7 @@ static void CG_UseItem( centity_t *cent ) {
 	if (cg.snap && cg.snap->ps.clientNum == cent->currentState.number && itemNum != HI_BINOCULARS)
 	{ //if not using binoculars, we just used that item up, so switch
 		BG_CycleInven(&cg.snap->ps, 1);
-		cg.itemSelect = -1; //update the client-side selection display
+		cg.itemSelect = HI_NONE; //update the client-side selection display
 	}
 }
 
@@ -555,11 +555,13 @@ static void CG_ItemPickup( int itemNum ) {
 		}
 		else if ( cg_autoswitch.integer == 1)
 		{ //only autoselect if not explosive ("safe")
-			if (bg_itemlist[itemNum].giTag != WP_TRIP_MINE &&
-				bg_itemlist[itemNum].giTag != WP_DET_PACK &&
-				bg_itemlist[itemNum].giTag != WP_THERMAL &&
-				bg_itemlist[itemNum].giTag != WP_ROCKET_LAUNCHER &&
-				bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
+			weapon_t weapon = (weapon_t)bg_itemlist[itemNum].giTag;
+
+			if (weapon != WP_TRIP_MINE &&
+				weapon != WP_DET_PACK &&
+				weapon != WP_THERMAL &&
+				weapon != WP_ROCKET_LAUNCHER &&
+				weapon > cg.snap->ps.weapon &&
 				cg.snap->ps.weapon != WP_SABER)
 			{
 				if (!cg.snap->ps.emplacedIndex)
@@ -571,7 +573,7 @@ static void CG_ItemPickup( int itemNum ) {
 		}
 		else if ( cg_autoswitch.integer == 2)
 		{ //autoselect if better
-			if (bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
+			if ((weapon_t)bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
 				cg.snap->ps.weapon != WP_SABER)
 			{
 				if (!cg.snap->ps.emplacedIndex)
@@ -653,7 +655,7 @@ void CG_ReattachLimb(centity_t *source)
 	const char *limbName;
 	const char *stubCapName;
 
-	switch (source->torsoBolt)
+	switch ((g2ModelParts_t)source->torsoBolt)
 	{
 	case G2_MODELPART_HEAD:
 		limbName = "head";
@@ -792,7 +794,7 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 	}
 }
 
-void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, int ctfMessage)
+void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, ctfMsg_t ctfMessage)
 {
 	char printMsg[1024];
 	const char *refName = NULL;
@@ -894,10 +896,10 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 
 	if (teamIndex < 50)
 	{
-		teamName = BG_TeamName(teamIndex, CASE_UPPER);
+		teamName = BG_TeamName((team_t)teamIndex, CASE_UPPER);
 	}
 
-	CG_PrintCTFMessage(ci, teamName, es->eventParm);
+	CG_PrintCTFMessage(ci, teamName, (ctfMsg_t)es->eventParm);
 }
 
 void DoFall(centity_t *cent, entityState_t *es, int clientNum)
@@ -994,7 +996,7 @@ also called by CG_CheckPlayerstateEvents
 #define	DEBUGNAME(x) if(cg_debugEvents.integer){CG_Printf(x"\n");}
 void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	entityState_t	*es;
-	int				event;
+	entity_event_t	event;
 	vec3_t			dir;
 	const char		*s;
 	int				clientNum;
@@ -1004,7 +1006,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	centity_t		*cl_ent;
 
 	es = &cent->currentState;
-	event = es->event & ~EV_EVENT_BITS;
+	event = (entity_event_t)(es->event & ~EV_EVENT_BITS);
 
 	if ( cg_debugEvents.integer ) {
 		CG_Printf( "ent:%3i  event:%3i ", es->number, event );
@@ -1259,14 +1261,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 
 				//Show the player their force selection bar in case picking the holocron up changed the current selection
-				if (index != FP_SABERATTACK && index != FP_SABERDEFEND && index != FP_SABERTHROW &&
-					index != FP_LEVITATION &&
+				if (FP_Selectable(index) &&
 					es->number == cg.snap->ps.clientNum &&
 					(index == cg.snap->ps.fd.forcePowerSelected || !(cg.snap->ps.fd.forcePowersActive & (1 << cg.snap->ps.fd.forcePowerSelected))))
 				{
 					if (cg.forceSelect != index)
 					{
-						cg.forceSelect = index;
+						cg.forceSelect = (forcePowers_t)index;
 						newindex = qtrue;
 					}
 				}
@@ -1566,7 +1567,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			if (cg.snap->ps.clientNum == es->number)
 			{
 				trap_S_StartLocalSound(cgs.media.happyMusic, CHAN_LOCAL);
-				CGCam_SetMusicMult(0.3, 5000);
+				CGCam_SetMusicMult(0.3f, 5000);
 			}
 		}
 		break;
@@ -1650,7 +1651,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{
 			int sID = -1;
 
-			switch (es->eventParm)
+			switch ((pdSounds_t)es->eventParm)
 			{
 			case PDSOUND_PROTECTHIT:
 				sID = trap_S_RegisterSound("sound/weapons/force/protecthit.mp3");
@@ -1789,7 +1790,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{
 			char *stripedref = NULL;
 
-			switch(es->eventParm)
+			switch((itemUseFail_t)es->eventParm)
 			{
 			case SENTRY_NOROOM:
 				stripedref = (char *)CG_GetStripEdString("INGAMETEXT", "SENTRY_NOROOM");
@@ -2012,7 +2013,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_PLAY_EFFECT:
 		DEBUGNAME("EV_PLAY_EFFECT");
-		switch(es->eventParm)
+		switch((effectTypes_t)es->eventParm)
 		{ //it isn't a hack, it's ingenuity!
 		case EFFECT_SMOKE:
 			eID = trap_FX_RegisterEffect("emplaced/dead_smoke.efx");
@@ -2208,16 +2209,16 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_ENTITY_SOUND");
 		//somewhat of a hack - weapon is the caller entity's index, trickedentindex is the proper sound channel
 		if ( cgs.gameSounds[ es->eventParm ] ) {
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
+			trap_S_StartSound (NULL, es->weapon, (soundChannel_t)es->trickedentindex, cgs.gameSounds[ es->eventParm ] );
 		} else {
 			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-			trap_S_StartSound (NULL, es->weapon, es->trickedentindex, CG_CustomSound( es->weapon, s ) );
+			trap_S_StartSound (NULL, es->weapon, (soundChannel_t)es->trickedentindex, CG_CustomSound( es->weapon, s ) );
 		}
 		break;
 
 	case EV_PLAY_ROFF:
 		DEBUGNAME("EV_PLAY_ROFF");
-		trap_ROFF_Play(es->weapon, es->eventParm, es->trickedentindex);
+		trap_ROFF_Play(es->weapon, es->eventParm, (qboolean)!!es->trickedentindex);
 		break;
 
 	case EV_GLASS_SHATTER:
@@ -2281,7 +2282,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if (es->eventParm && es->number == cg.snap->ps.clientNum)
 		{
 			trap_S_StartLocalSound(cgs.media.dramaticFailure, CHAN_LOCAL);
-			CGCam_SetMusicMult(0.3, 5000);
+			CGCam_SetMusicMult(0.3f, 5000);
 		}
 		break;
 

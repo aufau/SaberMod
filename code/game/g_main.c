@@ -361,7 +361,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		G_ShutdownGame( arg0 );
 		return 0;
 	case GAME_CLIENT_CONNECT:
-		return (intptr_t)ClientConnect( arg0, arg1, arg2 );
+		return (intptr_t)ClientConnect( arg0, (qboolean)arg1, (qboolean)arg2 );
 	case GAME_CLIENT_THINK:
 		ClientThink( arg0 );
 		return 0;
@@ -634,9 +634,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	char	serverinfo[MAX_INFO_STRING];
 	int		i;
 
-	// static assertions
-	assert( CV_MAX <= 31 );
-
 	B_InitAlloc(); //make sure everything is clean
 
 	G_Printf ("------- Game Initialization -------\n");
@@ -812,7 +809,7 @@ void G_ShutdownGame( int restart ) {
 #ifndef GAME_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
 
-Q_NORETURN void QDECL Com_Error ( int level, const char *error, ... ) {
+Q_NORETURN void QDECL Com_Error ( errorParm_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
@@ -1103,13 +1100,13 @@ SortRanks
 */
 int QDECL SortRanks( const int *a, const int *b ) {
 	gclient_t	*ca, *cb;
-	qboolean	ta, tb;
+	int			ta, tb;
 
 	ca = &level.clients[*a];
 	cb = &level.clients[*b];
 
-	ta = ca->pers.connected == CON_DISCONNECTED;
-	tb = cb->pers.connected == CON_DISCONNECTED;
+	ta = (int)(ca->pers.connected == CON_DISCONNECTED);
+	tb = (int)(cb->pers.connected == CON_DISCONNECTED);
 	if (ta || tb) {
 		return ta - tb;
 	}
@@ -1119,22 +1116,22 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	// if ( tb )       return -1;
 
 	// sort special clients last
-	ta = ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0;
-	tb = cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0;
+	ta = (int)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0);
+	tb = (int)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then connecting clients
-	ta = ca->pers.connected == CON_CONNECTING;
-	tb = cb->pers.connected == CON_CONNECTING;
+	ta = (int)(ca->pers.connected == CON_CONNECTING);
+	tb = (int)(cb->pers.connected == CON_CONNECTING);
 	if (ta || tb) {
 		return ta - tb;
 	}
 
 	// then spectators
-	ta = ca->sess.sessionTeam == TEAM_SPECTATOR;
-	tb = cb->sess.sessionTeam == TEAM_SPECTATOR;
+	ta = (int)(ca->sess.sessionTeam == TEAM_SPECTATOR);
+	tb = (int)(cb->sess.sessionTeam == TEAM_SPECTATOR);
 	if (ta && tb) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
@@ -1491,7 +1488,7 @@ static qboolean Parity( int i )
 	qboolean parity = qtrue;
 
 	while (i) {
-		parity = !parity;
+		parity = (qboolean)!parity;
 		i &= i - 1;
 	}
 
@@ -1752,7 +1749,7 @@ void LogExit( const char *string ) {
 				}
 			}
 		} else if (GT_Flag(level.gametype)) {
-			won = level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE];
+			won = (qboolean)(level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]);
 		}
 
 		trap_SendConsoleCommand( EXEC_APPEND, (won) ? "spWin\n" : "spLose\n" );
@@ -1974,13 +1971,13 @@ qboolean ScoreIsTied( void ) {
 	}
 
 	if ( GT_Team(level.gametype) ) {
-		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
+		return (qboolean)(level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]);
 	}
 
 	a = level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE];
 	b = level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE];
 
-	return a == b;
+	return (qboolean)(a == b);
 }
 
 /*
@@ -2148,7 +2145,7 @@ void CheckExitRules( void ) {
 	}
 
 	if ( GT_Round(level.gametype) ) {
-		qboolean	countDead = ( level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5 );
+		qboolean	countDead = (qboolean)(level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5);
 		int			redCount = TeamCount( -1, TEAM_RED, countDead );
 		int			blueCount = TeamCount( -1, TEAM_BLUE, countDead );
 

@@ -135,7 +135,7 @@ qhandle_t trap_R_RegisterFont( const char *fontName )
 	return syscall( UI_R_REGISTERFONT, fontName);
 }
 
-int	trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale)
+int	trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( UI_R_FONT_STRLENPIXELS, text, iFontIndex, PASSFLOAT(scale));
 }
@@ -145,7 +145,7 @@ int trap_R_Font_StrLenChars(const char *text)
 	return syscall( UI_R_FONT_STRLENCHARS, text);
 }
 
-int trap_R_Font_HeightPixels(const int iFontIndex, const float scale)
+int trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( UI_R_FONT_STRHEIGHTPIXELS, iFontIndex, PASSFLOAT(scale));
 }
@@ -214,7 +214,7 @@ int trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int e
 	return syscall( UI_CM_LERPTAG, tag, mod, startFrame, endFrame, PASSFLOAT(frac), tagName );
 }
 
-void trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum ) {
+void trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum ) {
 	syscall( UI_S_STARTLOCALSOUND, sfx, channelNum );
 }
 

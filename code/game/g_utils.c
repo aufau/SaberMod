@@ -646,7 +646,7 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( const vec3_t origin, int event, int blameEntityNum ) {
+gentity_t *G_TempEntity( const vec3_t origin, entity_event_t event, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
@@ -775,7 +775,7 @@ client side: jumppads and item pickups
 Adds an event+parm and twiddles the event counter
 ===============
 */
-void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
+void G_AddPredictableEvent( gentity_t *ent, entity_event_t event, int eventParm ) {
 	if ( !ent->client ) {
 		return;
 	}
@@ -819,7 +819,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 G_PlayEffect
 =============
 */
-gentity_t *G_PlayEffect(int fxID, vec3_t org, vec3_t ang, int blameEntityNum)
+gentity_t *G_PlayEffect(effectTypes_t fxID, vec3_t org, vec3_t ang, int blameEntityNum)
 {
 	gentity_t	*te;
 
@@ -867,7 +867,7 @@ gentity_t *G_ScreenShake(const vec3_t org, gentity_t *target, float intensity, i
 G_MuteSound
 =============
 */
-void G_MuteSound( int entnum, int channel )
+void G_MuteSound( int entnum, soundChannel_t channel )
 {
 	gentity_t	*te, *e;
 
@@ -923,7 +923,7 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 G_SoundAtLoc
 =============
 */
-void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum ) {
+void G_SoundAtLoc( vec3_t loc, soundChannel_t channel, int soundIndex, int blameEntityNum ) {
 	gentity_t	*te;
 
 	te = G_TempEntity( loc, EV_GENERAL_SOUND, blameEntityNum );
@@ -935,7 +935,7 @@ void G_SoundAtLoc( vec3_t loc, int channel, int soundIndex, int blameEntityNum )
 G_EntitySound
 =============
 */
-void G_EntitySound( gentity_t *ent, int channel, int soundIndex ) {
+void G_EntitySound( gentity_t *ent, soundChannel_t channel, int soundIndex ) {
 	gentity_t	*te;
 
 	te = G_TempEntity( ent->r.currentOrigin, EV_ENTITY_SOUND, ent->s.number );

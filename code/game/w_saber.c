@@ -201,9 +201,9 @@ void G_G2ClientSpineAngles( gentity_t *ent, vec3_t viewAngles, const vec3_t angl
 {
 	viewAngles[YAW] = AngleDelta( ent->client->ps.viewangles[YAW], angles[YAW] );
 
-	if ( !BG_FlippingAnim( ent->client->ps.legsAnim )
-		&& !BG_SpinningSaberAnim( ent->client->ps.legsAnim )
-		&& !BG_SpinningSaberAnim( ent->client->ps.torsoAnim )
+	if ( !BG_FlippingAnim( ANIM(ent->client->ps.legsAnim) )
+		&& !BG_SpinningSaberAnim( ANIM(ent->client->ps.legsAnim) )
+		&& !BG_SpinningSaberAnim( ANIM(ent->client->ps.torsoAnim) )
 		&& ent->client->ps.legsAnim != ent->client->ps.torsoAnim )//NOTE: presumes your legs & torso are on the same frame, though they *should* be because PM_SetAnimFinal tries to keep them in synch
 	{//FIXME: no need to do this if legs and torso on are same frame
 		//adjust for motion offset
@@ -536,7 +536,7 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 	//This is a rare exception, you should never really call PM_ utility functions from game or cgame (despite the fact that it's technically possible)
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, attAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
-	attacker->client->ps.saberLockFrame = bgGlobalAnimations[attAnim].firstFrame+(bgGlobalAnimations[attAnim].numFrames*0.5);
+	attacker->client->ps.saberLockFrame = bgGlobalAnimations[attAnim].firstFrame+(bgGlobalAnimations[attAnim].numFrames*0.5f);
 
 	pmv.ps = &defender->client->ps;
 	pmv.animations = bgGlobalAnimations;
@@ -544,7 +544,7 @@ qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLo
 
 	pm = &pmv;
 	PM_SetAnim(SETANIM_BOTH, defAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
-	defender->client->ps.saberLockFrame = bgGlobalAnimations[defAnim].firstFrame+(bgGlobalAnimations[defAnim].numFrames*0.5);
+	defender->client->ps.saberLockFrame = bgGlobalAnimations[defAnim].firstFrame+(bgGlobalAnimations[defAnim].numFrames*0.5f);
 
 	attacker->client->ps.saberLockHits = 0;
 	defender->client->ps.saberLockHits = 0;
@@ -600,6 +600,8 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 	float dist;
 	qboolean	ent1BlockingPlayer = qfalse;
 	qboolean	ent2BlockingPlayer = qfalse;
+	animNumber_t	torsoAnim1;
+	animNumber_t	torsoAnim2;
 
 	if (!g_saberLocking.integer)
 	{
@@ -637,20 +639,20 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 		return qfalse;
 	}
 
-	if (BG_InSpecialJump(ent1->client->ps.legsAnim))
+	if (BG_InSpecialJump(ANIM(ent1->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
-	if (BG_InSpecialJump(ent2->client->ps.legsAnim))
+	if (BG_InSpecialJump(ANIM(ent2->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
 
-	if (BG_InRoll(&ent1->client->ps, ent1->client->ps.legsAnim))
+	if (BG_InRoll(&ent1->client->ps, ANIM(ent1->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
-	if (BG_InRoll(&ent2->client->ps, ent2->client->ps.legsAnim))
+	if (BG_InRoll(&ent2->client->ps, ANIM(ent2->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
@@ -676,21 +678,27 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 		return qfalse;
 	}
 
+	// no ANIM_TOGGLEBIT?
+	torsoAnim1 = (animNumber_t)ent1->client->ps.torsoAnim;
+	torsoAnim2 = (animNumber_t)ent2->client->ps.torsoAnim;
+	assert((torsoAnim1 & ANIM_TOGGLEBIT) == 0);
+	assert((torsoAnim2 & ANIM_TOGGLEBIT) == 0);
+
 	//T to B lock
-	if ( ent1->client->ps.torsoAnim == BOTH_A1_T__B_ ||
-		ent1->client->ps.torsoAnim == BOTH_A2_T__B_ ||
-		ent1->client->ps.torsoAnim == BOTH_A3_T__B_ ||
-		ent1->client->ps.torsoAnim == BOTH_A4_T__B_ ||
-		ent1->client->ps.torsoAnim == BOTH_A5_T__B_ )
+	if ( torsoAnim1 == BOTH_A1_T__B_ ||
+		torsoAnim1 == BOTH_A2_T__B_ ||
+		torsoAnim1 == BOTH_A3_T__B_ ||
+		torsoAnim1 == BOTH_A4_T__B_ ||
+		torsoAnim1 == BOTH_A5_T__B_ )
 	{//ent1 is attacking top-down
 		return WP_SabersCheckLock2( ent1, ent2, LOCK_TOP );
 	}
 
-	if ( ent2->client->ps.torsoAnim == BOTH_A1_T__B_ ||
-		ent2->client->ps.torsoAnim == BOTH_A2_T__B_ ||
-		ent2->client->ps.torsoAnim == BOTH_A3_T__B_ ||
-		ent2->client->ps.torsoAnim == BOTH_A4_T__B_ ||
-		ent2->client->ps.torsoAnim == BOTH_A5_T__B_ )
+	if ( torsoAnim2 == BOTH_A1_T__B_ ||
+		torsoAnim2 == BOTH_A2_T__B_ ||
+		torsoAnim2 == BOTH_A3_T__B_ ||
+		torsoAnim2 == BOTH_A4_T__B_ ||
+		torsoAnim2 == BOTH_A5_T__B_ )
 	{//ent2 is attacking top-down
 		return WP_SabersCheckLock2( ent2, ent1, LOCK_TOP );
 	}
@@ -707,62 +715,62 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 	}
 
 	//TR to BL lock
-	if ( ent1->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-		ent1->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-		ent1->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-		ent1->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-		ent1->client->ps.torsoAnim == BOTH_A5_TR_BL )
+	if ( torsoAnim1 == BOTH_A1_TR_BL ||
+		torsoAnim1 == BOTH_A2_TR_BL ||
+		torsoAnim1 == BOTH_A3_TR_BL ||
+		torsoAnim1 == BOTH_A4_TR_BL ||
+		torsoAnim1 == BOTH_A5_TR_BL )
 	{//ent1 is attacking diagonally
 		if ( ent2BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_TR );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A5_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_TL )
+		if ( torsoAnim2 == BOTH_A1_TR_BL ||
+			torsoAnim2 == BOTH_A2_TR_BL ||
+			torsoAnim2 == BOTH_A3_TR_BL ||
+			torsoAnim2 == BOTH_A4_TR_BL ||
+			torsoAnim2 == BOTH_A5_TR_BL ||
+			torsoAnim2 == BOTH_P1_S1_TL )
 		{//ent2 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_TR );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_BR_TL ||
-			ent2->client->ps.torsoAnim == BOTH_A2_BR_TL ||
-			ent2->client->ps.torsoAnim == BOTH_A3_BR_TL ||
-			ent2->client->ps.torsoAnim == BOTH_A4_BR_TL ||
-			ent2->client->ps.torsoAnim == BOTH_A5_BR_TL ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_BL )
+		if ( torsoAnim2 == BOTH_A1_BR_TL ||
+			torsoAnim2 == BOTH_A2_BR_TL ||
+			torsoAnim2 == BOTH_A3_BR_TL ||
+			torsoAnim2 == BOTH_A4_BR_TL ||
+			torsoAnim2 == BOTH_A5_BR_TL ||
+			torsoAnim2 == BOTH_P1_S1_BL )
 		{//ent2 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_BL );
 		}
 		return qfalse;
 	}
 
-	if ( ent2->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-		ent2->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-		ent2->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-		ent2->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-		ent2->client->ps.torsoAnim == BOTH_A5_TR_BL )
+	if ( torsoAnim2 == BOTH_A1_TR_BL ||
+		torsoAnim2 == BOTH_A2_TR_BL ||
+		torsoAnim2 == BOTH_A3_TR_BL ||
+		torsoAnim2 == BOTH_A4_TR_BL ||
+		torsoAnim2 == BOTH_A5_TR_BL )
 	{//ent2 is attacking diagonally
 		if ( ent1BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_TR );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A5_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_TL )
+		if ( torsoAnim1 == BOTH_A1_TR_BL ||
+			torsoAnim1 == BOTH_A2_TR_BL ||
+			torsoAnim1 == BOTH_A3_TR_BL ||
+			torsoAnim1 == BOTH_A4_TR_BL ||
+			torsoAnim1 == BOTH_A5_TR_BL ||
+			torsoAnim1 == BOTH_P1_S1_TL )
 		{//ent1 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_TR );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_BR_TL ||
-			ent1->client->ps.torsoAnim == BOTH_A2_BR_TL ||
-			ent1->client->ps.torsoAnim == BOTH_A3_BR_TL ||
-			ent1->client->ps.torsoAnim == BOTH_A4_BR_TL ||
-			ent1->client->ps.torsoAnim == BOTH_A5_BR_TL ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_BL )
+		if ( torsoAnim1 == BOTH_A1_BR_TL ||
+			torsoAnim1 == BOTH_A2_BR_TL ||
+			torsoAnim1 == BOTH_A3_BR_TL ||
+			torsoAnim1 == BOTH_A4_BR_TL ||
+			torsoAnim1 == BOTH_A5_BR_TL ||
+			torsoAnim1 == BOTH_P1_S1_BL )
 		{//ent1 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_BL );
 		}
@@ -770,152 +778,152 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 	}
 
 	//TL to BR lock
-	if ( ent1->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-		ent1->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-		ent1->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-		ent1->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-		ent1->client->ps.torsoAnim == BOTH_A5_TL_BR )
+	if ( torsoAnim1 == BOTH_A1_TL_BR ||
+		torsoAnim1 == BOTH_A2_TL_BR ||
+		torsoAnim1 == BOTH_A3_TL_BR ||
+		torsoAnim1 == BOTH_A4_TL_BR ||
+		torsoAnim1 == BOTH_A5_TL_BR )
 	{//ent1 is attacking diagonally
 		if ( ent2BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_TL );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A5_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_TR )
+		if ( torsoAnim2 == BOTH_A1_TL_BR ||
+			torsoAnim2 == BOTH_A2_TL_BR ||
+			torsoAnim2 == BOTH_A3_TL_BR ||
+			torsoAnim2 == BOTH_A4_TL_BR ||
+			torsoAnim2 == BOTH_A5_TL_BR ||
+			torsoAnim2 == BOTH_P1_S1_TR )
 		{//ent2 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_TL );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_BL_TR ||
-			ent2->client->ps.torsoAnim == BOTH_A2_BL_TR ||
-			ent2->client->ps.torsoAnim == BOTH_A3_BL_TR ||
-			ent2->client->ps.torsoAnim == BOTH_A4_BL_TR ||
-			ent2->client->ps.torsoAnim == BOTH_A5_BL_TR ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_BR )
+		if ( torsoAnim2 == BOTH_A1_BL_TR ||
+			torsoAnim2 == BOTH_A2_BL_TR ||
+			torsoAnim2 == BOTH_A3_BL_TR ||
+			torsoAnim2 == BOTH_A4_BL_TR ||
+			torsoAnim2 == BOTH_A5_BL_TR ||
+			torsoAnim2 == BOTH_P1_S1_BR )
 		{//ent2 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_DIAG_BR );
 		}
 		return qfalse;
 	}
 
-	if ( ent2->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-		ent2->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-		ent2->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-		ent2->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-		ent2->client->ps.torsoAnim == BOTH_A5_TL_BR )
+	if ( torsoAnim2 == BOTH_A1_TL_BR ||
+		torsoAnim2 == BOTH_A2_TL_BR ||
+		torsoAnim2 == BOTH_A3_TL_BR ||
+		torsoAnim2 == BOTH_A4_TL_BR ||
+		torsoAnim2 == BOTH_A5_TL_BR )
 	{//ent2 is attacking diagonally
 		if ( ent1BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_TL );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A5_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_TR )
+		if ( torsoAnim1 == BOTH_A1_TL_BR ||
+			torsoAnim1 == BOTH_A2_TL_BR ||
+			torsoAnim1 == BOTH_A3_TL_BR ||
+			torsoAnim1 == BOTH_A4_TL_BR ||
+			torsoAnim1 == BOTH_A5_TL_BR ||
+			torsoAnim1 == BOTH_P1_S1_TR )
 		{//ent1 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_TL );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_BL_TR ||
-			ent1->client->ps.torsoAnim == BOTH_A2_BL_TR ||
-			ent1->client->ps.torsoAnim == BOTH_A3_BL_TR ||
-			ent1->client->ps.torsoAnim == BOTH_A4_BL_TR ||
-			ent1->client->ps.torsoAnim == BOTH_A5_BL_TR ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_BR )
+		if ( torsoAnim1 == BOTH_A1_BL_TR ||
+			torsoAnim1 == BOTH_A2_BL_TR ||
+			torsoAnim1 == BOTH_A3_BL_TR ||
+			torsoAnim1 == BOTH_A4_BL_TR ||
+			torsoAnim1 == BOTH_A5_BL_TR ||
+			torsoAnim1 == BOTH_P1_S1_BR )
 		{//ent1 is attacking in the opposite diagonal
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_DIAG_BR );
 		}
 		return qfalse;
 	}
 	//L to R lock
-	if ( ent1->client->ps.torsoAnim == BOTH_A1__L__R ||
-		ent1->client->ps.torsoAnim == BOTH_A2__L__R ||
-		ent1->client->ps.torsoAnim == BOTH_A3__L__R ||
-		ent1->client->ps.torsoAnim == BOTH_A4__L__R ||
-		ent1->client->ps.torsoAnim == BOTH_A5__L__R )
+	if ( torsoAnim1 == BOTH_A1__L__R ||
+		torsoAnim1 == BOTH_A2__L__R ||
+		torsoAnim1 == BOTH_A3__L__R ||
+		torsoAnim1 == BOTH_A4__L__R ||
+		torsoAnim1 == BOTH_A5__L__R )
 	{//ent1 is attacking l to r
 		if ( ent2BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_L );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_A5_TL_BR ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_TR ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_BL )
+		if ( torsoAnim2 == BOTH_A1_TL_BR ||
+			torsoAnim2 == BOTH_A2_TL_BR ||
+			torsoAnim2 == BOTH_A3_TL_BR ||
+			torsoAnim2 == BOTH_A4_TL_BR ||
+			torsoAnim2 == BOTH_A5_TL_BR ||
+			torsoAnim2 == BOTH_P1_S1_TR ||
+			torsoAnim2 == BOTH_P1_S1_BL )
 		{//ent2 is attacking or blocking on the r
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_L );
 		}
 		return qfalse;
 	}
-	if ( ent2->client->ps.torsoAnim == BOTH_A1__L__R ||
-		ent2->client->ps.torsoAnim == BOTH_A2__L__R ||
-		ent2->client->ps.torsoAnim == BOTH_A3__L__R ||
-		ent2->client->ps.torsoAnim == BOTH_A4__L__R ||
-		ent2->client->ps.torsoAnim == BOTH_A5__L__R )
+	if ( torsoAnim2 == BOTH_A1__L__R ||
+		torsoAnim2 == BOTH_A2__L__R ||
+		torsoAnim2 == BOTH_A3__L__R ||
+		torsoAnim2 == BOTH_A4__L__R ||
+		torsoAnim2 == BOTH_A5__L__R )
 	{//ent2 is attacking l to r
 		if ( ent1BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_L );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A2_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A3_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A4_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_A5_TL_BR ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_TR ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_BL )
+		if ( torsoAnim1 == BOTH_A1_TL_BR ||
+			torsoAnim1 == BOTH_A2_TL_BR ||
+			torsoAnim1 == BOTH_A3_TL_BR ||
+			torsoAnim1 == BOTH_A4_TL_BR ||
+			torsoAnim1 == BOTH_A5_TL_BR ||
+			torsoAnim1 == BOTH_P1_S1_TR ||
+			torsoAnim1 == BOTH_P1_S1_BL )
 		{//ent1 is attacking or blocking on the r
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_L );
 		}
 		return qfalse;
 	}
 	//R to L lock
-	if ( ent1->client->ps.torsoAnim == BOTH_A1__R__L ||
-		ent1->client->ps.torsoAnim == BOTH_A2__R__L ||
-		ent1->client->ps.torsoAnim == BOTH_A3__R__L ||
-		ent1->client->ps.torsoAnim == BOTH_A4__R__L ||
-		ent1->client->ps.torsoAnim == BOTH_A5__R__L )
+	if ( torsoAnim1 == BOTH_A1__R__L ||
+		torsoAnim1 == BOTH_A2__R__L ||
+		torsoAnim1 == BOTH_A3__R__L ||
+		torsoAnim1 == BOTH_A4__R__L ||
+		torsoAnim1 == BOTH_A5__R__L )
 	{//ent1 is attacking r to l
 		if ( ent2BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_R );
 		}
-		if ( ent2->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_A5_TR_BL ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_TL ||
-			ent2->client->ps.torsoAnim == BOTH_P1_S1_BR )
+		if ( torsoAnim2 == BOTH_A1_TR_BL ||
+			torsoAnim2 == BOTH_A2_TR_BL ||
+			torsoAnim2 == BOTH_A3_TR_BL ||
+			torsoAnim2 == BOTH_A4_TR_BL ||
+			torsoAnim2 == BOTH_A5_TR_BL ||
+			torsoAnim2 == BOTH_P1_S1_TL ||
+			torsoAnim2 == BOTH_P1_S1_BR )
 		{//ent2 is attacking or blocking on the l
 			return WP_SabersCheckLock2( ent1, ent2, LOCK_R );
 		}
 		return qfalse;
 	}
-	if ( ent2->client->ps.torsoAnim == BOTH_A1__R__L ||
-		ent2->client->ps.torsoAnim == BOTH_A2__R__L ||
-		ent2->client->ps.torsoAnim == BOTH_A3__R__L ||
-		ent2->client->ps.torsoAnim == BOTH_A4__R__L ||
-		ent2->client->ps.torsoAnim == BOTH_A5__R__L )
+	if ( torsoAnim2 == BOTH_A1__R__L ||
+		torsoAnim2 == BOTH_A2__R__L ||
+		torsoAnim2 == BOTH_A3__R__L ||
+		torsoAnim2 == BOTH_A4__R__L ||
+		torsoAnim2 == BOTH_A5__R__L )
 	{//ent2 is attacking r to l
 		if ( ent1BlockingPlayer )
 		{//player will block this anyway
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_R );
 		}
-		if ( ent1->client->ps.torsoAnim == BOTH_A1_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A2_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A3_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A4_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_A5_TR_BL ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_TL ||
-			ent1->client->ps.torsoAnim == BOTH_P1_S1_BR )
+		if ( torsoAnim1 == BOTH_A1_TR_BL ||
+			torsoAnim1 == BOTH_A2_TR_BL ||
+			torsoAnim1 == BOTH_A3_TR_BL ||
+			torsoAnim1 == BOTH_A4_TR_BL ||
+			torsoAnim1 == BOTH_A5_TR_BL ||
+			torsoAnim1 == BOTH_P1_S1_TL ||
+			torsoAnim1 == BOTH_P1_S1_BR )
 		{//ent1 is attacking or blocking on the l
 			return WP_SabersCheckLock2( ent2, ent1, LOCK_R );
 		}
@@ -1053,20 +1061,20 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender, f
 			{
 				quadDiff = -4 + (quadDiff + 4);
 			}
-			newQuad = attQuadEnd + ceilf( quadDiff * 0.5f );
+			newQuad = (saberQuadrant_t)(attQuadEnd + ceilf( quadDiff * 0.5f ));
 			if ( newQuad < Q_BR )
 			{//less than zero wraps around
-				newQuad = Q_B + newQuad;
+				newQuad = (saberQuadrant_t)(Q_B + newQuad);
 			}
 			if ( newQuad == attQuadStart )
 			{//never come off at the same angle that we would have if the attack was not interrupted
 				if ( Q_irand(0, 1) )
 				{
-					newQuad--;
+					newQuad = (saberQuadrant_t)(newQuad - 1);
 				}
 				else
 				{
-					newQuad++;
+					newQuad = (saberQuadrant_t)(newQuad + 1);
 				}
 				if ( newQuad < Q_BR )
 				{
@@ -1235,13 +1243,14 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 	int speedDif = 0;
 	int totalDamage = maxDmg;
 	float peakPoint = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	const animation_t *anim = &bgGlobalAnimations[ANIM(self->client->ps.torsoAnim)];
+	float attackAnimLength = anim->numFrames * abs(anim->frameLerp);
 	float currentPoint = 0;
 	float damageFactor = 0;
 	float animSpeedFactor = 1.0f;
 
 	//Be sure to scale by the proper anim speed just as if we were going to play the animation
-	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, self->client->ps.torsoAnim&~ANIM_TOGGLEBIT, &animSpeedFactor);
+	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
 	speedDif = attackAnimLength - (attackAnimLength * animSpeedFactor);
 	attackAnimLength += speedDif;
 	peakPoint = attackAnimLength;
@@ -1285,13 +1294,14 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 float G_GetAnimPoint(gentity_t *self)
 {
 	int speedDif = 0;
-	float attackAnimLength = bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.torsoAnim&~ANIM_TOGGLEBIT].frameLerp);
+	const animation_t *anim = &bgGlobalAnimations[ANIM(self->client->ps.torsoAnim)];
+	float attackAnimLength = anim->numFrames * abs(anim->frameLerp);
 	float currentPoint = 0;
 	float animSpeedFactor = 1.0f;
 	float animPercentage = 0;
 
 	//Be sure to scale by the proper anim speed just as if we were going to play the animation
-	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, self->client->ps.torsoAnim&~ANIM_TOGGLEBIT, &animSpeedFactor);
+	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
 	speedDif = attackAnimLength - (attackAnimLength * animSpeedFactor);
 	attackAnimLength += speedDif;
 
@@ -1549,7 +1559,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 		dmg = SABER_HITDAMAGE;
 
-		if (self->client->ps.fd.saberAnimLevel == 3)
+		if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_3)
 		{
 			//new damage-ramping system
 			if (!saberInSpecial && !inBackAttack)
@@ -1570,7 +1580,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				dmg = 100;
 			}
 		}
-		else if (self->client->ps.fd.saberAnimLevel == 2)
+		else if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_2)
 		{
 			if (saberInSpecial &&
 				(self->client->ps.saberMove == LS_A_FLIP_STAB || self->client->ps.saberMove == LS_A_FLIP_SLASH))
@@ -1586,7 +1596,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				dmg = 60;
 			}
 		}
-		else if (self->client->ps.fd.saberAnimLevel == 1)
+		else if (self->client->ps.fd.saberAnimLevel == FORCE_LEVEL_1)
 		{
 			if (saberInSpecial &&
 				(self->client->ps.saberMove == LS_A_LUNGE))
@@ -1616,7 +1626,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 		qboolean inBackAttack = G_SaberInBackAttack(self->client->ps.saberMove);
 
 		unblockable = qtrue;
-		self->client->ps.saberBlocked = 0;
+		self->client->ps.saberBlocked = BLOCKED_NONE;
 
 		if (!inBackAttack)
 		{
@@ -1707,7 +1717,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 
 		didHit = qtrue;
 
-		if (g_entities[tr.entityNum].client && !unblockable && WP_SaberCanBlock(&g_entities[tr.entityNum], tr.endpos, 0, MOD_SABER, qfalse, attackStr))
+		if (g_entities[tr.entityNum].client && !unblockable && WP_SaberCanBlock(&g_entities[tr.entityNum], tr.endpos, 0, qfalse, attackStr))
 		{
 			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, tr.entityNum );
 			if (dmg <= SABER_NONATTACK_DAMAGE)
@@ -1722,7 +1732,7 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 			{
 				int lockFactor = g_saberLockFactor.integer;
 
-				if ((g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK] - self->client->ps.fd.forcePowerLevel[FP_SABERATTACK]) > 1 &&
+				if (g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > 1 + self->client->ps.fd.forcePowerLevel[FP_SABERATTACK] &&
 					Q_irand(1, 10) < lockFactor*2)
 				{ //Just got blocked by someone with a decently higher attack level, so enter into a lock (where they have the advantage due to a higher attack lev)
 					if (!G_ClientIdleInWorld(&g_entities[tr.entityNum]))
@@ -1755,14 +1765,14 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 		{
 			if (g_entities[tr.entityNum].client && g_entities[tr.entityNum].client->ps.usingATST)
 			{
-				dmg *= 0.1;
+				dmg *= 0.1f;
 			}
 
 			if (g_entities[tr.entityNum].client && !g_entities[tr.entityNum].client->ps.fd.forcePowerLevel[FP_SABERATTACK])
 			{ //not a "jedi", so make them suffer more
 				if (dmg > SABER_NONATTACK_DAMAGE)
 				{ //don't bother increasing just for idle touch damage
-					dmg *= 1.5;
+					dmg *= 1.5f;
 				}
 			}
 
@@ -1772,11 +1782,11 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 				{ //don't reduce damage if it's only 1, or if this is an unblockable attack
 					if (dmg == SABER_HITDAMAGE)
 					{ //level 1 attack
-						dmg *= 0.7;
+						dmg *= 0.7f;
 					}
 					else
 					{
-						dmg *= 0.5;
+						dmg *= 0.5f;
 					}
 				}
 			}
@@ -1886,7 +1896,7 @@ blockStuff:
 		if (BG_SaberInSpecial(otherOwner->client->ps.saberMove))
 		{
 			otherUnblockable = qtrue;
-			otherOwner->client->ps.saberBlocked = 0;
+			otherOwner->client->ps.saberBlocked = BLOCKED_NONE;
 		}
 
 		if ( sabersClashed &&
@@ -1935,7 +1945,7 @@ blockStuff:
 			&& !PM_SaberInDeflect(otherOwner->client->ps.saberMove)
 			&& !PM_SaberInReflect(otherOwner->client->ps.saberMove)
 
-			&& (otherOwner->client->ps.fd.saberAnimLevel > FORCE_LEVEL_2 || ( otherOwner->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= 3 && Q_irand(0, otherOwner->client->ps.fd.saberAnimLevel) ))
+			&& (otherOwner->client->ps.fd.saberAnimLevel > FORCE_LEVEL_2 || ( otherOwner->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3 && Q_irand(0, otherOwner->client->ps.fd.saberAnimLevel) ))
 			&& !unblockable
 			&& !otherUnblockable
 			&& dmg > SABER_NONATTACK_DAMAGE
@@ -2219,7 +2229,7 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 
 			if (tr.fraction == 1 || tr.entityNum == ent->s.number)
 			{ //Slice them
-				if (!saberOwner->client->ps.isJediMaster && WP_SaberCanBlock(ent, tr.endpos, 0, MOD_SABER, qfalse, 8))
+				if (!saberOwner->client->ps.isJediMaster && WP_SaberCanBlock(ent, tr.endpos, 0, qfalse, 8))
 				{ //they blocked it
 					WP_SaberBlockNonRandom(ent, tr.endpos, qfalse);
 
@@ -2813,9 +2823,9 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	vec3_t addVel;
 	vec3_t rawAngles;
 	float fVSpeed = 0;
-	int f;
-	int torsoAnim;
-	int legsAnim;
+	animNumber_t f;
+	animNumber_t torsoAnim;
+	animNumber_t legsAnim;
 	int returnAfterUpdate = 0;
 	float animSpeedScale = 1;
 	qboolean setTorso = qfalse;
@@ -2839,7 +2849,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		(self->client->ps.weaponTime <= 0 || self->health < 1))
 	{ //we cycled attack levels while we were busy, so update now that we aren't (even if that means we're dead)
 		self->client->ps.fd.saberAnimLevel = self->client->saberCycleQueue;
-		self->client->saberCycleQueue = 0;
+		self->client->saberCycleQueue = FORCE_LEVEL_0;
 	}
 
 	if (!self ||
@@ -2884,8 +2894,8 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		animSpeedScale = 2;
 	}
 
-	torsoAnim = (self->client->ps.torsoAnim & ~ANIM_TOGGLEBIT );
-	legsAnim = (self->client->ps.legsAnim & ~ANIM_TOGGLEBIT );
+	torsoAnim = ANIM(self->client->ps.torsoAnim);
+	legsAnim = ANIM(self->client->ps.legsAnim);
 
 	VectorCopy(self->client->ps.origin, properOrigin);
 	VectorCopy(self->client->ps.viewangles, properAngles);
@@ -3380,17 +3390,20 @@ finalUpdate:
 		setTorso = qtrue;
 	}
 
-	if (!BG_FlippingAnim( self->client->ps.legsAnim ) &&
-		!BG_FlippingAnim( self->client->ps.torsoAnim ) &&
-		!BG_SpinningSaberAnim( self->client->ps.legsAnim ) &&
-		!BG_SpinningSaberAnim( self->client->ps.torsoAnim ) &&
-		!BG_InSpecialJump( self->client->ps.legsAnim ) &&
-		!BG_InSpecialJump( self->client->ps.torsoAnim ) &&
-		!BG_InRoll(&self->client->ps, self->client->ps.legsAnim) &&
-		!BG_SaberInSpecial(self->client->ps.saberMove) &&
-		!BG_SaberInSpecialAttack(self->client->ps.legsAnim) &&
-		!BG_SaberInSpecialAttack(self->client->ps.torsoAnim) &&
-		setTorso )
+	torsoAnim = ANIM(self->client->ps.torsoAnim);
+	legsAnim = ANIM(self->client->ps.legsAnim);
+
+	if (setTorso &&
+		!BG_FlippingAnim( legsAnim ) &&
+		!BG_FlippingAnim( torsoAnim ) &&
+		!BG_SpinningSaberAnim( legsAnim ) &&
+		!BG_SpinningSaberAnim( torsoAnim ) &&
+		!BG_InSpecialJump( legsAnim ) &&
+		!BG_InSpecialJump( torsoAnim ) &&
+		!BG_InRoll( &self->client->ps, legsAnim ) &&
+		!BG_SaberInSpecial( self->client->ps.saberMove ) &&
+		!BG_SaberInSpecialAttack( legsAnim ) &&
+		!BG_SaberInSpecialAttack( torsoAnim ))
 	{
 		float animSpeed = 50.0f / bgGlobalAnimations[torsoAnim].frameLerp;
 		int aFlags;
@@ -3575,7 +3588,7 @@ void WP_SaberBlock( gentity_t *playerent, vec3_t hitloc, qboolean missileBlock )
 }
 #endif // UNUSED
 
-int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolean projectile, int attackStr)
+int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, qboolean projectile, int attackStr)
 {
 	qboolean thrownSaber = qfalse;
 	float blockFactor = 0;
@@ -3596,7 +3609,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolea
 		return 0;
 	}
 
-	if (PM_InSaberAnim(self->client->ps.torsoAnim) && !self->client->ps.saberBlocked &&
+	if (PM_InSaberAnim(ANIM(self->client->ps.torsoAnim)) && !self->client->ps.saberBlocked &&
 		self->client->ps.saberMove != LS_READY && self->client->ps.saberMove != LS_NONE)
 	{
 		if ( self->client->ps.saberMove < LS_PARRY_UP || self->client->ps.saberMove > LS_REFLECT_LL )
@@ -3691,7 +3704,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, int mod, qboolea
 	}
 
 	if (self->client->ps.saberMove != LS_READY &&
-		!self->client->ps.saberBlocking)
+		self->client->ps.saberBlocking == BLK_NO)
 	{
 		return 0;
 	}

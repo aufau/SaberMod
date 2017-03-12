@@ -178,8 +178,8 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 }
 
-localEntity_t *FX_AddOrientedLine(vec3_t start, vec3_t end, vec3_t normal, float stScale, float scale,
-								  float dscale, float startalpha, float endalpha, float killTime, qhandle_t shader)
+static localEntity_t *FX_AddOrientedLine(vec3_t start, vec3_t end, vec3_t normal, float stScale, float scale,
+								  float dscale, float startalpha, float endalpha, int killTime, qhandle_t shader)
 {
 	localEntity_t	*le;
 
@@ -219,11 +219,11 @@ localEntity_t *FX_AddOrientedLine(vec3_t start, vec3_t end, vec3_t normal, float
 	le->refEntity.shaderRGBA[2] = 0xff;
 	le->refEntity.shaderRGBA[3] = 0xff;
 
-	le->color[0] = 1.0;
-	le->color[1] = 1.0;
-	le->color[2] = 1.0;
-	le->color[3] = 1.0;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
+	le->color[0] = 1;
+	le->color[1] = 1;
+	le->color[2] = 1;
+	le->color[3] = 1;
+	le->lifeRate = 1.0f / ( le->endTime - le->startTime );
 
 	return(le);
 }
@@ -303,7 +303,7 @@ void FX_DrawPortableShield(centity_t *cent)
 		}
 	}
 
-	FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
+	FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50, shader);
 }
 
 /*
@@ -1260,9 +1260,9 @@ Ghoul2 Insert End
 			}
 		}
 
-		ent.modelScale[0] = 1.1;
-		ent.modelScale[1] = 1.1;
-		ent.modelScale[2] = 1.1;
+		ent.modelScale[0] = 1.1f;
+		ent.modelScale[1] = 1.1f;
+		ent.modelScale[2] = 1.1f;
 
 		ent.origin[2] -= 2;
 		ScaleModelAxis(&ent);
@@ -1338,7 +1338,7 @@ Ghoul2 Insert End
 
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE))
 		{
-			i = cg.snap->ps.fd.forcePowerLevel[FP_SEE];
+			i = (int)cg.snap->ps.fd.forcePowerLevel[FP_SEE];
 
 			while (i > 0)
 			{
@@ -1391,7 +1391,7 @@ static void CG_Speaker( centity_t *cent ) {
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
-qboolean CG_GreyItem(int type, int tag, int plSide)
+static qboolean CG_GreyItem(int type, int tag, forceSide_t plSide)
 {
 	if (type == IT_POWERUP &&
 		(tag == PW_FORCE_ENLIGHTENED_LIGHT || tag == PW_FORCE_ENLIGHTENED_DARK))
@@ -1560,7 +1560,7 @@ Ghoul2 Insert End
 		(item->giType == IT_WEAPON || item->giType == IT_POWERUP))
 	{
 		// items bob up and down continuously
-		scale = 0.005 + cent->currentState.number * 0.00001;
+		scale = 0.005f + cent->currentState.number * 0.00001f;
 		cent->lerpOrigin[2] += 4 + cosf( ( cg.time + 1000 ) *  scale ) * 4;
 	}
 	else
@@ -2214,7 +2214,7 @@ static void CG_Portal( centity_t *cent ) {
 	ent.reType = RT_PORTALSURFACE;
 	ent.oldframe = s1->powerups;
 	ent.frame = s1->frame;		// rotation speed
-	ent.skinNum = s1->clientNum/256.0 * 360;	// roll offset
+	ent.skinNum = s1->clientNum * (360.0f / 256);	// roll offset
 /*
 Ghoul2 Insert Start
 */
@@ -2502,7 +2502,7 @@ void CG_AddPacketEntities( void ) {
 
 	// the auto-rotating items will all have the same axis
 	cg.autoAngles[0] = 0;
-	cg.autoAngles[1] = ( cg.time & 2047 ) * 360 / 2048.0;
+	cg.autoAngles[1] = ( cg.time & 2047 ) * 360 / 2048.0f;
 	cg.autoAngles[2] = 0;
 
 	cg.autoAnglesFast[0] = 0;

@@ -183,11 +183,11 @@ void	trap_S_MuteSound( int entityNum, int entchannel ) {
 	syscall( CG_S_MUTESOUND, entityNum, entchannel );
 }
 
-void	trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx ) {
+void	trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx ) {
 	syscall( CG_S_STARTSOUND, origin, entityNum, entchannel, sfx );
 }
 
-void	trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum ) {
+void	trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum ) {
 	syscall( CG_S_STARTLOCALSOUND, sfx, channelNum );
 }
 
@@ -248,7 +248,7 @@ qhandle_t trap_R_RegisterFont( const char *fontName )
 	return syscall( CG_R_REGISTERFONT, fontName);
 }
 
-int	trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale)
+int	trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( CG_R_FONT_STRLENPIXELS, text, iFontIndex, PASSFLOAT(scale));
 }
@@ -258,7 +258,7 @@ int trap_R_Font_StrLenChars(const char *text)
 	return syscall( CG_R_FONT_STRLENCHARS, text);
 }
 
-int trap_R_Font_HeightPixels(const int iFontIndex, const float scale)
+int trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale)
 {
 	return syscall( CG_R_FONT_STRHEIGHTPIXELS, iFontIndex, PASSFLOAT(scale));
 }
@@ -805,6 +805,6 @@ void trap_CG_RegisterSharedMemory(char *memory)
 Ghoul2 Insert End
 */
 
-qboolean trap_MVAPI_ControlFixes(mvfix_t fixes) {
+qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return syscall(MVAPI_CONTROL_FIXES, fixes);
 }

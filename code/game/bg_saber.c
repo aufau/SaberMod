@@ -386,7 +386,7 @@ static saberMoveName_t PM_SaberAnimTransitionAnim( saberMoveName_t curmove, sabe
 		case LS_A_TR2BL:
 		case LS_A_T2B:
 			//transition is the start
-			retmove = LS_S_TL2BR + (newmove-LS_A_TL2BR);
+			retmove = (saberMoveName_t)(LS_S_TL2BR + newmove - LS_A_TL2BR);
 		default:
 			break;
 		}
@@ -408,7 +408,7 @@ static saberMoveName_t PM_SaberAnimTransitionAnim( saberMoveName_t curmove, sabe
 			case LS_A_TR2BL:
 			case LS_A_T2B:
 				//transition is the return
-				retmove = LS_R_TL2BR + (newmove-LS_A_TL2BR);
+				retmove = (saberMoveName_t)(LS_R_TL2BR + newmove - LS_A_TL2BR);
 			default:
 				break;
 			}
@@ -426,7 +426,7 @@ static saberMoveName_t PM_SaberAnimTransitionAnim( saberMoveName_t curmove, sabe
 				//going into an attack
 				if ( PM_SaberKataDone( curmove, newmove ) )
 				{//done with this kata, must return to ready before attack again
-					retmove = LS_R_TL2BR + (newmove-LS_A_TL2BR);
+					retmove = (saberMoveName_t)(LS_R_TL2BR + newmove - LS_A_TL2BR);
 				}
 				else
 				{//okay to chain to another attack
@@ -777,12 +777,15 @@ void PM_SetAnimFrame( playerState_t *gent, int frame, qboolean torso, qboolean l
 
 static void PM_SaberLockBreak( playerState_t *genemy, qboolean victory )
 {
-	int	winAnim = BOTH_STAND1;
+	animNumber_t winAnim = BOTH_STAND1;
 //	int loseAnim = BOTH_STAND1;
 	qboolean punishLoser = qfalse;
 
-	switch ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) )
+	switch ( ANIM(pm->ps->torsoAnim) )
 	{
+	default:
+		winAnim = BOTH_STAND1;
+		break;
 	case BOTH_BF2LOCK:
 		pm->ps->saberMove = LS_A_T2B;
 		winAnim = BOTH_A3_T__B_;
@@ -911,6 +914,8 @@ static void PM_SaberLocked( void )
 	playerState_t	*genemy;
 	int				remaining = 0;
 	int				enemy = pm->ps->saberLockEnemy;
+	animNumber_t	torsoAnim;
+	animNumber_t	torsoAnimEnemy;
 
 	if ( enemy < 0 || enemy >= MAX_CLIENTS )
 	{
@@ -919,15 +924,17 @@ static void PM_SaberLocked( void )
 
 	genemy = pm->bgClients[pm->ps->saberLockEnemy];
 
-	if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-			(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK )
-		&& ( (genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-			(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK )
-		)
+	torsoAnim = ANIM(pm->ps->torsoAnim);
+	torsoAnimEnemy = ANIM(genemy->torsoAnim);
+
+	if (  ( torsoAnim == BOTH_BF2LOCK ||
+			torsoAnim == BOTH_BF1LOCK ||
+			torsoAnim == BOTH_CWCIRCLELOCK ||
+			torsoAnim == BOTH_CCWCIRCLELOCK ) &&
+		  ( torsoAnimEnemy == BOTH_BF2LOCK ||
+			torsoAnimEnemy == BOTH_BF1LOCK ||
+			torsoAnimEnemy == BOTH_CWCIRCLELOCK ||
+			torsoAnimEnemy == BOTH_CCWCIRCLELOCK ) )
 	{
 		float dist = 0;
 
@@ -964,7 +971,7 @@ static void PM_SaberLocked( void )
 				if ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
 					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK )
 				{
-					curFrame = floorf( currentFrame )-strength;
+					curFrame = currentFrame - strength;
 					//drop my frame one
 					if ( curFrame <= anim->firstFrame )
 					{//I won!  Break out
@@ -979,7 +986,7 @@ static void PM_SaberLocked( void )
 				}
 				else
 				{
-					curFrame = ceilf( currentFrame )+strength;
+					curFrame = currentFrame + strength;
 					//advance my frame one
 					if ( curFrame >= anim->firstFrame+anim->numFrames )
 					{//I won!  Break out
@@ -1261,8 +1268,8 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 			if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 &&
 				pm->ps->velocity[2] > 100 &&
 				PM_GroundDistance() < 32 &&
-				!BG_InSpecialJump(pm->ps->legsAnim) &&
-				!BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+				!BG_InSpecialJump(ANIM(pm->ps->legsAnim)) &&
+				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //FLIP AND DOWNWARD ATTACK
 				trace_t tr;
 
@@ -1275,7 +1282,7 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 				pm->ps->groundEntityNum != ENTITYNUM_NONE &&
 				(pm->ps->pm_flags & PMF_DUCKED) &&
 				pm->ps->weaponTime <= 0 &&
-				!BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //LUNGE (weak)
 				newmove = PM_SaberLungeAttackMove();
 			}
@@ -1286,7 +1293,7 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 		}
 		else if ( pm->cmd.forwardmove < 0 )
 		{//backward= T2B slash//B2T uppercut?
-			if (PM_CanBackstab() && !BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+			if (PM_CanBackstab() && !BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //BACKSTAB (attack varies by level)
 				if (pm->ps->fd.saberAnimLevel >= FORCE_LEVEL_2)
 				{//medium and higher attacks
@@ -1363,12 +1370,13 @@ void PM_WeaponLightsaber(void)
 	}
 	else
 	{
-		if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-				(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
-				pm->ps->saberLockFrame )
-			)
+		animNumber_t torsoAnim = ANIM(pm->ps->torsoAnim);
+
+		if ( torsoAnim == BOTH_BF2LOCK ||
+			torsoAnim == BOTH_BF1LOCK ||
+			torsoAnim == BOTH_CWCIRCLELOCK ||
+			torsoAnim == BOTH_CCWCIRCLELOCK ||
+			pm->ps->saberLockFrame )
 		{
 			if (pm->ps->saberLockEnemy < MAX_CLIENTS &&
 				pm->ps->saberLockEnemy >= 0)
@@ -1384,17 +1392,9 @@ void PM_WeaponLightsaber(void)
 				}
 			}
 
-			if ( ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
-					pm->ps->saberLockFrame )
-				)
-			{
-				pm->ps->torsoTimer = 0;
-				PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
-				pm->ps->saberLockFrame = 0;
-			}
+			pm->ps->torsoTimer = 0;
+			PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
+			pm->ps->saberLockFrame = 0;
 		}
 	}
 
@@ -1407,10 +1407,10 @@ void PM_WeaponLightsaber(void)
 
 		if ((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) != (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT))
 		{
-			PM_SetAnim(SETANIM_TORSO,(pm->ps->legsAnim & ~ANIM_TOGGLEBIT),SETANIM_FLAG_OVERRIDE, 100);
+			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
 
-		if (BG_InSaberStandAnim(pm->ps->torsoAnim))
+		if (BG_InSaberStandAnim(ANIM(pm->ps->torsoAnim)))
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
 		}
@@ -1484,7 +1484,7 @@ void PM_WeaponLightsaber(void)
 	{
 		if ((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) != (pm->ps->legsAnim & ~ANIM_TOGGLEBIT))
 		{
-			PM_SetAnim(SETANIM_TORSO,(pm->ps->legsAnim & ~ANIM_TOGGLEBIT),SETANIM_FLAG_OVERRIDE, 100);
+			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
 	}
 
@@ -1519,7 +1519,7 @@ void PM_WeaponLightsaber(void)
 				{ //act as a bounceMove and reset the saberMove instead of using a seperate value for it
 					PM_SetSaberMove( pm->ps->saberMove );
 					pm->ps->weaponTime = pm->ps->torsoTimer;
-					pm->ps->saberBlocked = 0;
+					pm->ps->saberBlocked = BLOCKED_NONE;
 				}
 				break;
 			case BLOCKED_PARRY_BROKEN:
@@ -1544,7 +1544,7 @@ void PM_WeaponLightsaber(void)
 					{//Maybe in a knockaway?
 						if (pm->ps->weaponTime <= 0)
 						{
-							pm->ps->saberBlocked = 0;
+							pm->ps->saberBlocked = BLOCKED_NONE;
 						}
 					}
 				}
@@ -1567,7 +1567,7 @@ void PM_WeaponLightsaber(void)
 						{//player is still in same attack quad, don't repeat that attack because it looks bad,
 							//FIXME: try to pick one that might look cool?
 							//newQuad = Q_irand( Q_BR, Q_BL );
-							newQuad = PM_irand_timesync( Q_BR, Q_BL );
+							newQuad = (saberQuadrant_t)PM_irand_timesync( Q_BR, Q_BL );
 							//FIXME: sanity check, just in case?
 						}//else player is switching up anyway, take the new attack dir
 						bounceMove = transitionMove[saberMoveData[pm->ps->saberMove].startQuad][newQuad];
@@ -1580,11 +1580,11 @@ void PM_WeaponLightsaber(void)
 						}
 						else if ( saberMoveData[pm->ps->saberMove].startQuad < Q_T )
 						{
-							bounceMove = LS_R_TL2BR+saberMoveData[pm->ps->saberMove].startQuad-Q_BR;
+							bounceMove = (saberMoveName_t)(LS_R_TL2BR+saberMoveData[pm->ps->saberMove].startQuad-Q_BR);
 						}
 						else// if ( saberMoveData[pm->ps->saberMove].startQuad > Q_T )
 						{
-							bounceMove = LS_R_BR2TL+saberMoveData[pm->ps->saberMove].startQuad-Q_TL;
+							bounceMove = (saberMoveName_t)(LS_R_BR2TL+saberMoveData[pm->ps->saberMove].startQuad-Q_TL);
 						}
 					}
 					PM_SetSaberMove( bounceMove );
@@ -1735,11 +1735,11 @@ weapChecks:
 			//Check for finishing an anim if necc.
 			if ( curmove >= LS_S_TL2BR && curmove <= LS_S_T2B )
 			{//started a swing, must continue from here
-				newmove = LS_A_TL2BR + (curmove-LS_S_TL2BR);
+				newmove = (saberMoveName_t)(LS_A_TL2BR + curmove - LS_S_TL2BR);
 			}
 			else if ( curmove >= LS_A_TL2BR && curmove <= LS_A_T2B )
 			{//finished an attack, must continue from here
-				newmove = LS_R_TL2BR + (curmove-LS_A_TL2BR);
+				newmove = (saberMoveName_t)(LS_R_TL2BR + curmove - LS_A_TL2BR);
 			}
 			else if ( PM_SaberInTransition( curmove ) )
 			{//in a transition, must play sequential attack
@@ -1807,7 +1807,7 @@ weapChecks:
 				}
 				else if ( curmove >= LS_S_TL2BR && curmove <= LS_S_T2B )
 				{//started a swing, must continue from here
-					newmove = LS_A_TL2BR + (curmove-LS_S_TL2BR);
+					newmove = (saberMoveName_t)(LS_A_TL2BR + curmove - LS_S_TL2BR);
 				}
 				else if ( PM_SaberInBrokenParry( curmove ) )
 				{//broken parries must always return to ready
@@ -1942,7 +1942,8 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 		 !BG_SaberInIdle( newMove ) && !PM_SaberInParry( newMove ) && !PM_SaberInKnockaway( newMove ) && !PM_SaberInBrokenParry( newMove ) && !PM_SaberInReflect( newMove ) && !BG_SaberInSpecial(newMove))
 	{//readies, parries and reflections have only 1 level
 		//increment the anim to the next level of saber anims
-		anim += (pm->ps->fd.saberAnimLevel-FORCE_LEVEL_1) * SABER_ANIM_GROUP_SIZE;
+		int inc = ((int)pm->ps->fd.saberAnimLevel - FORCE_LEVEL_1) * SABER_ANIM_GROUP_SIZE;
+		anim = (animNumber_t)(anim + inc);
 	}
 
 	// If the move does the same animation as the last one, we need to force a restart...
@@ -1965,7 +1966,7 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 
 	if ( BG_InSaberStandAnim(anim) || anim == BOTH_STAND1 )
 	{
-		anim = (pm->ps->legsAnim & ~ANIM_TOGGLEBIT);
+		anim = ANIM(pm->ps->legsAnim);
 
 		if ((anim >= BOTH_STAND1 && anim <= BOTH_STAND4TOATTACK2) ||
 			(anim >= TORSO_DROPWEAP1 && anim <= TORSO_WEAPONIDLE12))
@@ -2002,11 +2003,11 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 	}
 	else if ( (!pm->cmd.forwardmove&&!pm->cmd.rightmove&&!pm->cmd.upmove))
 	{//not trying to run, duck or jump
-		if ( !BG_FlippingAnim( pm->ps->legsAnim ) &&
-			!BG_InRoll( pm->ps, pm->ps->legsAnim ) &&
+		if ( !BG_FlippingAnim( ANIM(pm->ps->legsAnim) ) &&
+			!BG_InRoll( pm->ps, ANIM(pm->ps->legsAnim) ) &&
 			!PM_InKnockDown( pm->ps ) &&
-			!PM_JumpingAnim( pm->ps->legsAnim ) &&
-			!BG_InSpecialJump( pm->ps->legsAnim ) &&
+			!PM_JumpingAnim( ANIM(pm->ps->legsAnim) ) &&
+			!BG_InSpecialJump( ANIM(pm->ps->legsAnim) ) &&
 			anim != PM_GetSaberStance() &&
 			pm->ps->groundEntityNum != ENTITYNUM_NONE &&
 			!(pm->ps->pm_flags & PMF_DUCKED))

@@ -1462,7 +1462,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		respawn = Pickup_Ammo(ent, other);
 		if (ent->item->giTag == AMMO_THERMAL || ent->item->giTag == AMMO_TRIPMINE || ent->item->giTag == AMMO_DETPACK)
 		{
-			int weapForAmmo = 0;
+			weapon_t weapForAmmo;
 
 			if (ent->item->giTag == AMMO_THERMAL)
 			{
@@ -1971,7 +1971,7 @@ void ClearRegisteredItems( void ) {
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		if ( (1 << i) & weapons )
-			RegisterItem( BG_FindItemForWeapon( i ) );
+			RegisterItem( BG_FindItemForWeapon( (weapon_t)i ) );
 
 	// register holdable items players get on spawn
 	items = g_spawnItems.integer & LEGAL_ITEMS;
@@ -1979,7 +1979,7 @@ void ClearRegisteredItems( void ) {
 
 	while ( items ) {
 		if ( items & 1 )
-			RegisterItem( BG_FindItemForHoldable( i ) );
+			RegisterItem( BG_FindItemForHoldable( (holdable_t)i ) );
 
 		items >>= 1;
 		i++;

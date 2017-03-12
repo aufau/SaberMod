@@ -494,7 +494,7 @@ void UI_ReadLegalForce(void)
 	int iBuf = 0;
 	int forcePowerRank = 0;
 	int currank = 0;
-	int forceTeam = 0;
+	forceSide_t forceTeam = FORCE_ANY;
 	gametype_t gametype = GT_FFA;
 	qboolean updateForceLater = qfalse;
 
@@ -532,10 +532,10 @@ void UI_ReadLegalForce(void)
 	}
 
 	i = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	gametype = GT_Valid(i) ? i : GT_FFA;
+	gametype = GT_Valid(i) ? (gametype_t)i : GT_FFA;
 
 	//Second, legalize them.
-	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, ui_freeSaber.integer, forceTeam, gametype, 0))
+	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, (qboolean)!!ui_freeSaber.integer, forceTeam, gametype, 0))
 	{ //if they were illegal, we should refresh them.
 		updateForceLater = qtrue;
 	}
@@ -1138,7 +1138,7 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	char fcfBuffer[8192];
 	char singleBuf[64];
 	char info[MAX_INFO_VALUE];
-	int forceTeam = 0;
+	forceSide_t forceTeam = FORCE_ANY;
 	gametype_t gametype;
 
 	if (oldindex == 0)
@@ -1238,9 +1238,9 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	}
 
 	i = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	gametype = GT_Valid(i) ? i : GT_FFA;
+	gametype = GT_Valid(i) ? (gametype_t)i : GT_FFA;
 
-	BG_LegalizedForcePowers(fcfBuffer, uiMaxRank, ui_freeSaber.integer, forceTeam, gametype, 0);
+	BG_LegalizedForcePowers(fcfBuffer, uiMaxRank, (qboolean)!!ui_freeSaber.integer, forceTeam, gametype, 0);
 	//legalize the config based on the max rank
 
 	//now that we're done with the handle, it's time to parse our force data out of the string

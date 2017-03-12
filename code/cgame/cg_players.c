@@ -1044,7 +1044,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	v = Info_ValueForKey( configstring, "c1" );
 	CG_ColorFromString( v, newInfo.color1 );
 
-	newInfo.icolor1 = atoi(v);
+	newInfo.icolor1 = (saber_colors_t)atoi(v);
 
 	v = Info_ValueForKey( configstring, "c2" );
 	CG_ColorFromString( v, newInfo.color2 );
@@ -1067,7 +1067,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// team
 	v = Info_ValueForKey( configstring, "t" );
-	newInfo.team = atoi( v );
+	newInfo.team = (team_t)atoi( v );
 
 	// team task
 	v = Info_ValueForKey( configstring, "tt" );
@@ -1075,7 +1075,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// team leader
 	v = Info_ValueForKey( configstring, "tl" );
-	newInfo.teamLeader = atoi(v);
+	newInfo.teamLeader = (qboolean)!!atoi(v);
 
 	v = Info_ValueForKey( configstring, "g_redteam" );
 	Q_strncpyz(newInfo.redTeam, v, MAX_TEAMNAME);
@@ -1201,7 +1201,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	if ( !CG_ScanForExistingClientInfo( &newInfo, clientNum ) ) {
 		qboolean	forceDefer;
 
-		forceDefer = trap_MemoryRemaining() < 4000000;
+		forceDefer = (qboolean)(trap_MemoryRemaining() < 4000000);
 
 		// if we are defering loads, just have it pick the first valid
 		if (cg.snap && cg.snap->ps.clientNum == clientNum && !forceDefer)
@@ -1451,7 +1451,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 			if (fVel > 250)
 			{
-				animSpeedMult = 1.2;
+				animSpeedMult = 1.2f;
 			}
 			else if (fVel > 200)
 			{
@@ -1459,11 +1459,11 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 			}
 			else if (fVel > 100)
 			{
-				animSpeedMult = 0.9;
+				animSpeedMult = 0.9f;
 			}
 			else if (fVel > 0)
 			{
-				animSpeedMult = 0.8;
+				animSpeedMult = 0.8f;
 			}
 			else
 			{
@@ -1586,24 +1586,24 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		if (!cent->isATST)
 		{
-			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim(newAnimation))
+			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim((animNumber_t)newAnimation))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim)) )
+				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 
 			if (flags & BONE_ANIM_BLEND)
 			{
-				if (BG_FlippingAnim(newAnimation))
+				if (BG_FlippingAnim((animNumber_t)newAnimation))
 				{
 					blendTime = 200;
 				}
 				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim(oldAnim)) )
+					(BG_FlippingAnim((animNumber_t)oldAnim)) )
 				{
 					blendTime = 200;
 				}
@@ -1612,7 +1612,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		animSpeed *= animSpeedMult;
 
-		BG_SaberStartTransAnim(cent->currentState.fireflag, newAnimation, &animSpeed);
+		BG_SaberStartTransAnim((forceLevel_t)cent->currentState.fireflag, (animNumber_t)newAnimation, &animSpeed);
 
 		if (torsoOnly)
 		{
@@ -1887,7 +1887,8 @@ static void CG_RunLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf,
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
-		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		lf->oldFrame = lf->frame = 0;
+		lf->backlerp = 0;
 		return;
 	}
 
@@ -2079,11 +2080,11 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	if (cent->currentState.forcePowersActive & (1 << FP_RAGE))
 	{
-		speedScale = 1.3;
+		speedScale = 1.3f;
 	}
 	else if (cent->currentState.forcePowersActive & (1 << FP_SPEED))
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 	else
 	{
@@ -2105,7 +2106,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	}
 	else
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
@@ -2372,6 +2373,11 @@ qboolean CG_InKnockDown( int anim )
 
 void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t angles, vec3_t thoracicAngles, vec3_t ulAngles, vec3_t llAngles )
 {
+	animNumber_t torsoAnim = ANIM(cent->currentState.torsoAnim);
+	animNumber_t legsAnim = ANIM(cent->currentState.legsAnim);
+	animNumber_t torsoAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].torsoAnim);
+	animNumber_t legsAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].legsAnim);
+
 //	float legDif;
 //	cent->pe.torso.pitchAngle = viewAngles[PITCH];
 	viewAngles[YAW] = AngleDelta( cent->lerpAngles[YAW], angles[YAW] );
@@ -2385,37 +2391,37 @@ void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const vec3_t an
 		&& !BG_SaberInSpecial(cent->currentState.saberMove)
 		&& cent->currentState.legsAnim != cent->currentState.torsoAnim )//NOTE: presumes your legs & torso are on the same frame, though they *should* be because PM_SetAnimFinal tries to keep them in synch
 	*/
-	if ( !BG_FlippingAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InDeathAnim(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
-		!BG_InDeathAnim(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		!CG_InRoll(cent) &&
-		!CG_InRollAnim(cent) &&
-		!BG_SaberInSpecial(cent->currentState.saberMove) &&
-		!BG_SaberInSpecialAttack(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
+	if ( !BG_FlippingAnim( legsAnim ) &&
+		!BG_SpinningSaberAnim( legsAnim ) &&
+		!BG_SpinningSaberAnim( torsoAnim ) &&
+		!BG_InSpecialJump( legsAnim ) &&
+		!BG_InSpecialJump( torsoAnim ) &&
+		!BG_InDeathAnim( legsAnim ) &&
+		!BG_InDeathAnim( torsoAnim ) &&
+		!CG_InRoll( cent ) &&
+		!CG_InRollAnim( cent ) &&
+		!BG_SaberInSpecial( cent->currentState.saberMove ) &&
+		!BG_SaberInSpecialAttack( torsoAnim ) &&
+		!BG_SaberInSpecialAttack( legsAnim ) &&
 
-		!CG_InKnockDown(cent->currentState.torsoAnim) &&
-		!CG_InKnockDown(cent->currentState.legsAnim) &&
-		!CG_InKnockDown(cgs.clientinfo[cent->currentState.number].torsoAnim) &&
-		!CG_InKnockDown(cgs.clientinfo[cent->currentState.number].legsAnim) &&
+		!CG_InKnockDown( torsoAnim ) &&
+		!CG_InKnockDown( legsAnim ) &&
+		!CG_InKnockDown( torsoAnimInfo ) &&
+		!CG_InKnockDown( legsAnimInfo ) &&
 
-		!BG_FlippingAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-		!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
-		!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-		!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
+		!BG_FlippingAnim( legsAnimInfo ) &&
+		!BG_SpinningSaberAnim( legsAnimInfo ) &&
+		!BG_SpinningSaberAnim( torsoAnimInfo ) &&
+		!BG_InSpecialJump( legsAnimInfo ) &&
+		!BG_InSpecialJump( torsoAnimInfo ) &&
+		!BG_InDeathAnim( legsAnimInfo ) &&
+		!BG_InDeathAnim( torsoAnimInfo ) &&
+		!BG_SaberInSpecialAttack( torsoAnimInfo ) &&
+		!BG_SaberInSpecialAttack( legsAnimInfo ) &&
 
 		!(cent->currentState.eFlags & EF_DEAD) &&
-		(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) != (cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-		(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) != (cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT))
+		legsAnim != torsoAnim &&
+		legsAnimInfo != torsoAnimInfo)
 	{//FIXME: no need to do this if legs and torso on are same frame
 		//adjust for motion offset
 		mdxaBone_t	boltMatrix;
@@ -2547,7 +2553,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 	} else {
 		dest = headAngles[PITCH] * 0.75f;
 	}
-	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
+	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
 
 	// --------- roll -------------
@@ -2669,7 +2675,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 	if (cent->isATST)
 	{
-		cent->pe.legs.yawSwingDif = CG_SwingAnglesATST( cent, legsAngles[YAW], 40, 360, /*cg_swingSpeed.value*/ 0.05, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+		cent->pe.legs.yawSwingDif = CG_SwingAnglesATST( cent, legsAngles[YAW], 40, 360, /*cg_swingSpeed.value*/ 0.05f, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 	}
 	else
 	{
@@ -2679,7 +2685,7 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 		}
 		else
 		{
-			CG_SwingAngles( legsAngles[YAW], 40, 90, /*cg_swingSpeed.value*/ 0.3, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+			CG_SwingAngles( legsAngles[YAW], 40, 90, /*cg_swingSpeed.value*/ 0.3f, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 		}
 	}
 	legsAngles[YAW] = cent->pe.legs.yawAngle;
@@ -2794,28 +2800,33 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngle
 
 		if (cg_duelHeadAngles.integer && !(cent->currentState.eFlags & EF_DEAD))
 		{
-			if ( !BG_FlippingAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cent->currentState.legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cent->currentState.torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InDeathAnim(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
-				!BG_InDeathAnim(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-				!CG_InRoll(cent) &&
-				!CG_InRollAnim(cent) &&
-				!BG_SaberInSpecial(cent->currentState.saberMove) &&
-				!BG_SaberInSpecialAttack(cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cent->currentState.legsAnim&~ANIM_TOGGLEBIT) &&
+			animNumber_t torsoAnim = ANIM(cent->currentState.torsoAnim);
+			animNumber_t legsAnim = ANIM(cent->currentState.legsAnim);
+			animNumber_t torsoAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].torsoAnim);
+			animNumber_t legsAnimInfo = ANIM(cgs.clientinfo[cent->currentState.number].legsAnim);
 
-				!BG_FlippingAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_SpinningSaberAnim( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InSpecialJump( cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT ) &&
-				!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) &&
-				!BG_InDeathAnim(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].torsoAnim&~ANIM_TOGGLEBIT) &&
-				!BG_SaberInSpecialAttack(cgs.clientinfo[cent->currentState.number].legsAnim&~ANIM_TOGGLEBIT) )
+			if ( !BG_FlippingAnim( legsAnim ) &&
+				!BG_SpinningSaberAnim( legsAnim ) &&
+				!BG_SpinningSaberAnim( torsoAnim ) &&
+				!BG_InSpecialJump( legsAnim ) &&
+				!BG_InSpecialJump( torsoAnim ) &&
+				!BG_InDeathAnim( legsAnim ) &&
+				!BG_InDeathAnim( torsoAnim ) &&
+				!CG_InRoll( cent ) &&
+				!CG_InRollAnim( cent ) &&
+				!BG_SaberInSpecial( cent->currentState.saberMove ) &&
+				!BG_SaberInSpecialAttack( torsoAnim ) &&
+				!BG_SaberInSpecialAttack( legsAnim ) &&
+
+				!BG_FlippingAnim( legsAnimInfo ) &&
+				!BG_SpinningSaberAnim( legsAnimInfo ) &&
+				!BG_SpinningSaberAnim( torsoAnimInfo ) &&
+				!BG_InSpecialJump( legsAnimInfo ) &&
+				!BG_InSpecialJump( torsoAnimInfo ) &&
+				!BG_InDeathAnim( legsAnimInfo ) &&
+				!BG_InDeathAnim( torsoAnimInfo ) &&
+				!BG_SaberInSpecialAttack( torsoAnimInfo ) &&
+				!BG_SaberInSpecialAttack( legsAnimInfo ) )
 			{ //use similar check to spine correction, these are the "safe" anims to be in for twisting around
 				vec3_t headAngles;
 				int duelClient = -1;
@@ -3121,24 +3132,24 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 
 	// quad gives a dlight
 	if ( powerups & ( 1 << PW_QUAD ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0f );
 	}
 
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.redFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 0.2f, 0.2f );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0f, 0.2f, 0.2f );
 	}
 
 	// blueflag
 	if ( powerups & ( 1 << PW_BLUEFLAG ) ) {
 		CG_PlayerFlag( cent, cgs.media.blueFlagModel );
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 0.2f, 0.2f, 1.0f );
 	}
 
 	// neutralflag
 	if ( powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0, 1.0, 1.0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (id_rand()&31), 1.0f, 1.0f, 1.0f );
 	}
 
 	// haste leaves smoke trails
@@ -3766,7 +3777,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 }
 #endif // UNUSED
 
-void CG_DoSaber( vec3_t origin, vec3_t dir, float length, int color, int rfx )
+static void CG_DoSaber( vec3_t origin, vec3_t dir, float length, saber_colors_t color, int rfx )
 {
 	vec3_t		mid, rgb={1,1,1};
 	qhandle_t	blade = 0, glow = 0;
@@ -4187,9 +4198,9 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	mdxaBone_t	boltMatrix;
 	vec3_t futureAngles;
 	effectTrailArgStruct_t fx;
-	int scolor = 0;
+	saber_colors_t scolor;
 	vec3_t otherPos, otherDir, otherEnd;
-	float dualLen = 0.7;
+	float dualLen = 0.7f;
 
 	saberEnt = &cg_entities[cent->currentState.saberEntityNum];
 
@@ -4919,24 +4930,24 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 
 		if (!cent->isATST)
 		{
-			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim(newAnimation))
+			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim((animNumber_t)newAnimation))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim)) )
+				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 
 			if (flags & BONE_ANIM_BLEND)
 			{
-				if (BG_FlippingAnim(newAnimation))
+				if (BG_FlippingAnim((animNumber_t)newAnimation))
 				{
 					blendTime = 200;
 				}
 				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim(oldAnim)) )
+					(BG_FlippingAnim((animNumber_t)oldAnim)) )
 				{
 					blendTime = 200;
 				}
@@ -5017,7 +5028,8 @@ static void CG_G2EntRunLerpFrame( centity_t *cent, lerpFrame_t *lf, int newAnima
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
-		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		lf->oldFrame = lf->frame = 0;
+		lf->backlerp = 0;
 		return;
 	}
 
@@ -5187,11 +5199,11 @@ static void CG_G2EntAnimation( centity_t *cent, int *legsOld, int *legs, float *
 
 	if (cent->currentState.forcePowersActive & (1 << FP_RAGE))
 	{
-		speedScale = 1.3;
+		speedScale = 1.3f;
 	}
 	else if (cent->currentState.forcePowersActive & (1 << FP_SPEED))
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 	else
 	{
@@ -5206,7 +5218,7 @@ static void CG_G2EntAnimation( centity_t *cent, int *legsOld, int *legs, float *
 	}
 	else
 	{
-		speedScale = 1.7;
+		speedScale = 1.7f;
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
@@ -5333,7 +5345,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 	} else {
 		dest = headAngles[PITCH] * 0.75f;
 	}
-	CG_SwingAngles( dest, 15, 30, 0.1, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
+	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
 
 	if ( speed ) {
@@ -5702,7 +5714,7 @@ void CG_G2Animated( centity_t *cent )
 
 			if ( dif < 500 )
 			{
-				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = (dif - 500) * (255.0f / 500);
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
@@ -5730,7 +5742,7 @@ void CG_G2Animated( centity_t *cent )
 
 	if (cent->currentState.genericenemyindex > cg.time)
 	{
-		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysalimariShader );
+		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 	}
 }
 //rww - here ends the majority of my g2animent stuff.
@@ -5968,7 +5980,7 @@ void CG_Player( centity_t *cent ) {
 	{
 		if (cent->trickAlpha > 1)
 		{
-			cent->trickAlpha -= (cg.time - cent->trickAlphaTime)*0.5;
+			cent->trickAlpha -= (cg.time - cent->trickAlphaTime)*0.5f;
 			cent->trickAlphaTime = cg.time;
 
 			if (cent->trickAlpha < 0)
@@ -6845,35 +6857,35 @@ doEssentialTwo:
 	{
 		if (cgs.gametype == GT_CTY && (cent->currentState.powerups & (1 << PW_REDFLAG)))
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysaliredShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysaliredShader );
 		}
 		else if (cgs.gametype == GT_CTY && (cent->currentState.powerups & (1 << PW_BLUEFLAG)))
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysaliblueShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysaliblueShader );
 		}
 		else
 		{
-			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.ysalimariShader );
+			CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 		}
 	}
 
 	if (cent->currentState.powerups & (1 << PW_FORCE_BOON))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.boonShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.boonShader );
 	}
 
 	if (cent->currentState.powerups & (1 << PW_FORCE_ENLIGHTENED_DARK))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.endarkenmentShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.endarkenmentShader );
 	}
 	else if (cent->currentState.powerups & (1 << PW_FORCE_ENLIGHTENED_LIGHT))
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0, cgs.media.enlightenmentShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 2.0f, cgs.media.enlightenmentShader );
 	}
 
 	if (cent->currentState.eFlags & EF_INVULNERABLE)
 	{
-		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4, cgs.media.invulnerabilityShader );
+		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.invulnerabilityShader );
 	}
 stillDoSaber:
 	if (cent->currentState.weapon == WP_SABER && !cent->currentState.shouldtarget)
@@ -6973,7 +6985,7 @@ stillDoSaber:
 				{
 					if (cent->bolt3 < 90)
 					{
-						cent->bolt3 += (cg.time - cent->bolt2)*0.5;
+						cent->bolt3 += (cg.time - cent->bolt2) / 2;
 
 						if (cent->bolt3 > 90)
 						{
@@ -6982,7 +6994,7 @@ stillDoSaber:
 					}
 					else if (cent->bolt3 > 90)
 					{
-						cent->bolt3 -= (cg.time - cent->bolt2)*0.5;
+						cent->bolt3 -= (cg.time - cent->bolt2) / 2;
 
 						if (cent->bolt3 < 90)
 						{
@@ -7451,7 +7463,7 @@ doEssentialThree:
 
 			if ( dif < 500 )
 			{
-				brightness = floorf((dif - 500.0f) / 500.0f * 255.0f );
+				brightness = (dif - 500) * (255.0f / 500);
 			}
 
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;

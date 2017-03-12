@@ -636,7 +636,7 @@ float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
 	int		delta;
 	float	angle;
 	float	speed;
-	int		torsoAnim;
+	animNumber_t	torsoAnim;
 
 	delta = dp_realtime - pi->barrelTime;
 	if ( pi->barrelSpinning ) {
@@ -650,7 +650,7 @@ float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
 		angle = pi->barrelAngle + delta * speed;
 	}
 
-	torsoAnim = pi->torsoAnim  & ~ANIM_TOGGLEBIT;
+	torsoAnim = ANIM(pi->torsoAnim);
 	if( torsoAnim == BOTH_A1_T__B_ ) {
 		torsoAnim = BOTH_ATTACK3;
 	}

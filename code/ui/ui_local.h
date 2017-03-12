@@ -820,7 +820,7 @@ typedef struct {
 	int				forceConfigDarkIndexBegin; //mark the index number dark configs start at
 	int				forceConfigLightIndexBegin; //mark the index number light configs start at
 
-	int effectsColor;
+	saber_colors_t	effectsColor;
 
 	qboolean inGameLoad;
 
@@ -926,7 +926,7 @@ void			trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, floa
 void			trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
 void			trap_UpdateScreen( void );
 int				trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName );
-void			trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void			trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
 sfxHandle_t		trap_S_RegisterSound( const char *sample );
 void			trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 void			trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
@@ -970,9 +970,9 @@ qboolean		trap_VerifyCDKey( const char *key, const char *chksum);
 #endif // USE_CD_KEY
 
 qhandle_t		trap_R_RegisterFont( const char *name );
-int				trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale);
+int				trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int				trap_R_Font_StrLenChars(const char *text);
-int				trap_R_Font_HeightPixels(const int iFontIndex, const float scale);
+int				trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
 void			trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 qboolean		trap_Language_IsAsian(void);
 qboolean		trap_Language_UsesSpaces(void);

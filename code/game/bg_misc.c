@@ -105,7 +105,7 @@ int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	//NUM_FORCE_POWERS
 };
 
-const int forcePowerSorted[NUM_FORCE_POWERS] =
+const forcePowers_t forcePowerSorted[NUM_FORCE_POWERS] =
 { //rww - always use this order when drawing force powers for any reason
 	FP_TELEPATHY,
 	FP_HEAL,
@@ -127,13 +127,13 @@ const int forcePowerSorted[NUM_FORCE_POWERS] =
 	FP_SABERTHROW
 };
 
-const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
+const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 { //nothing should be usable at rank 0..
 	FORCE_LIGHTSIDE,//FP_HEAL,//instant
-	0,//FP_LEVITATION,//hold/duration
-	0,//FP_SPEED,//duration
-	0,//FP_PUSH,//hold/duration
-	0,//FP_PULL,//hold/duration
+	FORCE_ANY,//FP_LEVITATION,//hold/duration
+	FORCE_ANY,//FP_SPEED,//duration
+	FORCE_ANY,//FP_PUSH,//hold/duration
+	FORCE_ANY,//FP_PULL,//hold/duration
 	FORCE_LIGHTSIDE,//FP_TELEPATHY,//instant
 	FORCE_DARKSIDE,//FP_GRIP,//hold/duration
 	FORCE_DARKSIDE,//FP_LIGHTNING,//hold/duration
@@ -143,14 +143,14 @@ const int forcePowerDarkLight[NUM_FORCE_POWERS] = //0 == neutral
 	FORCE_LIGHTSIDE,//FP_TEAM_HEAL,//instant
 	FORCE_DARKSIDE,//FP_TEAM_FORCE,//instant
 	FORCE_DARKSIDE,//FP_DRAIN,//hold/duration
-	0,//FP_SEE,//duration
-	0,//FP_SABERATTACK,
-	0,//FP_SABERDEFEND,
-	0//FP_SABERTHROW,
+	FORCE_ANY,//FP_SEE,//duration
+	FORCE_ANY,//FP_SABERATTACK,
+	FORCE_ANY,//FP_SABERDEFEND,
+	FORCE_ANY//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 };
 
-const int WeaponReadyAnim[WP_NUM_WEAPONS] =
+const animNumber_t WeaponReadyAnim[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
@@ -173,7 +173,7 @@ const int WeaponReadyAnim[WP_NUM_WEAPONS] =
 	TORSO_WEAPONREADY1//WP_TURRET,
 };
 
-const int WeaponAttackAnim[WP_NUM_WEAPONS] =
+const animNumber_t WeaponAttackAnim[WP_NUM_WEAPONS] =
 {
 	BOTH_ATTACK1,//WP_NONE, //(shouldn't happen)
 
@@ -250,7 +250,7 @@ fpDisabled is actually only expected (needed) from the server, because the ui di
 force power selection anyway when force powers are disabled on the server.
 ================
 */
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled)
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled)
 {
 	char powerBuf[128];
 	char readBuf[128];
@@ -260,7 +260,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int allowedPoints = 0;
 	int usedPoints = 0;
 
-	int final_Side;
+	forceSide_t final_Side;
 	int final_Powers[NUM_FORCE_POWERS] = { 0 };
 
 	if (strlen(powerOut) >= sizeof(powerBuf))
@@ -275,7 +275,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	}
 
 	//first of all, print the max rank into the string as the rank
-	Com_sprintf(powerOut, sizeof(powerOut), "%i-", maxRank);
+	Com_sprintf(powerOut, sizeof(powerOut), "%i-", (int)maxRank);
 
 	while (i < 128 && powerBuf[i] && powerBuf[i] != '-')
 	{
@@ -291,7 +291,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	readBuf[c] = 0;
 	i++;
 	//at this point, readBuf contains the intended side
-	final_Side = atoi(readBuf);
+	final_Side = (forceSide_t)atoi(readBuf);
 
 	if (final_Side != FORCE_LIGHTSIDE &&
 		final_Side != FORCE_DARKSIDE)
@@ -330,7 +330,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	while (i < NUM_FORCE_POWERS)
 	{ //if this power doesn't match the side we're on, then 0 it now.
 		if (final_Powers[i] &&
-			forcePowerDarkLight[i] &&
+			forcePowerDarkLight[i] != FORCE_ANY &&
 			forcePowerDarkLight[i] != final_Side)
 		{
 			final_Powers[i] = 0;
@@ -513,7 +513,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	//We finally have all the force powers legalized and stored locally.
 	//Put them all into the string and return the result. We already have
 	//the rank there, so print the side and the powers now.
-	Q_strcat(powerOut, 128, va("%i-", final_Side));
+	Q_strcat(powerOut, 128, va("%i-", (int)final_Side));
 
 	i = strlen(powerOut);
 	c = 0;
@@ -565,7 +565,7 @@ gitem_t	bg_itemlist[] =
 /* icon */		NULL,		// icon
 /* pickup */	//NULL,		// pickup_name
 		0,					// quantity
-		0,					// giType (IT_*)
+		IT_BAD,				// giType (IT_*)
 		0,					// giTag
 /* precache */ "",			// precaches
 /* sounds */ ""				// sounds
@@ -1497,7 +1497,7 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 	return qtrue;
 }
 
-int BG_ProperForceIndex(int power)
+int BG_ProperForceIndex(forcePowers_t power)
 {
 	int i = 0;
 
@@ -1516,63 +1516,30 @@ int BG_ProperForceIndex(int power)
 
 void BG_CycleForce(playerState_t *ps, int direction)
 {
-	int i = ps->fd.forcePowerSelected;
-	int x = i;
-	int presel = i;
-	int foundnext = -1;
+	forcePowers_t selected = ps->fd.forcePowerSelected;
+	forcePowers_t foundnext = FP_NONE;
+	int presel;
+	int x;
 
-	if (x >= NUM_FORCE_POWERS ||
-		x < 0 ||
-		!(ps->fd.forcePowersKnown & (1 << x)))
+	assert(direction == 1 || direction == -1);
+
+	if (!FP_Selectable(selected) ||
+		!(ps->fd.forcePowersKnown & (1 << selected)))
 	{ //apparently we have no valid force powers
 		return;
 	}
 
-	x = BG_ProperForceIndex(x);
+	x = BG_ProperForceIndex(selected);
+	if (x < 0)
+	{
+		return;
+	}
+
 	presel = x;
 
-	if (direction == 1)
-	{ //get the next power
-		x++;
-	}
-	else
-	{ //get the previous power
-		x--;
-	}
-
-	if (x >= NUM_FORCE_POWERS)
-	{ //cycled off the end.. cycle around to the first
-		x = 0;
-	}
-	if (x < 0)
-	{ //cycled off the beginning.. cycle around to the last
-		x = NUM_FORCE_POWERS-1;
-	}
-
-	i = forcePowerSorted[x]; //the "sorted" value of this power
-
-	while (x != presel)
+	do
 	{ //loop around to the current force power
-		if (ps->fd.forcePowersKnown & (1 << i) && i != ps->fd.forcePowerSelected)
-		{ //we have the force power
-			if (i != FP_LEVITATION &&
-				i != FP_SABERATTACK &&
-				i != FP_SABERDEFEND &&
-				i != FP_SABERTHROW)
-			{ //it's selectable
-				foundnext = i;
-				break;
-			}
-		}
-
-		if (direction == 1)
-		{ //next
-			x++;
-		}
-		else
-		{ //previous
-			x--;
-		}
+		x += direction;
 
 		if (x >= NUM_FORCE_POWERS)
 		{ //loop around
@@ -1583,10 +1550,21 @@ void BG_CycleForce(playerState_t *ps, int direction)
 			x = NUM_FORCE_POWERS-1;
 		}
 
-		i = forcePowerSorted[x]; //set to the sorted value again
-	}
+		selected = forcePowerSorted[x]; //the "sorted" value of this power
 
-	if (foundnext != -1)
+		if (ps->fd.forcePowersKnown & (1 << selected) &&
+			ps->fd.forcePowerSelected != selected)
+		{ //we have the force power
+			if (FP_Selectable(selected))
+			{ //it's selectable
+				foundnext = selected;
+				break;
+			}
+		}
+
+	} while (x != presel);
+
+	if (foundnext != FP_NONE)
 	{ //found one, select it
 		ps->fd.forcePowerSelected = foundnext;
 	}
@@ -1872,7 +1850,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 		VectorCopy( tr->trDelta, result );
 		break;
 	case TR_GRAVITY:
-		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
+		deltaTime = ( atTime - tr->trTime ) * 0.001f;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
 		result[2] -= DEFAULT_GRAVITY * deltaTime;		// FIXME: local gravity...
 		break;
@@ -2045,7 +2023,7 @@ Handles the sequence numbers
 
 void	trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps ) {
+void BG_AddPredictableEventToPlayerstate( entity_event_t newEvent, int eventParm, playerState_t *ps ) {
 
 #ifdef _DEBUG
 	{
@@ -2462,12 +2440,12 @@ char *BG_StringAlloc ( const char *source )
 	char *dest;
 	size_t len = strlen ( source ) + 1;
 
-	dest = BG_AllocUnaligned ( len );
+	dest = (char *)BG_AllocUnaligned ( len );
 	strncpy ( dest, source, len );
 	return dest;
 }
 
 qboolean BG_OutOfMemory ( void )
 {
-	return bg_poolSize >= MAX_POOL_SIZE;
+	return (qboolean)(bg_poolSize >= MAX_POOL_SIZE);
 }

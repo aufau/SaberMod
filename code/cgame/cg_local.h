@@ -495,7 +495,7 @@ typedef struct {
 	vec3_t			color1;
 	vec3_t			color2;
 
-	int				icolor1;
+	saber_colors_t	icolor1;
 
 	int				score;			// updated by score servercmds
 	int				location;		// location index for team mode
@@ -732,8 +732,8 @@ typedef struct {
 	// input state sent to server
 	int			weaponSelect;
 
-	int			forceSelect;
-	int			itemSelect;
+	forcePowers_t	forceSelect;		// FP_NONE or selectable force (see FP_Selectable macro)
+	holdable_t		itemSelect;
 
 	// auto rotating items
 	vec3_t		autoAngles;
@@ -1385,8 +1385,8 @@ typedef struct {
 	int				duelWinner;
 	int				duelist1;
 	int				duelist2;
-	int				redflag, blueflag;		// flag status from configstrings
-	int				flagStatus;
+	flagStatus_t	redflag, blueflag;		// flag status from configstrings
+	flagStatus_t	flagStatus;
 
 	qboolean  newHud;
 
@@ -1421,7 +1421,7 @@ Ghoul2 Insert End
 	qboolean eventHandling;
 	qboolean mouseCaptured;
 	qboolean sizingHud;
-	void *capturedItem;
+	menuDef_t *capturedItem;
 	qhandle_t activeCursor;
 
 	// orders
@@ -1712,9 +1712,9 @@ void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, team_t team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font);
-void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont);
-int CG_Text_Width(const char *text, float scale, int iMenuFont);
-int CG_Text_Height(const char *text, float scale, int iMenuFont);
+void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont);
+int CG_Text_Width(const char *text, float scale, font_t iMenuFont);
+int CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
 
@@ -1846,7 +1846,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p,
 				   const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
-				   float duration,
+				   int duration,
 				   int startTime,
 				   int fadeInTime,
 				   int leFlags,
@@ -1926,7 +1926,7 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 
 // MVAPI
 
-qboolean	trap_MVAPI_ControlFixes(mvfix_t fixes);
+qboolean	trap_MVAPI_ControlFixes(int fixes);
 
 //
 // system traps
@@ -2001,11 +2001,11 @@ int			trap_CM_MarkFragments( int numPoints, const vec3_t *points,
 // normal sounds will have their volume dynamically changed as their entity
 // moves and the listener moves
 void		trap_S_MuteSound( int entityNum, int entchannel );
-void		trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
+void		trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx );
 void		trap_S_StopLoopingSound(int entnum);
 
 // a local sound is always played full volume
-void		trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void		trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
 void		trap_S_ClearLoopingSounds( qboolean killall );
 void		trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void		trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
@@ -2028,9 +2028,9 @@ qhandle_t	trap_R_RegisterSkin( const char *name );			// returns all white if not
 qhandle_t	trap_R_RegisterShader( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterShaderNoMip( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterFont( const char *name );
-int			trap_R_Font_StrLenPixels(const char *text, const int iFontIndex, const float scale);
+int			trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int			trap_R_Font_StrLenChars(const char *text);
-int			trap_R_Font_HeightPixels(const int iFontIndex, const float scale);
+int			trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
 void		trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 qboolean	trap_Language_IsAsian(void);
 qboolean	trap_Language_UsesSpaces(void);
@@ -2124,7 +2124,7 @@ void		trap_Key_SetCatcher( int catcher );
 int			trap_Key_GetKey( const char *binding );
 
 void		BG_CycleInven(playerState_t *ps, int direction);
-int			BG_ProperForceIndex(int power);
+int			BG_ProperForceIndex(forcePowers_t power);
 void		BG_CycleForce(playerState_t *ps, int direction);
 
 

@@ -137,7 +137,7 @@ void P_WorldEffects( gentity_t *ent ) {
 
 	waterlevel = ent->waterlevel;
 
-	envirosuit = ent->client->ps.powerups[PW_BATTLESUIT] > level.time;
+	envirosuit = (qboolean)(ent->client->ps.powerups[PW_BATTLESUIT] > level.time);
 
 	//
 	// check for drowning
@@ -865,7 +865,7 @@ void SendPendingPredictableEvents( playerState_t *ps ) {
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_TempEntity( ps->origin, event, ps->clientNum );
+		t = G_TempEntity( ps->origin, (entity_event_t)event, ps->clientNum );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;
@@ -1024,7 +1024,7 @@ static void G_SwitchTeam( gentity_t *ent ) {
 	}
 
 	client->sess.sessionTeam = team;
-	client->ps.fd.forceDoInit = 1; // every time we change teams make sure our force powers are set right
+	client->ps.fd.forceDoInit = qtrue; // every time we change teams make sure our force powers are set right
 	client->sess.teamLeader = qfalse;
 	teamLeader = TeamLeader( team );
 	// if there is no team leader or the team leader is a bot and this client is not a bot
@@ -1425,9 +1425,9 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.trace = trap_Trace;
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
-	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
-	pm.noKick = ( g_dmflags.integer & DF_NO_KICK ) > 0;
-	pm.noYDFA = ( g_dmflags.integer & DF_NO_YDFA ) > 0;
+	pm.noFootsteps = (qboolean)((g_dmflags.integer & DF_NO_FOOTSTEPS) > 0);
+	pm.noKick = (qboolean)((g_dmflags.integer & DF_NO_KICK) > 0);
+	pm.noYDFA = (qboolean)((g_dmflags.integer & DF_NO_YDFA) > 0);
 
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;
@@ -1525,8 +1525,9 @@ void ClientThink_real( gentity_t *ent ) {
 
 				if (clientLost->health < 1)
 				{
+					animNumber_t tempAnim = ANIM(clientLost->client->ps.legsAnim);
 					gGAvoidDismember = 2;
-					G_CheckForDismemberment(clientLost, clientLost->client->ps.origin, 999, (clientLost->client->ps.legsAnim&~ANIM_TOGGLEBIT));
+					G_CheckForDismemberment(clientLost, clientLost->client->ps.origin, 999, tempAnim);
 				}
 
 				gGAvoidDismember = 0;

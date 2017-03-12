@@ -102,7 +102,7 @@ Adds a smoke puff or blood trail localEntity.
 localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
-				   float duration,
+				   int duration,
 				   int startTime,
 				   int fadeInTime,
 				   int leFlags,
@@ -119,17 +119,17 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	re = &le->refEntity;
 	re->rotation = Q_random( &seed ) * 360;
 	re->radius = radius;
-	re->shaderTime = startTime / 1000.0f;
+	re->shaderTime = startTime * 0.001f;
 
 	le->leType = LE_MOVE_SCALE_FADE;
 	le->startTime = startTime;
 	le->fadeInTime = fadeInTime;
 	le->endTime = startTime + duration;
 	if ( fadeInTime > startTime ) {
-		le->lifeRate = 1.0 / ( le->endTime - le->fadeInTime );
+		le->lifeRate = 1.0f / ( le->endTime - le->fadeInTime );
 	}
 	else {
-		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
+		le->lifeRate = 1.0f / ( le->endTime - le->startTime );
 	}
 	le->color[0] = r;
 	le->color[1] = g;
@@ -164,7 +164,7 @@ void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int ra
 	le->leType = LE_LINE;
 	le->startTime = cg.time;
 	le->endTime = cg.time + time;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
+	le->lifeRate = 1.0f / ( le->endTime - le->startTime );
 
 	re = &le->refEntity;
 	VectorCopy( start, re->origin );
@@ -172,7 +172,7 @@ void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int ra
 	re->shaderTime = cg.time / 1000.0f;
 
 	re->reType = RT_LINE;
-	re->radius = 0.5*radius;
+	re->radius = 0.5f*radius;
 	re->customShader = cgs.media.whiteShader; //trap_R_RegisterShaderNoMip("textures/colombia/canvas_doublesided");
 
 	re->shaderTexCoord[0] = re->shaderTexCoord[1] = 1.0f;
@@ -911,7 +911,7 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 	le->leType = LE_SCOREPLUM;
 	le->startTime = cg.time;
 	le->endTime = cg.time + 1000;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
+	le->lifeRate = 1.0f / ( le->endTime - le->startTime );
 
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 	le->radius = score;

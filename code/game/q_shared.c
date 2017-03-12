@@ -1043,8 +1043,8 @@ char *Q_SanitizeStr( char *string )
 }
 
 qboolean Q_IsInteger( const char * s ) {
-	int			i;
-	int			len;
+	size_t		i;
+	size_t		len;
 	qboolean	foundDigit;
 
 	len = strlen( s );
@@ -1062,14 +1062,14 @@ qboolean Q_IsInteger( const char * s ) {
 }
 
 int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
-	size_t		len;
+	int			len;
 	va_list		argptr;
 
 	va_start (argptr,fmt);
 	len = vsnprintf (dest, size, fmt, argptr);
 	va_end (argptr);
 
-	if (len >= size) {
+	if ((size_t)len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
 		len = size - 1;
 	}

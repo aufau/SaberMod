@@ -828,7 +828,7 @@ BotAISetupClient
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart) {
 	bot_state_t *bs;
 
-	if (!botstates[client]) botstates[client] = B_Alloc(sizeof(bot_state_t)); //G_Alloc(sizeof(bot_state_t));
+	if (!botstates[client]) botstates[client] = (bot_state_t *)B_Alloc(sizeof(bot_state_t)); //G_Alloc(sizeof(bot_state_t));
 																			  //rww - G_Alloc bad! B_Alloc good.
 
 	memset(botstates[client], 0, sizeof(bot_state_t));
@@ -1141,7 +1141,7 @@ int PassWayCheck(bot_state_t *bs, int windex)
 
 	if (bs->wpCurrent && gWPArray[windex]->forceJumpTo &&
 		gWPArray[windex]->origin[2] > (bs->wpCurrent->origin[2]+64) &&
-		bs->cur_ps.fd.forcePowerLevel[FP_LEVITATION] < gWPArray[windex]->forceJumpTo)
+		(int)bs->cur_ps.fd.forcePowerLevel[FP_LEVITATION] < gWPArray[windex]->forceJumpTo)
 	{
 		return 0;
 	}
@@ -1257,7 +1257,7 @@ void CheckForShorterRoutes(bot_state_t *bs, int newwpindex)
 
 		if (checklen < bestlen-64 || bestlen == -1)
 		{
-			if (bs->cur_ps.fd.forcePowerLevel[FP_LEVITATION] >= gWPArray[newwpindex]->neighbors[i].forceJumpTo)
+			if ((int)bs->cur_ps.fd.forcePowerLevel[FP_LEVITATION] >= gWPArray[newwpindex]->neighbors[i].forceJumpTo)
 			{
 				bestlen = checklen;
 				bestindex = gWPArray[newwpindex]->neighbors[i].num;
@@ -4422,31 +4422,31 @@ float BotWeaponCanLead(bot_state_t *bs)
 
 	if (weap == WP_BRYAR_PISTOL)
 	{
-		return 0.5;
+		return 0.5f;
 	}
 	if (weap == WP_BLASTER)
 	{
-		return 0.35;
+		return 0.35f;
 	}
 	if (weap == WP_BOWCASTER)
 	{
-		return 0.5;
+		return 0.5f;
 	}
 	if (weap == WP_REPEATER)
 	{
-		return 0.45;
+		return 0.45f;
 	}
 	if (weap == WP_THERMAL)
 	{
-		return 0.5;
+		return 0.5f;
 	}
 	if (weap == WP_DEMP2)
 	{
-		return 0.35;
+		return 0.35f;
 	}
 	if (weap == WP_ROCKET_LAUNCHER)
 	{
-		return 0.7;
+		return 0.7f;
 	}
 
 	return 0;
@@ -5030,7 +5030,7 @@ int BotSelectIdealWeapon(bot_state_t *bs)
 		}
 	}
 
-	if (bestweight != -1 && bs->cur_ps.weapon != bestweapon && bs->virtualWeapon != bestweapon)
+	if (bestweight != -1 && (int)bs->cur_ps.weapon != bestweapon && bs->virtualWeapon != bestweapon)
 	{
 		bs->virtualWeapon = bestweapon;
 		BotSelectWeapon(bs->client, bestweapon);
@@ -5062,7 +5062,7 @@ int BotSelectChoiceWeapon(bot_state_t *bs, int weapon, int doselection)
 		i++;
 	}
 
-	if (hasit && bs->cur_ps.weapon != weapon && doselection && bs->virtualWeapon != weapon)
+	if (hasit && (int)bs->cur_ps.weapon != weapon && doselection && bs->virtualWeapon != weapon)
 	{
 		bs->virtualWeapon = weapon;
 		BotSelectWeapon(bs->client, weapon);
@@ -6502,14 +6502,14 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 				bs->saberPowerTime = level.time + Q_irand(3000, 15000);
 			}
 
-			if (bs->currentEnemy->health > 75 && g_entities[bs->client].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > 2)
+			if (bs->currentEnemy->health > 75 && g_entities[bs->client].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > FORCE_LEVEL_2)
 			{
 				if (g_entities[bs->client].client->ps.fd.saberAnimLevel != FORCE_LEVEL_3 && bs->saberPower)
 				{ //if we are up against someone with a lot of health and we have a strong attack available, then h4q them
 					Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 				}
 			}
-			else if (bs->currentEnemy->health > 40 && g_entities[bs->client].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > 1)
+			else if (bs->currentEnemy->health > 40 && g_entities[bs->client].client->ps.fd.forcePowerLevel[FP_SABERATTACK] > FORCE_LEVEL_1)
 			{
 				if (g_entities[bs->client].client->ps.fd.saberAnimLevel != FORCE_LEVEL_2)
 				{ //they're down on health a little, use level 2 if we can
@@ -6653,7 +6653,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			}
 
 			if (bs->plantDecided > level.time && bs->forceWeaponSelect &&
-				bs->cur_ps.weapon == bs->forceWeaponSelect)
+				(int)bs->cur_ps.weapon == bs->forceWeaponSelect)
 			{
 				bs->doAttack = 1;
 				bs->plantDecided = 0;

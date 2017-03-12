@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "bg_weapons.h"
 #include "anims.h"
+#include "bg_net.h"
 
 // the "gameversion" client command will print this plus compile date
 #define	GAMEVERSION			"SaberMod"
@@ -40,8 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
-#define ARMOR_PROTECTION		0.50 // Shields only stop 50% of armor-piercing dmg
-#define ARMOR_REDUCTION_FACTOR	0.50 // Certain damage doesn't take off armor as efficiently
+#define ARMOR_PROTECTION		0.5f // Shields only stop 50% of armor-piercing dmg
+#define ARMOR_REDUCTION_FACTOR	0.5f // Certain damage doesn't take off armor as efficiently
 
 #define	JUMP_VELOCITY		225//270
 
@@ -133,6 +134,7 @@ Ghoul2 Insert End
 #define MAX_MODES				128
 
 typedef enum {
+	G2_MODELPART_INVALID = -1,
 	G2_MODELPART_HEAD = 10,
 	G2_MODELPART_WAIST,
 	G2_MODELPART_LARM,
@@ -143,20 +145,6 @@ typedef enum {
 } g2ModelParts_t;
 
 #define G2_MODEL_PART	50
-
-typedef enum {
-	HANDEXTEND_NONE = 0,
-	HANDEXTEND_FORCEPUSH,
-	HANDEXTEND_FORCEPULL,
-	HANDEXTEND_FORCEGRIP,
-	HANDEXTEND_SABERPULL,
-	HANDEXTEND_CHOKE, //use handextend priorities to choke someone being gripped
-	HANDEXTEND_WEAPONREADY,
-	HANDEXTEND_DODGE,
-	HANDEXTEND_KNOCKDOWN,
-	HANDEXTEND_DUELCHALLENGE,
-	HANDEXTEND_TAUNT
-} forceHandAnims_t;
 
 typedef enum {
 	GT_FFA,				// free for all
@@ -188,7 +176,7 @@ typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 extern const vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
 
-extern const int forcePowerSorted[NUM_FORCE_POWERS];
+extern const forcePowers_t forcePowerSorted[NUM_FORCE_POWERS];
 
 /*
 ===================================================================================
@@ -219,31 +207,9 @@ extern animation_t		bgGlobalAnimations[MAX_TOTALANIMATIONS];
 // changes so a restart of the same anim can be detected
 #define	ANIM_TOGGLEBIT		2048		// Maximum number of animation sequences is 2048 (0-2047).  12th bit is the toggle
 
+#define ANIM(x) ((animNumber_t)((x) & ~ANIM_TOGGLEBIT))
 
 typedef enum {
-	PM_NORMAL,		// can accelerate and turn
-	PM_FLOAT,		// float with no gravity in general direction of velocity (intended for gripping)
-	PM_NOCLIP,		// noclip movement
-	PM_SPECTATOR,	// still run into walls
-	PM_DEAD,		// no acceleration or turning, but free falling
-	PM_FREEZE,		// stuck in place with no control
-	PM_INTERMISSION,	// no movement or status bar
-	PM_SPINTERMISSION,	// no movement or status bar
-	PM_HARMLESS		// can't use weapons, items, force powers
-} pmtype_t;
-
-typedef enum {
-	WEAPON_READY,
-	WEAPON_RAISING,
-	WEAPON_DROPPING,
-	WEAPON_FIRING,
-	WEAPON_CHARGING,
-	WEAPON_CHARGING_ALT,
-	WEAPON_IDLE, //lowered		// NOTENOTE Added with saber
-} weaponstate_t;
-
-
-enum {
 	FORCE_MASTERY_UNINITIATED,
 	FORCE_MASTERY_INITIATE,
 	FORCE_MASTERY_PADAWAN,
@@ -253,7 +219,7 @@ enum {
 	FORCE_MASTERY_JEDI_KNIGHT,
 	FORCE_MASTERY_JEDI_MASTER,
 	NUM_FORCE_MASTERY_LEVELS
-};
+} forceMastery_t;
 extern const char * const forceMasteryLevels[NUM_FORCE_MASTERY_LEVELS];
 extern const int forceMasteryPoints[NUM_FORCE_MASTERY_LEVELS];
 
@@ -353,9 +319,11 @@ typedef enum {
 	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH					// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
+	STAT_MAX
 } statIndex_t;
 
+q_static_assert(STAT_MAX <= MAX_STATS);
 
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
@@ -377,9 +345,11 @@ typedef enum {
 	PERS_DEFEND_COUNT,				// defend awards
 	PERS_ASSIST_COUNT,				// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,		// kills with the guantlet
-	PERS_CAPTURES					// captures
+	PERS_CAPTURES,					// captures
+	PERS_MAX
 } persEnum_t;
 
+q_static_assert(PERS_MAX <= MAX_PERSISTANT);
 
 // entityState_t->eFlags
 #define	EF_DEAD				0x00000001		// don't draw a foe marker over players with EF_DEAD
@@ -474,6 +444,8 @@ typedef enum {
 	PW_NUM_POWERUPS
 
 } powerup_t;
+
+q_static_assert(PW_NUM_POWERUPS < 31);
 
 typedef enum {
 	HI_NONE,
@@ -811,8 +783,8 @@ typedef struct gitem_s {
 } const gitem_t;
 
 // included in both the game dll and the client
-extern	gitem_t	bg_itemlist[];
-extern	const int		bg_numItems;
+extern	gitem_t		bg_itemlist[];
+extern	const int	bg_numItems;
 
 float vectoyaw( const vec3_t vec );
 
@@ -873,164 +845,6 @@ typedef enum {
 							// this avoids having to set eFlags and eventNum
 } entityType_t;
 
-// Okay, here lies the much-dreaded Pat-created FSM movement chart...  Heretic II strikes again!
-// Why am I inflicting this on you?  Well, it's better than hardcoded states.
-// Ideally this will be replaced with an external file or more sophisticated move-picker
-// once the game gets out of prototype stage.
-
-// rww - Moved all this to bg_public so that we can access the saberMoveData stuff on the cgame
-// which is currently used for determining if a saber trail should be rendered in a given frame
-
-typedef enum {
-	// Totally invalid
-	LS_INVALID	= -1,
-	// Invalid, or saber not armed
-	LS_NONE		= 0,
-
-	// General movements with saber
-	LS_READY,
-	LS_DRAW,
-	LS_PUTAWAY,
-
-	// Attacks
-	LS_A_TL2BR,//4
-	LS_A_L2R,
-	LS_A_BL2TR,
-	LS_A_BR2TL,
-	LS_A_R2L,
-	LS_A_TR2BL,
-	LS_A_T2B,
-	LS_A_BACKSTAB,
-	LS_A_BACK,
-	LS_A_BACK_CR,
-	LS_A_LUNGE,
-	LS_A_JUMP_T__B_,
-	LS_A_FLIP_STAB,
-	LS_A_FLIP_SLASH,
-
-	//starts
-	LS_S_TL2BR,//26
-	LS_S_L2R,
-	LS_S_BL2TR,//# Start of attack chaining to SLASH LR2UL
-	LS_S_BR2TL,//# Start of attack chaining to SLASH LR2UL
-	LS_S_R2L,
-	LS_S_TR2BL,
-	LS_S_T2B,
-
-	//returns
-	LS_R_TL2BR,//33
-	LS_R_L2R,
-	LS_R_BL2TR,
-	LS_R_BR2TL,
-	LS_R_R2L,
-	LS_R_TR2BL,
-	LS_R_T2B,
-
-	//transitions
-	LS_T1_BR__R,//40
-	LS_T1_BR_TR,
-	LS_T1_BR_T_,
-	LS_T1_BR_TL,
-	LS_T1_BR__L,
-	LS_T1_BR_BL,
-	LS_T1__R_BR,//46
-	LS_T1__R_TR,
-	LS_T1__R_T_,
-	LS_T1__R_TL,
-	LS_T1__R__L,
-	LS_T1__R_BL,
-	LS_T1_TR_BR,//52
-	LS_T1_TR__R,
-	LS_T1_TR_T_,
-	LS_T1_TR_TL,
-	LS_T1_TR__L,
-	LS_T1_TR_BL,
-	LS_T1_T__BR,//58
-	LS_T1_T___R,
-	LS_T1_T__TR,
-	LS_T1_T__TL,
-	LS_T1_T___L,
-	LS_T1_T__BL,
-	LS_T1_TL_BR,//64
-	LS_T1_TL__R,
-	LS_T1_TL_TR,
-	LS_T1_TL_T_,
-	LS_T1_TL__L,
-	LS_T1_TL_BL,
-	LS_T1__L_BR,//70
-	LS_T1__L__R,
-	LS_T1__L_TR,
-	LS_T1__L_T_,
-	LS_T1__L_TL,
-	LS_T1__L_BL,
-	LS_T1_BL_BR,//76
-	LS_T1_BL__R,
-	LS_T1_BL_TR,
-	LS_T1_BL_T_,
-	LS_T1_BL_TL,
-	LS_T1_BL__L,
-
-	//Bounces
-	LS_B1_BR,
-	LS_B1__R,
-	LS_B1_TR,
-	LS_B1_T_,
-	LS_B1_TL,
-	LS_B1__L,
-	LS_B1_BL,
-
-	//Deflected attacks
-	LS_D1_BR,
-	LS_D1__R,
-	LS_D1_TR,
-	LS_D1_T_,
-	LS_D1_TL,
-	LS_D1__L,
-	LS_D1_BL,
-	LS_D1_B_,
-
-	//Reflected attacks
-	LS_V1_BR,
-	LS_V1__R,
-	LS_V1_TR,
-	LS_V1_T_,
-	LS_V1_TL,
-	LS_V1__L,
-	LS_V1_BL,
-	LS_V1_B_,
-
-	// Broken parries
-	LS_H1_T_,//
-	LS_H1_TR,
-	LS_H1_TL,
-	LS_H1_BR,
-	LS_H1_B_,
-	LS_H1_BL,
-
-	// Knockaways
-	LS_K1_T_,//
-	LS_K1_TR,
-	LS_K1_TL,
-	LS_K1_BR,
-	LS_K1_BL,
-
-	// Parries
-	LS_PARRY_UP,//
-	LS_PARRY_UR,
-	LS_PARRY_UL,
-	LS_PARRY_LR,
-	LS_PARRY_LL,
-
-	// Projectile Reflections
-	LS_REFLECT_UP,//
-	LS_REFLECT_UR,
-	LS_REFLECT_UL,
-	LS_REFLECT_LR,
-	LS_REFLECT_LL,
-
-	LS_MOVE_MAX//
-} saberMoveName_t;
-
 typedef enum {
 	Q_NEGATIVE = -1, // make sure this enum is signed
 	Q_BR,
@@ -1052,7 +866,7 @@ typedef struct
 	saberQuadrant_t	endQuad;
 	unsigned animSetFlags;
 	int blendTime;
-	int blocking;
+	saberBlockType_t blocking;
 	saberMoveName_t chain_idle;			// What move to call if the attack button is not pressed at the end of this anim
 	saberMoveName_t chain_attack;		// What move to call if the attack button (and nothing else) is pressed
 	int trailLength;
@@ -1062,32 +876,32 @@ extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 
 const char *BG_TeamName(team_t team, letterCase_t letterCase);
 
-qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber, int teamForce, gametype_t gametype, int fpDisabled);
+qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
-qboolean BG_InSpecialJump( int anim );
-qboolean BG_InSaberStandAnim( int anim );
-qboolean BG_DirectFlippingAnim( int anim );
+qboolean BG_InSpecialJump( animNumber_t anim );
+qboolean BG_InSaberStandAnim( animNumber_t anim );
+qboolean BG_DirectFlippingAnim( animNumber_t anim );
 qboolean BG_SaberInAttack( saberMoveName_t move );
 qboolean BG_SaberInSpecial( saberMoveName_t move );
 qboolean BG_SaberInIdle( saberMoveName_t move );
-qboolean BG_FlippingAnim( int anim );
-qboolean BG_SpinningSaberAnim( int anim );
-qboolean BG_SaberInSpecialAttack( int anim );
+qboolean BG_FlippingAnim( animNumber_t anim );
+qboolean BG_SpinningSaberAnim( animNumber_t anim );
+qboolean BG_SaberInSpecialAttack( animNumber_t anim );
 saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
 saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
 saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move );
-qboolean BG_InRoll( playerState_t *ps, int anim );
-qboolean BG_InDeathAnim( int anim );
+qboolean BG_InRoll( const playerState_t *ps, animNumber_t anim );
+qboolean BG_InDeathAnim( animNumber_t anim );
 
-void BG_SaberStartTransAnim( int saberAnimLevel, animNumber_t anim, float *animSpeed );
+void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed );
 
 void BG_ForcePowerDrain( playerState_t *ps, forcePowers_t forcePower, int overrideAmt );
 
 void	BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
 void	BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
-void	BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
+void	BG_AddPredictableEventToPlayerstate( entity_event_t newEvent, int eventParm, playerState_t *ps );
 
 void	BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
 
@@ -1110,10 +924,10 @@ void BG_TempFree( size_t size );
 char *BG_StringAlloc ( const char *source );
 qboolean BG_OutOfMemory ( void );
 
-extern const int WeaponReadyAnim[WP_NUM_WEAPONS];
-extern const int WeaponAttackAnim[WP_NUM_WEAPONS];
+extern const animNumber_t WeaponReadyAnim[WP_NUM_WEAPONS];
+extern const animNumber_t WeaponAttackAnim[WP_NUM_WEAPONS];
 
-extern const int forcePowerDarkLight[NUM_FORCE_POWERS];
+extern const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS];
 
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024

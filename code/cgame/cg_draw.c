@@ -71,7 +71,7 @@ const char * const showPowersName[] =
 };
 
 
-int MenuFontToHandle(int iMenuFont)
+qhandle_t MenuFontToHandle(font_t iMenuFont)
 {
 #ifdef MISSIONPACK
 	switch (iMenuFont)
@@ -94,25 +94,25 @@ int MenuFontToHandle(int iMenuFont)
 #endif
 }
 
-int CG_Text_Width(const char *text, float scale, int iMenuFont)
+int CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
-int CG_Text_Height(const char *text, float scale, int iMenuFont)
+int CG_Text_Height(const char *text, float scale, font_t iMenuFont)
 {
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
 
 #include "../qcommon/qfiles.h"	// for STYLE_BLINK etc
-void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
+void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont)
 {
 	int iStyleOR = 0;
-	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int iFontIndex = (int)MenuFontToHandle(iMenuFont);
 
 	switch (style)
 	{
@@ -298,7 +298,7 @@ static void CG_DrawZoomMask( void )
 
 		if ( random() > 0.98f && ( cg.time & 1024 ))
 		{
-			flip = !flip;
+			flip = (qboolean)!flip;
 		}
 	}
 	else if ( cg.predictedPlayerState.zoomMode)
@@ -916,14 +916,16 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 		// don't need to draw ammo, but we will draw the current saber style in this window
 		switch ( cg.predictedPlayerState.fd.saberDrawAnimLevel )
 		{
-		case 1://FORCE_LEVEL_1:
+		case FORCE_LEVEL_1:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle1 );
 			break;
-		case 2://FORCE_LEVEL_2:
+		case FORCE_LEVEL_2:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle2 );
 			break;
-		case 3://FORCE_LEVEL_3:
+		case FORCE_LEVEL_3:
 			CG_DrawPic( x, y, 80, 40, cgs.media.HUDSaberStyle3 );
+			break;
+		default:
 			break;
 		}
 		return;
@@ -1203,14 +1205,14 @@ void CG_DrawHUD(centity_t	*cent)
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
 	}
-	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
+	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.gametype == GT_REDROVER && cgs.roundlimit)
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
 		else
 			scoreStr = va("Round: %i", cgs.round);
-		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7);
+		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 	}
 #ifdef MISSIONPACK
 	menuHUD = Menus_FindByName("righthud");
@@ -1234,17 +1236,10 @@ void CG_DrawHUD(centity_t	*cent)
 
 #define MAX_SHOWPOWERS NUM_FORCE_POWERS
 
-qboolean ForcePower_Valid(int i)
+static qboolean ForcePower_Valid(forcePowers_t i)
 {
-	if (i == FP_LEVITATION ||
-		i == FP_SABERATTACK ||
-		i == FP_SABERDEFEND ||
-		i == FP_SABERTHROW)
-	{
-		return qfalse;
-	}
-
-	if (cg.snap->ps.fd.forcePowersKnown & (1 << i))
+	if (FP_Selectable(i) &&
+		cg.snap->ps.fd.forcePowersKnown & (1 << i))
 	{
 		return qtrue;
 	}
@@ -1288,7 +1283,7 @@ void CG_DrawForceSelect( void )
 
 	for (i=0;i < NUM_FORCE_POWERS;++i)
 	{
-		if (ForcePower_Valid(i))
+		if (ForcePower_Valid((forcePowers_t)i))
 		{
 			count++;
 		}
@@ -1372,7 +1367,7 @@ void CG_DrawForceSelect( void )
 	i = BG_ProperForceIndex(cg.forceSelect) + 1;
 	if (i >= MAX_SHOWPOWERS)
 	{
-		i = 0;
+		i = FP_FIRST;
 	}
 
 	// Work forwards from current icon
@@ -1381,7 +1376,7 @@ void CG_DrawForceSelect( void )
 	{
 		if (i >= MAX_SHOWPOWERS)
 		{
-			i = 0;
+			i = FP_FIRST;
 		}
 
 		if (!ForcePower_Valid(forcePowerSorted[i]))	// Does he have this power?
@@ -1436,16 +1431,16 @@ void CG_DrawInvenSelect( void )
 		return;
 	}
 
-	if (cg.itemSelect == -1)
+	if (cg.itemSelect == HI_NONE)
 	{
-		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
+		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 	}
 
 //const int bits = cg.snap->ps.stats[ STAT_ITEMS ];
 
 	// count the number of items owned
 	count = 0;
-	for ( i = 0 ; i < HI_NUM_HOLDABLE ; i++ )
+	for ( i = HI_NONE + 1 ; i < HI_NUM_HOLDABLE ; i++ )
 	{
 		if (/*CG_InventorySelectable(i) && inv_icons[i]*/
 			(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) )
@@ -1481,8 +1476,8 @@ void CG_DrawInvenSelect( void )
 		sideRightIconCnt = holdCount - sideLeftIconCnt;
 	}
 
-	i = cg.itemSelect - 1;
-	if (i<0)
+	i = (int)cg.itemSelect - 1;
+	if (i <= HI_NONE)
 	{
 		i = HI_NUM_HOLDABLE-1;
 	}
@@ -1502,12 +1497,12 @@ void CG_DrawInvenSelect( void )
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
-		if (i<0)
+		if (i <= HI_NONE)
 		{
 			i = HI_NUM_HOLDABLE-1;
 		}
 
-		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == cg.itemSelect )
+		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == (int)cg.itemSelect )
 		{
 			continue;
 		}
@@ -1558,9 +1553,9 @@ void CG_DrawInvenSelect( void )
 	}
 
 	i = cg.itemSelect + 1;
-	if (i> HI_NUM_HOLDABLE-1)
+	if (i > HI_NUM_HOLDABLE-1)
 	{
-		i = 0;
+		i = HI_NONE + 1;
 	}
 
 	// Right side ICONS
@@ -1570,12 +1565,12 @@ void CG_DrawInvenSelect( void )
 //	addX = smallIconSize * 0.75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
-		if (i> HI_NUM_HOLDABLE-1)
+		if (i > HI_NUM_HOLDABLE)
 		{
-			i = 0;
+			i = HI_NONE + 1;
 		}
 
-		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == cg.itemSelect )
+		if ( !(cg.snap->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << i)) || i == (int)cg.itemSelect )
 		{
 			continue;
 		}
@@ -2136,7 +2131,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			for (j = 0; j < PW_NUM_POWERUPS; j++) {
 				if (ci->powerups & (1 << j)) {
 
-					item = BG_FindItemForPowerup( j );
+					item = BG_FindItemForPowerup( (powerup_t)j );
 
 					if (item) {
 						CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
@@ -2179,7 +2174,7 @@ static void CG_DrawPowerupIcons(int y)
 		{
 			int secondsleft = (cg.snap->ps.powerups[j] - cg.time)/1000;
 
-			item = BG_FindItemForPowerup( j );
+			item = BG_FindItemForPowerup( (powerup_t)j );
 
 			if (item)
 			{
@@ -2721,33 +2716,33 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 					cgs.clientinfo[crossEnt->currentState.number].team == cgs.clientinfo[cg.snap->ps.clientNum].team )
 				{
 					//Allies are green
-					ecolor[0] = 0.0;//R
-					ecolor[1] = 1.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 0;//R
+					ecolor[1] = 1;//G
+					ecolor[2] = 0;//B
 				}
 				else
 				{
 					//Enemies are red
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 
 				if (cg.snap->ps.duelInProgress)
 				{
 					if (crossEnt->currentState.number != cg.snap->ps.duelIndex)
 					{ //grey out crosshair for everyone but your foe if you're in a duel
-						ecolor[0] = 0.4;
-						ecolor[1] = 0.4;
-						ecolor[2] = 0.4;
+						ecolor[0] = 0.4f;
+						ecolor[1] = 0.4f;
+						ecolor[2] = 0.4f;
 					}
 				}
 				else if (crossEnt->currentState.bolt1)
 				{ //this fellow is in a duel. We just checked if we were in a duel above, so
 				  //this means we aren't and he is. Which of course means our crosshair greys out over him.
-					ecolor[0] = 0.4;
-					ecolor[1] = 0.4;
-					ecolor[2] = 0.4;
+					ecolor[0] = 0.4f;
+					ecolor[1] = 0.4f;
+					ecolor[2] = 0.4f;
 				}
 			}
 			else if (crossEnt->currentState.shouldtarget)
@@ -2765,27 +2760,27 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 					(GT_Team(cgs.gametype) &&
 						(team_t)crossEnt->currentState.teamowner ==	cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
-					ecolor[0] = 0.0;//R
-					ecolor[1] = 1.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 0;//R
+					ecolor[1] = 1;//G
+					ecolor[2] = 0;//B
 				}
 				else if (crossEnt->currentState.teamowner == 16 ||
 					(GT_Team(cgs.gametype) && crossEnt->currentState.teamowner &&
 						(team_t)crossEnt->currentState.teamowner != cgs.clientinfo[cg.snap->ps.clientNum].team))
 				{
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 				else if (crossEnt->currentState.eType == ET_GRAPPLE)
 				{
-					ecolor[0] = 1.0;//R
-					ecolor[1] = 0.0;//G
-					ecolor[2] = 0.0;//B
+					ecolor[0] = 1;//R
+					ecolor[1] = 0;//G
+					ecolor[2] = 0;//B
 				}
 			}
 
-			ecolor[3] = 1.0;
+			ecolor[3] = 1;
 
 			trap_R_SetColor( ecolor );
 		}
@@ -2972,7 +2967,7 @@ static void CG_DrawHolocronIcons(void)
 	}
 }
 
-static qboolean CG_IsDurationPower(int power)
+static qboolean CG_IsDurationPower(forcePowers_t power)
 {
 	if (power == FP_HEAL ||
 		power == FP_SPEED ||
@@ -3044,7 +3039,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 	static	int oldDif = 0;
 	centity_t *cent = &cg_entities[lockEntNum];
 	vec4_t color={0.0f,0.0f,0.0f,0.0f};
-	int dif = ( cg.time - cg.snap->ps.rocketLockTime ) / ( 1200.0f / /*8.0f*/16.0f );
+	int dif = ( cg.time - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
 	int i;
 
 	if (!cg.snap->ps.rocketLockTime)
@@ -3297,7 +3292,7 @@ static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	vec4_t		tcolor;
 	const char	*name;
-	int			baseColor;
+	ct_table_t	baseColor;
 
 	if ( !cg_drawCrosshair.integer ) {
 		return;
@@ -3402,14 +3397,14 @@ static void CG_DrawSpectator(void)
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		if ( cgs.clientinfo[cgs.duelist1].modelIcon )
 		{
-			CG_DrawPic( 10, SCREEN_HEIGHT-(size*1.5), size, size, cgs.clientinfo[cgs.duelist1].modelIcon );
+			CG_DrawPic( 10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist1].modelIcon );
 		}
 		if ( cgs.clientinfo[cgs.duelist2].modelIcon )
 		{
-			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
+			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
 		}
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist1].score, cgs.fraglimit );
-		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5f) + 64, text, UI_CENTER, colorWhite );
 
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist2].score, cgs.fraglimit );
 		UI_DrawProportionalString( SCREEN_WIDTH - size + 22, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
@@ -3835,7 +3830,7 @@ void CG_DrawTimedMenus() {
 
 qboolean CG_OtherTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		team_t team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.redflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.blueflag == FLAG_TAKEN) {
@@ -3849,7 +3844,7 @@ qboolean CG_OtherTeamHasFlag(void) {
 
 qboolean CG_YourTeamHasFlag(void) {
 	if (GT_Flag(cgs.gametype)) {
-		team_t team = cg.snap->ps.persistant[PERS_TEAM];
+		team_t team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 		if (team == TEAM_RED && cgs.blueflag == FLAG_TAKEN) {
 			return qtrue;
 		} else if (team == TEAM_BLUE && cgs.redflag == FLAG_TAKEN) {
@@ -3865,7 +3860,7 @@ void CG_DrawFlagStatus()
 {
 	int myFlagTakenShader = 0;
 	int theirFlagShader = 0;
-	team_t team = 0;
+	team_t team;
 	int startDrawPos = 2;
 	int ico_size = 32;
 
@@ -3879,7 +3874,7 @@ void CG_DrawFlagStatus()
 		return;
 	}
 
-	team = cg.snap->ps.persistant[PERS_TEAM];
+	team = (team_t)cg.snap->ps.persistant[PERS_TEAM];
 
 	if (cgs.gametype == GT_CTY)
 	{
@@ -4090,7 +4085,7 @@ static void CG_Draw2D( void ) {
 					hcolor[3] = 0.15f;
 					hcolor[0] = 0.2f;
 					hcolor[1] = 0.2f;
-					hcolor[2] = 0.2;
+					hcolor[2] = 0.2f;
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;

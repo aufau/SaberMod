@@ -73,17 +73,17 @@ qboolean PM_SaberInParry( saberMoveName_t move );
 qboolean PM_SaberInKnockaway( saberMoveName_t move );
 qboolean PM_SaberInReflect( saberMoveName_t move );
 qboolean PM_SaberInStart( saberMoveName_t move );
-qboolean PM_InSaberAnim( int anim );
+qboolean PM_InSaberAnim( animNumber_t anim );
 qboolean PM_InKnockDown( playerState_t *ps );
-qboolean PM_PainAnim( int anim );
-qboolean PM_JumpingAnim( int anim );
-qboolean PM_LandingAnim( int anim );
-qboolean PM_SpinningAnim( int anim );
-qboolean PM_InOnGroundAnim ( int anim );
-qboolean PM_InRollComplete( playerState_t *ps, int anim );
-int PM_AnimLength( int index, animNumber_t anim );
+qboolean PM_PainAnim( animNumber_t anim );
+qboolean PM_JumpingAnim( animNumber_t anim );
+qboolean PM_LandingAnim( animNumber_t anim );
+qboolean PM_SpinningAnim( animNumber_t anim );
+qboolean PM_InOnGroundAnim ( animNumber_t anim );
+qboolean PM_InRollComplete( playerState_t *ps, animNumber_t anim );
+int PM_AnimLength( animNumber_t anim );
 
-int PM_GetSaberStance(void);
+animNumber_t PM_GetSaberStance(void);
 float PM_GroundDistance(void);
 qboolean PM_SomeoneInFront(trace_t *tr);
 saberMoveName_t PM_SaberFlipOverAttackMove(trace_t *tr);
@@ -91,7 +91,7 @@ saberMoveName_t PM_SaberJumpAttackMove( void );
 
 void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
 void PM_AddTouchEnt( int entityNum );
-void PM_AddEvent( int newEvent );
+void PM_AddEvent( entity_event_t newEvent );
 
 qboolean	PM_SlideMove( qboolean gravity );
 void		PM_StepSlideMove( qboolean gravity );
@@ -105,7 +105,7 @@ void PM_ForceLegsAnim( animNumber_t anim );
 void PM_BeginWeaponChange( int weapon );
 void PM_FinishWeaponChange( void );
 
-void PM_SetAnim(int setAnimParts, animNumber_t anim, int setAnimFlags, int blendTime);
+void PM_SetAnim(int setAnimParts, animNumber_t anim, unsigned setAnimFlags, int blendTime);
 
 void PM_WeaponLightsaber(void);
 void PM_SetSaberMove( saberMoveName_t newMove);

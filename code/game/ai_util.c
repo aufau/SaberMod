@@ -35,18 +35,18 @@ static void *BAllocList[MAX_BALLOC];
 
 char gBotChatBuffer[MAX_CLIENTS][MAX_CHAT_BUFFER_SIZE];
 
-void *B_TempAlloc(int size)
+void *B_TempAlloc(size_t size)
 {
 	return BG_TempAlloc(size);
 }
 
-void B_TempFree(int size)
+void B_TempFree(size_t size)
 {
 	BG_TempFree(size);
 }
 
 
-void *B_Alloc(int size)
+void *B_Alloc(size_t size)
 {
 #ifdef BOT_ZMALLOC
 	void *ptr = NULL;
