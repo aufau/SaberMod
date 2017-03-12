@@ -465,8 +465,8 @@ qboolean Menus_AnyFullScreenVisible();
 void  Menus_Activate(menuDef_t *menu);
 
 displayContextDef_t *Display_GetContext();
-void *Display_CaptureItem(int x, int y);
-qboolean Display_MouseMove(void *p, int x, int y);
+menuDef_t *Display_CaptureItem(int x, int y);
+qboolean Display_MouseMove(menuDef_t *p, int x, int y);
 int Display_CursorType(int x, int y);
 qboolean Display_KeyBindPending();
 void Menus_OpenByName(const char *p);

@@ -241,7 +241,7 @@ const char *String_Alloc(const char *p) {
 			str = str->next;
 		}
 
-		str  = UI_Alloc(sizeof(stringDef_t));
+		str  = (stringDef_t *)UI_Alloc(sizeof(stringDef_t));
 		str->next = NULL;
 		str->str = &strPool[ph];
 		if (last) {
@@ -932,7 +932,7 @@ itemDef_t *Menu_ClearFocus(menuDef_t *menu) {
 }
 
 qboolean IsVisible(int flags) {
-  return (flags & WINDOW_VISIBLE && !(flags & WINDOW_FADINGOUT));
+  return (qboolean)(flags & WINDOW_VISIBLE && !(flags & WINDOW_FADINGOUT));
 }
 
 qboolean Rect_ContainsPoint(rectDef_t *rect, float x, float y) {
@@ -2696,7 +2696,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 			}
 
 			if ( key == A_INSERT || key == A_KP_0 ) {
-				DC->setOverstrikeMode(!DC->getOverstrikeMode());
+				DC->setOverstrikeMode((qboolean)!DC->getOverstrikeMode());
 				return qtrue;
 			}
 		}
@@ -3404,7 +3404,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 
 		case A_F11:
 			if (DC->getCVarValue("developer")) {
-				debugMode ^= 1;
+				debugMode = (qboolean)!debugMode;
 			}
 			break;
 
@@ -7069,7 +7069,7 @@ qboolean MenuParse_fadeCycle( itemDef_t *item, int handle ) {
 qboolean MenuParse_itemDef( itemDef_t *item, int handle ) {
 	menuDef_t *menu = (menuDef_t*)item;
 	if (menu->itemCount < MAX_MENUITEMS) {
-		menu->items[menu->itemCount] = UI_Alloc(sizeof(itemDef_t));
+		menu->items[menu->itemCount] = (itemDef_t *)UI_Alloc(sizeof(itemDef_t));
 		Item_Init(menu->items[menu->itemCount]);
 		if (!Item_Parse(handle, menu->items[menu->itemCount])) {
 			return qfalse;
@@ -7220,8 +7220,8 @@ void Menu_PaintAll() {
 
 	if (debugMode) {
 		static const vec4_t v = {1, 1, 1, 1};
-		DC->drawText(5, 25, .5, v, va("fps: %f", DC->FPS), 0, 0, 0, 0);
-		DC->drawText(5, 45, .5, v, va("x: %d  y:%d", DC->cursorx,DC->cursory), 0, 0, 0, 0);
+		DC->drawText(5, 25, .5, v, va("fps: %f", DC->FPS), 0, 0, 0, FONT_SMALL);
+		DC->drawText(5, 45, .5, v, va("x: %d  y:%d", DC->cursorx,DC->cursory), 0, 0, 0, FONT_SMALL);
 	}
 }
 
@@ -7233,7 +7233,7 @@ displayContextDef_t *Display_GetContext() {
 	return DC;
 }
 
-void *Display_CaptureItem(int x, int y) {
+menuDef_t *Display_CaptureItem(int x, int y) {
 	int i;
 
 	for (i = 0; i < menuCount; i++) {
@@ -7248,9 +7248,8 @@ void *Display_CaptureItem(int x, int y) {
 
 
 // FIXME:
-qboolean Display_MouseMove(void *p, int x, int y) {
+qboolean Display_MouseMove(menuDef_t *menu, int x, int y) {
 	int i;
-	menuDef_t *menu = (menuDef_t *)p;
 
 	if (menu == NULL) {
 		menu = Menu_GetFocused();

@@ -1421,7 +1421,7 @@ Ghoul2 Insert End
 	qboolean eventHandling;
 	qboolean mouseCaptured;
 	qboolean sizingHud;
-	void *capturedItem;
+	menuDef_t *capturedItem;
 	qhandle_t activeCursor;
 
 	// orders

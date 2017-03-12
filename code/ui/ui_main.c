@@ -60,7 +60,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		  return UI_API_VERSION;
 
 	  case UI_INIT:
-		  _UI_Init(arg0);
+		  _UI_Init((qboolean)arg0);
 		   // not using MVAPI, just checking level
 		  _UI_MVAPI_Init(arg11);
 		  return 0;
@@ -70,7 +70,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		  return 0;
 
 	  case UI_KEY_EVENT:
-		  _UI_KeyEvent( arg0, arg1 );
+		  _UI_KeyEvent( arg0, (qboolean)arg1 );
 		  return 0;
 
 	  case UI_MOUSE_EVENT:
@@ -85,14 +85,14 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		  return _UI_IsFullscreen();
 
 	  case UI_SET_ACTIVE_MENU:
-		  _UI_SetActiveMenu( arg0 );
+		  _UI_SetActiveMenu( (uiMenuCommand_t)arg0 );
 		  return 0;
 
 	  case UI_CONSOLE_COMMAND:
 		  return UI_ConsoleCommand(arg0);
 
 	  case UI_DRAW_CONNECT_SCREEN:
-		  UI_DrawConnectScreen( arg0 );
+		  UI_DrawConnectScreen( (qboolean)arg0 );
 		  return 0;
 	  case UI_HASUNIQUECDKEY: // mod authors need to observe this
 	    return qtrue; // bk010117 - change this to qfalse for mods!
@@ -1398,7 +1398,7 @@ qboolean UI_TrueJediEnabled( void )
 	{
 		trueJedi = atoi( Info_ValueForKey( info, "g_jediVmerc" ) );
 	}
-	return (trueJedi != 0);
+	return (qboolean)(trueJedi != 0);
 }
 
 static void UI_DrawJediNonJedi(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int min, int max, font_t iMenuFont)
@@ -3043,15 +3043,15 @@ static qboolean UI_Effects_HandleKey(int flags, float *special, int key) {
 
 		if (key == A_MOUSE2) {
 			if ( uiInfo.effectsColor == 0 ) {
-				uiInfo.effectsColor = NUM_SABER_COLORS - 1;
+				uiInfo.effectsColor = (saber_colors_t)(NUM_SABER_COLORS - 1);
 			} else {
-				uiInfo.effectsColor--;
+				uiInfo.effectsColor = (saber_colors_t)(uiInfo.effectsColor - 1);
 			}
 		} else {
 			if ( uiInfo.effectsColor >= NUM_SABER_COLORS ) {
-				uiInfo.effectsColor = 0;
+				uiInfo.effectsColor = (saber_colors_t)0;
 			} else {
-				uiInfo.effectsColor++;
+				uiInfo.effectsColor = (saber_colors_t)(uiInfo.effectsColor + 1);
 			}
 		}
 
@@ -5680,7 +5680,7 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 							int wDisable, i = 0;
 
 							//check force
-							restrictedForce = atoi(Info_ValueForKey(info, "fdisable"));
+							restrictedForce = (qboolean)!!atoi(Info_ValueForKey(info, "fdisable"));
 							if ( UI_AllForceDisabled( restrictedForce ) )
 							{//all force powers are disabled
 								allForceDisabled = qtrue;

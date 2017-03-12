@@ -250,7 +250,7 @@ static void UI_CalcPostGameStats() {
 	newInfo.score *= newInfo.skillBonus;
 
 	// see if the score is higher for this one
-	newHigh = (newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
+	newHigh = (qboolean)(newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
 
 	if  (newHigh) {
 		// if so write out the new one
