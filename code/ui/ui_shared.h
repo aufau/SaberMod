@@ -403,7 +403,7 @@ typedef struct {
 	Q_NORETURN void (*Error)(errorParm_t level, const char *error, ...);
 	void (*Print)(const char *msg, ...);
 	void (*Pause)(qboolean b);
-	int (*ownerDrawWidth)(int ownerDraw, float scale);
+	int (*ownerDrawWidth)(int ownerDraw, float scale, font_t iMenuFont);
 	sfxHandle_t (*registerSound)(const char *name);
 	void (*startBackgroundTrack)( const char *intro, const char *loop, qboolean bReturnWithoutStarting);
 	void (*stopBackgroundTrack)();

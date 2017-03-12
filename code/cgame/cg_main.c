@@ -2339,24 +2339,22 @@ static void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t 
 	CG_Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 }
 
-static int CG_OwnerDrawWidth(int ownerDraw, float scale) {
+static int CG_OwnerDrawWidth(int ownerDraw, float scale, font_t iMenuFont) {
 	switch (ownerDraw) {
 	  case CG_GAME_TYPE:
-			return CG_Text_Width(gametypeLong[cgs.gametype], scale, FONT_MEDIUM);
+			return CG_Text_Width(gametypeLong[cgs.gametype], scale, iMenuFont);
 	  case CG_GAME_STATUS:
-			return CG_Text_Width(CG_GetGameStatusText(), scale, FONT_MEDIUM);
+			return CG_Text_Width(CG_GetGameStatusText(), scale, iMenuFont);
 			break;
 	  case CG_KILLER:
-			return CG_Text_Width(CG_GetKillerText(), scale, FONT_MEDIUM);
+			return CG_Text_Width(CG_GetKillerText(), scale, iMenuFont);
 			break;
 	  case CG_RED_NAME:
-			return CG_Text_Width(cg_redTeamName.string, scale, FONT_MEDIUM);
+			return CG_Text_Width(cg_redTeamName.string, scale, iMenuFont);
 			break;
 	  case CG_BLUE_NAME:
-			return CG_Text_Width(cg_blueTeamName.string, scale, FONT_MEDIUM);
+			return CG_Text_Width(cg_blueTeamName.string, scale, iMenuFont);
 			break;
-
-
 	}
 	return 0;
 }

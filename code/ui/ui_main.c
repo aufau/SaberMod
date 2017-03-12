@@ -2110,7 +2110,7 @@ static void UI_DrawOpponentName(rectDef_t *rect, float scale, vec4_t color, int 
   Text_Paint(rect->x, rect->y, scale, color, UI_Cvar_VariableString("ui_opponentName"), 0, 0, textStyle, iMenuFont);
 }
 
-static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
+static int UI_OwnerDrawWidth(int ownerDraw, float scale, font_t iMenuFont) {
 	int i, h, value, findex, iUse = 0;
 	const char *text;
 	const char *s = NULL;
@@ -2333,7 +2333,7 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
   }
 
 	if (s) {
-		return Text_Width(s, scale, 0);
+		return Text_Width(s, scale, iMenuFont);
 	}
 	return 0;
 }

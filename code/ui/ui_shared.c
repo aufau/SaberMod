@@ -3523,7 +3523,7 @@ void Item_SetTextExtents(itemDef_t *item, int *width, int *height, const char *t
 
 		if (item->type == ITEM_TYPE_OWNERDRAW && (item->textalignment == ITEM_ALIGN_CENTER || item->textalignment == ITEM_ALIGN_RIGHT))
 		{
-			originalWidth += DC->ownerDrawWidth(item->window.ownerDraw, item->textscale);
+			originalWidth += DC->ownerDrawWidth(item->window.ownerDraw, item->textscale, item->iMenuFont);
 		}
 		else if (item->type == ITEM_TYPE_EDITFIELD && item->textalignment == ITEM_ALIGN_CENTER && item->cvar)
 		{
