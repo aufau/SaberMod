@@ -1452,9 +1452,8 @@ static animNumber_t G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int 
 
 animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, meansOfDeath_t mod, hitLoc_t hitLoc )
 {//FIXME: play dead flop anims on body if in an appropriate _DEAD anim when this func is called
-	int deathAnim = ANIM_INVALID;
+	animNumber_t deathAnim = ANIM_INVALID;
 	int max_health;
-	int legAnim = 0;
 	vec3_t objVelocity;
 
 	if (!self || !self->client)
@@ -1488,324 +1487,219 @@ animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, int damage, meansOf
 		hitLoc = G_GetHitLocation( self, point );//self->hitLoc
 	}
 
-	if (self->client)
-	{
-		legAnim = self->client->ps.legsAnim;
-	}
-	else
-	{
-		legAnim = self->s.legsAnim;
-	}
-
 	if (gGAvoidDismember)
 	{
 		return BOTH_RIGHTHANDCHOPPEDOFF;
 	}
 
-	//dead flops
-	switch( legAnim&~ANIM_TOGGLEBIT )
+	if (self->client)
 	{
-	case BOTH_DEATH1:		//# First Death anim
-	case BOTH_DEAD1:
-	case BOTH_DEATH2:			//# Second Death anim
-	case BOTH_DEAD2:
-	case BOTH_DEATH8:			//#
-	case BOTH_DEAD8:
-	case BOTH_DEATH13:			//#
-	case BOTH_DEAD13:
-	case BOTH_DEATH14:			//#
-	case BOTH_DEAD14:
-	case BOTH_DEATH16:			//#
-	case BOTH_DEAD16:
-	case BOTH_DEADBACKWARD1:		//# First thrown backward death finished pose
-	case BOTH_DEADBACKWARD2:		//# Second thrown backward death finished pose
-		/*
-		deathAnim = -2;
-		if ( PM_FinishedCurrentLegsAnim( self ) )
-		{//done with the anim
-			deathAnim = BOTH_DEADFLOP2;
-		}
-		else
-		{
-			deathAnim = -2;
-		}
-		break;
-	case BOTH_DEADFLOP2:
-		deathAnim = BOTH_DEADFLOP2;
-		break;
-		*/
-	case BOTH_DEATH10:			//#
-	case BOTH_DEAD10:
-	case BOTH_DEATH15:			//#
-	case BOTH_DEAD15:
-	case BOTH_DEADFORWARD1:		//# First thrown forward death finished pose
-	case BOTH_DEADFORWARD2:		//# Second thrown forward death finished pose
-		/*
-		deathAnim = -2;
-		if ( PM_FinishedCurrentLegsAnim( self ) )
-		{//done with the anim
-			deathAnim = BOTH_DEADFLOP1;
-		}
-		else
-		{
-			deathAnim = -2;
-		}
-		break;
-		*/
-	case BOTH_DEADFLOP1:
-		/*
-		deathAnim = -2;
-		deathAnim = BOTH_DEADFLOP1;
-		break;
-		*/
-	case BOTH_DEAD3:				//# Third Death finished pose
-	case BOTH_DEAD4:				//# Fourth Death finished pose
-	case BOTH_DEAD5:				//# Fifth Death finished pose
-	case BOTH_DEAD6:				//# Sixth Death finished pose
-	case BOTH_DEAD7:				//# Seventh Death finished pose
-	case BOTH_DEAD9:				//#
-	case BOTH_DEAD11:			//#
-	case BOTH_DEAD12:			//#
-	case BOTH_DEAD17:			//#
-	case BOTH_DEAD18:			//#
-	case BOTH_DEAD19:			//#
-	case BOTH_LYINGDEAD1:		//# Killed lying down death finished pose
-	case BOTH_STUMBLEDEAD1:		//# Stumble forward death finished pose
-	case BOTH_FALLDEAD1LAND:		//# Fall forward and splat death finished pose
-	case BOTH_DEATH3:			//# Third Death anim
-	case BOTH_DEATH4:			//# Fourth Death anim
-	case BOTH_DEATH5:			//# Fifth Death anim
-	case BOTH_DEATH6:			//# Sixth Death anim
-	case BOTH_DEATH7:			//# Seventh Death anim
-	case BOTH_DEATH9:			//#
-	case BOTH_DEATH11:			//#
-	case BOTH_DEATH12:			//#
-	case BOTH_DEATH17:			//#
-	case BOTH_DEATH18:			//#
-	case BOTH_DEATH19:			//#
-	case BOTH_DEATHFORWARD1:		//# First Death in which they get thrown forward
-	case BOTH_DEATHFORWARD2:		//# Second Death in which they get thrown forward
-	case BOTH_DEATHBACKWARD1:	//# First Death in which they get thrown backward
-	case BOTH_DEATHBACKWARD2:	//# Second Death in which they get thrown backward
-	case BOTH_DEATH1IDLE:		//# Idle while close to death
-	case BOTH_LYINGDEATH1:		//# Death to play when killed lying down
-	case BOTH_STUMBLEDEATH1:		//# Stumble forward and fall face first death
-	case BOTH_FALLDEATH1:		//# Fall forward off a high cliff and splat death - start
-	case BOTH_FALLDEATH1INAIR:	//# Fall forward off a high cliff and splat death - loop
-	case BOTH_FALLDEATH1LAND:	//# Fall forward off a high cliff and splat death - hit bottom
-		deathAnim = -2;
-		break;
+		deathAnim = G_CheckSpecialDeathAnim( self, point, damage );
 	}
-	if ( deathAnim == -1 )
-	{
-		if (self->client)
-		{
-			deathAnim = G_CheckSpecialDeathAnim( self, point, damage );
-		}
 
-		if (deathAnim == -1)
+	if (deathAnim == ANIM_INVALID)
+	{
+		//death anims
+		switch( hitLoc )
 		{
-			//death anims
-			switch( hitLoc )
+		case HL_FOOT_RT:
+		case HL_FOOT_LT:
+			if ( mod == MOD_SABER && !Q_irand( 0, 2 ) )
 			{
-			case HL_FOOT_RT:
-			case HL_FOOT_LT:
-				if ( mod == MOD_SABER && !Q_irand( 0, 2 ) )
-				{
-					return BOTH_DEATH10;//chest: back flip
-				}
-				else if ( !Q_irand( 0, 2 ) )
-				{
-					deathAnim = BOTH_DEATH4;//back: forward
-				}
-				else if ( !Q_irand( 0, 1 ) )
-				{
-					deathAnim = BOTH_DEATH5;//same as 4
-				}
-				else
-				{
-					deathAnim = BOTH_DEATH15;//back: forward
-				}
-				break;
-			case HL_LEG_RT:
-				if ( !Q_irand( 0, 2 ) )
-				{
-					deathAnim = BOTH_DEATH4;//back: forward
-				}
-				else if ( !Q_irand( 0, 1 ) )
-				{
-					deathAnim = BOTH_DEATH5;//same as 4
-				}
-				else
-				{
-					deathAnim = BOTH_DEATH15;//back: forward
-				}
-				break;
-			case HL_LEG_LT:
-				if ( !Q_irand( 0, 2 ) )
-				{
-					deathAnim = BOTH_DEATH4;//back: forward
-				}
-				else if ( !Q_irand( 0, 1 ) )
-				{
-					deathAnim = BOTH_DEATH5;//same as 4
-				}
-				else
-				{
-					deathAnim = BOTH_DEATH15;//back: forward
-				}
-				break;
-			case HL_BACK:
-				if ( !VectorLengthSquared( objVelocity ) )
-				{
-					deathAnim = BOTH_DEATH17;//head/back: croak
-				}
-				else
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-						deathAnim = BOTH_DEATH4;//back: forward
-					}
-					else if ( !Q_irand( 0, 1 ) )
-					{
-						deathAnim = BOTH_DEATH5;//same as 4
-					}
-					else
-					{
-						deathAnim = BOTH_DEATH15;//back: forward
-					}
-				}
-				break;
-			case HL_CHEST_RT:
-			case HL_ARM_RT:
-			case HL_HAND_RT:
-			case HL_BACK_RT:
-				if ( damage <= max_health*0.25 )
-				{
-					deathAnim = BOTH_DEATH9;//chest right: snap, fall forward
-				}
-				else if ( damage <= max_health*0.5 )
-				{
-					deathAnim = BOTH_DEATH3;//chest right: back
-				}
-				else if ( damage <= max_health*0.75 )
-				{
-					deathAnim = BOTH_DEATH6;//chest right: spin
-				}
-				else
-				{
-					//TEMP HACK: play spinny deaths less often
-					if ( Q_irand( 0, 1 ) )
-					{
-						deathAnim = BOTH_DEATH8;//chest right: spin high
-					}
-					else
-					{
-						switch ( Q_irand( 0, 2 ) )
-						{
-						default:
-						case 0:
-							deathAnim = BOTH_DEATH9;//chest right: snap, fall forward
-							break;
-						case 1:
-							deathAnim = BOTH_DEATH3;//chest right: back
-							break;
-						case 2:
-							deathAnim = BOTH_DEATH6;//chest right: spin
-							break;
-						}
-					}
-				}
-				break;
-			case HL_CHEST_LT:
-			case HL_ARM_LT:
-			case HL_HAND_LT:
-			case HL_BACK_LT:
-				if ( damage <= max_health*0.25 )
-				{
-					deathAnim = BOTH_DEATH11;//chest left: snap, fall forward
-				}
-				else if ( damage <= max_health*0.5 )
-				{
-					deathAnim = BOTH_DEATH7;//chest left: back
-				}
-				else if ( damage <= max_health*0.75 )
-				{
-					deathAnim = BOTH_DEATH12;//chest left: spin
-				}
-				else
-				{
-					//TEMP HACK: play spinny deaths less often
-					if ( Q_irand( 0, 1 ) )
-					{
-						deathAnim = BOTH_DEATH14;//chest left: spin high
-					}
-					else
-					{
-						switch ( Q_irand( 0, 2 ) )
-						{
-						default:
-						case 0:
-							deathAnim = BOTH_DEATH11;//chest left: snap, fall forward
-							break;
-						case 1:
-							deathAnim = BOTH_DEATH7;//chest left: back
-							break;
-						case 2:
-							deathAnim = BOTH_DEATH12;//chest left: spin
-							break;
-						}
-					}
-				}
-				break;
-			case HL_CHEST:
-			case HL_WAIST:
-				if ( damage <= max_health*0.25 || !VectorLengthSquared( objVelocity ) )
-				{
-					if ( !Q_irand( 0, 1 ) )
-					{
-						deathAnim = BOTH_DEATH18;//gut: fall right
-					}
-					else
-					{
-						deathAnim = BOTH_DEATH19;//gut: fall left
-					}
-				}
-				else if ( damage <= max_health*0.5 )
-				{
-					deathAnim = BOTH_DEATH2;//chest: backward short
-				}
-				else if ( damage <= max_health*0.75 )
-				{
-					if ( !Q_irand( 0, 1 ) )
-					{
-						deathAnim = BOTH_DEATH1;//chest: backward med
-					}
-					else
-					{
-						deathAnim = BOTH_DEATH16;//same as 1
-					}
-				}
-				else
-				{
-					deathAnim = BOTH_DEATH10;//chest: back flip
-				}
-				break;
-			case HL_HEAD:
-				if ( damage <= max_health*0.5 )
-				{
-					deathAnim = BOTH_DEATH17;//head/back: croak
-				}
-				else
-				{
-					deathAnim = BOTH_DEATH13;//head: stumble, fall back
-				}
-				break;
-			default:
-				break;
+				return BOTH_DEATH10;//chest: back flip
 			}
+			else if ( !Q_irand( 0, 2 ) )
+			{
+				deathAnim = BOTH_DEATH4;//back: forward
+			}
+			else if ( !Q_irand( 0, 1 ) )
+			{
+				deathAnim = BOTH_DEATH5;//same as 4
+			}
+			else
+			{
+				deathAnim = BOTH_DEATH15;//back: forward
+			}
+			break;
+		case HL_LEG_RT:
+			if ( !Q_irand( 0, 2 ) )
+			{
+				deathAnim = BOTH_DEATH4;//back: forward
+			}
+			else if ( !Q_irand( 0, 1 ) )
+			{
+				deathAnim = BOTH_DEATH5;//same as 4
+			}
+			else
+			{
+				deathAnim = BOTH_DEATH15;//back: forward
+			}
+			break;
+		case HL_LEG_LT:
+			if ( !Q_irand( 0, 2 ) )
+			{
+				deathAnim = BOTH_DEATH4;//back: forward
+			}
+			else if ( !Q_irand( 0, 1 ) )
+			{
+				deathAnim = BOTH_DEATH5;//same as 4
+			}
+			else
+			{
+				deathAnim = BOTH_DEATH15;//back: forward
+			}
+			break;
+		case HL_BACK:
+			if ( !VectorLengthSquared( objVelocity ) )
+			{
+				deathAnim = BOTH_DEATH17;//head/back: croak
+			}
+			else
+			{
+				if ( !Q_irand( 0, 2 ) )
+				{
+					deathAnim = BOTH_DEATH4;//back: forward
+				}
+				else if ( !Q_irand( 0, 1 ) )
+				{
+					deathAnim = BOTH_DEATH5;//same as 4
+				}
+				else
+				{
+					deathAnim = BOTH_DEATH15;//back: forward
+				}
+			}
+			break;
+		case HL_CHEST_RT:
+		case HL_ARM_RT:
+		case HL_HAND_RT:
+		case HL_BACK_RT:
+			if ( damage <= max_health*0.25f )
+			{
+				deathAnim = BOTH_DEATH9;//chest right: snap, fall forward
+			}
+			else if ( damage <= max_health*0.5f )
+			{
+				deathAnim = BOTH_DEATH3;//chest right: back
+			}
+			else if ( damage <= max_health*0.75f )
+			{
+				deathAnim = BOTH_DEATH6;//chest right: spin
+			}
+			else
+			{
+				//TEMP HACK: play spinny deaths less often
+				if ( Q_irand( 0, 1 ) )
+				{
+					deathAnim = BOTH_DEATH8;//chest right: spin high
+				}
+				else
+				{
+					switch ( Q_irand( 0, 2 ) )
+					{
+					default:
+					case 0:
+						deathAnim = BOTH_DEATH9;//chest right: snap, fall forward
+						break;
+					case 1:
+						deathAnim = BOTH_DEATH3;//chest right: back
+						break;
+					case 2:
+						deathAnim = BOTH_DEATH6;//chest right: spin
+						break;
+					}
+				}
+			}
+			break;
+		case HL_CHEST_LT:
+		case HL_ARM_LT:
+		case HL_HAND_LT:
+		case HL_BACK_LT:
+			if ( damage <= max_health*0.25f )
+			{
+				deathAnim = BOTH_DEATH11;//chest left: snap, fall forward
+			}
+			else if ( damage <= max_health*0.5 )
+			{
+				deathAnim = BOTH_DEATH7;//chest left: back
+			}
+			else if ( damage <= max_health*0.75f )
+			{
+				deathAnim = BOTH_DEATH12;//chest left: spin
+			}
+			else
+			{
+				//TEMP HACK: play spinny deaths less often
+				if ( Q_irand( 0, 1 ) )
+				{
+					deathAnim = BOTH_DEATH14;//chest left: spin high
+				}
+				else
+				{
+					switch ( Q_irand( 0, 2 ) )
+					{
+					default:
+					case 0:
+						deathAnim = BOTH_DEATH11;//chest left: snap, fall forward
+						break;
+					case 1:
+						deathAnim = BOTH_DEATH7;//chest left: back
+						break;
+					case 2:
+						deathAnim = BOTH_DEATH12;//chest left: spin
+						break;
+					}
+				}
+			}
+			break;
+		case HL_CHEST:
+		case HL_WAIST:
+			if ( damage <= max_health*0.25f || !VectorLengthSquared( objVelocity ) )
+			{
+				if ( !Q_irand( 0, 1 ) )
+				{
+					deathAnim = BOTH_DEATH18;//gut: fall right
+				}
+				else
+				{
+					deathAnim = BOTH_DEATH19;//gut: fall left
+				}
+			}
+			else if ( damage <= max_health*0.5f )
+			{
+				deathAnim = BOTH_DEATH2;//chest: backward short
+			}
+			else if ( damage <= max_health*0.75f )
+			{
+				if ( !Q_irand( 0, 1 ) )
+				{
+					deathAnim = BOTH_DEATH1;//chest: backward med
+				}
+				else
+				{
+					deathAnim = BOTH_DEATH16;//same as 1
+				}
+			}
+			else
+			{
+				deathAnim = BOTH_DEATH10;//chest: back flip
+			}
+			break;
+		case HL_HEAD:
+			if ( damage <= max_health*0.5f )
+			{
+				deathAnim = BOTH_DEATH17;//head/back: croak
+			}
+			else
+			{
+				deathAnim = BOTH_DEATH13;//head: stumble, fall back
+			}
+			break;
+		default:
+			break;
 		}
 	}
+
 	return deathAnim;
 }
 
