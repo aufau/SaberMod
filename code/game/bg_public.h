@@ -879,20 +879,20 @@ const char *BG_TeamName(team_t team, letterCase_t letterCase);
 qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
-qboolean BG_InSpecialJump( int anim );
-qboolean BG_InSaberStandAnim( int anim );
-qboolean BG_DirectFlippingAnim( int anim );
+qboolean BG_InSpecialJump( animNumber_t anim );
+qboolean BG_InSaberStandAnim( animNumber_t anim );
+qboolean BG_DirectFlippingAnim( animNumber_t anim );
 qboolean BG_SaberInAttack( saberMoveName_t move );
 qboolean BG_SaberInSpecial( saberMoveName_t move );
 qboolean BG_SaberInIdle( saberMoveName_t move );
-qboolean BG_FlippingAnim( int anim );
-qboolean BG_SpinningSaberAnim( int anim );
-qboolean BG_SaberInSpecialAttack( int anim );
+qboolean BG_FlippingAnim( animNumber_t anim );
+qboolean BG_SpinningSaberAnim( animNumber_t anim );
+qboolean BG_SaberInSpecialAttack( animNumber_t anim );
 saberMoveName_t BG_BrokenParryForAttack( saberMoveName_t move );
 saberMoveName_t BG_BrokenParryForParry( saberMoveName_t move );
 saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move );
-qboolean BG_InRoll( const playerState_t *ps, int anim );
-qboolean BG_InDeathAnim( int anim );
+qboolean BG_InRoll( const playerState_t *ps, animNumber_t anim );
+qboolean BG_InDeathAnim( animNumber_t anim );
 
 void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed );
 

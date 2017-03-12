@@ -36,11 +36,9 @@ BEGIN: Animation utility functions (sequence checking)
 ==============================================================================
 */
 //Called regardless of pm validity:
-qboolean BG_InSpecialJump( int anim )
+qboolean BG_InSpecialJump( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_WALL_RUN_RIGHT:
 	case BOTH_WALL_RUN_RIGHT_FLIP:
@@ -60,11 +58,9 @@ qboolean BG_InSpecialJump( int anim )
 	}
 }
 
-qboolean BG_InSaberStandAnim( int anim )
+qboolean BG_InSaberStandAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_SABERFAST_STANCE:
 	case BOTH_STAND2:
@@ -75,11 +71,9 @@ qboolean BG_InSaberStandAnim( int anim )
 	}
 }
 
-qboolean BG_DirectFlippingAnim( int anim )
+qboolean BG_DirectFlippingAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_FLIP_F:			//# Flip forward
 	case BOTH_FLIP_B:			//# Flip backwards
@@ -144,11 +138,9 @@ qboolean BG_SaberInIdle( saberMoveName_t move )
 	}
 }
 
-qboolean BG_FlippingAnim( int anim )
+qboolean BG_FlippingAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_FLIP_F:			//# Flip forward
 	case BOTH_FLIP_B:			//# Flip backwards
@@ -183,11 +175,9 @@ qboolean BG_FlippingAnim( int anim )
 	}
 }
 
-qboolean BG_SpinningSaberAnim( int anim )
+qboolean BG_SpinningSaberAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	//level 1 - FIXME: level 1 will have *no* spins
 	case BOTH_T1_BR_BL:
@@ -252,11 +242,9 @@ qboolean BG_SpinningSaberAnim( int anim )
 	}
 }
 
-qboolean BG_SaberInSpecialAttack( int anim )
+qboolean BG_SaberInSpecialAttack( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_A2_STABBACK1:
 	case BOTH_ATTACK_BACK:
@@ -340,11 +328,9 @@ saberMoveName_t BG_KnockawayForParry( saberBlockedType_t move )
 	//return LS_NONE;
 }
 
-qboolean BG_InRoll( const playerState_t *ps, int anim )
+qboolean BG_InRoll( const playerState_t *ps, animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_ROLL_F:
 	case BOTH_ROLL_B:
@@ -359,11 +345,9 @@ qboolean BG_InRoll( const playerState_t *ps, int anim )
 	}
 }
 
-qboolean BG_InDeathAnim( int anim )
+qboolean BG_InDeathAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_DIVE1:
 	case BOTH_DEATHBACKWARD1:
@@ -477,11 +461,9 @@ qboolean PM_SaberInReturn( saberMoveName_t move )
 	return qfalse;
 }
 
-qboolean PM_InSaberAnim( int anim )
+qboolean PM_InSaberAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	if ( animN >= BOTH_A1_T__B_ && animN <= BOTH_H1_S1_BR )
+	if ( anim >= BOTH_A1_T__B_ && anim <= BOTH_H1_S1_BR )
 	{
 		return qtrue;
 	}
@@ -521,11 +503,9 @@ qboolean PM_InKnockDown( playerState_t *ps )
 	}
 }
 
-qboolean PM_PainAnim( int anim )
+qboolean PM_PainAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_PAIN1:				//# First take pain anim
 	case BOTH_PAIN2:				//# Second take pain anim
@@ -552,11 +532,9 @@ qboolean PM_PainAnim( int anim )
 	}
 }
 
-qboolean PM_JumpingAnim( int anim )
+qboolean PM_JumpingAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_JUMP1:				//# Jump - wind-up and leave ground
 	case BOTH_INAIR1:			//# In air loop (from jump)
@@ -589,11 +567,9 @@ qboolean PM_JumpingAnim( int anim )
 	}
 }
 
-qboolean PM_LandingAnim( int anim )
+qboolean PM_LandingAnim( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_LAND1:				//# Landing (from in air loop)
 	case BOTH_LAND2:				//# Landing Hard (from a great height)
@@ -610,7 +586,7 @@ qboolean PM_LandingAnim( int anim )
 	}
 }
 
-qboolean PM_SpinningAnim( int anim )
+qboolean PM_SpinningAnim( animNumber_t anim )
 {
 	/*
 	switch ( anim )
@@ -623,11 +599,9 @@ qboolean PM_SpinningAnim( int anim )
 	return BG_SpinningSaberAnim( anim );
 }
 
-qboolean PM_InOnGroundAnim ( int anim )
+qboolean PM_InOnGroundAnim ( animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_DEAD1:
 	case BOTH_DEAD2:
@@ -663,11 +637,9 @@ qboolean PM_InOnGroundAnim ( int anim )
 
 }
 
-qboolean PM_InRollComplete( playerState_t *ps, int anim )
+qboolean PM_InRollComplete( playerState_t *ps, animNumber_t anim )
 {
-	animNumber_t animN = ANIM(anim);
-
-	switch ( animN )
+	switch ( anim )
 	{
 	case BOTH_ROLL_F:
 	case BOTH_ROLL_B:
@@ -682,7 +654,7 @@ qboolean PM_InRollComplete( playerState_t *ps, int anim )
 	}
 }
 
-int PM_AnimLength( int index, animNumber_t anim )
+int PM_AnimLength( animNumber_t anim )
 {
 	if (anim >= MAX_ANIMATIONS)
 	{
@@ -928,7 +900,7 @@ LEGS Animations
 Base animation for overall body
 ===================
 */
-static void PM_StartLegsAnim( int anim ) {
+static void PM_StartLegsAnim( animNumber_t anim ) {
 	switch ( pm->ps->pm_type ) {
 	case PM_DEAD:
 	case PM_FREEZE:
@@ -970,14 +942,14 @@ void PM_ContinueLegsAnim( animNumber_t anim ) {
 }
 
 void PM_ForceLegsAnim( animNumber_t anim) {
-	if (BG_InSpecialJump(pm->ps->legsAnim) &&
+	if (BG_InSpecialJump(ANIM(pm->ps->legsAnim)) &&
 		pm->ps->legsTimer > 0 &&
 		!BG_InSpecialJump(anim))
 	{
 		return;
 	}
 
-	if (BG_InRoll(pm->ps, pm->ps->legsAnim) &&
+	if (BG_InRoll(pm->ps, ANIM(pm->ps->legsAnim)) &&
 		pm->ps->legsTimer > 0 &&
 		!BG_InRoll(pm->ps, anim))
 	{
@@ -1209,7 +1181,7 @@ void PM_SetAnim(int setAnimParts, animNumber_t anim, unsigned setAnimFlags, int 
 		setAnimFlags |= SETANIM_FLAG_RESTART;
 	}
 
-	if (BG_InRoll(pm->ps, pm->ps->legsAnim))
+	if (BG_InRoll(pm->ps, ANIM(pm->ps->legsAnim)))
 	{ //never interrupt a roll
 		return;
 	}

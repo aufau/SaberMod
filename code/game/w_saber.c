@@ -201,9 +201,9 @@ void G_G2ClientSpineAngles( gentity_t *ent, vec3_t viewAngles, const vec3_t angl
 {
 	viewAngles[YAW] = AngleDelta( ent->client->ps.viewangles[YAW], angles[YAW] );
 
-	if ( !BG_FlippingAnim( ent->client->ps.legsAnim )
-		&& !BG_SpinningSaberAnim( ent->client->ps.legsAnim )
-		&& !BG_SpinningSaberAnim( ent->client->ps.torsoAnim )
+	if ( !BG_FlippingAnim( ANIM(ent->client->ps.legsAnim) )
+		&& !BG_SpinningSaberAnim( ANIM(ent->client->ps.legsAnim) )
+		&& !BG_SpinningSaberAnim( ANIM(ent->client->ps.torsoAnim) )
 		&& ent->client->ps.legsAnim != ent->client->ps.torsoAnim )//NOTE: presumes your legs & torso are on the same frame, though they *should* be because PM_SetAnimFinal tries to keep them in synch
 	{//FIXME: no need to do this if legs and torso on are same frame
 		//adjust for motion offset
@@ -639,20 +639,20 @@ qboolean WP_SabersCheckLock( gentity_t *ent1, gentity_t *ent2 )
 		return qfalse;
 	}
 
-	if (BG_InSpecialJump(ent1->client->ps.legsAnim))
+	if (BG_InSpecialJump(ANIM(ent1->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
-	if (BG_InSpecialJump(ent2->client->ps.legsAnim))
+	if (BG_InSpecialJump(ANIM(ent2->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
 
-	if (BG_InRoll(&ent1->client->ps, ent1->client->ps.legsAnim))
+	if (BG_InRoll(&ent1->client->ps, ANIM(ent1->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
-	if (BG_InRoll(&ent2->client->ps, ent2->client->ps.legsAnim))
+	if (BG_InRoll(&ent2->client->ps, ANIM(ent2->client->ps.legsAnim)))
 	{
 		return qfalse;
 	}
@@ -3609,7 +3609,7 @@ int WP_SaberCanBlock(gentity_t *self, vec3_t point, int dflags, qboolean project
 		return 0;
 	}
 
-	if (PM_InSaberAnim(self->client->ps.torsoAnim) && !self->client->ps.saberBlocked &&
+	if (PM_InSaberAnim(ANIM(self->client->ps.torsoAnim)) && !self->client->ps.saberBlocked &&
 		self->client->ps.saberMove != LS_READY && self->client->ps.saberMove != LS_NONE)
 	{
 		if ( self->client->ps.saberMove < LS_PARRY_UP || self->client->ps.saberMove > LS_REFLECT_LL )

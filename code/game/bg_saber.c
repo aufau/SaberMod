@@ -1268,8 +1268,8 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 			if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 &&
 				pm->ps->velocity[2] > 100 &&
 				PM_GroundDistance() < 32 &&
-				!BG_InSpecialJump(pm->ps->legsAnim) &&
-				!BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+				!BG_InSpecialJump(ANIM(pm->ps->legsAnim)) &&
+				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //FLIP AND DOWNWARD ATTACK
 				trace_t tr;
 
@@ -1282,7 +1282,7 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 				pm->ps->groundEntityNum != ENTITYNUM_NONE &&
 				(pm->ps->pm_flags & PMF_DUCKED) &&
 				pm->ps->weaponTime <= 0 &&
-				!BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //LUNGE (weak)
 				newmove = PM_SaberLungeAttackMove();
 			}
@@ -1293,7 +1293,7 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 		}
 		else if ( pm->cmd.forwardmove < 0 )
 		{//backward= T2B slash//B2T uppercut?
-			if (PM_CanBackstab() && !BG_SaberInSpecialAttack(pm->ps->torsoAnim))
+			if (PM_CanBackstab() && !BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
 			{ //BACKSTAB (attack varies by level)
 				if (pm->ps->fd.saberAnimLevel >= FORCE_LEVEL_2)
 				{//medium and higher attacks
@@ -1410,7 +1410,7 @@ void PM_WeaponLightsaber(void)
 			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
 
-		if (BG_InSaberStandAnim(pm->ps->torsoAnim))
+		if (BG_InSaberStandAnim(ANIM(pm->ps->torsoAnim)))
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
 		}
@@ -2003,11 +2003,11 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 	}
 	else if ( (!pm->cmd.forwardmove&&!pm->cmd.rightmove&&!pm->cmd.upmove))
 	{//not trying to run, duck or jump
-		if ( !BG_FlippingAnim( pm->ps->legsAnim ) &&
-			!BG_InRoll( pm->ps, pm->ps->legsAnim ) &&
+		if ( !BG_FlippingAnim( ANIM(pm->ps->legsAnim) ) &&
+			!BG_InRoll( pm->ps, ANIM(pm->ps->legsAnim) ) &&
 			!PM_InKnockDown( pm->ps ) &&
-			!PM_JumpingAnim( pm->ps->legsAnim ) &&
-			!BG_InSpecialJump( pm->ps->legsAnim ) &&
+			!PM_JumpingAnim( ANIM(pm->ps->legsAnim) ) &&
+			!BG_InSpecialJump( ANIM(pm->ps->legsAnim) ) &&
 			anim != PM_GetSaberStance() &&
 			pm->ps->groundEntityNum != ENTITYNUM_NONE &&
 			!(pm->ps->pm_flags & PMF_DUCKED))

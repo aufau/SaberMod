@@ -1586,24 +1586,24 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		if (!cent->isATST)
 		{
-			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim(newAnimation))
+			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim((animNumber_t)newAnimation))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim)) )
+				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 
 			if (flags & BONE_ANIM_BLEND)
 			{
-				if (BG_FlippingAnim(newAnimation))
+				if (BG_FlippingAnim((animNumber_t)newAnimation))
 				{
 					blendTime = 200;
 				}
 				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim(oldAnim)) )
+					(BG_FlippingAnim((animNumber_t)oldAnim)) )
 				{
 					blendTime = 200;
 				}
@@ -4930,24 +4930,24 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 
 		if (!cent->isATST)
 		{
-			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim(newAnimation))
+			if (/*BG_FlippingAnim(newAnimation) ||*/ BG_InDeathAnim((animNumber_t)newAnimation))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim)) )
+				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
 
 			if (flags & BONE_ANIM_BLEND)
 			{
-				if (BG_FlippingAnim(newAnimation))
+				if (BG_FlippingAnim((animNumber_t)newAnimation))
 				{
 					blendTime = 200;
 				}
 				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim(oldAnim)) )
+					(BG_FlippingAnim((animNumber_t)oldAnim)) )
 				{
 					blendTime = 200;
 				}

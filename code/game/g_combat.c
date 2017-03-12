@@ -955,22 +955,23 @@ qboolean G_InKnockDown( playerState_t *ps )
 	}
 }
 
-static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage )
+static animNumber_t G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage )
 {
-	int deathAnim = -1;
+	animNumber_t legsAnim = ANIM(self->client->ps.legsAnim);
+	animNumber_t deathAnim = ANIM_INVALID;
 
-	if ( BG_InRoll( &self->client->ps, self->client->ps.legsAnim ) )
+	if ( BG_InRoll( &self->client->ps, legsAnim ) )
 	{
 		deathAnim = BOTH_DEATH_ROLL;		//# Death anim from a roll
 	}
-	else if ( BG_FlippingAnim( self->client->ps.legsAnim ) )
+	else if ( BG_FlippingAnim( legsAnim ) )
 	{
 		deathAnim = BOTH_DEATH_FLIP;		//# Death anim from a flip
 	}
 	else if ( G_InKnockDown( &self->client->ps ) )
 	{//since these happen a lot, let's handle them case by case
-		int animLength = bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].numFrames * abs(bgGlobalAnimations[self->client->ps.legsAnim&~ANIM_TOGGLEBIT].frameLerp);
-		switch ( self->client->ps.legsAnim&~ANIM_TOGGLEBIT )
+		int animLength = bgGlobalAnimations[legsAnim].numFrames * abs(bgGlobalAnimations[legsAnim].frameLerp);
+		switch ( legsAnim )
 		{
 		case BOTH_KNOCKDOWN1:
 			if ( animLength - self->client->ps.legsTimer > 100 )
@@ -1440,6 +1441,8 @@ static int G_CheckSpecialDeathAnim( gentity_t *self, vec3_t point, int damage )
 					deathAnim = BOTH_DEATH_LYING_DN;
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}
