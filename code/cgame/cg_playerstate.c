@@ -180,7 +180,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 	}
 	cg.damageValue = kick;
 	cg.v_dmg_time = cg.time + DAMAGE_TIME;
-	cg.damageTime = cg.snap->serverTime;
+	cg.damageTime = cg.time;
 }
 
 

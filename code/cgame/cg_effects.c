@@ -63,7 +63,7 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing ) {
 		le->leFlags = LEF_PUFF_DONT_SCALE;
 		le->leType = LE_MOVE_SCALE_FADE;
 		le->startTime = cg.time;
-		le->endTime = cg.time + 1000 + random() * 250;
+		le->endTime = cg.time + 1000 + (int) (random() * 250);
 		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 
 		re = &le->refEntity;
@@ -169,7 +169,7 @@ void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int ra
 	re = &le->refEntity;
 	VectorCopy( start, re->origin );
 	VectorCopy( end, re->oldorigin);
-	re->shaderTime = cg.time / 1000.0f;
+	re->shaderTime = cg.time * 0.001f;
 
 	re->reType = RT_LINE;
 	re->radius = 0.5f*radius;
@@ -210,7 +210,7 @@ void CG_ThrowChunk( vec3_t origin, vec3_t velocity, qhandle_t hModel, int option
 
 	le->leType = LE_FRAGMENT;
 	le->startTime = cg.time;
-	le->endTime = le->startTime + 5000 + random() * 3000;
+	le->endTime = le->startTime + 5000 + (int)(random() * 3000);
 
 	VectorCopy( origin, re->origin );
 	AxisCopy( axisDefault, re->axis );

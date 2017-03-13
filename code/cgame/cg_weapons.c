@@ -611,18 +611,18 @@ Ghoul2 Insert End
 		if ( cent->currentState.weapon == WP_BRYAR_PISTOL )
 		{
 			// Hardcoded max charge time of 1 second
-			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.bryarFrontFlash;
 		}
 		else if ( cent->currentState.weapon == WP_BOWCASTER )
 		{
 			// Hardcoded max charge time of 1 second
-			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.greenFrontFlash;
 		}
 		else if ( cent->currentState.weapon == WP_DEMP2 )
 		{
-			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.lightningFlash;
 			scale = 1.75f;
 		}
@@ -877,9 +877,9 @@ void CG_DrawIconBackground(void)
 {
 	int				height,xAdd,x2,y2,t;
 	int				prongLeftX,prongRightX;
-	float			inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
-	float			wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
-	float			fpTime = cg.forceSelectTime+WEAPON_SELECT_TIME;
+	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
+	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
+	int				fpTime = cg.forceSelectTime+WEAPON_SELECT_TIME;
 	qhandle_t		background;
 	int				drawType = cgs.media.weaponIconBackground;
 	int				prongsOn = cgs.media.weaponProngsOn;
@@ -1636,7 +1636,7 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 			(ent->weapon == WP_BOWCASTER && !altFire) ||
 			(ent->weapon == WP_DEMP2 && altFire))
 		{
-			float val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
+			float val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
 
 			if (val > 3)
 			{

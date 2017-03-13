@@ -135,7 +135,7 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 
 	if ( ent->wait > 0 ) {
 		ent->think = multi_wait;
-		ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
+		ent->nextthink = level.time + (int)( ( ent->wait + ent->random * crandom() ) * 1000 );
 	} else {
 		// we can't just remove (self) here, because this is a touch function
 		// called while looping through area links...
@@ -578,7 +578,7 @@ so, the basic time between firing is a random time between
 void func_timer_think( gentity_t *self ) {
 	G_UseTargets (self, self->activator);
 	// set time before next firing
-	self->nextthink = level.time + 1000 * ( self->wait + crandom() * self->random );
+	self->nextthink = level.time + (int)( 1000 * ( self->wait + crandom() * self->random ) );
 }
 
 void func_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {

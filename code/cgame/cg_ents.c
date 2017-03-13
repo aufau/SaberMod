@@ -946,13 +946,13 @@ static void CG_General( centity_t *cent ) {
 					minusExt += 360;
 				}
 
-				trap_SetClientTurnExtent(minusExt, plusExt, cg.time+5000);
+				trap_SetClientTurnExtent(minusExt, plusExt, cg.serverTime + 5000);
 
 				VectorCopy(empAngles, cent->turAngles);
 			}
 			else if (cg.snap->ps.clientNum == empOwn->currentState.number)
 			{
-				trap_SetClientForceAngle(cg.time+5000, cent->turAngles);
+				trap_SetClientForceAngle(cg.serverTime + 5000, cent->turAngles);
 			}
 
 		//	empAngles[PITCH] -= 160;
@@ -1110,10 +1110,10 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
-	if ( cent->currentState.time > cg.time && cent->currentState.weapon == WP_EMPLACED_GUN )
+	if ( cent->currentState.time > cg.serverTime && cent->currentState.weapon == WP_EMPLACED_GUN )
 	{
 		// make the gun pulse red to warn about it exploding
-		val = (1.0f - (float)(cent->currentState.time - cg.time) / 3200.0f ) * 0.3f;
+		val = (1.0f - (float)(cent->currentState.time - cg.serverTime) / 3200.0f ) * 0.3f;
 
 		ent.customShader = trap_R_RegisterShader( "gfx/effects/turretflashdie" );
 		ent.shaderRGBA[0] = (sinf( cg.time * 0.04f ) * val * 0.4f + val) * 255;
@@ -1388,7 +1388,7 @@ static void CG_Speaker( centity_t *cent ) {
 
 	//	ent->s.frame = ent->wait * 10;
 	//	ent->s.clientNum = ent->random * 10;
-	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
+	cent->miscTime = cg.time + cent->currentState.frame * 100 + (int)(cent->currentState.clientNum * 100 * crandom());
 }
 
 static qboolean CG_GreyItem(int type, int tag, forceSide_t plSide)
@@ -1522,7 +1522,7 @@ Ghoul2 Insert End
 			ent.shaderRGBA[0] = 200;
 			ent.shaderRGBA[1] = 200;
 			ent.shaderRGBA[2] = 200;
-			ent.shaderRGBA[3] = 150 + sinf(cg.time*0.01)*30;
+			ent.shaderRGBA[3] = 150 + sinf(cg.time * 0.01f) * 30;
 		}
 		else
 		{
@@ -1752,8 +1752,7 @@ Ghoul2 Insert End
 
 		alpha = (float)msec / ITEM_SCALEUP_TIME;
 		a = alpha * 255;
-		if (a <= 0)
-			a=1;
+		a = CLAMP(1, 255, a);
 
 		ent.shaderRGBA[3] = a;
 		if (item->giType != IT_POWERUP || item->giTag != PW_FORCE_BOON)
@@ -1808,9 +1807,9 @@ Ghoul2 Insert End
 		if (item->giType == IT_TEAM &&
 			(item->giTag == PW_REDFLAG || item->giTag == PW_BLUEFLAG))
 		{
-			ent.modelScale[0] = 0.7;
-			ent.modelScale[1] = 0.7;
-			ent.modelScale[2] = 0.7;
+			ent.modelScale[0] = 0.7f;
+			ent.modelScale[1] = 0.7f;
+			ent.modelScale[2] = 0.7f;
 			ScaleModelAxis(&ent);
 		}
 		trap_R_AddRefEntityToScene(&ent);
@@ -1854,7 +1853,7 @@ Ghoul2 Insert End
 				if ( item->giType == IT_POWERUP )
 				{
 					ent.origin[2] += 12;
-					spinAngles[1] = ( cg.time & 1023 ) * 360 / -1024.0f;
+					spinAngles[1] = ( cg.serverTime & 1023 ) * 360 / -1024.0f;
 				}
 				AnglesToAxis( spinAngles, ent.axis );
 
@@ -1929,7 +1928,7 @@ static void CG_Missile( centity_t *cent ) {
 		if ( weapon->altMissileSound ) {
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->altMissileSound );
 		}
@@ -1956,7 +1955,7 @@ static void CG_Missile( centity_t *cent ) {
 		{
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->missileSound );
 		}
@@ -2129,7 +2128,7 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 	// flicker between two skins (FIXME?)
-	ent.skinNum = ( cg.time >> 6 ) & 1;
+	ent.skinNum = ( cg.serverTime >> 6 ) & 1;
 
 	// get the model, either as a bmodel or a modelindex
 	if ( s1->solid == SOLID_BMODEL )
@@ -2350,14 +2349,14 @@ void CG_CalcEntityLerpPositions( centity_t *cent ) {
 	}
 
 	// just use the current frame and evaluate as best we can
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
+	BG_EvaluateTrajectory( &cent->currentState.pos, cg.serverTime, cent->lerpOrigin );
+	BG_EvaluateTrajectory( &cent->currentState.apos, cg.serverTime, cent->lerpAngles );
 
 	// adjust for riding a mover if it wasn't rolled into the predicted
 	// player state
 	if ( cent != &cg.predictedPlayerEntity ) {
 		CG_AdjustPositionForMover( cent->lerpOrigin, cent->currentState.groundEntityNum,
-		cg.snap->serverTime, cg.time, cent->lerpOrigin );
+		cg.snap->serverTime, cg.serverTime, cent->lerpOrigin );
 	}
 /*
 Ghoul2 Insert Start
@@ -2502,11 +2501,11 @@ void CG_AddPacketEntities( void ) {
 
 	// the auto-rotating items will all have the same axis
 	cg.autoAngles[0] = 0;
-	cg.autoAngles[1] = ( cg.time & 2047 ) * 360 / 2048.0f;
+	cg.autoAngles[1] = ( cg.serverTime & 2047 ) * 360 / 2048.0f;
 	cg.autoAngles[2] = 0;
 
 	cg.autoAnglesFast[0] = 0;
-	cg.autoAnglesFast[1] = ( cg.time & 1023 ) * 360 / 1024.0f;
+	cg.autoAnglesFast[1] = ( cg.serverTime & 1023 ) * 360 / 1024.0f;
 	cg.autoAnglesFast[2] = 0;
 
 	AnglesToAxis( cg.autoAngles, cg.autoAxis );

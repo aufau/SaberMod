@@ -620,9 +620,6 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		altMissileHitSound;
 
 	sfxHandle_t		readySound;
-	float			trailRadius;
-	float			wiTrailTime;
-
 } weaponInfo_t;
 
 
@@ -695,10 +692,10 @@ typedef struct {
 	qboolean	nextFrameTeleport;
 
 	int			frametime;		// cg.time - cg.oldTime
-
-	int			time;			// this is the time value that the client
-								// is rendering at.
-	int			oldTime;		// time at last frame, used for missile trails and prediction checking
+	int			serverTime;		// cl.serverTime
+	int			time;			// time since an initialization of CGame module
+								// used for renderer, effects and ghoul2 submodules
+	int			oldTime;		// time at last frame
 
 	int			physicsTime;	// either cg.snap->time or cg.nextSnap->time
 
@@ -837,11 +834,11 @@ typedef struct {
 	int			weaponAnimationTime;
 
 	// blend blobs
-	float		damageTime;
+	int			damageTime;
 	float		damageX, damageY, damageValue;
 
 	// view movement
-	float		v_dmg_time;
+	int			v_dmg_time;
 	float		v_dmg_pitch;
 	float		v_dmg_roll;
 
@@ -852,7 +849,7 @@ typedef struct {
 	float		bobfracsin;
 	int			bobcycle;
 	float		xyspeed;
-	int     nextOrbitTime;
+	int     	nextOrbitTime;
 
 	//qboolean cameraMode;		// if rendering from a loaded camera
 	int			loadLCARSStage;
@@ -864,14 +861,14 @@ typedef struct {
 	qboolean		testGun;
 
 	// HUD stuff
-	float			HUDTickFlashTime;
+	int				HUDTickFlashTime;
 	qboolean		HUDArmorFlag;
 	qboolean		HUDHealthFlag;
 	qboolean		iconHUDActive;
 	float			iconHUDPercent;
-	float			iconSelectTime;
-	float			invenSelectTime;
-	float			forceSelectTime;
+	int				iconSelectTime;
+	int				invenSelectTime;
+	int				forceSelectTime;
 
 	vec3_t			lastFPFlashPoint;
 

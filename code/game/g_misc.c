@@ -339,7 +339,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	int i = 0;
 	int othercarrying = 0;
-	float time_lowest = 0;
+	int time_lowest = 0;
 	int index_lowest = -1;
 	int hasall = 1;
 	// int forceReselect = WP_NONE;
@@ -433,8 +433,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	self->s.modelindex = 0;
 	self->enemy = other;
 
-	self->pos2[0] = 1;
-	self->pos2[1] = level.time + HOLOCRON_RESPAWN_TIME;
+	self->boltpoint1 = level.time + HOLOCRON_RESPAWN_TIME;
 
 	/*
 	if (self->count == FP_SABERATTACK && !HasSetSaberOnly())
@@ -459,7 +458,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 
 void HolocronThink(gentity_t *ent)
 {
-	if (ent->pos2[0] && (!ent->enemy || !ent->enemy->client || ent->enemy->health < 1))
+	if (ent->boltpoint1 && (!ent->enemy || !ent->enemy->client || ent->enemy->health < 1))
 	{
 		if (ent->enemy && ent->enemy->client)
 		{
@@ -475,9 +474,9 @@ void HolocronThink(gentity_t *ent)
 			goto justthink;
 		}
 	}
-	else if (ent->pos2[0] && ent->enemy && ent->enemy->client)
+	else if (ent->boltpoint1 && ent->enemy && ent->enemy->client)
 	{
-		ent->pos2[1] = level.time + HOLOCRON_RESPAWN_TIME;
+		ent->boltpoint1 = level.time + HOLOCRON_RESPAWN_TIME;
 	}
 
 	if (ent->enemy && ent->enemy->client)
@@ -513,7 +512,7 @@ void HolocronThink(gentity_t *ent)
 
 			ent->s.pos.trTime = level.time;
 
-			ent->pos2[0] = 0;
+			ent->boltpoint1 = 0;
 
 			trap_LinkEntity(ent);
 
@@ -521,7 +520,7 @@ void HolocronThink(gentity_t *ent)
 		}
 	}
 
-	if (ent->pos2[0] && ent->pos2[1] < level.time)
+	if (ent->boltpoint1 && ent->boltpoint1 < level.time)
 	{ //isn't in original place and has been there for (HOLOCRON_RESPAWN_TIME) seconds without being picked up, so respawn
 		VectorCopy(ent->s.origin2, ent->s.pos.trBase);
 		VectorCopy(ent->s.origin2, ent->s.origin);
@@ -529,7 +528,7 @@ void HolocronThink(gentity_t *ent)
 
 		ent->s.pos.trTime = level.time;
 
-		ent->pos2[0] = 0;
+		ent->boltpoint1 = 0;
 
 		trap_LinkEntity(ent);
 	}
@@ -1416,7 +1415,7 @@ void fx_runner_think( gentity_t *ent )
 	// call the effect with the desired position and orientation
 	G_AddEvent( ent, EV_PLAY_EFFECT_ID, ent->bolt_Head );
 
-	ent->nextthink = level.time + ent->delay + random() * ent->random;
+	ent->nextthink = level.time + ent->delay + (int)(random() * ent->random);
 
 	if ( ent->target )
 	{
@@ -1599,7 +1598,7 @@ animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t dama
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
 int GetNearestVisibleWP(vec3_t org, int ignore);
 int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
-extern float gBotEdit;
+extern qboolean gBotEdit;
 
 #define ANIMENT_ALIGNED_UNKNOWN		0
 #define ANIMENT_ALIGNED_BAD			1
@@ -1842,7 +1841,7 @@ void ExampleAnimEntAlertOthers(gentity_t *self)
 				ExampleAnimEntAlignment(self) == ExampleAnimEntAlignment(&g_entities[i]))
 			{
 				g_entities[i].bolt_Motion = self->bolt_Motion;
-				g_entities[i].speed = level.time + 4000; //4 seconds til we forget about the enemy
+				g_entities[i].timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 				g_entities[i].bolt_RArm = level.time + Q_irand(500, 1000);
 			}
 		}
@@ -1967,7 +1966,7 @@ void ExampleAnimEnt_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		if (attacker->s.number >= MAX_CLIENTS || (ExampleAnimEntAlignment(self) != ANIMENT_ALIGNED_GOOD && !(attacker->r.svFlags & SVF_BOT)))
 		{
 			self->bolt_Motion = attacker->s.number;
-			self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+			self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 			ExampleAnimEntAlertOthers(self);
 			self->bolt_RArm = level.time + Q_irand(500, 1000);
 		}
@@ -2406,7 +2405,7 @@ void ExampleAnimEntEnemyHandling(gentity_t *self, float enDist)
 	{
 		self->bolt_Motion = bestIndex;
 		enDist = minDist;
-		self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+		self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 		ExampleAnimEntAlertOthers(self);
 		self->bolt_RArm = level.time + Q_irand(500, 1000);
 
@@ -2594,7 +2593,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 				g_entities[self->bolt_Motion].inuse &&
 				g_entities[self->bolt_Motion].client)
 			{
-				if (self->speed < level.time || g_entities[self->bolt_Motion].health < 1)
+				if (self->timestamp < level.time || g_entities[self->bolt_Motion].health < 1)
 				{
 					self->bolt_Motion = ENTITYNUM_NONE;
 				}
@@ -2613,7 +2612,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 				g_entities[self->bolt_Motion].inuse &&
 				g_entities[self->bolt_Motion].s.eType == ET_GRAPPLE)
 			{
-				if (self->speed < level.time || g_entities[self->bolt_Motion].health < 1)
+				if (self->timestamp < level.time || g_entities[self->bolt_Motion].health < 1)
 				{
 					self->bolt_Motion = ENTITYNUM_NONE;
 				}
@@ -2685,7 +2684,7 @@ void ExampleAnimEntUpdateSelf(gentity_t *self)
 					{
 						self->boltpoint4 = 1;
 					}
-					self->speed = level.time + 4000; //4 seconds til we forget about the enemy
+					self->timestamp = level.time + 4000; //4 seconds til we forget about the enemy
 				}
 				else
 				{

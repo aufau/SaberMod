@@ -256,9 +256,41 @@ static void CG_ShaderStateChanged( const char *o ) {
 			t++;
 			o = strstr(t, "@");
 			if (o) {
+				int offsetInt;
+				int offsetFrac;
+
 				strncpy(timeOffset, t, o-t);
 				timeOffset[o-t] = 0;
 				o++;
+
+				if (sscanf(timeOffset, "%d.%d", &offsetInt, &offsetFrac) == 2 &&
+					offsetInt >= 0 && offsetFrac >= 0)
+				{
+					int offset;
+
+					while (offsetFrac >= 1000)
+						offsetFrac /= 10;
+					while (0 < offsetFrac && offsetFrac < 100)
+						offsetFrac *= 10;
+
+					offset = offsetInt * 1000 + offsetFrac;
+					offset = offset - cg.time;
+
+					// this offset value is synchronized on all clients
+					if (offset < 0) {
+						// truncation occurs for remaps older than 4h40m
+						// one-shot shader - must have expired already
+						// periodic shader - bugged on original clients already
+						offset = -(offset & 0x00ffffff);
+					}
+
+					// convert to time since cgame initialization, may be negative
+					offset = cg.time + offset;
+
+					Com_sprintf( timeOffset, sizeof(timeOffset),
+						"%d.%03d", offset / 1000, abs(offset) % 1000 );
+				}
+
 				trap_R_RemapShader( originalShader, newShader, timeOffset );
 			}
 		} else {
@@ -625,7 +657,7 @@ static void CG_MapRestart( void ) {
 		CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120 );
 	}
 	if (cg_singlePlayerActive.integer) {
-		trap_Cvar_Set("ui_matchStartTime", va("%i", cg.time));
+		trap_Cvar_Set("ui_matchStartTime", va("%i", cg.serverTime));
 		if (cg_recordSPDemo.integer && *cg_recordSPDemoName.string) {
 			trap_SendConsoleCommand(va("set g_synchronousclients 1 ; record %s \n", cg_recordSPDemoName.string));
 		}

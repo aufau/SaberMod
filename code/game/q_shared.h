@@ -550,7 +550,7 @@ typedef enum {
 #define PROP_SPACE_BIG_WIDTH	6
 
 #define BLINK_DIVISOR			200
-#define PULSE_DIVISOR			75
+#define PULSE_DIVISOR			75.0f
 
 #define UI_LEFT			0x00000000	// default
 #define UI_CENTER		0x00000001
@@ -1445,11 +1445,11 @@ typedef struct forcedata_s {
 	int				forceJumpAddTime;
 	int				forceGripEntityNum;					//what entity I'm gripping
 	int				forceGripDamageDebounceTime;		//debounce for grip damage
-	float			forceGripBeingGripped;				//if > level.time then client is in someone's grip
+	int				forceGripBeingGripped;				//if > level.time then client is in someone's grip
 	qboolean		forceGripCripple;					//if != 0 then make it so this client can't move quickly (he's being gripped)
 	int				forceGripUseTime;					//can't use if > level.time
-	float			forceGripSoundTime;
-	float			forceGripStarted;					//level.time when the grip was activated
+	int				forceGripSoundTime;
+	int				forceGripStarted;					//level.time when the grip was activated
 	float			forceSpeedSmash;
 	float			forceSpeedDoDamage;
 	int				forceSpeedHitIndex;					//if we hit another player and got hurt, hurt them too
@@ -1464,7 +1464,7 @@ typedef struct forcedata_s {
 
 	int				forceRageRecoveryTime;
 	int				forceDrainEntNum;
-	float			forceDrainTime;
+	int				forceDrainTime;
 
 	qboolean		forceDoInit;
 

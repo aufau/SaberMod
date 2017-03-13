@@ -328,7 +328,7 @@ static void CG_TouchItem( centity_t *cent ) {
 	if ( !cg_predictItems.integer ) {
 		return;
 	}
-	if ( !BG_PlayerTouchesItem( &cg.predictedPlayerState, &cent->currentState, cg.time ) ) {
+	if ( !BG_PlayerTouchesItem( &cg.predictedPlayerState, &cent->currentState, cg.serverTime ) ) {
 		return;
 	}
 
@@ -697,7 +697,7 @@ void CG_PredictPlayerState( void ) {
 	cmdNum = current - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &oldestCmd );
 	if ( oldestCmd.serverTime > cg.snap->ps.commandTime
-		&& oldestCmd.serverTime < cg.time ) {	// special check for map_restart
+		&& oldestCmd.serverTime < cg.serverTime ) {	// special check for map_restart
 		if ( cg_showmiss.integer ) {
 			CG_Printf ("exceeded PACKET_BACKUP on commands\n");
 		}
@@ -768,7 +768,8 @@ void CG_PredictPlayerState( void ) {
 			} else {
 				vec3_t	adjusted;
 				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
-					cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted );
+					cg.predictedPlayerState.groundEntityNum, cg.physicsTime,
+					oldPlayerState.commandTime, adjusted );
 
 				if ( cg_showmiss.integer ) {
 					if (!VectorCompare( oldPlayerState.origin, adjusted )) {
@@ -818,7 +819,7 @@ void CG_PredictPlayerState( void ) {
 			cg_pmove.bgClients[i] = &cgSendPS[i];
 		}
 
-		if (cg.snap && cg.snap->ps.saberLockTime > cg.time)
+		if (cg.snap && cg.snap->ps.saberLockTime > cg.serverTime)
 		{
 			centity_t *blockOpp = &cg_entities[cg.snap->ps.saberLockEnemy];
 
@@ -854,7 +855,7 @@ void CG_PredictPlayerState( void ) {
 	}
 
 	if ( cg_showmiss.integer > 1 ) {
-		CG_Printf( "[%i : %i] ", cg_pmove.cmd.serverTime, cg.time );
+		CG_Printf( "[%i : %i] ", cg_pmove.cmd.serverTime, cg.serverTime );
 	}
 
 	if ( !moved ) {
@@ -867,7 +868,8 @@ void CG_PredictPlayerState( void ) {
 	// adjust for the movement of the groundentity
 	CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
 		cg.predictedPlayerState.groundEntityNum,
-		cg.physicsTime, cg.time, cg.predictedPlayerState.origin );
+		cg.physicsTime, cg.predictedPlayerState.commandTime,
+		cg.predictedPlayerState.origin );
 
 	if ( cg_showmiss.integer ) {
 		if (cg.predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS) {

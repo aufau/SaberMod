@@ -606,7 +606,7 @@ static qboolean pas_find_enemies( gentity_t *self )
 					G_Sound( self, CHAN_BODY, G_SoundIndex( "sound/chars/turret/startup.wav" ));
 
 					// Wind up turrets for a bit
-					self->attackDebounceTime = level.time + 900 + random() * 200;
+					self->attackDebounceTime = level.time + 900 + (int)(random() * 200);
 				}
 
 				G_SetEnemy( self, target );
@@ -668,7 +668,7 @@ void pas_adjust_enemy( gentity_t *ent )
 		// shut-down sound
 		G_Sound( ent, CHAN_BODY, G_SoundIndex( "sound/chars/turret/shutdown.wav" ));
 
-		ent->bounceCount = level.time + 500 + random() * 150;
+		ent->bounceCount = level.time + 500 + (int)(random() * 150);
 
 		// make turret play ping sound for 5 seconds
 		ent->aimDebounceTime = level.time + 5000;
@@ -839,7 +839,11 @@ void pas_think( gentity_t *ent )
 	else
 	{
 		// no enemy, so make us slowly sweep back and forth as if searching for a new one
-		diffYaw = sinf( level.time * 0.0001f + ent->count ) * 2.0f;
+		// diffYaw = sinf( level.time * 0.0001f + ent->count ) * 2.0f;
+
+		// avoid precision loss at high level.time values
+		// remainder(5654867 * 0.0001, 2 * M_PI) == 0.000001
+		diffYaw = sinf( (level.time % 5654867) * 0.0001f + ent->count ) * 2.0f;
 	}
 
 	if ( fabsf(diffYaw) > 0.25f )
@@ -2109,7 +2113,7 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 	int		hitTime;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	hitTime = level.previousTime + (int)( ( level.time - level.previousTime ) * trace->fraction );
 	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );

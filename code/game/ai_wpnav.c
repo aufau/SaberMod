@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "botlib.h"
 #include "ai_main.h"
 
-float gWPRenderTime = 0;
-float gDeactivated = 0;
-float gBotEdit = 0;
+int gWPRenderTime = 0;
+qboolean gDeactivated = qfalse;
+qboolean gBotEdit = qfalse;
 int gWPRenderedFrame = 0;
 wpobject_t *gWPArray[MAX_WPARRAY_SIZE];
 int gWPNum = 0;
@@ -2169,11 +2169,11 @@ void LoadPath_ThisLevel(void)
 
 	if (bot_wp_edit.value)
 	{
-		gBotEdit = 1;
+		gBotEdit = qtrue;
 	}
 	else
 	{
-		gBotEdit = 0;
+		gBotEdit = qfalse;
 	}
 
 	//set the flag entities
@@ -2319,7 +2319,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_add") == 0)
 	{
-		gDeactivated = 1;
+		gDeactivated = qtrue;
 		OptionalSArgument = ConcatArgs( 1 );
 
 		if (OptionalSArgument)
@@ -2340,7 +2340,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_rem") == 0)
 	{
-		gDeactivated = 1;
+		gDeactivated = qtrue;
 
 		OptionalSArgument = ConcatArgs( 1 );
 
@@ -2363,7 +2363,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_tele") == 0)
 	{
-		gDeactivated = 1;
+		gDeactivated = qtrue;
 		OptionalSArgument = ConcatArgs( 1 );
 
 		if (OptionalSArgument)
@@ -2403,7 +2403,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_addflagged") == 0)
 	{
-		gDeactivated = 1;
+		gDeactivated = qtrue;
 
 		RequiredSArgument = ConcatArgs( 1 );
 
@@ -2479,7 +2479,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_switchflags") == 0)
 	{
-		gDeactivated = 1;
+		gDeactivated = qtrue;
 
 		RequiredSArgument = ConcatArgs( 1 );
 
@@ -2579,7 +2579,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 
 	if (Q_stricmp (cmd, "bot_wp_save") == 0)
 	{
-		gDeactivated = 0;
+		gDeactivated = qfalse;
 		trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 		SavePathData(mapname.string);
 		return 1;

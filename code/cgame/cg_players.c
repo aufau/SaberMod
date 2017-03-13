@@ -5532,7 +5532,7 @@ void CG_DrawNoForceSphere(centity_t *cent, vec3_t origin, float scale, int shade
 	VectorScale(ent.axis[1], scale, ent.axis[1]);
 	VectorScale(ent.axis[2], -scale, ent.axis[2]);
 
-	ent.shaderRGBA[3] = (cent->currentState.genericenemyindex - cg.time)/8;
+	ent.shaderRGBA[3] = (cent->currentState.genericenemyindex - cg.serverTime)/8;
 	ent.renderfx |= RF_RGB_TINT;
 	if (ent.shaderRGBA[3] > 200)
 	{
@@ -5703,9 +5703,9 @@ void CG_G2Animated( centity_t *cent )
 
 	// Electricity
 	//------------------------------------------------
-	if ( cent->currentState.emplacedOwner > cg.time )
+	if ( cent->currentState.emplacedOwner > cg.serverTime )
 	{
-		int	dif = cent->currentState.emplacedOwner - cg.time;
+		int	dif = cent->currentState.emplacedOwner - cg.serverTime;
 
 		if ( dif > 0 && random() > 0.4f )
 		{
@@ -5740,7 +5740,7 @@ void CG_G2Animated( centity_t *cent )
 		}
 	}
 
-	if (cent->currentState.genericenemyindex > cg.time)
+	if (cent->currentState.genericenemyindex > cg.serverTime)
 	{
 		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 	}
@@ -6115,7 +6115,7 @@ void CG_Player( centity_t *cent ) {
 		seeker.renderfx = 0; //renderfx;
 							 //don't show in first person?
 
-		angle = ((cg.time / 12) & 255) * (float) (M_PI * 2 / 255);
+		angle = ((cg.serverTime / 12) & 255) * (float) (M_PI * 2 / 255);
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -6125,7 +6125,7 @@ void CG_Player( centity_t *cent ) {
 
 		if (cent->currentState.genericenemyindex > 1024)
 		{
-			prefig = (cent->currentState.genericenemyindex-cg.time)/80;
+			prefig = (cent->currentState.genericenemyindex-cg.serverTime)/80;
 
 			if (prefig > 55)
 			{
@@ -6727,7 +6727,7 @@ doEssentialTwo:
 
 				if (renderedHolos == 0)
 				{
-					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255);
+					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255);
 					dir[0] = cosf(angle) * 20;
 					dir[1] = sinf(angle) * 20;
 					dir[2] = cosf(angle) * 20;
@@ -6742,7 +6742,7 @@ doEssentialTwo:
 				}
 				else if (renderedHolos == 1)
 				{
-					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
+					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
 					if (angle > (float) M_PI * 2)
 						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;
@@ -6759,7 +6759,7 @@ doEssentialTwo:
 				}
 				else
 				{
-					angle = ((cg.time / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
+					angle = ((cg.serverTime / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
 					if (angle > (float) M_PI * 2)
 						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;
@@ -6931,8 +6931,8 @@ stillDoSaber:
 
 				//cent->bolt4 = 1;
 
-				saberEnt->currentState.pos.trTime = cg.time;
-				saberEnt->currentState.apos.trTime = cg.time;
+				saberEnt->currentState.pos.trTime = cg.serverTime;
+				saberEnt->currentState.apos.trTime = cg.serverTime;
 
 				VectorCopy(saberEnt->currentState.pos.trBase, saberEnt->lerpOrigin);
 				VectorCopy(saberEnt->currentState.apos.trBase, saberEnt->lerpAngles);
@@ -6958,8 +6958,8 @@ stillDoSaber:
 
 						VectorCopy(saberEnt->currentState.pos.trBase, saberEnt->lerpOrigin);
 						VectorCopy(saberEnt->currentState.apos.trBase, saberEnt->lerpAngles);
-						saberEnt->currentState.pos.trTime = cg.time;
-						saberEnt->currentState.apos.trTime = cg.time;
+						saberEnt->currentState.pos.trTime = cg.serverTime;
+						saberEnt->currentState.apos.trTime = cg.serverTime;
 					}
 				}
 			}
@@ -7452,9 +7452,9 @@ doEssentialThree:
 
 	// Electricity
 	//------------------------------------------------
-	if ( cent->currentState.emplacedOwner > cg.time )
+	if ( cent->currentState.emplacedOwner > cg.serverTime )
 	{
-		int	dif = cent->currentState.emplacedOwner - cg.time;
+		int	dif = cent->currentState.emplacedOwner - cg.serverTime;
 
 		if ( dif > 0 && random() > 0.4f )
 		{
@@ -7537,8 +7537,8 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	CG_ClearLerpFrame( cent, &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.legs, cent->currentState.legsAnim, qfalse);
 	CG_ClearLerpFrame( cent, &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.torso, cent->currentState.torsoAnim, qtrue);
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
+	BG_EvaluateTrajectory( &cent->currentState.pos, cg.serverTime, cent->lerpOrigin );
+	BG_EvaluateTrajectory( &cent->currentState.apos, cg.serverTime, cent->lerpAngles );
 
 	VectorCopy( cent->lerpOrigin, cent->rawOrigin );
 	VectorCopy( cent->lerpAngles, cent->rawAngles );

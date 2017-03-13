@@ -1589,7 +1589,7 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 	int	damage	= ROCKET_DAMAGE;
 	int	vel = ROCKET_VELOCITY;
 	int dif = 0;
-	float rTime;
+	int rTime;
 	gentity_t *missile;
 
 	if ( altFire )
@@ -2394,7 +2394,7 @@ void BlowDetpacks(gentity_t *ent)
 			{
 				VectorCopy( found->r.currentOrigin, found->s.origin );
 				found->think = DetPackBlow;
-				found->nextthink = level.time + 100 + random() * 200;
+				found->nextthink = level.time + 100 + (int)(random() * 200);
 				G_Sound( found, CHAN_BODY, G_SoundIndex("sound/weapons/detpack/warning.wav") );
 			}
 		}

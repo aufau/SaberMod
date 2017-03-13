@@ -603,7 +603,7 @@ static void CG_OffsetThirdPersonView( void )
 				stiffFactor = 0.0f;
 			}
 		} else {
-			stiffFactor = deltayaw / (cg.time - cg.oldTime);
+			stiffFactor = deltayaw / cg.frametime;
 		}
 		if (stiffFactor < 1.0f)
 		{
@@ -1050,7 +1050,7 @@ static int CG_CalcFov( void ) {
 		}
 		else
 		{
-			f = ( cg.time - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
+			f = ( cg.serverTime - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
 			if ( f < 1.0f ) {
 				fov_x = zoomFov + f * (fov_x - zoomFov);
@@ -1320,15 +1320,17 @@ static void CG_PowerupTimerSounds( void ) {
 	// powerup timers going away
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
 		t = cg.snap->ps.powerups[i];
-		if ( t <= cg.time ) {
+		if ( t <= cg.serverTime ) {
 			continue;
 		}
-		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
+		if ( t - cg.serverTime >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
 			continue;
 		}
-		if ( ( t - cg.time ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
-			//trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
+		/*
+		if ( ( t - cg.serverTime ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
+			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
 		}
+		*/
 	}
 }
 
@@ -1408,7 +1410,7 @@ void CG_SE_UpdateShake( vec3_t origin, vec3_t angles )
 	if ( cgScreenEffects.shake_duration <= 0 )
 		return;
 
-	if ( cg.time > ( cgScreenEffects.shake_start + cgScreenEffects.shake_duration ) )
+	if ( cg.serverTime > ( cgScreenEffects.shake_start + cgScreenEffects.shake_duration ) )
 	{
 		cgScreenEffects.shake_intensity = 0;
 		cgScreenEffects.shake_duration = 0;
@@ -1420,7 +1422,7 @@ void CG_SE_UpdateShake( vec3_t origin, vec3_t angles )
 	cgScreenEffects.FOV2 = CAMERA_DEFAULT_FOV;
 
 	//intensity_scale now also takes into account FOV with 90.0 as normal
-	intensity_scale = 1.0f - ( (float) ( cg.time - cgScreenEffects.shake_start ) / (float) cgScreenEffects.shake_duration ) * (((cgScreenEffects.FOV+cgScreenEffects.FOV2)/2.0f)/90.0f);
+	intensity_scale = 1.0f - ( (float) ( cg.serverTime - cgScreenEffects.shake_start ) / (float) cgScreenEffects.shake_duration ) * (((cgScreenEffects.FOV+cgScreenEffects.FOV2)/2.0f)/90.0f);
 
 	intensity = cgScreenEffects.shake_intensity * intensity_scale;
 
@@ -1505,7 +1507,7 @@ void CGCam_Shake( float intensity, int duration )
 
 	cgScreenEffects.shake_intensity = intensity;
 	cgScreenEffects.shake_duration = duration;
-	cgScreenEffects.shake_start = cg.time;
+	cgScreenEffects.shake_start = cg.serverTime;
 }
 
 void CGCam_SetMusicMult( float multiplier, int duration )
@@ -1533,6 +1535,33 @@ Screen Effect stuff ends here
 
 /*
 =================
+CG_TimeBias
+
+Bias serverTime so that its value is low enough to fit into a single
+precision float (at least for 4h39m after CGame initialization).
+=================
+*/
+static int CG_TimeBias( int serverTime ) {
+	static int	bias = 0;
+
+	if (cg.time == 0) {
+		char buf[2];
+
+		trap_Cvar_VariableStringBuffer( "cg_fixServerTime", buf, sizeof(buf) );
+
+		if (atoi(buf)) {
+			// give it some headroom to avoid negative time values
+			bias = 4096 - serverTime;
+			// may help with client synchronization in some cases
+			bias += serverTime & 4095;
+		}
+	}
+
+	return serverTime + bias;
+}
+
+/*
+=================
 CG_DrawActiveFrame
 
 Generates and draws a game scene and status information at the given time.
@@ -1541,7 +1570,8 @@ Generates and draws a game scene and status information at the given time.
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
 	int		inwater;
 
-	cg.time = serverTime;
+	cg.time = CG_TimeBias( serverTime );
+	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
 
 	if (cg.snap && ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
@@ -1583,7 +1613,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	if (cg.snap && cg.snap->ps.saberLockTime > cg.time)
+	if (cg.snap && cg.snap->ps.saberLockTime > cg.serverTime)
 	{
 		trap_SetUserCmdValue( cg.weaponSelect, 0.01f, cg.forceSelect, cg.itemSelect );
 	}

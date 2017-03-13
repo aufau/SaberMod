@@ -408,7 +408,7 @@ static void CG_DrawZoomMask( void )
 			trap_R_SetColor( colorTable[CT_WHITE] );
 
 			// draw the charge level
-			max = ( cg.time - cg.predictedPlayerState.weaponChargeTime ) / ( 50.0f * 30.0f ); // bad hardcodedness 50 is disruptor charge unit and 30 is max charge units allowed.
+			max = ( cg.serverTime - cg.predictedPlayerState.weaponChargeTime ) / ( 50.0f * 30.0f ); // bad hardcodedness 50 is disruptor charge unit and 30 is max charge units allowed.
 
 			if ( max > 1.0f )
 			{
@@ -1938,12 +1938,12 @@ static float CG_DrawTimer( float y ) {
 
 		msec = cgs.timelimit * 60 * 1000;
 		if (!cg.warmup) {
-			msec -= cg.time - cgs.levelStartTime;
+			msec -= cg.serverTime - cgs.levelStartTime;
 			// intermission or overtime
 			msec = msec > 0 ? msec + 1000 : - msec;
 		}
 	} else {
-		msec = MAX(0, cg.time - cgs.levelStartTime);
+		msec = MAX(0, cg.serverTime - cgs.levelStartTime);
 	}
 
 	seconds = msec / 1000;
@@ -2170,9 +2170,9 @@ static void CG_DrawPowerupIcons(int y)
 
 	for (j = 0; j < PW_NUM_POWERUPS; j++)
 	{
-		if (cg.snap->ps.powerups[j] > cg.time)
+		if (cg.snap->ps.powerups[j] > cg.serverTime)
 		{
-			int secondsleft = (cg.snap->ps.powerups[j] - cg.time)/1000;
+			int secondsleft = (cg.snap->ps.powerups[j] - cg.serverTime)/1000;
 
 			item = BG_FindItemForPowerup( (powerup_t)j );
 
@@ -2353,7 +2353,7 @@ Adds the current interpolate / extrapolate bar for this frame
 void CG_AddLagometerFrameInfo( void ) {
 	int			offset;
 
-	offset = cg.time - cg.latestSnapshotTime;
+	offset = cg.serverTime - cg.latestSnapshotTime;
 	lagometer.frameSamples[ lagometer.frameCount & ( LAG_SAMPLES - 1) ] = offset;
 	lagometer.frameCount++;
 }
@@ -2412,7 +2412,7 @@ static void CG_DrawDisconnect( void ) {
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &cmd );
 	if ( cmd.serverTime <= cg.snap->ps.commandTime
-		|| cmd.serverTime > cg.time ) {	// special check for map_restart // bk 0102165 - FIXME
+		|| cmd.serverTime > cg.serverTime ) {	// special check for map_restart // bk 0102165 - FIXME
 		return;
 	}
 
@@ -3023,7 +3023,7 @@ static void CG_DrawActivePowers(void)
 	}
 
 	//additionally, draw an icon force force rage recovery
-	if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+	if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
 	{
 		CG_DrawPic( startx, starty, endx, endy, cgs.media.rageRecShader);
 	}
@@ -3039,7 +3039,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 	static	int oldDif = 0;
 	centity_t *cent = &cg_entities[lockEntNum];
 	vec4_t color={0.0f,0.0f,0.0f,0.0f};
-	int dif = ( cg.time - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
+	int dif = ( cg.serverTime - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
 	int i;
 
 	if (!cg.snap->ps.rocketLockTime)
@@ -3449,7 +3449,7 @@ static void CG_DrawVote(void) {
 //		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 	}
 
-	sec = ( VOTE_TIME - ( cg.time - cgs.voteTime ) ) / 1000;
+	sec = ( VOTE_TIME - ( cg.serverTime - cgs.voteTime ) ) / 1000;
 	if ( sec < 0 ) {
 		sec = 0;
 	}
@@ -3489,7 +3489,7 @@ static void CG_DrawTeamVote(void) {
 //		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 	}
 
-	sec = ( VOTE_TIME - ( cg.time - cgs.teamVoteTime[cs_offset] ) ) / 1000;
+	sec = ( VOTE_TIME - ( cg.serverTime - cgs.teamVoteTime[cs_offset] ) ) / 1000;
 	if ( sec < 0 ) {
 		sec = 0;
 	}
@@ -3764,7 +3764,7 @@ static void CG_DrawWarmup( void ) {
 		CG_Text_Paint(320 - w / 2, 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}
 
-	sec = ( sec - cg.time );
+	sec = ( sec - cg.serverTime );
 	if ( sec < 0 ) {
 		cg.warmup = 0;
 		sec = 0;
@@ -3944,14 +3944,14 @@ CG_Draw2D
 =================
 */
 static void CG_Draw2D( void ) {
-	float			inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
-	float			wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
-	float			bestTime;
+	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
+	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
+	int				bestTime;
 	int				drawSelect = 0;
 	float			fallTime, rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
 	vec4_t			hcolor;
 #ifdef MISSIONPACK
-	if (cgs.orderPending && cg.time > cgs.orderTime) {
+	if (cgs.orderPending && cg.serverTime > cgs.orderTime) {
 		CG_CheckOrderPending();
 	}
 #endif
@@ -4048,7 +4048,7 @@ static void CG_Draw2D( void ) {
 				rageTime = 0.15f;
 			}
 
-			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
 			{
 				float checkRageRecTime = rageTime;
 
@@ -4080,7 +4080,7 @@ static void CG_Draw2D( void ) {
 			}
 			else
 			{
-				if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+				if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
 				{
 					hcolor[3] = 0.15f;
 					hcolor[0] = 0.2f;
@@ -4091,7 +4091,7 @@ static void CG_Draw2D( void ) {
 				cgRageTime = 0;
 			}
 		}
-		else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+		else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
 		{
 			if (!cgRageRecTime)
 			{
@@ -4298,7 +4298,7 @@ static void CG_Draw2D( void ) {
 			}
 		}
 
-		if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.time - cg.snap->ps.rocketLockTime) > 0)
+		if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.serverTime - cg.snap->ps.rocketLockTime) > 0)
 		{
 			CG_DrawRocketLocking( cg.snap->ps.rocketLockIndex, cg.snap->ps.rocketLockTime );
 		}
@@ -4373,7 +4373,7 @@ static void CG_Draw2D( void ) {
 		}
 	}
 
-	if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.time - cg.snap->ps.rocketLockTime) > 0)
+	if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.serverTime - cg.snap->ps.rocketLockTime) > 0)
 	{
 		CG_DrawRocketLocking( cg.snap->ps.rocketLockIndex, cg.snap->ps.rocketLockTime );
 	}
@@ -4382,7 +4382,7 @@ static void CG_Draw2D( void ) {
 	{
 		CG_DrawHolocronIcons();
 	}
-	if (cg.snap->ps.fd.forcePowersActive || cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+	if (cg.snap->ps.fd.forcePowersActive || cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
 	{
 		CG_DrawActivePowers();
 	}
@@ -4475,7 +4475,7 @@ static void CG_Draw2D( void ) {
 
 	if (cg.snap->ps.fallingToDeath)
 	{
-		fallTime = (float)(cg.time - cg.snap->ps.fallingToDeath);
+		fallTime = (float)(cg.serverTime - cg.snap->ps.fallingToDeath);
 
 		fallTime /= (FALL_FADE_TIME/2);
 
