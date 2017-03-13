@@ -6742,9 +6742,7 @@ doEssentialTwo:
 				}
 				else if (renderedHolos == 1)
 				{
-					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
-					if (angle > (float) M_PI * 2)
-						angle -= (float) M_PI * 2;
+					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255) + (float)M_PI;
 					dir[0] = sinf(angle) * 20;
 					dir[1] = cosf(angle) * 20;
 					dir[2] = cosf(angle) * 20;
@@ -6759,9 +6757,7 @@ doEssentialTwo:
 				}
 				else
 				{
-					angle = ((cg.serverTime / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
-					if (angle > (float) M_PI * 2)
-						angle -= (float) M_PI * 2;
+					angle = ((cg.serverTime / 6) & 255) * (float) (M_PI * 2 / 255) + (float)(0.5 * M_PI);
 					dir[0] = sinf(angle) * 20;
 					dir[1] = cosf(angle) * 20;
 					dir[2] = 0;
