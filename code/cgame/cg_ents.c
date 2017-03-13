@@ -946,13 +946,13 @@ static void CG_General( centity_t *cent ) {
 					minusExt += 360;
 				}
 
-				trap_SetClientTurnExtent(minusExt, plusExt, cg.time+5000);
+				trap_SetClientTurnExtent(minusExt, plusExt, cg.serverTime + 5000);
 
 				VectorCopy(empAngles, cent->turAngles);
 			}
 			else if (cg.snap->ps.clientNum == empOwn->currentState.number)
 			{
-				trap_SetClientForceAngle(cg.time+5000, cent->turAngles);
+				trap_SetClientForceAngle(cg.serverTime + 5000, cent->turAngles);
 			}
 
 		//	empAngles[PITCH] -= 160;
@@ -1110,10 +1110,10 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
-	if ( cent->currentState.time > cg.time && cent->currentState.weapon == WP_EMPLACED_GUN )
+	if ( cent->currentState.time > cg.serverTime && cent->currentState.weapon == WP_EMPLACED_GUN )
 	{
 		// make the gun pulse red to warn about it exploding
-		val = (1.0f - (float)(cent->currentState.time - cg.time) / 3200.0f ) * 0.3f;
+		val = (1.0f - (float)(cent->currentState.time - cg.serverTime) / 3200.0f ) * 0.3f;
 
 		ent.customShader = trap_R_RegisterShader( "gfx/effects/turretflashdie" );
 		ent.shaderRGBA[0] = (sinf( cg.time * 0.04f ) * val * 0.4f + val) * 255;
@@ -1928,7 +1928,7 @@ static void CG_Missile( centity_t *cent ) {
 		if ( weapon->altMissileSound ) {
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->altMissileSound );
 		}
@@ -1955,7 +1955,7 @@ static void CG_Missile( centity_t *cent ) {
 		{
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->missileSound );
 		}
@@ -2349,14 +2349,14 @@ void CG_CalcEntityLerpPositions( centity_t *cent ) {
 	}
 
 	// just use the current frame and evaluate as best we can
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
+	BG_EvaluateTrajectory( &cent->currentState.pos, cg.serverTime, cent->lerpOrigin );
+	BG_EvaluateTrajectory( &cent->currentState.apos, cg.serverTime, cent->lerpAngles );
 
 	// adjust for riding a mover if it wasn't rolled into the predicted
 	// player state
 	if ( cent != &cg.predictedPlayerEntity ) {
 		CG_AdjustPositionForMover( cent->lerpOrigin, cent->currentState.groundEntityNum,
-		cg.snap->serverTime, cg.time, cent->lerpOrigin );
+		cg.snap->serverTime, cg.serverTime, cent->lerpOrigin );
 	}
 /*
 Ghoul2 Insert Start

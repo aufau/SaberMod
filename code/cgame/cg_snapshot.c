@@ -37,11 +37,11 @@ CG_ResetEntity
 static void CG_ResetEntity( centity_t *cent ) {
 	// if the previous snapshot this entity was updated in is at least
 	// an event window back in time then we can reset the previous event
-	if ( cent->snapShotTime < cg.time - EVENT_VALID_MSEC ) {
+	if ( cent->snapShotTime < cg.serverTime - EVENT_VALID_MSEC ) {
 		cent->previousEvent = 0;
 	}
 
-	cent->trailTime = cg.snap->serverTime;
+	cent->trailTime = cg.time + (cg.snap->serverTime - cg.serverTime);
 
 	VectorCopy (cent->currentState.origin, cent->lerpOrigin);
 	VectorCopy (cent->currentState.angles, cent->lerpAngles);
@@ -389,7 +389,7 @@ void CG_ProcessSnapshots( void ) {
 		}
 
 		// if our time is < nextFrame's, we have a nice interpolating state
-		if ( cg.time >= cg.snap->serverTime && cg.time < cg.nextSnap->serverTime ) {
+		if ( cg.serverTime >= cg.snap->serverTime && cg.serverTime < cg.nextSnap->serverTime ) {
 			break;
 		}
 
@@ -401,11 +401,11 @@ void CG_ProcessSnapshots( void ) {
 	if ( cg.snap == NULL ) {
 		CG_Error( "CG_ProcessSnapshots: cg.snap == NULL" );
 	}
-	if ( cg.time < cg.snap->serverTime ) {
+	if ( cg.serverTime < cg.snap->serverTime ) {
 		// this can happen right after a vid_restart
-		cg.time = cg.snap->serverTime;
+		cg.serverTime = cg.snap->serverTime;
 	}
-	if ( cg.nextSnap != NULL && cg.nextSnap->serverTime <= cg.time ) {
+	if ( cg.nextSnap != NULL && cg.nextSnap->serverTime <= cg.serverTime ) {
 		CG_Error( "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
 	}
 
@@ -417,7 +417,7 @@ void CG_ProcessSnapshots( void ) {
 		if ( delta == 0 ) {
 			cg.frameInterpolation = 0;
 		} else {
-			cg.frameInterpolation = (float)( cg.time - cg.snap->serverTime ) / delta;
+			cg.frameInterpolation = (float)( cg.serverTime - cg.snap->serverTime ) / delta;
 		}
 	} else {
 		cg.frameInterpolation = 0;	// actually, it should never be used, because

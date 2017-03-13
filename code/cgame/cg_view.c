@@ -603,7 +603,7 @@ static void CG_OffsetThirdPersonView( void )
 				stiffFactor = 0.0f;
 			}
 		} else {
-			stiffFactor = deltayaw / (cg.time - cg.oldTime);
+			stiffFactor = deltayaw / cg.frametime;
 		}
 		if (stiffFactor < 1.0f)
 		{
@@ -1050,7 +1050,7 @@ static int CG_CalcFov( void ) {
 		}
 		else
 		{
-			f = ( cg.time - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
+			f = ( cg.serverTime - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
 			if ( f < 1.0f ) {
 				fov_x = zoomFov + f * (fov_x - zoomFov);
@@ -1320,15 +1320,17 @@ static void CG_PowerupTimerSounds( void ) {
 	// powerup timers going away
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
 		t = cg.snap->ps.powerups[i];
-		if ( t <= cg.time ) {
+		if ( t <= cg.serverTime ) {
 			continue;
 		}
-		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
+		if ( t - cg.serverTime >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
 			continue;
 		}
-		if ( ( t - cg.time ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
-			//trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
+		/*
+		if ( ( t - cg.serverTime ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
+			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
 		}
+		*/
 	}
 }
 
@@ -1541,7 +1543,8 @@ Generates and draws a game scene and status information at the given time.
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
 	int		inwater;
 
-	cg.time = serverTime;
+	cg.time += serverTime - cg.serverTime
+	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
 
 	if (cg.snap && ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
@@ -1583,7 +1586,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	if (cg.snap && cg.snap->ps.saberLockTime > cg.time)
+	if (cg.snap && cg.snap->ps.saberLockTime > cg.serverTime)
 	{
 		trap_SetUserCmdValue( cg.weaponSelect, 0.01f, cg.forceSelect, cg.itemSelect );
 	}

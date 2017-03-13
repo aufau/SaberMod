@@ -692,10 +692,10 @@ typedef struct {
 	qboolean	nextFrameTeleport;
 
 	int			frametime;		// cg.time - cg.oldTime
-
-	int			time;			// this is the time value that the client
-								// is rendering at.
-	int			oldTime;		// time at last frame, used for missile trails and prediction checking
+	int			serverTime;		// cl.serverTime
+	int			time;			// time since an initialization of CGame module
+								// used for renderer, effects and ghoul2 submodules
+	int			oldTime;		// time at last frame
 
 	int			physicsTime;	// either cg.snap->time or cg.nextSnap->time
 
