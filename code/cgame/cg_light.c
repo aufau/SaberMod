@@ -60,7 +60,7 @@ void CG_RunLightStyles (void)
 	int		i;
 	clightstyle_t	*ls;
 
-	ofs = cg.time / 50;
+	ofs = cg.serverTime / 50;
 //	if (ofs == lastofs)
 //		return;
 	lastofs = ofs;

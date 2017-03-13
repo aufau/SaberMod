@@ -6115,7 +6115,7 @@ void CG_Player( centity_t *cent ) {
 		seeker.renderfx = 0; //renderfx;
 							 //don't show in first person?
 
-		angle = ((cg.time / 12) & 255) * (float) (M_PI * 2 / 255);
+		angle = ((cg.serverTime / 12) & 255) * (float) (M_PI * 2 / 255);
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -6727,7 +6727,7 @@ doEssentialTwo:
 
 				if (renderedHolos == 0)
 				{
-					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255);
+					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255);
 					dir[0] = cosf(angle) * 20;
 					dir[1] = sinf(angle) * 20;
 					dir[2] = cosf(angle) * 20;
@@ -6742,7 +6742,7 @@ doEssentialTwo:
 				}
 				else if (renderedHolos == 1)
 				{
-					angle = ((cg.time / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
+					angle = ((cg.serverTime / 8) & 255) * (float) (M_PI * 2 / 255 + M_PI);
 					if (angle > (float) M_PI * 2)
 						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;
@@ -6759,7 +6759,7 @@ doEssentialTwo:
 				}
 				else
 				{
-					angle = ((cg.time / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
+					angle = ((cg.serverTime / 6) & 255) * (float) (M_PI * 2 / 255 + 0.5 * M_PI);
 					if (angle > (float) M_PI * 2)
 						angle -= (float) M_PI * 2;
 					dir[0] = sinf(angle) * 20;

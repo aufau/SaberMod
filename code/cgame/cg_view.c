@@ -1410,7 +1410,7 @@ void CG_SE_UpdateShake( vec3_t origin, vec3_t angles )
 	if ( cgScreenEffects.shake_duration <= 0 )
 		return;
 
-	if ( cg.time > ( cgScreenEffects.shake_start + cgScreenEffects.shake_duration ) )
+	if ( cg.serverTime > ( cgScreenEffects.shake_start + cgScreenEffects.shake_duration ) )
 	{
 		cgScreenEffects.shake_intensity = 0;
 		cgScreenEffects.shake_duration = 0;
@@ -1422,7 +1422,7 @@ void CG_SE_UpdateShake( vec3_t origin, vec3_t angles )
 	cgScreenEffects.FOV2 = CAMERA_DEFAULT_FOV;
 
 	//intensity_scale now also takes into account FOV with 90.0 as normal
-	intensity_scale = 1.0f - ( (float) ( cg.time - cgScreenEffects.shake_start ) / (float) cgScreenEffects.shake_duration ) * (((cgScreenEffects.FOV+cgScreenEffects.FOV2)/2.0f)/90.0f);
+	intensity_scale = 1.0f - ( (float) ( cg.serverTime - cgScreenEffects.shake_start ) / (float) cgScreenEffects.shake_duration ) * (((cgScreenEffects.FOV+cgScreenEffects.FOV2)/2.0f)/90.0f);
 
 	intensity = cgScreenEffects.shake_intensity * intensity_scale;
 
@@ -1507,7 +1507,7 @@ void CGCam_Shake( float intensity, int duration )
 
 	cgScreenEffects.shake_intensity = intensity;
 	cgScreenEffects.shake_duration = duration;
-	cgScreenEffects.shake_start = cg.time;
+	cgScreenEffects.shake_start = cg.serverTime;
 }
 
 void CGCam_SetMusicMult( float multiplier, int duration )

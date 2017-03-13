@@ -1853,7 +1853,7 @@ Ghoul2 Insert End
 				if ( item->giType == IT_POWERUP )
 				{
 					ent.origin[2] += 12;
-					spinAngles[1] = ( cg.time & 1023 ) * 360 / -1024.0f;
+					spinAngles[1] = ( cg.serverTime & 1023 ) * 360 / -1024.0f;
 				}
 				AnglesToAxis( spinAngles, ent.axis );
 
@@ -2128,7 +2128,7 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 	// flicker between two skins (FIXME?)
-	ent.skinNum = ( cg.time >> 6 ) & 1;
+	ent.skinNum = ( cg.serverTime >> 6 ) & 1;
 
 	// get the model, either as a bmodel or a modelindex
 	if ( s1->solid == SOLID_BMODEL )
@@ -2501,11 +2501,11 @@ void CG_AddPacketEntities( void ) {
 
 	// the auto-rotating items will all have the same axis
 	cg.autoAngles[0] = 0;
-	cg.autoAngles[1] = ( cg.time & 2047 ) * 360 / 2048.0f;
+	cg.autoAngles[1] = ( cg.serverTime & 2047 ) * 360 / 2048.0f;
 	cg.autoAngles[2] = 0;
 
 	cg.autoAnglesFast[0] = 0;
-	cg.autoAnglesFast[1] = ( cg.time & 1023 ) * 360 / 1024.0f;
+	cg.autoAnglesFast[1] = ( cg.serverTime & 1023 ) * 360 / 1024.0f;
 	cg.autoAnglesFast[2] = 0;
 
 	AnglesToAxis( cg.autoAngles, cg.autoAxis );
