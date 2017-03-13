@@ -775,6 +775,8 @@ void CG_RegisterCvars( void ) {
 	//trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "forcepowers", DEFAULT_FORCEPOWERS, CVAR_USERINFO | CVAR_ARCHIVE );
 
+	trap_Cvar_Register(NULL, "cg_fixServerTime", "1", CVAR_LATCH | CVAR_ARCHIVE );
+
 	// Cvars uses for transferring data between client and server
 	trap_Cvar_Register(NULL, "ui_about_gametype",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_fraglimit",		"0", CVAR_ROM|CVAR_INTERNAL );

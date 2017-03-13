@@ -1535,6 +1535,33 @@ Screen Effect stuff ends here
 
 /*
 =================
+CG_TimeBias
+
+Bias serverTime so that its value is low enough to fit into a single
+precision float (at least for 4h39m after CGame initialization).
+=================
+*/
+static int CG_TimeBias( int serverTime ) {
+	static int	bias = 0;
+
+	if (cg.time == 0) {
+		char buf[2];
+
+		trap_Cvar_VariableStringBuffer( "cg_fixServerTime", buf, sizeof(buf) );
+
+		if (atoi(buf)) {
+			// give it some headroom to avoid negative time values
+			bias = 4096 - serverTime;
+			// may help with client synchronization in some cases
+			bias += serverTime & 4095;
+		}
+	}
+
+	return serverTime + bias;
+}
+
+/*
+=================
 CG_DrawActiveFrame
 
 Generates and draws a game scene and status information at the given time.
@@ -1543,7 +1570,7 @@ Generates and draws a game scene and status information at the given time.
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
 	int		inwater;
 
-	cg.time += serverTime - cg.serverTime
+	cg.time = CG_TimeBias( serverTime );
 	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
 

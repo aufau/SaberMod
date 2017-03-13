@@ -108,6 +108,9 @@ cg_privateDuel <0|1>
   Hide all other players and entities when duelling. Available only
   on server running JK2MV 1.2 or newer.
 
+cg_fixServerTime <0|1>
+  Fix various engine issues on servers running for a few days.
+
 Spectating
 ..........
 
