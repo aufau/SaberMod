@@ -6115,7 +6115,7 @@ void CG_Player( centity_t *cent ) {
 		seeker.renderfx = 0; //renderfx;
 							 //don't show in first person?
 
-		angle = ((cg.serverTime / 12) & 255) * (float) (M_PI * 2 / 255);
+		angle = (cg.serverTime % 3072) * (float) (M_PI * 2 / 3072);
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
