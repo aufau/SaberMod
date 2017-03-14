@@ -1832,8 +1832,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
 		return;
 	}
+	/*
 	if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXVOTES")) );
+		return;
+	}
+	*/
+	if ( ent->s.number == level.voteClient && level.voteCooldown > level.time ) {
+		trap_SendServerCommand( ent-g_entities,
+			va("print \"You must wait %d seconds before calling a new vote.\n\"", g_voteCooldown.integer) );
 		return;
 	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
@@ -2053,6 +2060,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	level.voteTime = level.time;
 	level.voteYes = 1;
 	level.voteNo = 0;
+	level.voteClient = ent->s.number;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;
@@ -2130,10 +2138,12 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADY")) );
 		return;
 	}
+	/*
 	if ( ent->client->pers.teamVoteCount >= MAX_VOTE_COUNT ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXTEAMVOTES")) );
 		return;
 	}
+	*/
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSPECVOTE")) );
 		return;

@@ -156,6 +156,7 @@ vmCvar_t	g_roundWarmup;
 vmCvar_t	g_noKick;
 vmCvar_t	g_infiniteAmmo;
 vmCvar_t	g_instagib;
+vmCvar_t	g_voteCooldown;
 
 
 int gDuelist1 = -1;
@@ -320,6 +321,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -2437,6 +2439,7 @@ CheckVote
 void CheckVote( void ) {
 	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
 		level.voteExecuteTime = 0;
+		level.voteCooldown = level.time + g_voteCooldown.integer * 1000;
 
 		if (level.voteCmd == CV_POLL)
 		{

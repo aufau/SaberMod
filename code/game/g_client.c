@@ -1479,6 +1479,10 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	} else {
 		client->prof.ip = ip;
 		client->prof.qport = qport;
+
+		if ( level.voteClient == clientNum ) {
+			level.voteCooldown = 0;
+		}
 	}
 
 	client->pers.connected = CON_CONNECTING;

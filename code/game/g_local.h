@@ -411,8 +411,8 @@ typedef struct {
 	int			maxHealth;			// for handicapping
 	int			enterTime;			// level.time the client entered the game
 	playerTeamState_t teamState;	// status in teamplay games
-	int			voteCount;			// to prevent people from constantly calling votes
-	int			teamVoteCount;		// to prevent people from constantly calling votes
+//	int			voteCount;			// to prevent people from constantly calling votes
+//	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
 	int			totalDamageTakenFromEnemies;
 	int			totalDamageDealtToEnemies;
@@ -574,9 +574,11 @@ typedef struct {
 	int			voteYes;
 	int			voteNo;
 	int			numVotingClients;		// set by CalculateRanks
+	int			voteCooldown;			// when voteClient may call a new vote
 
 	voteCommand_t	voteCmd;			// current vote
 	int			voteArg;				// vote argument for CheckVote
+	int			voteClient;				// client who called current/last vote
 
 	// team voting state
 	char		teamVoteString[2][MAX_STRING_CHARS];
@@ -1181,6 +1183,7 @@ extern	vmCvar_t	g_spawnWeapons;
 extern  vmCvar_t	g_noKick;
 extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
+extern	vmCvar_t	g_voteCooldown;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

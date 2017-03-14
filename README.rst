@@ -249,6 +249,9 @@ g_spawnWeapons <bitmask>
   spawned on a map. Setting this cvar to 0 restores original behaviour
   of `g_weaponDisable`.
 
+g_voteCooldown <seconds>
+  How long a player has to wait before he can call another vote.
+
 roundlimit <limit>
   Number of rounds in a round-based match.
 
