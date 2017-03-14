@@ -183,8 +183,7 @@ static int G_GetMapTypeBits(const char *type)
 	return typeBits;
 }
 
-#ifdef UNUSED
-qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
+qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype)
 {
 	int			typeBits = 0;
 	int			thisLevel = -1;
@@ -217,6 +216,17 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 		return qfalse;
 	}
 
+	switch (gametype) {
+	case GT_FFA:
+	case GT_TEAM:
+	case GT_TOURNAMENT:
+	case GT_REDROVER:
+	case GT_CLANARENA:
+		return qtrue;
+	default:
+		break;
+	}
+
 	type = Info_ValueForKey(g_arenaInfos[thisLevel], "type");
 
 	typeBits = G_GetMapTypeBits(type);
@@ -227,7 +237,6 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 
 	return qfalse;
 }
-#endif // UNUSED
 
 //rww - auto-obtain nextmap. I could've sworn Q3 had something like this, but I guess not.
 const char *G_RefreshNextMap(int gametype, qboolean forced)

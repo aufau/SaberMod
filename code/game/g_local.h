@@ -998,7 +998,7 @@ qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
 void Svcmd_BotList_f( void );
 void BotInterbreedEndMatch( void );
-qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
+qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
 // w_force.c / w_saber.c
