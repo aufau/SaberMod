@@ -114,13 +114,13 @@ cg_fixServerTime <0|1>
 Spectating
 ..........
 
-As spectator `+use` button makes you change followed player using
+As a spectator, `+use` button makes you change followed player using
 "smart cycle" mode. It will switch between duelling players, search
 for a next powerup player or cycle through current team in a
 scoreboard order.
 
-As free floating spectator you can target a player with your crosshair
-and press `+attack` button to start following him.
+As a free floating spectator you can target a player with your
+crosshair and press `+attack` button to start following him.
 
 Server-Side
 -----------
@@ -293,9 +293,9 @@ included modes and `reset.cfg` as an example.
 
 Other type of modes can change a specific rule instead of loading full
 game config. For example one could create "Kicks On" mode that changes
-g_noKicks value to 0. In such scenario it's be best to also include a
-mode reverting to original state: "Kicks Off", or reset affected cvars
-in `reset.cfg`.
+g_kickMethod value to 1. In such scenario it's be best to also include
+a mode reverting to original state: "Kicks Off", or reset affected
+cvars in `reset.cfg`.
 
 Server can be configured to go back to a default mode after a period
 of inactivity. To do so last lines of the main server config should
@@ -357,8 +357,8 @@ software. Read LICENSE.txt and README-raven.txt to learn
 more. According to the license, among other things, you are obliged to
 distribute full source code of your mod alongside of it, or at least a
 written offer to ship it (eg a HTTP download link inside a .pk3
-file). Moreover, any mod using patches from this repository **has to**
-be released under GPLv2.
+file). Moreover, any mod using patches from this repository **must**
+be released under GPLv2 or a compatible license.
 
 Q3ASM is Copyright (c) id Software and ioquake3 developers.
 
@@ -367,7 +367,7 @@ Authors
 
 * id Software 1999-2000
 * Raven Software 1999-2002
-* SaberMod team 2015-2017
+* SaberMod developers 2015-2017
 
   + Witold *fau* Piłat <witold.pilat@gmail.com> 2015-2017
   + Dziablo 2015-2016
@@ -375,15 +375,17 @@ Authors
 Thanks
 ------
 
-* Daggolin (boy) - Technical discussion, sharing patches and his JK2
-  modding expertise.
 * Miso - Sending patches, testing, promoting SaberMod by hosting
   servers and events.
+* Daggolin (boy) - Technical discussion, sharing patches and his JK2
+  modding expertise.
 * Xycaleth - Creating League mod that was a great inspiration to
   SaberMod and sharing it's source code.
+* ouned - Engine and modding expertise.
 * Developers of jk2mv, mvsdk, Jedi Academy, OpenJK, ioq3, jomme, JA++
   (japp), League Mod and other open source id tech 3 mods for various
   code bugfixes.
+* Players who help testing and improving SaberMod on a daily basis.
 
 .. _GitHub : https://github.com/aufau/SaberMod
 .. _`JK2 SDK GPL`: https://github.com/aufau/jk2sdk-gpl
