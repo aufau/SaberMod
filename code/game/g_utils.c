@@ -558,9 +558,7 @@ void G_KillG2Queue(int entNum)
 #ifdef _DEBUG
 		Com_Printf("WARNING: Exceeded the MAX_G2_KILL_QUEUE count for this frame!\n");
 #endif
-		//Since we're out of queue slots, just send it now as a seperate command (eats more bandwidth, but we have no choice)
-		trap_SendServerCommand(-1, va("kg2 %i", entNum));
-		return;
+		G_SendG2KillQueue();
 	}
 
 	gG2KillIndex[gG2KillNum] = entNum;
