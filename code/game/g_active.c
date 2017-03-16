@@ -1384,6 +1384,10 @@ void ClientThink_real( gentity_t *ent ) {
 		ent->client->ps.fallingToDeath = 0;
 
 		G_MuteSound(ent->s.number, CHAN_VOICE); //stop screaming, because you are dead!
+
+		// ClientThink_real is called in G_Respawn with updated
+		// gclient_t state, don't continue here
+		goto reset_contents;
 	}
 
 	if (ent->client->ps.otherKillerTime > level.time &&
