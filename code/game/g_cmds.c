@@ -1042,7 +1042,7 @@ argCheck:
 		return;
 	}
 
-	if (trap_Argc() > 1)
+	if (trap_Argc() > 1 && !level.intermissionQueued && !level.intermissiontime)
 	{
 		//if there's an arg, assume it's a combo team command from the UI.
 		Cmd_Team_f(ent);
