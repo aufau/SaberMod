@@ -314,6 +314,8 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 	case PM_INTERMISSION:
 	case PM_SPINTERMISSION:
 		return;
+	default:
+		break;
 	}
 
 	VectorCopy (self->s.origin2, activator->client->ps.velocity);

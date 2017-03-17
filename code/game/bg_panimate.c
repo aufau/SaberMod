@@ -907,6 +907,8 @@ static void PM_StartLegsAnim( animNumber_t anim ) {
 	case PM_INTERMISSION:
 	case PM_SPINTERMISSION:
 		return;
+	default:
+		break;
 	}
 	if ( pm->ps->legsTimer > 0 ) {
 		return;		// a high priority animation is running
@@ -975,6 +977,8 @@ void PM_StartTorsoAnim( animNumber_t anim ) {
 	case PM_INTERMISSION:
 	case PM_SPINTERMISSION:
 		return;
+	default:
+		break;
 	}
 
 	if (pm->ps->usingATST)

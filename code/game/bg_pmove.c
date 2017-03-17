@@ -4545,6 +4545,8 @@ void PmoveSingle (pmove_t *pmove) {
 		default:
 			pm->cmd.generic_cmd = 0;
 		}
+	default:
+		break;
 	}
 
 	if (pm->ps->duelInProgress && pm->ps->duelTime >= pm->cmd.serverTime)
