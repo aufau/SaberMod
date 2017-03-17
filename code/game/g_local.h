@@ -159,6 +159,7 @@ enum {
 	KICK_NOEFFECT,
 	KICK_BASEJK,
 	KICK_NODAMAGE,
+	KICK_LEAGUE,
 };
 
 //============================================================================
