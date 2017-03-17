@@ -155,6 +155,12 @@ typedef enum
 	HL_MAX
 } hitLoc_t;
 
+enum {
+	KICK_NOEFFECT,
+	KICK_BASEJK,
+	KICK_NODAMAGE,
+};
+
 //============================================================================
 
 extern void *precachedKyle;
@@ -1180,7 +1186,7 @@ extern  vmCvar_t	g_restrictSpectator;
 extern	vmCvar_t	g_spawnItems;
 extern  vmCvar_t	g_spawnShield;
 extern	vmCvar_t	g_spawnWeapons;
-extern  vmCvar_t	g_noKick;
+extern  vmCvar_t	g_kickMethod;
 extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;

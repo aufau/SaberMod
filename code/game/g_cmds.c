@@ -1984,25 +1984,14 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_KICK_MODE:
 		if ( !Q_stricmp( arg1, "nk" ) )
 		{
-			i = atoi ( arg2 );
-
-			if ( i < 1 ) {
-				i = 3;
-			}
-			if ( i > 2 ) {
-				Com_sprintf( level.voteString, sizeof( level.voteString ),
-					"dmflags %d; g_friendlyFire 1; g_noKick 3", g_dmflags.integer | DF_NO_KICK );
-				Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick" );
-			} else {
-				Com_sprintf( level.voteString, sizeof( level.voteString ),
-					"dmflags %d; g_friendlyFire 1; g_noKick %d", g_dmflags.integer & ~DF_NO_KICK, i );
-				Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "No Kick (%d)", i );
-			}
+			Com_sprintf( level.voteString, sizeof( level.voteString ),
+				"dmflags %d; g_friendlyFire 1", g_dmflags.integer | DF_NO_KICK );
+			Q_strncpyz( level.voteDisplayString, "No Kick", sizeof( level.voteDisplayString ) );
 		}
 		else
 		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"dmflags %d; g_friendlyFire 0; g_noKick 0", g_dmflags.integer & ~DF_NO_KICK );
+				"dmflags %d; g_friendlyFire 0", g_dmflags.integer & ~DF_NO_KICK );
 			Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		}
 		break;

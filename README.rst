@@ -41,11 +41,12 @@ match <0|1>
 mode [mode]
   Switch to one of admin-defined game modes.
 
-nk [mode]
-  No Kick. `mode` can be 1 - no dmg, 2 - no knockback, 3 - no kicking.
+nk
+  No Kick. Disables kicking completely and turns on friendly fire.
 
 wk
-  With Kick - default JK2 rules.
+  With Kick. Kicking mechanics depends on `g_kickMethod` value. Also
+  turns off friendly fire.
 
 poll <question>
   Ask an arbitrary question to players.
@@ -211,8 +212,12 @@ g_modeDefault <mode>
 g_modeIdleTime <minutes>
   Reset to default mode if server has been idle for this many minutes.
 
-g_noKick <0|1|2>
-  See callvote_ nk and wk.
+g_kickMethod <method>
+  Choose one of following force kick methods:
+
+  =====================  =====================  =====================
+  0 - No effect          1 - Basejk             2 - No damage
+  =====================  =====================  =====================
 
 g_restrictChat <0|1>
   Prevent spectators from speaking to players and all clients from
