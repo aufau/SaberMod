@@ -1015,6 +1015,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 	int		i, num;
     int		characters;
     int		spaces;
+	int		ats;
     char	ch;
     char	*p;
     char	*end;
@@ -1024,6 +1025,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
     end = cleanName + sizeof(cleanName) - 1;
     characters = 0;
     spaces = 0;
+	ats = 0;
 
     for ( ; *in == ' '; in++ );
 
@@ -1033,15 +1035,25 @@ static void ClientSetName( gclient_t *client, const char *in ) {
         if ( ch == ' ' ) {
             if ( spaces <= 3 ) {
                 spaces++;
+				ats = 0;
                 *p++ = ch;
             }
-        } else if ( ch == Q_COLOR_ESCAPE && Q_IsColorChar(*in) ) {
+        } else if ( ch == '@' ) {
+			if ( ats < 2 ) {
+				spaces = 0;
+				ats++;
+				characters++;
+				*p++ = ch;
+			}
+		} else if ( ch == Q_COLOR_ESCAPE && Q_IsColorChar(*in) ) {
             if ( p + 1 < end ) {
                 *p++ = ch;
-                *p++ = *in++;
+                *p++ = *in;
             }
+			in++;
         } else if ( isgraph(ch) ) {
             spaces = 0;
+			ats = 0;
             characters++;
             *p++ = ch;
         }
