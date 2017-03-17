@@ -645,7 +645,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void Cmd_SmartFollowCycle_f( gentity_t *ent );
 void Cmd_SaberAttackCycle_f(gentity_t *ent);
-int G_ItemUsable(playerState_t *ps, int forcedUse);
+int G_ItemUsable(playerState_t *ps, holdable_t forcedUse);
 void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
 

@@ -2310,7 +2310,7 @@ void Cmd_SetViewpos_f( gentity_t *ent ) {
 	TeleportPlayer( ent, origin, angles );
 }
 
-int G_ItemUsable(playerState_t *ps, int forcedUse)
+int G_ItemUsable(playerState_t *ps, holdable_t forcedUse)
 {
 	vec3_t fwd, fwdorg, dest, pos;
 	vec3_t yawonly;
