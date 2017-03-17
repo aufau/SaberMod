@@ -1727,7 +1727,7 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		gentity_t *faceKicked = &g_entities[client->ps.forceKickFlip-1];
 
-		if (faceKicked && faceKicked->client && g_noKick.integer <= 1 &&
+		if (faceKicked && faceKicked->client && g_kickMethod.integer > KICK_NOEFFECT &&
 			(!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
 			(!faceKicked->client->ps.duelInProgress || faceKicked->client->ps.duelIndex == ent->s.number) &&
 			(!ent->client->ps.duelInProgress || ent->client->ps.duelIndex == faceKicked->s.number))
@@ -1742,7 +1742,7 @@ void ClientThink_real( gentity_t *ent ) {
 				// low as 200, resulting in strength 12
 				strength = 0.05f * (int)VectorNormalize2( client->ps.velocity, oppDir );
 
-				if (g_noKick.integer) {
+				if (g_kickMethod.integer == KICK_NODAMAGE) {
 					dflag |= DAMAGE_NO_DAMAGE;
 				}
 

@@ -153,7 +153,7 @@ vmCvar_t	g_spawnShield;
 vmCvar_t	g_spawnWeapons;
 vmCvar_t	g_roundlimit;
 vmCvar_t	g_roundWarmup;
-vmCvar_t	g_noKick;
+vmCvar_t	g_kickMethod;
 vmCvar_t	g_infiniteAmmo;
 vmCvar_t	g_instagib;
 vmCvar_t	g_voteCooldown;
@@ -318,7 +318,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_noKick, "g_noKick", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_kickMethod, "g_kickMethod", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
