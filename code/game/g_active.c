@@ -1750,9 +1750,13 @@ void ClientThink_real( gentity_t *ent ) {
 
 				G_Damage( faceKicked, ent, ent, oppDir, client->ps.origin, strength, dflag, MOD_MELEE );
 
-				if ( faceKicked->client->ps.weapon != WP_SABER ||
-					 faceKicked->client->ps.fd.saberAnimLevel < FORCE_LEVEL_3 ||
-					 (!BG_SaberInAttack(faceKicked->client->ps.saberMove) && !PM_SaberInStart(faceKicked->client->ps.saberMove) && !PM_SaberInReturn(faceKicked->client->ps.saberMove) && !PM_SaberInTransition(faceKicked->client->ps.saberMove)) )
+				if (g_kickMethod.integer == KICK_LEAGUE ||
+					faceKicked->client->ps.weapon != WP_SABER ||
+					faceKicked->client->ps.fd.saberAnimLevel < FORCE_LEVEL_3 ||
+					(   !BG_SaberInAttack(faceKicked->client->ps.saberMove) &&
+						!PM_SaberInStart(faceKicked->client->ps.saberMove) &&
+						!PM_SaberInReturn(faceKicked->client->ps.saberMove) &&
+						!PM_SaberInTransition(faceKicked->client->ps.saberMove)	) )
 				{
 					if (faceKicked->health > 0 &&
 						faceKicked->client->ps.stats[STAT_HEALTH] > 0 &&
