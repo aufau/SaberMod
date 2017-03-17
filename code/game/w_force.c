@@ -4060,6 +4060,8 @@ void FindGenericEnemyIndex(gentity_t *self)
 					blen = tlen;
 					besten = ent;
 				}
+			default:
+				break;
 			}
 		}
 

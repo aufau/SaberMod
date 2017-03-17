@@ -2058,6 +2058,8 @@ void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
 	case PM_INTERMISSION:
 	case PM_SPINTERMISSION:
 		return;
+	default:
+		break;
 	}
 
 	/*
