@@ -2681,9 +2681,13 @@ static void Cmd_AddBot_f(gentity_t *ent)
 	trap_SendServerCommand( ent-g_entities, va("print \"%s.\n\"", G_GetStripEdString("SVINGAME", "ONLY_ADD_BOTS_AS_SERVER")));
 }
 
-void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
+static void Cmd_RageQuit_f(gentity_t *ent)
+{
+	trap_DropClient( ent-g_entities, S_COLOR_RED "ragequit" );
+}
 
 #ifdef _DEBUG
+void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 void ScorePlum( int clientNum, vec3_t origin, int score );
 
 static void Cmd_DebugPlum_f(gentity_t *self)
@@ -2937,6 +2941,7 @@ static const clientCommand_t commands[] = {
 	{ "vote", Cmd_Vote_f, CMD_NOINTERMISSION },
 	{ "callteamvote", Cmd_CallTeamVote_f, CMD_NOINTERMISSION },
 	{ "teamvote", Cmd_TeamVote_f, CMD_NOINTERMISSION },
+	{ "ragequit", Cmd_RageQuit_f, 0 },
 	{ "gc", Cmd_GameCommand_f, CMD_NOINTERMISSION },
 	{ "give", Cmd_Give_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "god", Cmd_God_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },

@@ -24,12 +24,15 @@ Client-Side
 Console Commands
 ................
 
-players [?]
-  List players connected to server with some additional info.
-
 follow [first|second]
   Follow first or second best player on the server. Can be used to
   stay on spectator team in Tournament gametype.
+
+players [?]
+  List players connected to server with some additional info.
+
+ragequit
+  Reserved for God, do not use.
 
 Callvote
 ........
