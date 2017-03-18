@@ -2207,15 +2207,18 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	level.teamVoteNo[cs_offset] = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if (level.clients[i].sess.sessionTeam == team)
+		if (level.clients[i].sess.sessionTeam == team) {
 			level.clients[i].ps.eFlags &= ~EF_TEAMVOTED;
+			level.clients[i].pers.teamVote = VOTE_NONE;
+		}
 	}
 	ent->client->ps.eFlags |= EF_TEAMVOTED;
+	ent->client->pers.teamVote = VOTE_YES;
 
 	trap_SetConfigstring( CS_TEAMVOTE_TIME + cs_offset, va("%i", level.teamVoteTime[cs_offset] ) );
 	trap_SetConfigstring( CS_TEAMVOTE_STRING + cs_offset, level.teamVoteString[cs_offset] );
-	trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, va("%i", level.teamVoteYes[cs_offset] ) );
-	trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
+	trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, "1" );
+	trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, "0" );
 }
 
 /*
@@ -2224,7 +2227,9 @@ Cmd_TeamVote_f
 ==================
 */
 void Cmd_TeamVote_f( gentity_t *ent ) {
-	int			team, cs_offset;
+	team_t		team;
+	vote_t		vote;
+	int			cs_offset;
 	char		msg[2];
 
 	team = ent->client->sess.sessionTeam;
@@ -2239,31 +2244,23 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOTEAMVOTEINPROG")) );
 		return;
 	}
-	if ( ent->client->ps.eFlags & EF_TEAMVOTED ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
-		return;
-	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTEASSPEC")) );
 		return;
 	}
 
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLTEAMVOTECAST")) );
-
 	ent->client->ps.eFlags |= EF_TEAMVOTED;
 
 	trap_Argv( 1, msg, sizeof( msg ) );
+	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
 
-	if ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) {
-		level.teamVoteYes[cs_offset]++;
-		trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, va("%i", level.teamVoteYes[cs_offset] ) );
+	if ( vote != ent->client->pers.teamVote ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLTEAMVOTECAST")) );
+		ent->client->pers.teamVote = vote;
+		CalculateRanks();
 	} else {
-		level.teamVoteNo[cs_offset]++;
-		trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
 	}
-
-	// a majority will be determined in TeamCheckVote, which will also account
-	// for players entering or leaving
 }
 
 

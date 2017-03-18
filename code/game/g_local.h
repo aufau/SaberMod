@@ -437,6 +437,7 @@ typedef struct {
 	int			accuracy_hits;		// total number of hits
 	qboolean	privateDuel;
 	vote_t		vote;
+	vote_t		teamVote;
 
 	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
