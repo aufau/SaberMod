@@ -2053,13 +2053,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;
+		level.clients[i].pers.vote = VOTE_NONE;
 	}
 	ent->client->ps.eFlags |= EF_VOTED;
+	ent->client->pers.vote = VOTE_YES;
 
 	trap_SetConfigstring( CS_VOTE_TIME, va("%i", level.voteTime ) );
 	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );
-	trap_SetConfigstring( CS_VOTE_YES, va("%i", level.voteYes ) );
-	trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );
+	trap_SetConfigstring( CS_VOTE_YES, "1" );
+	trap_SetConfigstring( CS_VOTE_NO, "0" );
 }
 
 /*
@@ -2069,13 +2071,10 @@ Cmd_Vote_f
 */
 void Cmd_Vote_f( gentity_t *ent ) {
 	char		msg[2];
+	vote_t		vote;
 
 	if ( !level.voteTime ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTEINPROG")) );
-		return;
-	}
-	if ( ent->client->ps.eFlags & EF_VOTED ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEALREADY")) );
 		return;
 	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
@@ -2083,22 +2082,18 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		return;
 	}
 
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );
-
 	ent->client->ps.eFlags |= EF_VOTED;
 
 	trap_Argv( 1, msg, sizeof( msg ) );
+	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
 
-	if ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) {
-		level.voteYes++;
-		trap_SetConfigstring( CS_VOTE_YES, va("%i", level.voteYes ) );
+	if ( vote != ent->client->pers.vote ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );
+		ent->client->pers.vote = vote;
+		CalculateRanks();
 	} else {
-		level.voteNo++;
-		trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEALREADY")) );
 	}
-
-	// a majority will be determined in CheckVote, which will also account
-	// for players entering or leaving
 }
 
 /*
