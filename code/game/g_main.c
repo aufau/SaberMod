@@ -1179,6 +1179,7 @@ void CalculateRanks( void ) {
 	int		score;
 	int		newScore;
 	int		voteCount[VOTE_MAX] = { 0 };
+	int		teamVoteCount[2][VOTE_MAX] = { 0 };
 	// int		preNumSpec = level.numNonSpectatorClients;
 	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
@@ -1203,10 +1204,13 @@ void CalculateRanks( void ) {
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 						level.numVotingClients++;
 						voteCount[level.clients[i].pers.vote]++;
-						if ( level.clients[i].sess.sessionTeam == TEAM_RED )
+						if ( level.clients[i].sess.sessionTeam == TEAM_RED ) {
 							level.numteamVotingClients[0]++;
-						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
+							teamVoteCount[0][level.clients[i].pers.teamVote]++;
+						} else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE ) {
 							level.numteamVotingClients[1]++;
+							teamVoteCount[1][level.clients[i].pers.teamVote]++;
+						}
 					}
 				}
 			}
@@ -1217,6 +1221,13 @@ void CalculateRanks( void ) {
 	trap_SetConfigstring( CS_VOTE_NO, va("%i", voteCount[VOTE_NO] ) );
 	level.voteYes = voteCount[VOTE_YES];
 	level.voteNo = voteCount[VOTE_NO];
+
+	for ( i = 0; i < 2; i++ ) {
+		trap_SetConfigstring( CS_TEAMVOTE_YES + i, va("%i", teamVoteCount[i][VOTE_YES] ) );
+		trap_SetConfigstring( CS_TEAMVOTE_NO + i, va("%i", teamVoteCount[i][VOTE_NO] ) );
+		level.teamVoteYes[i] = teamVoteCount[i][VOTE_YES];
+		level.teamVoteNo[i] = teamVoteCount[i][VOTE_NO];
+	}
 
 	if (!g_warmup.integer)
 	{
