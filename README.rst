@@ -203,7 +203,7 @@ g_logFilter[1-4] <mask>
   64 - Private Duel      128 - Obituary         256 - Say
   512 - Say Team         1024 - Tell            2048 - Voice Tell
   4096 - Item Pickup     8192 - Flag            16384 - Weapon Stats
-  32768 - Game Stats     65536 - Duel Stats
+  32768 - Game Stats     65536 - Duel Stats     131072 - Vote
   =====================  =====================  =====================
 
 g_maxGameClients <limit>
