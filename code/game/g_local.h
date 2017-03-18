@@ -74,6 +74,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOG_WEAPON_STATS	0x00004000
 #define LOG_GAME_STATS		0x00008000
 #define LOG_AUSTRIAN		0x00010000
+#define LOG_VOTE			0x00020000
 
 #define LOG_DEFAULT			41943
 
