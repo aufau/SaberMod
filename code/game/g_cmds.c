@@ -2042,7 +2042,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 	}
 
-	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLCALLEDVOTE") ) );
+	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s (%s" S_COLOR_WHITE ")\n\"",
+			ent->client->pers.netname,
+			G_GetStripEdString("SVINGAME", "PLCALLEDVOTE"),
+			level.voteDisplayString) );
 
 	// start the voting, the caller autoamtically votes yes
 	level.voteCmd = voteCmd;
@@ -2198,7 +2201,9 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED )
 			continue;
 		if (level.clients[i].sess.sessionTeam == team)
-			trap_SendServerCommand( i, va("print \"%s" S_COLOR_WHITE " called a team vote.\n\"", ent->client->pers.netname ) );
+			trap_SendServerCommand( i,
+				va("print \"%s" S_COLOR_WHITE " called a team vote (Leader %s" S_COLOR_WHITE ")\n\"",
+					ent->client->pers.netname, level.clients[i].pers.netname ) );
 	}
 
 	// start the voting, the caller autoamtically votes yes
