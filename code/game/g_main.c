@@ -2527,7 +2527,7 @@ void CheckVote( void ) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
 			level.voteExecuteTime = level.time + 3000;
-		} else if ( level.voteNo >= level.numVotingClients/2 ) {
+		} else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 ) {
 			// same behavior as a timeout
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 		} else {
@@ -2648,7 +2648,8 @@ static void CheckTeamVote( team_t team ) {
 			else {
 				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );
 			}
-		} else if ( level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {
+		} else if ( level.teamVoteYes[cs_offset] == 0 ||
+			level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {
 			// same behavior as a timeout
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEFAILED")) );
 		} else {
