@@ -1689,7 +1689,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 				"Please download " GAME_VERSION " clientside\"");
 		}
 
-		if (trap_Cvar_VariableIntegerValue("mv_allowDownload") && Info_ValueForKey(userinfo, "JK2MV")[0])
+		if (trap_Cvar_VariableIntegerValue("mv_httpdownloads") && Info_ValueForKey(userinfo, "JK2MV")[0])
 		{
 			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
 				"To update your clientside mod type `\\mv_allowdownload 1` in the console and reconnect.\n\"" );
