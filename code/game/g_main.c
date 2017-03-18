@@ -1178,6 +1178,7 @@ void CalculateRanks( void ) {
 	int		rank;
 	int		score;
 	int		newScore;
+	int		voteCount[VOTE_MAX] = { 0 };
 	// int		preNumSpec = level.numNonSpectatorClients;
 	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
@@ -1201,6 +1202,7 @@ void CalculateRanks( void ) {
 					level.numPlayingClients++;
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 						level.numVotingClients++;
+						voteCount[level.clients[i].pers.vote]++;
 						if ( level.clients[i].sess.sessionTeam == TEAM_RED )
 							level.numteamVotingClients[0]++;
 						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
@@ -1210,6 +1212,11 @@ void CalculateRanks( void ) {
 			}
 		}
 	}
+
+	trap_SetConfigstring( CS_VOTE_YES, va("%i", voteCount[VOTE_YES] ) );
+	trap_SetConfigstring( CS_VOTE_NO, va("%i", voteCount[VOTE_NO] ) );
+	level.voteYes = voteCount[VOTE_YES];
+	level.voteNo = voteCount[VOTE_NO];
 
 	if (!g_warmup.integer)
 	{

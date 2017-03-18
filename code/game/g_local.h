@@ -355,6 +355,13 @@ typedef enum {
 	TEAM_ACTIVE		// Now actively playing
 } playerTeamStateState_t;
 
+typedef enum {
+	VOTE_NONE,
+	VOTE_NO,
+	VOTE_YES,
+	VOTE_MAX,
+} vote_t;
+
 typedef union {
 	byte		b[4];
 	unsigned	ui;
@@ -429,6 +436,7 @@ typedef struct {
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
 	qboolean	privateDuel;
+	vote_t		vote;
 
 	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
