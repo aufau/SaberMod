@@ -1139,7 +1139,6 @@ extern	vmCvar_t	g_fraglimitVoteCorrection;
 
 extern	vmCvar_t	g_duelWeaponDisable;
 extern	vmCvar_t	g_fraglimit;
-extern	vmCvar_t	g_duel_fraglimit;
 extern	vmCvar_t	g_timelimit;
 extern	vmCvar_t	g_capturelimit;
 extern	vmCvar_t	g_saberInterpolate;

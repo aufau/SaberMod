@@ -164,6 +164,9 @@ dmflags <bitmask>
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================
 
+duel_fraglimit
+  Removed. Use roundlimit instead.
+
 g_allowVote <0|1|bitmask>
   0 / 1 - disable / enable all votes.
 
