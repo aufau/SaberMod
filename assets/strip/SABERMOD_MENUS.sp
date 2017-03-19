@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 45
+COUNT 49
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -406,4 +406,40 @@ INDEX 44
    TEXT_LANGUAGE3 "Configure SaberMod options."
    TEXT_LANGUAGE6 "Configure SaberMod options."
    TEXT_LANGUAGE8 "Configure SaberMod options."
+}
+INDEX 45
+{
+   REFERENCE RULES
+   TEXT_LANGUAGE1 "Rules"
+   TEXT_LANGUAGE2 "Rules"
+   TEXT_LANGUAGE3 "Rules"
+   TEXT_LANGUAGE6 "Rules"
+   TEXT_LANGUAGE8 "Rules"
+}
+INDEX 46
+{
+   REFERENCE RULES_DESC
+   TEXT_LANGUAGE1 "Change game rules."
+   TEXT_LANGUAGE2 "Change game rules."
+   TEXT_LANGUAGE3 "Change game rules."
+   TEXT_LANGUAGE6 "Change game rules."
+   TEXT_LANGUAGE8 "Change game rules."
+}
+INDEX 47
+{
+   REFERENCE TEAMSIZE
+   TEXT_LANGUAGE1 "Team Size:"
+   TEXT_LANGUAGE2 "Team Size:"
+   TEXT_LANGUAGE3 "Team Size:"
+   TEXT_LANGUAGE6 "Team Size:"
+   TEXT_LANGUAGE8 "Team Size:"
+}
+INDEX 48
+{
+   REFERENCE TEAMSIZE_DESC
+   TEXT_LANGUAGE1 "Maximum players in a team."
+   TEXT_LANGUAGE2 "Maximum players in a team."
+   TEXT_LANGUAGE3 "Maximum players in a team."
+   TEXT_LANGUAGE6 "Maximum players in a team."
+   TEXT_LANGUAGE8 "Maximum players in a team."
 }
