@@ -4488,6 +4488,13 @@ static void UI_RunMenuScript(const char **args)
 			if (uiInfo.teamIndex >= 0 && uiInfo.teamIndex < uiInfo.myTeamCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callteamvote leader \"%s\"\n",uiInfo.teamNames[uiInfo.teamIndex]) );
 			}
+		} else if (Q_stricmp(name, "voteRule") == 0) {
+			char	rule[32];
+			char	value[32];
+
+			trap_Cvar_VariableStringBuffer( "ui_voteRule", rule, sizeof(rule) );
+			trap_Cvar_VariableStringBuffer( va("ui_vote_%s", rule), value, sizeof(value) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote %s %s\n", rule, value) );
 		} else if (Q_stricmp(name, "addBot") == 0) {
 			if (GT_Team(trap_Cvar_VariableValue("g_gametype"))) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot %s %i %s\n", UI_GetBotNameByNumber(uiInfo.botIndex), uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "Red" : "Blue") );
@@ -4732,6 +4739,18 @@ static void UI_RunMenuScript(const char **args)
 			{
 				UI_Update(name2);
 			}
+		}
+		else if (Q_stricmp(name, "rulesInit") == 0)
+		{
+			char	info[MAX_INFO_VALUE];
+
+			trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+
+			trap_Cvar_Set( "ui_vote_timelimit", Info_ValueForKey(info, "timelimit") );
+			trap_Cvar_Set( "ui_vote_fraglimit", Info_ValueForKey(info, "fraglimit") );
+			trap_Cvar_Set( "ui_vote_capturelimit", Info_ValueForKey(info, "capturelimit") );
+			trap_Cvar_Set( "ui_vote_roundlimit", Info_ValueForKey(info, "roundlimit") );
+			trap_Cvar_Set( "ui_vote_teamsize", Info_ValueForKey(info, "teamsize") );
 		}
 		else
 		{
