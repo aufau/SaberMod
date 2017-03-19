@@ -78,7 +78,6 @@ vmCvar_t	g_duelWeaponDisable;
 vmCvar_t	g_allowDuelSuicide;
 vmCvar_t	g_fraglimitVoteCorrection;
 vmCvar_t	g_fraglimit;
-vmCvar_t	g_duel_fraglimit;
 vmCvar_t	g_timelimit;
 vmCvar_t	g_capturelimit;
 vmCvar_t	g_saberInterpolate;
@@ -221,7 +220,6 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_fraglimitVoteCorrection, "g_fraglimitVoteCorrection", "1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-	{ &g_duel_fraglimit, "duel_fraglimit", "10", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 
@@ -766,7 +764,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if ( level.gametype == GT_TOURNAMENT )
 	{
 		G_LogPrintf( LOG_GAME, "Duel Tournament Begun: kill limit %d, win limit: %d\n",
-			g_fraglimit.integer, g_duel_fraglimit.integer );
+			g_fraglimit.integer, g_roundlimit.integer );
 	}
 }
 
@@ -1604,7 +1602,7 @@ qboolean DuelLimitHit(void)
 			continue;
 		}
 
-		if ( g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
+		if ( g_roundlimit.integer && cl->sess.wins >= g_roundlimit.integer )
 		{
 			return qtrue;
 		}
@@ -2219,7 +2217,7 @@ void CheckExitRules( void ) {
 				continue;
 			}
 
-			if ( level.gametype == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
+			if ( level.gametype == GT_TOURNAMENT && g_roundlimit.integer && cl->sess.wins >= g_roundlimit.integer )
 			{
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
