@@ -2252,7 +2252,7 @@ FUNCTIONS CALLED EVERY FRAME
 static void CheckIdle( void ) {
 	qboolean	defaultMode;
 
-	defaultMode = (qboolean) !!strcmp(g_mode.string, g_modeDefault.string);
+	defaultMode = (qboolean) !!Q_stricmp(g_mode.string, g_modeDefault.string);
 
 	// reset to default mode if server is idle
 	if ( level.numVotingClients == 0 && g_modeIdleTime.integer > 0 && defaultMode ) {
