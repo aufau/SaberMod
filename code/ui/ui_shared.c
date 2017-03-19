@@ -3793,7 +3793,9 @@ void Item_TextField_Paint(itemDef_t *item) {
 
 	parent = item->parent;
 
-	if (item->window.flags & WINDOW_HASFOCUS) {
+	if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
+		Vector4Copy(parent->disableColor, newColor);
+	} else if (item->window.flags & WINDOW_HASFOCUS) {
 		lowLight[0] = 0.8f * parent->focusColor[0];
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
