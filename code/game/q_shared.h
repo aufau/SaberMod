@@ -1013,6 +1013,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 //=============================================
 
 float Com_Clamp( float min, float max, float value );
+int Com_Clampi( int min, int max, int value );
 
 unsigned	COM_HashForString(const char *str, size_t size);
 char	*COM_SkipPath( char *pathname );
