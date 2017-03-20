@@ -4671,15 +4671,24 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 				else
 				{
+					int imageX = x + 2 + item->window.rect.w - SCROLLBAR_SIZE - 4 - listPtr->elementHeight;
+					int imageY = y + LISTBOX_HIGHLIGHT_DROP;
+
 					text = DC->feederItemText(item->special, i, 0, &optionalImage1, &optionalImage2, &optionalImage3 );
-					if ( optionalImage1 >= 0 || optionalImage2 >= 0 || optionalImage3 >= 0)
-					{
-						//DC->drawHandlePic(x + 4 + listPtr->elementHeight, y, listPtr->columnInfo[j].width, listPtr->columnInfo[j].width, optionalImage);
-					}
-					else if (text)
-					{
-//						DC->drawText(x + 4, y + listPtr->elementHeight, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle);
+
+					if (text) {
 						DC->drawText(x + 4, y, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle, item->iMenuFont);
+					}
+					if ( optionalImage3 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage3);
+						imageX -= listPtr->elementHeight;
+					}
+					if ( optionalImage2 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage2);
+						imageX -= listPtr->elementHeight;
+					}
+					if ( optionalImage1 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage1);
 					}
 				}
 
