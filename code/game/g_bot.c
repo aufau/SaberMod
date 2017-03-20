@@ -305,6 +305,40 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 }
 
 /*
+=================
+G_GetMapsConfigstring
+=================
+*/
+static int G_GetMapsConfigstring( char *cs, size_t size, int max ) {
+	int		numMaps = 0;
+	int		i;
+
+	cs[0] = '\0';
+
+	for ( i = 0; i < g_numArenas; i++ ) {
+		const char	*type;
+		int			typeBits;
+
+		type = Info_ValueForKey( g_arenaInfos[i], "type" );
+		typeBits = G_GetMapTypeBits( type );
+
+		if ( typeBits & (1 << level.gametype) ) {
+			if ( numMaps < max ) {
+				const char *map;
+
+				map = Info_ValueForKey( g_arenaInfos[i], "map" );
+				Q_strcat( cs, size, map );
+				Q_strcat( cs, size, "\\" );
+			}
+
+			numMaps++;
+		}
+	}
+
+	return numMaps;
+}
+
+/*
 ===============
 G_LoadArenas
 ===============
@@ -344,6 +378,19 @@ static void G_LoadArenas( void ) {
 	}
 
 	G_RefreshNextMap(level.gametype, qfalse);
+
+	// write available maps for current gametype to CS_MAPS
+	{
+		char	cs[MAX_INFO_STRING];
+		int		numMaps;
+
+		numMaps = G_GetMapsConfigstring( cs, sizeof( cs ), MAX_SERVER_MAPS );
+
+		if ( numMaps > MAX_SERVER_MAPS || strlen( cs ) + 1 >= sizeof( cs ) )
+			Com_Printf( S_COLOR_YELLOW "WARNING: Too many maps for callvote menu.\n" );
+
+		trap_SetConfigstring( CS_MAPS, cs );
+	}
 }
 
 #ifdef UNUSED

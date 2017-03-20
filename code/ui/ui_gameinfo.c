@@ -346,3 +346,35 @@ void UI_LoadModes( void ) {
 	uiInfo.modeCount = i;
 	uiInfo.modeIndex = 0;
 }
+
+void UI_LoadServerMaps( void ) {
+	char *map;
+	int i, j;
+
+	// UI_LoadArenas();
+
+	trap_GetConfigString( CS_MAPS, uiInfo.serverMapBuf, sizeof( uiInfo.serverMapBuf ) );
+	map = uiInfo.serverMapBuf;
+
+	for ( i = 0; i < MAX_SERVER_MAPS; i++ ) {
+		const char *name = map;
+
+		map = strchr( map, '\\' );
+		if (!map)
+			break;
+		*map++ = '\0';
+
+		uiInfo.serverMapList[i].mapLoadName = name;
+		uiInfo.serverMapList[i].mapIndex = -1;
+
+		for ( j = 0; j < uiInfo.mapCount; j++ ) {
+			if ( !Q_stricmp( uiInfo.mapList[j].mapLoadName, name ) ) {
+				uiInfo.serverMapList[i].mapIndex = j;
+				break;
+			}
+		}
+	}
+
+	uiInfo.serverMapCount = i;
+	uiInfo.serverMapIndex = 0;
+}

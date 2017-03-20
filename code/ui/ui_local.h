@@ -644,6 +644,11 @@ typedef struct {
 } mapInfo;
 
 typedef struct {
+	const char *mapLoadName;
+	int mapIndex;
+} serverMapInfo;
+
+typedef struct {
 	const char *tierName;
 	const char *maps[MAPS_PER_TIER];
 	int gameTypes[MAPS_PER_TIER];
@@ -778,6 +783,11 @@ typedef struct {
 	int movieCount;
 	int movieIndex;
 	int previewMovie;
+
+	char serverMapBuf[MAX_INFO_STRING];
+	serverMapInfo serverMapList[MAX_SERVER_MAPS];
+	int serverMapCount;
+	int serverMapIndex;
 
 	char modeBuf[MAX_INFO_STRING];
 	const char *modeList[MAX_MODES];
@@ -1086,6 +1096,7 @@ void UI_SPUnlockMedals_f( void );
 void UI_InitGameinfo( void );
 
 void UI_LoadModes( void );
+void UI_LoadServerMaps( void );
 
 //
 // ui_login.c

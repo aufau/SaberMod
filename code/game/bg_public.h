@@ -121,6 +121,9 @@ Ghoul2 Insert End
 */
 #define CS_LOCATIONS			(CS_CHARSKINS+MAX_CHARSKINS)
 #define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS) // unused
+
+#define CS_MAPS					(CS_PARTICLES+0)
+
 #define CS_EFFECTS				(CS_PARTICLES+MAX_LOCATIONS)
 #define	CS_LIGHT_STYLES			(CS_EFFECTS + MAX_FX)
 #define CS_STRING_PACKAGES		(CS_LIGHT_STYLES + (MAX_LIGHT_STYLES*3))
@@ -132,6 +135,7 @@ Ghoul2 Insert End
 #endif
 
 #define MAX_MODES				128
+#define MAX_SERVER_MAPS			128
 
 typedef enum {
 	G2_MODELPART_INVALID = -1,

@@ -77,6 +77,7 @@
 
 #define FEEDER_FORCECFG						0x10			// force config list
 #define FEEDER_MODES						0x11			// server modes
+#define FEEDER_SERVER_MAPS					0x12			// server maps
 
 // display flags
 #define CG_SHOW_BLUE_TEAM_HAS_REDFLAG     0x00000001
@@ -304,6 +305,8 @@
 
 #define UI_MODES_SELECTION 290
 #define UI_PLAYER_LIST_SELECTION 291
+#define UI_SERVER_MAPS_SELECTION 292
+
 
 #define VOICECHAT_GETFLAG			"getflag"				// command someone to get the flag
 #define VOICECHAT_OFFENSE			"offense"				// command someone to go on offense

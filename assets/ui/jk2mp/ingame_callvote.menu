@@ -236,6 +236,7 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				hide                    grpCallVote ;
+				uiScript                loadServerMaps ;
 				show                    map ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            changemapbutton forecolor 1 1 1 1 ;
@@ -869,7 +870,7 @@
 			name                    map
 			group                   grpCallVote
 			text                    @MENUS0_NEW_MAP
-			ownerdraw               UI_ALLMAPS_SELECTION
+			ownerdraw               UI_SERVER_MAPS_SELECTION
 			rect                    120 25 230 20
 			textalign               0
 			textalignx              5
@@ -896,7 +897,7 @@
 			elementwidth            120
 			elementheight           15
 			elementtype             LISTBOX_TEXT
-			feeder                  FEEDER_ALLMAPS
+			feeder                  FEEDER_SERVER_MAPS
 			border                  1
 			bordercolor             .5 .5 .5 .5
 			backcolor               0 0 .5 .25
@@ -940,7 +941,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				uiScript                voteMap ;
+				uiScript                voteServerMap ;
 				uiScript                closeingame
 				hide                    doneButton
 			}

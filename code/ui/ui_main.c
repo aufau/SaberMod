@@ -2094,6 +2094,13 @@ static void UI_DrawAllMapsSelection(rectDef_t *rect, float scale, vec4_t color, 
 	}
 }
 
+static void UI_DrawServerMapsSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, font_t iMenuFont) {
+	int index = uiInfo.serverMapIndex;
+	if (index >= 0 && index < uiInfo.serverMapCount) {
+		Text_Paint(rect->x, rect->y, scale, color, uiInfo.serverMapList[index].mapLoadName, 0, 0, textStyle, iMenuFont);
+	}
+}
+
 static void UI_DrawModesSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, font_t iMenuFont) {
 	if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
 	  Text_Paint(rect->x, rect->y, scale, color, uiInfo.modeList[uiInfo.modeIndex], 0, 0, textStyle, iMenuFont);
@@ -2313,6 +2320,8 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale, font_t iMenuFont) {
 		case UI_TIER_GAMETYPE:
 			break;
 		case UI_ALLMAPS_SELECTION:
+			break;
+		case UI_SERVER_MAPS_SELECTION:
 			break;
 		case UI_MODES_SELECTION:
 			break;
@@ -2852,6 +2861,9 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_MAPS_SELECTION:
 			UI_DrawAllMapsSelection(&rect, scale, color, textStyle, qfalse, iMenuFont);
+			break;
+		case UI_SERVER_MAPS_SELECTION:
+			UI_DrawServerMapsSelection(&rect, scale, color, textStyle, iMenuFont);
 			break;
 		case UI_MODES_SELECTION:
 			UI_DrawModesSelection(&rect, scale, color, textStyle, iMenuFont);
@@ -4359,6 +4371,8 @@ static void UI_RunMenuScript(const char **args)
 			UI_LoadMods();
 		} else if (Q_stricmp(name, "loadModes") == 0) {
 			UI_LoadModes();
+		} else if (Q_stricmp(name, "loadServerMaps") == 0) {
+			UI_LoadServerMaps();
 		} else if (Q_stricmp(name, "playMovie") == 0) {
 			if (uiInfo.previewMovie >= 0) {
 			  trap_CIN_StopCinematic(uiInfo.previewMovie);
@@ -4466,6 +4480,10 @@ static void UI_RunMenuScript(const char **args)
 		} else if (Q_stricmp(name, "voteMap") == 0) {
 			if (ui_currentNetMap.integer >=0 && ui_currentNetMap.integer < uiInfo.mapCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map %s\n",uiInfo.mapList[ui_currentNetMap.integer].mapLoadName) );
+			}
+		} else if (Q_stricmp(name, "voteServerMap") == 0) {
+			if (uiInfo.serverMapIndex >= 0 && uiInfo.serverMapIndex < uiInfo.serverMapCount) {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map \"%s\"\n",uiInfo.serverMapList[uiInfo.serverMapIndex].mapLoadName) );
 			}
 		} else if (Q_stricmp(name, "voteMode") == 0) {
 			if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
@@ -5500,6 +5518,9 @@ static int UI_FeederCount(float feederID)
 
 		case FEEDER_MODES:
 			return uiInfo.modeCount;
+
+		case FEEDER_SERVER_MAPS:
+			return uiInfo.serverMapCount;
 	}
 
 	return 0;
@@ -5820,6 +5841,10 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 		if (index >= 0 && index < uiInfo.modeCount) {
 			return uiInfo.modeList[index];
 		}
+	} else if (feederID == FEEDER_SERVER_MAPS) {
+		if (index >= 0 && index < uiInfo.serverMapCount) {
+			return uiInfo.serverMapList[index].mapLoadName;
+		}
 	}
 	return "";
 }
@@ -6060,6 +6085,8 @@ qboolean UI_FeederSelection(float feederID, int index) {
 		uiInfo.demoIndex = index;
 	} else if (feederID == FEEDER_MODES) {
 		uiInfo.modeIndex = index;
+	} else if (feederID == FEEDER_SERVER_MAPS) {
+		uiInfo.serverMapIndex = index;
 	}
 
 	return qtrue;
