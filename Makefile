@@ -100,7 +100,7 @@ ui/jk2mp/createserver.menu ui/jk2mp/ingame_player.menu			\
 ui/jk2mp/ingame_setup_modoptions.menu ui/jk2mp/gameinfo.txt		\
 ui/jk2mp/setup.menu ui/jk2mp/ingame.menu						\
 ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp	\
-strip/SABERMOD_MENUS.sp
+strip/SABERMOD_MENUS.sp gfx/2d/crosshairj.tga
 
 svs_zip		:= $(name)-$(VERSION).zip
 svs_assets	:= server.cfg reset.cfg modes/
