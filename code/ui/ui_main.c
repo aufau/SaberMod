@@ -4373,6 +4373,7 @@ static void UI_RunMenuScript(const char **args)
 			UI_LoadModes();
 		} else if (Q_stricmp(name, "loadServerMaps") == 0) {
 			UI_LoadServerMaps();
+			UI_GetHTTPDownloads();
 		} else if (Q_stricmp(name, "playMovie") == 0) {
 			if (uiInfo.previewMovie >= 0) {
 			  trap_CIN_StopCinematic(uiInfo.previewMovie);
@@ -5843,6 +5844,13 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 		}
 	} else if (feederID == FEEDER_SERVER_MAPS) {
 		if (index >= 0 && index < uiInfo.serverMapCount) {
+			if ( uiInfo.serverMapList[index].mapIndex == -1 ) {
+				if ( uiInfo.httpDownloads ) {
+					*handle3 = trap_R_RegisterShaderNoMip( "gfx/menus/download" );
+				} else {
+					*handle3 = trap_R_RegisterShaderNoMip( "gfx/menus/missing" );
+				}
+			}
 			return uiInfo.serverMapList[index].mapLoadName;
 		}
 	}

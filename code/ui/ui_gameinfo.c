@@ -378,3 +378,25 @@ void UI_LoadServerMaps( void ) {
 	uiInfo.serverMapCount = i;
 	uiInfo.serverMapIndex = 0;
 }
+
+void UI_GetHTTPDownloads( void ) {
+	char		info[MAX_INFO_VALUE];
+	char		clientJK2MV[2];
+	const char	*serverJK2MV;
+
+	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+	trap_Cvar_VariableStringBuffer( "JK2MV", clientJK2MV, sizeof(clientJK2MV) );
+	serverJK2MV = Info_ValueForKey( info, "JK2MV" );
+
+	if (clientJK2MV[0] != '\0' &&
+		(int)trap_Cvar_VariableValue( "mv_allowdownload" ) &&
+		serverJK2MV[0] != '\0' &&
+		atoi( Info_ValueForKey( info, "mv_httpdownloads" ) ) )
+	{
+		uiInfo.httpDownloads = qtrue;
+	}
+	else
+	{
+		uiInfo.httpDownloads = qfalse;
+	}
+}

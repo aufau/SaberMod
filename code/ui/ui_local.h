@@ -834,6 +834,7 @@ typedef struct {
 
 	qboolean inGameLoad;
 
+	qboolean httpDownloads;
 }	uiInfo_t;
 
 extern uiInfo_t uiInfo;
@@ -1097,6 +1098,7 @@ void UI_InitGameinfo( void );
 
 void UI_LoadModes( void );
 void UI_LoadServerMaps( void );
+void UI_GetHTTPDownloads( void );
 
 //
 // ui_login.c
