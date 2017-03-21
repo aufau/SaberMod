@@ -39,7 +39,8 @@ Callvote
 
 match <0|1>
   Enable/Disable match mode - restrict spectator chat and disable
-  damage plums.
+  damage plums. In round-based gametypes dead players may only follow
+  their teammates.
 
 mode [mode]
   Switch to one of admin-defined game modes.
