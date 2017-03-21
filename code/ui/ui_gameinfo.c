@@ -336,11 +336,14 @@ void UI_LoadModes( void ) {
 	mode = uiInfo.modeBuf;
 
 	for ( i = 0; i < MAX_MODES; i++ ) {
-		uiInfo.modeList[i] = mode;
+		const char *name = mode;
+
 		mode = strchr( mode, '\\' );
 		if (!mode)
 			break;
 		*mode++ = '\0';
+
+		uiInfo.modeList[i] = name;
 	}
 
 	uiInfo.modeCount = i;
