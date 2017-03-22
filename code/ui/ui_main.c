@@ -5851,7 +5851,11 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 					*handle3 = trap_R_RegisterShaderNoMip( "gfx/menus/missing" );
 				}
 			}
-			return uiInfo.serverMapList[index].mapLoadName;
+			if ( ui_longMapName.integer && uiInfo.serverMapList[index].mapName ) {
+				return uiInfo.serverMapList[index].mapName;
+			} else {
+				return uiInfo.serverMapList[index].mapLoadName;
+			}
 		}
 	}
 	return "";
@@ -7186,6 +7190,8 @@ vmCvar_t	ui_realWarmUp;
 vmCvar_t	ui_serverStatusTimeOut;
 vmCvar_t	s_language;
 
+vmCvar_t	ui_longMapName;
+
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
 	{ &ui_selectedModelIndex, "ui_selectedModelIndex", "16", CVAR_ARCHIVE },
@@ -7269,6 +7275,8 @@ static cvarTable_t cvarTable[] = {
 	{ &ui_realCaptureLimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART},
 	{ &ui_serverStatusTimeOut, "ui_serverStatusTimeOut", "7000", CVAR_ARCHIVE},
 	{ &s_language, "s_language", "english", CVAR_ARCHIVE | CVAR_NORESTART},
+
+	{ &ui_longMapName, "ui_longMapName", "1", CVAR_ARCHIVE},
 };
 
 /*

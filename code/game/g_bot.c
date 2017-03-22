@@ -309,13 +309,18 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 G_GetMapsConfigstring
 =================
 */
-static int G_GetMapsConfigstring( char *cs, size_t size, int max ) {
-	int		numMaps = 0;
+static int G_GetMapsConfigstrings( char cs[MAX_CS_MAPS][MAX_INFO_STRING], int max ) {
+	char	token[MAX_INFO_VALUE * 2 + 1];
+	int		numMaps;
 	int		i;
+	int		n = 0;
+	int		pos = 0;
 
-	cs[0] = '\0';
+	for ( i = 0; i < MAX_CS_MAPS; i++ ) {
+		cs[i][0] = '\0';
+	}
 
-	for ( i = 0; i < g_numArenas; i++ ) {
+	for ( i = 0, numMaps = 0; i < g_numArenas && numMaps < max; i++ ) {
 		const char	*type;
 		int			typeBits;
 
@@ -323,13 +328,23 @@ static int G_GetMapsConfigstring( char *cs, size_t size, int max ) {
 		typeBits = G_GetMapTypeBits( type );
 
 		if ( typeBits & (1 << level.gametype) ) {
-			if ( numMaps < max ) {
-				const char *map;
+			const char	*name = Info_ValueForKey( g_arenaInfos[i], "map" );
+			const char	*longName = Info_ValueForKey( g_arenaInfos[i], "longname" );
+			int			len;
 
-				map = Info_ValueForKey( g_arenaInfos[i], "map" );
-				Q_strcat( cs, size, map );
-				Q_strcat( cs, size, "\\" );
+			len = Com_sprintf( token, sizeof( token ), "%s\\%s\\", name, longName );
+
+			while ( pos + len + 1 >= MAX_INFO_STRING ) {
+				cs[n][MAX_INFO_STRING - 1] = '\0'; // safe
+				pos = 0;
+				n++;
+				if ( n >= MAX_CS_MAPS ) {
+					return -1;
+				}
 			}
+
+			strncpy( &cs[n][pos], token, len + 1 );
+			pos += len;
 
 			numMaps++;
 		}
@@ -379,17 +394,20 @@ static void G_LoadArenas( void ) {
 
 	G_RefreshNextMap(level.gametype, qfalse);
 
-	// write available maps for current gametype to CS_MAPS
+	// write available maps for current gametype to CS_SERVER_MAPS
 	{
-		char	cs[MAX_INFO_STRING];
+		char	cs[MAX_CS_MAPS][MAX_INFO_STRING];
 		int		numMaps;
 
-		numMaps = G_GetMapsConfigstring( cs, sizeof( cs ), MAX_SERVER_MAPS );
+		numMaps = G_GetMapsConfigstrings( cs, MAX_SERVER_MAPS );
 
-		if ( numMaps > MAX_SERVER_MAPS || strlen( cs ) + 1 >= sizeof( cs ) )
+		if ( numMaps >= MAX_SERVER_MAPS || numMaps == -1 ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Too many maps for callvote menu.\n" );
+		}
 
-		trap_SetConfigstring( CS_MAPS, cs );
+		for ( n = 0; n < MAX_CS_MAPS; n++ ) {
+			trap_SetConfigstring( CS_MAPS + n, cs[n] );
+		}
 	}
 }
 

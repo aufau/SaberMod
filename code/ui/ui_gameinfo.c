@@ -351,25 +351,62 @@ void UI_LoadModes( void ) {
 }
 
 void UI_LoadServerMaps( void ) {
-	char *map;
-	int i, j;
+	char *p;
+	int i, n;
 
 	// UI_LoadArenas();
 
-	trap_GetConfigString( CS_MAPS, uiInfo.serverMapBuf, sizeof( uiInfo.serverMapBuf ) );
-	map = uiInfo.serverMapBuf;
+	for ( i = 0; i < MAX_CS_MAPS; i++ ) {
+		trap_GetConfigString( CS_MAPS + i, uiInfo.serverMapBuf[i], sizeof( uiInfo.serverMapBuf[0] ) );
+	}
+
+	n = 0;
+	p = uiInfo.serverMapBuf[n];
 
 	for ( i = 0; i < MAX_SERVER_MAPS; i++ ) {
-		const char *name = map;
+		const char *name;
+		const char *longName;
+		qboolean valid = qfalse;
+		qboolean done = qfalse;
+		int j;
 
-		map = strchr( map, '\\' );
-		if (!map)
+		// fau - I'm ashamed of this parsing
+		do {
+			name = p;
+			p = strchr( p, '\\' );
+			if ( p ) {
+				*p++ = '\0';
+
+				longName = p;
+				p = strchr( p, '\\' );
+
+				if ( p ) {
+					*p++ = '\0';
+					// we have valid name and longName
+					valid = qtrue;
+				}
+			}
+
+			if ( !p ) {
+				// otherwise try next configstring until we run out
+				n++;
+				if ( n >= MAX_CS_MAPS ) {
+					done = qtrue;
+					break;
+				}
+				p = uiInfo.serverMapBuf[n];
+			}
+		} while ( !valid );
+
+		if ( done ) {
 			break;
-		*map++ = '\0';
+		}
 
+		uiInfo.serverMapList[i].mapName = longName;
 		uiInfo.serverMapList[i].mapLoadName = name;
 		uiInfo.serverMapList[i].mapIndex = -1;
 
+		// match local map
 		for ( j = 0; j < uiInfo.mapCount; j++ ) {
 			if ( !Q_stricmp( uiInfo.mapList[j].mapLoadName, name ) ) {
 				uiInfo.serverMapList[i].mapIndex = j;
