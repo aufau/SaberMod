@@ -78,7 +78,6 @@ vmCvar_t	g_duelWeaponDisable;
 vmCvar_t	g_allowDuelSuicide;
 vmCvar_t	g_fraglimitVoteCorrection;
 vmCvar_t	g_fraglimit;
-vmCvar_t	g_duel_fraglimit;
 vmCvar_t	g_timelimit;
 vmCvar_t	g_capturelimit;
 vmCvar_t	g_saberInterpolate;
@@ -221,7 +220,6 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_fraglimitVoteCorrection, "g_fraglimitVoteCorrection", "1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-	{ &g_duel_fraglimit, "duel_fraglimit", "10", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 
@@ -242,11 +240,11 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
 	{ &g_log[2], "g_log3", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
 	{ &g_log[3], "g_log4", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
-	{ &g_logFilter[0], "g_logFilter1", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_logFilter[0], "g_logFilter1", "173015", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_logFilter[1], "g_logFilter2", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_logFilter[2], "g_logFilter3", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_logFilter[3], "g_logFilter4", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_consoleFilter, "g_consoleFilter", STR(LOG_DEFAULT), CVAR_ARCHIVE, 0, qfalse },
+	{ &g_consoleFilter, "g_consoleFilter", "41943", CVAR_ARCHIVE, 0, qfalse },
 
 	{ &g_logSync, "g_logSync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
@@ -766,7 +764,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if ( level.gametype == GT_TOURNAMENT )
 	{
 		G_LogPrintf( LOG_GAME, "Duel Tournament Begun: kill limit %d, win limit: %d\n",
-			g_fraglimit.integer, g_duel_fraglimit.integer );
+			g_fraglimit.integer, g_roundlimit.integer );
 	}
 }
 
@@ -1178,6 +1176,8 @@ void CalculateRanks( void ) {
 	int		rank;
 	int		score;
 	int		newScore;
+	int		voteCount[VOTE_MAX] = { 0 };
+	int		teamVoteCount[2][VOTE_MAX] = { 0 };
 	// int		preNumSpec = level.numNonSpectatorClients;
 	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
@@ -1201,14 +1201,30 @@ void CalculateRanks( void ) {
 					level.numPlayingClients++;
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
 						level.numVotingClients++;
-						if ( level.clients[i].sess.sessionTeam == TEAM_RED )
+						voteCount[level.clients[i].pers.vote]++;
+						if ( level.clients[i].sess.sessionTeam == TEAM_RED ) {
 							level.numteamVotingClients[0]++;
-						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
+							teamVoteCount[0][level.clients[i].pers.teamVote]++;
+						} else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE ) {
 							level.numteamVotingClients[1]++;
+							teamVoteCount[1][level.clients[i].pers.teamVote]++;
+						}
 					}
 				}
 			}
 		}
+	}
+
+	trap_SetConfigstring( CS_VOTE_YES, va("%i", voteCount[VOTE_YES] ) );
+	trap_SetConfigstring( CS_VOTE_NO, va("%i", voteCount[VOTE_NO] ) );
+	level.voteYes = voteCount[VOTE_YES];
+	level.voteNo = voteCount[VOTE_NO];
+
+	for ( i = 0; i < 2; i++ ) {
+		trap_SetConfigstring( CS_TEAMVOTE_YES + i, va("%i", teamVoteCount[i][VOTE_YES] ) );
+		trap_SetConfigstring( CS_TEAMVOTE_NO + i, va("%i", teamVoteCount[i][VOTE_NO] ) );
+		level.teamVoteYes[i] = teamVoteCount[i][VOTE_YES];
+		level.teamVoteNo[i] = teamVoteCount[i][VOTE_NO];
 	}
 
 	if (!g_warmup.integer)
@@ -1586,7 +1602,7 @@ qboolean DuelLimitHit(void)
 			continue;
 		}
 
-		if ( g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
+		if ( g_roundlimit.integer && cl->sess.wins >= g_roundlimit.integer )
 		{
 			return qtrue;
 		}
@@ -2201,7 +2217,7 @@ void CheckExitRules( void ) {
 				continue;
 			}
 
-			if ( level.gametype == GT_TOURNAMENT && g_duel_fraglimit.integer && cl->sess.wins >= g_duel_fraglimit.integer )
+			if ( level.gametype == GT_TOURNAMENT && g_roundlimit.integer && cl->sess.wins >= g_roundlimit.integer )
 			{
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
@@ -2509,7 +2525,9 @@ void CheckVote( void ) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
 			level.voteExecuteTime = level.time + 3000;
-		} else if ( level.voteNo >= level.numVotingClients/2 ) {
+			G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
+				level.voteYes, level.voteNo, level.voteDisplayString );
+		} else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 ) {
 			// same behavior as a timeout
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 		} else {
@@ -2624,13 +2642,19 @@ static void CheckTeamVote( team_t team ) {
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED")) );
 			//
 			if ( !strncmp( "leader", level.teamVoteString[cs_offset], 6) ) {
+				int clientNum = atoi(level.teamVoteString[cs_offset] + 7);
 				//set the team leader
-				SetLeader(team, atoi(level.teamVoteString[cs_offset] + 7));
+				SetLeader(team, clientNum);
+				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s is the new %s team leader\n",
+					BG_TeamName(team, CASE_UPPER), clientNum,
+					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
+					level.clients[clientNum].pers.netname, BG_TeamName(team, CASE_LOWER) );
 			}
 			else {
 				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );
 			}
-		} else if ( level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {
+		} else if ( level.teamVoteYes[cs_offset] == 0 ||
+			level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {
 			// same behavior as a timeout
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEFAILED")) );
 		} else {

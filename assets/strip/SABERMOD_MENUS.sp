@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 45
+COUNT 53
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -406,4 +406,76 @@ INDEX 44
    TEXT_LANGUAGE3 "Configure SaberMod options."
    TEXT_LANGUAGE6 "Configure SaberMod options."
    TEXT_LANGUAGE8 "Configure SaberMod options."
+}
+INDEX 45
+{
+   REFERENCE RULES
+   TEXT_LANGUAGE1 "Rules"
+   TEXT_LANGUAGE2 "Rules"
+   TEXT_LANGUAGE3 "Rules"
+   TEXT_LANGUAGE6 "Rules"
+   TEXT_LANGUAGE8 "Rules"
+}
+INDEX 46
+{
+   REFERENCE RULES_DESC
+   TEXT_LANGUAGE1 "Change game rules."
+   TEXT_LANGUAGE2 "Change game rules."
+   TEXT_LANGUAGE3 "Change game rules."
+   TEXT_LANGUAGE6 "Change game rules."
+   TEXT_LANGUAGE8 "Change game rules."
+}
+INDEX 47
+{
+   REFERENCE TEAMSIZE
+   TEXT_LANGUAGE1 "Team Size:"
+   TEXT_LANGUAGE2 "Team Size:"
+   TEXT_LANGUAGE3 "Team Size:"
+   TEXT_LANGUAGE6 "Team Size:"
+   TEXT_LANGUAGE8 "Team Size:"
+}
+INDEX 48
+{
+   REFERENCE TEAMSIZE_DESC
+   TEXT_LANGUAGE1 "Maximum players in a team."
+   TEXT_LANGUAGE2 "Maximum players in a team."
+   TEXT_LANGUAGE3 "Maximum players in a team."
+   TEXT_LANGUAGE6 "Maximum players in a team."
+   TEXT_LANGUAGE8 "Maximum players in a team."
+}
+INDEX 49
+{
+   REFERENCE SHORT
+   TEXT_LANGUAGE1 "Short"
+   TEXT_LANGUAGE2 "Short"
+   TEXT_LANGUAGE3 "Short"
+   TEXT_LANGUAGE6 "Short"
+   TEXT_LANGUAGE8 "Short"
+}
+INDEX 50
+{
+   REFERENCE LONG
+   TEXT_LANGUAGE1 "Long"
+   TEXT_LANGUAGE2 "Long"
+   TEXT_LANGUAGE3 "Long"
+   TEXT_LANGUAGE6 "Long"
+   TEXT_LANGUAGE8 "Long"
+}
+INDEX 51
+{
+   REFERENCE DISPLAY_NAME
+   TEXT_LANGUAGE1 "Display Name:"
+   TEXT_LANGUAGE2 "Display Name:"
+   TEXT_LANGUAGE3 "Display Name:"
+   TEXT_LANGUAGE6 "Display Name:"
+   TEXT_LANGUAGE8 "Display Name:"
+}
+INDEX 52
+{
+   REFERENCE DISPLAY_NAME_DESC
+   TEXT_LANGUAGE1 "Choose display name style."
+   TEXT_LANGUAGE2 "Choose display name style."
+   TEXT_LANGUAGE3 "Choose display name style."
+   TEXT_LANGUAGE6 "Choose display name style."
+   TEXT_LANGUAGE8 "Choose display name style."
 }

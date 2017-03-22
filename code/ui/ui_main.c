@@ -2094,6 +2094,13 @@ static void UI_DrawAllMapsSelection(rectDef_t *rect, float scale, vec4_t color, 
 	}
 }
 
+static void UI_DrawServerMapsSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, font_t iMenuFont) {
+	int index = uiInfo.serverMapIndex;
+	if (index >= 0 && index < uiInfo.serverMapCount) {
+		Text_Paint(rect->x, rect->y, scale, color, uiInfo.serverMapList[index].mapLoadName, 0, 0, textStyle, iMenuFont);
+	}
+}
+
 static void UI_DrawModesSelection(rectDef_t *rect, float scale, vec4_t color, int textStyle, font_t iMenuFont) {
 	if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
 	  Text_Paint(rect->x, rect->y, scale, color, uiInfo.modeList[uiInfo.modeIndex], 0, 0, textStyle, iMenuFont);
@@ -2313,6 +2320,8 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale, font_t iMenuFont) {
 		case UI_TIER_GAMETYPE:
 			break;
 		case UI_ALLMAPS_SELECTION:
+			break;
+		case UI_SERVER_MAPS_SELECTION:
 			break;
 		case UI_MODES_SELECTION:
 			break;
@@ -2852,6 +2861,9 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_MAPS_SELECTION:
 			UI_DrawAllMapsSelection(&rect, scale, color, textStyle, qfalse, iMenuFont);
+			break;
+		case UI_SERVER_MAPS_SELECTION:
+			UI_DrawServerMapsSelection(&rect, scale, color, textStyle, iMenuFont);
 			break;
 		case UI_MODES_SELECTION:
 			UI_DrawModesSelection(&rect, scale, color, textStyle, iMenuFont);
@@ -4359,6 +4371,9 @@ static void UI_RunMenuScript(const char **args)
 			UI_LoadMods();
 		} else if (Q_stricmp(name, "loadModes") == 0) {
 			UI_LoadModes();
+		} else if (Q_stricmp(name, "loadServerMaps") == 0) {
+			UI_LoadServerMaps();
+			UI_GetHTTPDownloads();
 		} else if (Q_stricmp(name, "playMovie") == 0) {
 			if (uiInfo.previewMovie >= 0) {
 			  trap_CIN_StopCinematic(uiInfo.previewMovie);
@@ -4467,6 +4482,10 @@ static void UI_RunMenuScript(const char **args)
 			if (ui_currentNetMap.integer >=0 && ui_currentNetMap.integer < uiInfo.mapCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map %s\n",uiInfo.mapList[ui_currentNetMap.integer].mapLoadName) );
 			}
+		} else if (Q_stricmp(name, "voteServerMap") == 0) {
+			if (uiInfo.serverMapIndex >= 0 && uiInfo.serverMapIndex < uiInfo.serverMapCount) {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map \"%s\"\n",uiInfo.serverMapList[uiInfo.serverMapIndex].mapLoadName) );
+			}
 		} else if (Q_stricmp(name, "voteMode") == 0) {
 			if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote mode \"%s\"\n",uiInfo.modeList[uiInfo.modeIndex]) );
@@ -4488,6 +4507,13 @@ static void UI_RunMenuScript(const char **args)
 			if (uiInfo.teamIndex >= 0 && uiInfo.teamIndex < uiInfo.myTeamCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callteamvote leader \"%s\"\n",uiInfo.teamNames[uiInfo.teamIndex]) );
 			}
+		} else if (Q_stricmp(name, "voteRule") == 0) {
+			char	rule[32];
+			char	value[32];
+
+			trap_Cvar_VariableStringBuffer( "ui_voteRule", rule, sizeof(rule) );
+			trap_Cvar_VariableStringBuffer( va("ui_vote_%s", rule), value, sizeof(value) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote %s %s\n", rule, value) );
 		} else if (Q_stricmp(name, "addBot") == 0) {
 			if (GT_Team(trap_Cvar_VariableValue("g_gametype"))) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot %s %i %s\n", UI_GetBotNameByNumber(uiInfo.botIndex), uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "Red" : "Blue") );
@@ -4732,6 +4758,18 @@ static void UI_RunMenuScript(const char **args)
 			{
 				UI_Update(name2);
 			}
+		}
+		else if (Q_stricmp(name, "rulesInit") == 0)
+		{
+			char	info[MAX_INFO_VALUE];
+
+			trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+
+			trap_Cvar_Set( "ui_vote_timelimit", Info_ValueForKey(info, "timelimit") );
+			trap_Cvar_Set( "ui_vote_fraglimit", Info_ValueForKey(info, "fraglimit") );
+			trap_Cvar_Set( "ui_vote_capturelimit", Info_ValueForKey(info, "capturelimit") );
+			trap_Cvar_Set( "ui_vote_roundlimit", Info_ValueForKey(info, "roundlimit") );
+			trap_Cvar_Set( "ui_vote_teamsize", Info_ValueForKey(info, "teamsize") );
 		}
 		else
 		{
@@ -5481,6 +5519,9 @@ static int UI_FeederCount(float feederID)
 
 		case FEEDER_MODES:
 			return uiInfo.modeCount;
+
+		case FEEDER_SERVER_MAPS:
+			return uiInfo.serverMapCount;
 	}
 
 	return 0;
@@ -5801,6 +5842,21 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 		if (index >= 0 && index < uiInfo.modeCount) {
 			return uiInfo.modeList[index];
 		}
+	} else if (feederID == FEEDER_SERVER_MAPS) {
+		if (index >= 0 && index < uiInfo.serverMapCount) {
+			if ( uiInfo.serverMapList[index].mapIndex == -1 ) {
+				if ( uiInfo.httpDownloads ) {
+					*handle3 = trap_R_RegisterShaderNoMip( "gfx/menus/download" );
+				} else {
+					*handle3 = trap_R_RegisterShaderNoMip( "gfx/menus/missing" );
+				}
+			}
+			if ( ui_longMapName.integer && uiInfo.serverMapList[index].mapName ) {
+				return uiInfo.serverMapList[index].mapName;
+			} else {
+				return uiInfo.serverMapList[index].mapLoadName;
+			}
+		}
 	}
 	return "";
 }
@@ -6041,6 +6097,8 @@ qboolean UI_FeederSelection(float feederID, int index) {
 		uiInfo.demoIndex = index;
 	} else if (feederID == FEEDER_MODES) {
 		uiInfo.modeIndex = index;
+	} else if (feederID == FEEDER_SERVER_MAPS) {
+		uiInfo.serverMapIndex = index;
 	}
 
 	return qtrue;
@@ -7132,6 +7190,8 @@ vmCvar_t	ui_realWarmUp;
 vmCvar_t	ui_serverStatusTimeOut;
 vmCvar_t	s_language;
 
+vmCvar_t	ui_longMapName;
+
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
 	{ &ui_selectedModelIndex, "ui_selectedModelIndex", "16", CVAR_ARCHIVE },
@@ -7215,6 +7275,8 @@ static cvarTable_t cvarTable[] = {
 	{ &ui_realCaptureLimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART},
 	{ &ui_serverStatusTimeOut, "ui_serverStatusTimeOut", "7000", CVAR_ARCHIVE},
 	{ &s_language, "s_language", "english", CVAR_ARCHIVE | CVAR_NORESTART},
+
+	{ &ui_longMapName, "ui_longMapName", "1", CVAR_ARCHIVE},
 };
 
 /*

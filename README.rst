@@ -164,6 +164,9 @@ dmflags <bitmask>
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================
 
+duel_fraglimit
+  Removed. Use roundlimit instead.
+
 g_allowVote <0|1|bitmask>
   0 / 1 - disable / enable all votes.
 
@@ -203,7 +206,7 @@ g_logFilter[1-4] <mask>
   64 - Private Duel      128 - Obituary         256 - Say
   512 - Say Team         1024 - Tell            2048 - Voice Tell
   4096 - Item Pickup     8192 - Flag            16384 - Weapon Stats
-  32768 - Game Stats     65536 - Duel Stats
+  32768 - Game Stats     65536 - Duel Stats     131072 - Vote
   =====================  =====================  =====================
 
 g_maxGameClients <limit>

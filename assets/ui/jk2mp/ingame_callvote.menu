@@ -15,6 +15,7 @@
 		descScale               0.8
 		descColor               .235 .882 .847 1        // Focus color for text and items
 		descAlignment           ITEM_ALIGN_LEFT
+		disableColor            .7 .7 .7 1
 		onopen
 		{
 			hide                    grpcallVote ;
@@ -107,7 +108,7 @@
 
 		itemDef
 		{
-			name                    gametype_glow
+			name                    rules_glow
 			group                   glows
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 73 103 30
@@ -119,10 +120,10 @@
 
 		itemDef
 		{
-			name                    gametypebutton
+			name                    rulesbutton
 			group                   grpbutton
-			text                    @MENUS2_GAMETYPE
-			descText                @MENUS2_START_A_DIFFERENT_TYPE
+			text                    @SABERMENUS_RULES
+			descText                @SABERMENUS_RULES_DESC
 			type                    ITEM_TYPE_BUTTON
 			style                   WINDOW_STYLE_EMPTY
 			rect                    10 73 103 30
@@ -138,17 +139,19 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				hide                    grpCallVote ;
-				show                    type ;
+				show                    rules ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
-				setitemcolor            gametypebutton forecolor 1 1 1 1 ;
+				setitemcolor            rulesbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_voteRule 0 ;
+				uiScript                rulesInit
 			}
 			mouseEnter
 			{
-				show                    gametype_glow
+				show                    rules_glow
 			}
 			mouseExit
 			{
-				hide                    gametype_glow
+				hide                    rules_glow
 			}
 		}
 
@@ -185,7 +188,7 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				hide                    grpCallVote ;
-				uiScript				loadModes ;
+				uiScript                loadModes ;
 				show                    mode ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            modebutton forecolor 1 1 1 1 ;
@@ -233,6 +236,7 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				hide                    grpCallVote ;
+				uiScript                loadServerMaps ;
 				show                    map ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            changemapbutton forecolor 1 1 1 1 ;
@@ -457,33 +461,286 @@
 		}
 
 		//----------------------------------
-		// GAMETYPE VOTE PANEL
+		// RULES VOTE PANEL
 		//----------------------------------
 		itemDef
 		{
-			name                    type
+			name                    rules
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 40 230 161
+			background              "gfx/menus/menu_box1"   // Frame
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		// Highlights
+		itemDef
+		{
+			name                    highlight1
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 50 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight2
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 70 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight3
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 90 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight4
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 110 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight5
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 130 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight6
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 150 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight7
+			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 170 230 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		// Fields
+		/*
+		itemDef
+		{
+			name                    rules
 			group                   grpCallVote
 			text                    @MENUS0_GAME_TYPE
 			descText                @MENUS2_SELECT_A_NEW_GAME_TYPE
 			style                   0
 			ownerdraw               UI_NETGAMETYPE
-			rect                    120 105 230 30
+			rect                    120 50 230 20
 			textalign               ITEM_ALIGN_RIGHT
-			textalignx              50
+			textalignx              70
 			textaligny              -2
 			font                    2
-			textscale               .9
+			textscale               .8
 			forecolor               1 1 1 1
 			visible                 0
+			cvarTest                ui_voteRule
+			enableCvar              { 0 gametype }
+			mouseEnter
+			{
+				show                    highlight1
+			}
+			mouseExit
+			{
+				hide                    highlight1
+			}
+			action
+			{
+				setCvar                 ui_voteRule gametype ;
+			}
+		}
+		*/
+
+		itemDef
+		{
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @MENUS0_TIME_LIMIT
+			descText                @MENUS0_THIS_VALUE_ADJUSTS_THE
+			style                   0
+			rect                    120 50 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_timelimit
+			cvarTest                ui_voteRule
+			enableCvar              { 0 timelimit }
+			mouseEnter
+			{
+				show                    highlight1
+			}
+			mouseExit
+			{
+				hide                    highlight1
+			}
+			action
+			{
+				setCvar                 ui_voteRule timelimit ;
+			}
 		}
 
 		itemDef
 		{
-			name                    type
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @MENUS0_FRAG_LIMIT
+			style                   0
+			rect                    120 90 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_fraglimit
+			cvarTest                ui_voteRule
+			enableCvar              { 0 fraglimit }
+			mouseEnter              { show highlight3 }
+			mouseExit               { hide highlight3 }
+			action
+			{
+				setCvar                 ui_voteRule fraglimit ;
+			}
+		}
+
+		itemDef
+		{
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @MENUS1_CAPTURE_LIMIT
+			style                   0
+			rect                    120 110 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_capturelimit
+			cvarTest                ui_voteRule
+			enableCvar              { 0 capturelimit }
+			mouseEnter              { show highlight4 }
+			mouseExit               { hide highlight4 }
+			action
+			{
+				setCvar                 ui_voteRule capturelimit ;
+			}
+		}
+
+		itemDef
+		{
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @SABERMENUS_ROUND_LIMIT
+			descText                @SABERMENUS_THE_NUMBER_OF_ROUNDS
+			style                   0
+			rect                    120 130 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_roundlimit
+			cvarTest                ui_voteRule
+			enableCvar              { 0 roundlimit }
+			mouseEnter              { show highlight5 }
+			mouseExit               { hide highlight5 }
+			action
+			{
+				setCvar                 ui_voteRule roundlimit ;
+			}
+		}
+
+		itemDef
+		{
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @SABERMENUS_TEAMSIZE
+			descText                @SABERMENUS_TEAMSIZE_DESC
+			style                   0
+			rect                    120 170 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_teamsize
+			cvarTest                ui_voteRule
+			enableCvar              { 0 teamsize }
+			mouseEnter              { show highlight7 }
+			mouseExit               { hide highlight7 }
+			action
+			{
+				setCvar                 ui_voteRule teamsize ;
+			}
+		}
+
+		itemDef
+		{
+			name                    rules
 			group                   grpCallVote
 			text                    @MENUS0_OK
 			descText                @MENUS2_BEGIN_VOTE_FOR_THIS_GAME
-			type                    1
+			type                    ITEM_TYPE_BUTTON
 			style                   WINDOW_STYLE_FILLED
 			rect                    270 200 80 30
 			textalign               ITEM_ALIGN_CENTER
@@ -493,10 +750,12 @@
 			textscale               1
 			forecolor               0.65 0.65 1 1
 			visible                 1
+			cvarTest                ui_voteRule
+			disableCvar             { 0 }
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				uiScript                voteGame ;
+				uiScript                voteRule ;
 				uiScript                closeingame
 				hide                    doneButton
 			}
@@ -606,12 +865,13 @@
 		//----------------------------------
 		// MAP VOTE PANEL
 		//----------------------------------
+		/*
 		itemDef
 		{
 			name                    map
 			group                   grpCallVote
 			text                    @MENUS0_NEW_MAP
-			ownerdraw               UI_ALLMAPS_SELECTION
+			ownerdraw               UI_SERVER_MAPS_SELECTION
 			rect                    120 25 230 20
 			textalign               0
 			textalignx              5
@@ -620,6 +880,30 @@
 			textscale               .8
 			forecolor               1 1 1 1
 			decoration
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+		}
+		*/
+
+		itemDef
+		{
+			name                    map
+			group                   grpCallVote
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DISPLAY_NAME
+			descText                @SABERMENUS_DISPLAY_NAME_DESC
+			cvar                    "ui_longMapName"
+			cvarFloatList           { @SABERMENUS_SHORT 0 @SABERMENUS_LONG 1 }
+			rect                    120 25 230 20
+			textalign               0
+			textalignx              5
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
 			visible                 0
 			action
 			{
@@ -638,7 +922,7 @@
 			elementwidth            120
 			elementheight           15
 			elementtype             LISTBOX_TEXT
-			feeder                  FEEDER_ALLMAPS
+			feeder                  FEEDER_SERVER_MAPS
 			border                  1
 			bordercolor             .5 .5 .5 .5
 			backcolor               0 0 .5 .25
@@ -682,7 +966,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				uiScript                voteMap ;
+				uiScript                voteServerMap ;
 				uiScript                closeingame
 				hide                    doneButton
 			}
@@ -704,7 +988,7 @@
 			name                    kick
 			group                   grpCallVote
 			text                    @MENUS0_KICK_PLAYER
-			ownerdraw				UI_PLAYER_LIST_SELECTION
+			ownerdraw               UI_PLAYER_LIST_SELECTION
 			rect                    120 25 230 20
 			textalign               0
 			textalignx              5

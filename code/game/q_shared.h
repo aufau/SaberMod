@@ -1382,6 +1382,7 @@ typedef enum {
 #define	MAX_SOUNDS			256		// so they cannot be blindly increased
 #define MAX_FX				64		// max effects strings, I'm hoping that 64 will be plenty
 #define MAX_STRING_PACKAGES	30
+#define MAX_CS_MAPS			4
 /*
 Ghoul2 Insert Start
 */

@@ -183,41 +183,36 @@ static int G_GetMapTypeBits(const char *type)
 	return typeBits;
 }
 
-#ifdef UNUSED
-qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
+qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype)
+{
+	arena_t		arena;
+
+	arena = G_GetArenaByMap( mapname );
+	return G_DoesArenaSupportGametype( arena, gametype );
+}
+
+qboolean G_DoesArenaSupportGametype(arena_t arena, gametype_t gametype)
 {
 	int			typeBits = 0;
-	int			thisLevel = -1;
-	int			n = 0;
 	const char	*type;
 
-	if (!g_arenaInfos[0])
+	if (arena < 0 || arena >= g_numArenas)
 	{
 		return qfalse;
 	}
 
-	if (!mapname || !mapname[0])
-	{
-		return qfalse;
+	switch (gametype) {
+	case GT_FFA:
+	case GT_TEAM:
+	case GT_TOURNAMENT:
+	case GT_REDROVER:
+	case GT_CLANARENA:
+		return qtrue;
+	default:
+		break;
 	}
 
-	for( n = 0; n < g_numArenas; n++ )
-	{
-		type = Info_ValueForKey( g_arenaInfos[n], "map" );
-
-		if (Q_stricmp(mapname, type) == 0)
-		{
-			thisLevel = n;
-			break;
-		}
-	}
-
-	if (thisLevel == -1)
-	{
-		return qfalse;
-	}
-
-	type = Info_ValueForKey(g_arenaInfos[thisLevel], "type");
+	type = Info_ValueForKey(g_arenaInfos[arena], "type");
 
 	typeBits = G_GetMapTypeBits(type);
 	if (typeBits & (1 << gametype))
@@ -227,7 +222,6 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 
 	return qfalse;
 }
-#endif // UNUSED
 
 //rww - auto-obtain nextmap. I could've sworn Q3 had something like this, but I guess not.
 const char *G_RefreshNextMap(int gametype, qboolean forced)
@@ -305,6 +299,55 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 }
 
 /*
+=================
+G_GetMapsConfigstring
+=================
+*/
+static int G_GetMapsConfigstrings( char cs[MAX_CS_MAPS][MAX_INFO_STRING], int max ) {
+	char	token[MAX_INFO_VALUE * 2 + 1];
+	int		numMaps;
+	int		i;
+	int		n = 0;
+	int		pos = 0;
+
+	for ( i = 0; i < MAX_CS_MAPS; i++ ) {
+		cs[i][0] = '\0';
+	}
+
+	for ( i = 0, numMaps = 0; i < g_numArenas && numMaps < max; i++ ) {
+		const char	*type;
+		int			typeBits;
+
+		type = Info_ValueForKey( g_arenaInfos[i], "type" );
+		typeBits = G_GetMapTypeBits( type );
+
+		if ( typeBits & (1 << level.gametype) ) {
+			const char	*name = Info_ValueForKey( g_arenaInfos[i], "map" );
+			const char	*longName = Info_ValueForKey( g_arenaInfos[i], "longname" );
+			int			len;
+
+			len = Com_sprintf( token, sizeof( token ), "%s\\%s\\", name, longName );
+
+			while ( pos + len + 1 >= MAX_INFO_STRING ) {
+				cs[n][MAX_INFO_STRING - 1] = '\0'; // safe
+				pos = 0;
+				n++;
+				if ( n >= MAX_CS_MAPS ) {
+					return -1;
+				}
+			}
+
+			strncpy( &cs[n][pos], token, len + 1 );
+			pos += len;
+
+			numMaps++;
+		}
+	}
+
+	return numMaps;
+}
+
+/*
 ===============
 G_LoadArenas
 ===============
@@ -344,12 +387,57 @@ static void G_LoadArenas( void ) {
 	}
 
 	G_RefreshNextMap(level.gametype, qfalse);
+
+	// write available maps for current gametype to CS_SERVER_MAPS
+	{
+		char	cs[MAX_CS_MAPS][MAX_INFO_STRING];
+		int		numMaps;
+
+		numMaps = G_GetMapsConfigstrings( cs, MAX_SERVER_MAPS );
+
+		if ( numMaps >= MAX_SERVER_MAPS || numMaps == -1 ) {
+			Com_Printf( S_COLOR_YELLOW "WARNING: Too many maps for callvote menu.\n" );
+		}
+
+		for ( n = 0; n < MAX_CS_MAPS; n++ ) {
+			trap_SetConfigstring( CS_MAPS + n, cs[n] );
+		}
+	}
+}
+
+/*
+===============
+G_GetArenaByMap
+===============
+*/
+arena_t G_GetArenaByMap( const char *map ) {
+	int			n;
+
+	if (!map || !map[0]) {
+		return ARENA_INVALID;
+	}
+
+	for( n = 0; n < g_numArenas; n++ ) {
+		if( Q_stricmp( Info_ValueForKey( g_arenaInfos[n], "map" ), map ) == 0 ) {
+			return n;
+		}
+	}
+
+	return ARENA_INVALID;
+}
+
+const char *G_GetArenaInfo( arena_t arena ) {
+	if ( arena < 0 || arena >= g_numArenas ) {
+		return NULL;
+	}
+
+	return g_arenaInfos[arena];
 }
 
 #ifdef UNUSED
 /*
 ===============
-G_GetArenaInfoByNumber
+G_GetArenaInfoByMap
 ===============
 */
 const char *G_GetArenaInfoByMap( const char *map ) {

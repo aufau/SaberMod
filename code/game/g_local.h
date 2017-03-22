@@ -74,6 +74,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOG_WEAPON_STATS	0x00004000
 #define LOG_GAME_STATS		0x00008000
 #define LOG_AUSTRIAN		0x00010000
+#define LOG_VOTE			0x00020000
 
 #define LOG_DEFAULT			41943
 
@@ -355,6 +356,13 @@ typedef enum {
 	TEAM_ACTIVE		// Now actively playing
 } playerTeamStateState_t;
 
+typedef enum {
+	VOTE_NONE,
+	VOTE_NO,
+	VOTE_YES,
+	VOTE_MAX,
+} vote_t;
+
 typedef union {
 	byte		b[4];
 	unsigned	ui;
@@ -429,6 +437,8 @@ typedef struct {
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
 	qboolean	privateDuel;
+	vote_t		vote;
+	vote_t		teamVote;
 
 	int			saved[MAX_PERSISTANT];	// saved ps.persistant
 } clientPersistant_t;
@@ -979,6 +989,9 @@ void UpdateTournamentInfo( void );
 //
 // g_bot.c
 //
+typedef int arena_t;
+#define ARENA_INVALID -1
+
 void G_InitBots( int restart );
 char *G_GetBotInfoByNumber( int num );
 char *G_GetBotInfoByName( const char *name );
@@ -988,8 +1001,12 @@ qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
 void Svcmd_BotList_f( void );
 void BotInterbreedEndMatch( void );
-qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
+qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype);
+qboolean G_DoesArenaSupportGametype(arena_t arena, gametype_t gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
+arena_t G_GetArenaByMap( const char *map );
+const char *G_GetArenaInfo( arena_t arena );
+
 
 // w_force.c / w_saber.c
 gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum);

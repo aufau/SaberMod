@@ -336,13 +336,143 @@ void UI_LoadModes( void ) {
 	mode = uiInfo.modeBuf;
 
 	for ( i = 0; i < MAX_MODES; i++ ) {
-		uiInfo.modeList[i] = mode;
+		const char *name = mode;
+
 		mode = strchr( mode, '\\' );
 		if (!mode)
 			break;
 		*mode++ = '\0';
+
+		uiInfo.modeList[i] = name;
 	}
 
 	uiInfo.modeCount = i;
 	uiInfo.modeIndex = 0;
+}
+
+static int SortServerMapsLoadName( const void *a, const void *b ) {
+	const serverMapInfo *ai = (const serverMapInfo *)a;
+	const serverMapInfo *bi = (const serverMapInfo *)b;
+	char mapNameA[MAX_INFO_VALUE];
+	char mapNameB[MAX_INFO_VALUE];
+
+	Q_strncpyz( mapNameA, ai->mapLoadName, sizeof( mapNameA ) );
+	Q_CleanStr( mapNameA );
+
+	Q_strncpyz( mapNameB, bi->mapLoadName, sizeof( mapNameB ) );
+	Q_CleanStr( mapNameB );
+
+	return Q_stricmp( mapNameA, mapNameB );
+}
+
+static int SortServerMapsName( const void *a, const void *b ) {
+	const serverMapInfo *ai = (const serverMapInfo *)a;
+	const serverMapInfo *bi = (const serverMapInfo *)b;
+	char mapNameA[MAX_INFO_VALUE];
+	char mapNameB[MAX_INFO_VALUE];
+
+	Q_strncpyz( mapNameA, ai->mapName, sizeof( mapNameA ) );
+	Q_CleanStr( mapNameA );
+
+	Q_strncpyz( mapNameB, bi->mapName, sizeof( mapNameB ) );
+	Q_CleanStr( mapNameB );
+
+	return Q_stricmp( mapNameA, mapNameB );
+}
+
+void UI_LoadServerMaps( void ) {
+	char *p;
+	int i, n;
+
+	// UI_LoadArenas();
+
+	for ( i = 0; i < MAX_CS_MAPS; i++ ) {
+		trap_GetConfigString( CS_MAPS + i, uiInfo.serverMapBuf[i], sizeof( uiInfo.serverMapBuf[0] ) );
+	}
+
+	n = 0;
+	p = uiInfo.serverMapBuf[n];
+
+	for ( i = 0; i < MAX_SERVER_MAPS; i++ ) {
+		const char *name;
+		const char *longName;
+		qboolean valid = qfalse;
+		qboolean done = qfalse;
+		int j;
+
+		// fau - I'm ashamed of this parsing
+		do {
+			name = p;
+			p = strchr( p, '\\' );
+			if ( p ) {
+				*p++ = '\0';
+
+				longName = p;
+				p = strchr( p, '\\' );
+
+				if ( p ) {
+					*p++ = '\0';
+					// we have valid name and longName
+					valid = qtrue;
+				}
+			}
+
+			if ( !p ) {
+				// otherwise try next configstring until we run out
+				n++;
+				if ( n >= MAX_CS_MAPS ) {
+					done = qtrue;
+					break;
+				}
+				p = uiInfo.serverMapBuf[n];
+			}
+		} while ( !valid );
+
+		if ( done ) {
+			break;
+		}
+
+		uiInfo.serverMapList[i].mapName = longName;
+		uiInfo.serverMapList[i].mapLoadName = name;
+		uiInfo.serverMapList[i].mapIndex = -1;
+
+		// match local map
+		for ( j = 0; j < uiInfo.mapCount; j++ ) {
+			if ( !Q_stricmp( uiInfo.mapList[j].mapLoadName, name ) ) {
+				uiInfo.serverMapList[i].mapIndex = j;
+				break;
+			}
+		}
+	}
+
+	uiInfo.serverMapCount = i;
+	uiInfo.serverMapIndex = 0;
+
+	if ( ui_longMapName.integer ) {
+		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsName );
+	} else {
+		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsLoadName );
+	}
+}
+
+void UI_GetHTTPDownloads( void ) {
+	char		info[MAX_INFO_VALUE];
+	char		clientJK2MV[2];
+	const char	*serverJK2MV;
+
+	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+	trap_Cvar_VariableStringBuffer( "JK2MV", clientJK2MV, sizeof(clientJK2MV) );
+	serverJK2MV = Info_ValueForKey( info, "JK2MV" );
+
+	if (clientJK2MV[0] != '\0' &&
+		(int)trap_Cvar_VariableValue( "mv_allowdownload" ) &&
+		serverJK2MV[0] != '\0' &&
+		atoi( Info_ValueForKey( info, "mv_httpdownloads" ) ) )
+	{
+		uiInfo.httpDownloads = qtrue;
+	}
+	else
+	{
+		uiInfo.httpDownloads = qfalse;
+	}
 }

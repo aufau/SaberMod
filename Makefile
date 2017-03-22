@@ -93,14 +93,15 @@ name		:= SaberMod
 
 cls_pk3		:= $(name)-$(VERSION).pk3
 cls_doc		:= README.rst LICENSE.txt
-cls_assets := SOURCE.txt mv.info ui/jk2mpingame.txt				\
-ui/jk2mp/menudef.h ui/jk2mp/ingame_about.menu					\
-ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu			\
-ui/jk2mp/createserver.menu ui/jk2mp/ingame_player.menu			\
-ui/jk2mp/ingame_setup_modoptions.menu ui/jk2mp/gameinfo.txt		\
-ui/jk2mp/setup.menu ui/jk2mp/ingame.menu						\
-ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp	\
-strip/SABERMOD_MENUS.sp gfx/2d/crosshairj.tga
+cls_assets := SOURCE.txt mv.info ui/jk2mpingame.txt					\
+ui/jk2mp/menudef.h ui/jk2mp/ingame_about.menu						\
+ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu				\
+ui/jk2mp/createserver.menu ui/jk2mp/ingame_player.menu				\
+ui/jk2mp/ingame_setup_modoptions.menu ui/jk2mp/gameinfo.txt			\
+ui/jk2mp/setup.menu ui/jk2mp/ingame.menu							\
+ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp		\
+strip/SABERMOD_MENUS.sp shaders/sabermod.shader_mv					\
+gfx/2d/crosshairj.tga gfx/menus/download.tga gfx/menus/missing.tga
 
 svs_zip		:= $(name)-$(VERSION).zip
 svs_assets	:= server.cfg reset.cfg modes/

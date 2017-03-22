@@ -1,0 +1,17 @@
+gfx/menus/download
+{
+	uiElementHD
+	{
+		map gfx/menus/download.tga
+		blendFunc blend
+	}
+}
+
+gfx/menus/missing
+{
+	uiElementHD
+	{
+		map gfx/menus/missing.tga
+		blendFunc blend
+	}
+}

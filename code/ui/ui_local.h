@@ -88,9 +88,9 @@ extern vmCvar_t	ui_scoreTimeBonus;
 extern vmCvar_t	ui_scoreSkillBonus;
 extern vmCvar_t	ui_scoreShutoutBonus;
 extern vmCvar_t	ui_scoreTime;
-extern vmCvar_t ui_serverStatusTimeOut;
+extern vmCvar_t	ui_serverStatusTimeOut;
 
-
+extern vmCvar_t	ui_longMapName;
 
 //
 // ui_qmenu.c
@@ -644,6 +644,12 @@ typedef struct {
 } mapInfo;
 
 typedef struct {
+	const char *mapName;
+	const char *mapLoadName;
+	int mapIndex;
+} serverMapInfo;
+
+typedef struct {
 	const char *tierName;
 	const char *maps[MAPS_PER_TIER];
 	int gameTypes[MAPS_PER_TIER];
@@ -779,6 +785,12 @@ typedef struct {
 	int movieIndex;
 	int previewMovie;
 
+	char serverMapBuf[MAX_CS_MAPS][MAX_INFO_STRING];
+	char serverMapLongBuf[MAX_INFO_STRING];
+	serverMapInfo serverMapList[MAX_SERVER_MAPS];
+	int serverMapCount;
+	int serverMapIndex;
+
 	char modeBuf[MAX_INFO_STRING];
 	const char *modeList[MAX_MODES];
 	int modeCount;
@@ -824,6 +836,7 @@ typedef struct {
 
 	qboolean inGameLoad;
 
+	qboolean httpDownloads;
 }	uiInfo_t;
 
 extern uiInfo_t uiInfo;
@@ -1086,6 +1099,8 @@ void UI_SPUnlockMedals_f( void );
 void UI_InitGameinfo( void );
 
 void UI_LoadModes( void );
+void UI_LoadServerMaps( void );
+void UI_GetHTTPDownloads( void );
 
 //
 // ui_login.c

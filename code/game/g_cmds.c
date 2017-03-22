@@ -1772,6 +1772,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char			arg1[MAX_STRING_TOKENS];
 	const char		*arg2;
 	const char		*errorMsg;
+	const char		*mapInfo;
+	arena_t			arena;
 	char			s[MAX_STRING_CHARS];
 
 	static const char *voteCanonicalName[CV_MAX] = {
@@ -1916,23 +1918,26 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting
 		// this allows a player to change maps, but not upset the map rotation
+		arena = G_GetArenaByMap( arg2 );
 
-		/*
-		if (!G_DoesMapSupportGametype(arg2, trap_Cvar_VariableIntegerValue("g_gametype")))
+		if ( !G_DoesArenaSupportGametype( arena, level.gametype ) )
 		{
 			//trap_SendServerCommand( ent-g_entities, "print \"You can't vote for this map, it isn't supported by the current gametype.\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", G_GetStripEdString("SVINGAME", "NOVOTE_MAPNOTSUPPORTEDBYGAME")) );
 			return;
 		}
-		*/
 
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
 		if (*s) {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %s; set nextmap \"%s\"", arg1, arg2, s );
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s; set nextmap \"%s\"", arg2, s );
 		} else {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %s", arg1, arg2 );
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s", arg2 );
 		}
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
+
+		mapInfo = G_GetArenaInfo( arena );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
+			"%s %s" S_COLOR_WHITE " (%s" S_COLOR_WHITE ")", voteName,
+			Info_ValueForKey( mapInfo, "longname" ), Info_ValueForKey( mapInfo, "map" ) );
 		break;
 	case CV_KICK:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
@@ -2042,7 +2047,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 	}
 
-	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLCALLEDVOTE") ) );
+	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s (%s" S_COLOR_WHITE ")\n\"",
+			ent->client->pers.netname,
+			G_GetStripEdString("SVINGAME", "PLCALLEDVOTE"),
+			level.voteDisplayString) );
 
 	// start the voting, the caller autoamtically votes yes
 	level.voteCmd = voteCmd;
@@ -2053,13 +2061,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;
+		level.clients[i].pers.vote = VOTE_NONE;
 	}
 	ent->client->ps.eFlags |= EF_VOTED;
+	ent->client->pers.vote = VOTE_YES;
 
 	trap_SetConfigstring( CS_VOTE_TIME, va("%i", level.voteTime ) );
 	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );
-	trap_SetConfigstring( CS_VOTE_YES, va("%i", level.voteYes ) );
-	trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );
+	trap_SetConfigstring( CS_VOTE_YES, "1" );
+	trap_SetConfigstring( CS_VOTE_NO, "0" );
 }
 
 /*
@@ -2068,14 +2078,11 @@ Cmd_Vote_f
 ==================
 */
 void Cmd_Vote_f( gentity_t *ent ) {
-	char		msg[64];
+	char		msg[2];
+	vote_t		vote;
 
 	if ( !level.voteTime ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTEINPROG")) );
-		return;
-	}
-	if ( ent->client->ps.eFlags & EF_VOTED ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEALREADY")) );
 		return;
 	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
@@ -2083,22 +2090,18 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		return;
 	}
 
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );
-
 	ent->client->ps.eFlags |= EF_VOTED;
 
 	trap_Argv( 1, msg, sizeof( msg ) );
+	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
 
-	if ( msg[0] == 'y' || msg[1] == 'Y' || msg[1] == '1' ) {
-		level.voteYes++;
-		trap_SetConfigstring( CS_VOTE_YES, va("%i", level.voteYes ) );
+	if ( vote != ent->client->pers.vote ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );
+		ent->client->pers.vote = vote;
+		CalculateRanks();
 	} else {
-		level.voteNo++;
-		trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEALREADY")) );
 	}
-
-	// a majority will be determined in CheckVote, which will also account
-	// for players entering or leaving
 }
 
 /*
@@ -2203,7 +2206,9 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED )
 			continue;
 		if (level.clients[i].sess.sessionTeam == team)
-			trap_SendServerCommand( i, va("print \"%s" S_COLOR_WHITE " called a team vote.\n\"", ent->client->pers.netname ) );
+			trap_SendServerCommand( i,
+				va("print \"%s" S_COLOR_WHITE " called a team vote (Leader %s" S_COLOR_WHITE ")\n\"",
+					ent->client->pers.netname, level.clients[i].pers.netname ) );
 	}
 
 	// start the voting, the caller autoamtically votes yes
@@ -2212,15 +2217,18 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	level.teamVoteNo[cs_offset] = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if (level.clients[i].sess.sessionTeam == team)
+		if (level.clients[i].sess.sessionTeam == team) {
 			level.clients[i].ps.eFlags &= ~EF_TEAMVOTED;
+			level.clients[i].pers.teamVote = VOTE_NONE;
+		}
 	}
 	ent->client->ps.eFlags |= EF_TEAMVOTED;
+	ent->client->pers.teamVote = VOTE_YES;
 
 	trap_SetConfigstring( CS_TEAMVOTE_TIME + cs_offset, va("%i", level.teamVoteTime[cs_offset] ) );
 	trap_SetConfigstring( CS_TEAMVOTE_STRING + cs_offset, level.teamVoteString[cs_offset] );
-	trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, va("%i", level.teamVoteYes[cs_offset] ) );
-	trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
+	trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, "1" );
+	trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, "0" );
 }
 
 /*
@@ -2229,8 +2237,10 @@ Cmd_TeamVote_f
 ==================
 */
 void Cmd_TeamVote_f( gentity_t *ent ) {
-	int			team, cs_offset;
-	char		msg[64];
+	team_t		team;
+	vote_t		vote;
+	int			cs_offset;
+	char		msg[2];
 
 	team = ent->client->sess.sessionTeam;
 	if ( team == TEAM_RED )
@@ -2244,31 +2254,23 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOTEAMVOTEINPROG")) );
 		return;
 	}
-	if ( ent->client->ps.eFlags & EF_TEAMVOTED ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
-		return;
-	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTEASSPEC")) );
 		return;
 	}
 
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLTEAMVOTECAST")) );
-
 	ent->client->ps.eFlags |= EF_TEAMVOTED;
 
 	trap_Argv( 1, msg, sizeof( msg ) );
+	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
 
-	if ( msg[0] == 'y' || msg[1] == 'Y' || msg[1] == '1' ) {
-		level.teamVoteYes[cs_offset]++;
-		trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, va("%i", level.teamVoteYes[cs_offset] ) );
+	if ( vote != ent->client->pers.teamVote ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLTEAMVOTECAST")) );
+		ent->client->pers.teamVote = vote;
+		CalculateRanks();
 	} else {
-		level.teamVoteNo[cs_offset]++;
-		trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
+		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
 	}
-
-	// a majority will be determined in TeamCheckVote, which will also account
-	// for players entering or leaving
 }
 
 

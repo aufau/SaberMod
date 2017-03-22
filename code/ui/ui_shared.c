@@ -3433,6 +3433,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 						g_editingField = qtrue;
 						g_editItem = item;
 						DC->setOverstrikeMode(qtrue);
+						Item_Action(item);
 					}
 				} else {
 					if (Rect_ContainsPoint(&item->window.rect, DC->cursorx, DC->cursory)) {
@@ -3473,9 +3474,9 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 					g_editingField = qtrue;
 					g_editItem = item;
 					DC->setOverstrikeMode(qtrue);
-				} else {
-						Item_Action(item);
 				}
+
+				Item_Action(item);
 			}
 			break;
 	}
@@ -3792,7 +3793,9 @@ void Item_TextField_Paint(itemDef_t *item) {
 
 	parent = item->parent;
 
-	if (item->window.flags & WINDOW_HASFOCUS) {
+	if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
+		Vector4Copy(parent->disableColor, newColor);
+	} else if (item->window.flags & WINDOW_HASFOCUS) {
 		lowLight[0] = 0.8f * parent->focusColor[0];
 		lowLight[1] = 0.8f * parent->focusColor[1];
 		lowLight[2] = 0.8f * parent->focusColor[2];
@@ -4668,15 +4671,24 @@ void Item_ListBox_Paint(itemDef_t *item) {
 				}
 				else
 				{
+					int imageX = x + 2 + item->window.rect.w - SCROLLBAR_SIZE - 4 - listPtr->elementHeight;
+					int imageY = y + LISTBOX_HIGHLIGHT_DROP;
+
 					text = DC->feederItemText(item->special, i, 0, &optionalImage1, &optionalImage2, &optionalImage3 );
-					if ( optionalImage1 >= 0 || optionalImage2 >= 0 || optionalImage3 >= 0)
-					{
-						//DC->drawHandlePic(x + 4 + listPtr->elementHeight, y, listPtr->columnInfo[j].width, listPtr->columnInfo[j].width, optionalImage);
-					}
-					else if (text)
-					{
-//						DC->drawText(x + 4, y + listPtr->elementHeight, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle);
+
+					if (text) {
 						DC->drawText(x + 4, y, item->textscale, item->window.foreColor, text, 0, 0, item->textStyle, item->iMenuFont);
+					}
+					if ( optionalImage3 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage3);
+						imageX -= listPtr->elementHeight;
+					}
+					if ( optionalImage2 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage2);
+						imageX -= listPtr->elementHeight;
+					}
+					if ( optionalImage1 >= 0 ) {
+						DC->drawHandlePic(imageX, imageY, listPtr->elementHeight, listPtr->elementHeight, optionalImage1);
 					}
 				}
 
