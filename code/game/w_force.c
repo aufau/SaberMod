@@ -4095,7 +4095,7 @@ void SeekerDroneUpdate(gentity_t *self)
 		VectorCopy(self->client->ps.origin, elevated);
 		elevated[2] += 40;
 
-		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
+		angle = (level.time % 3072) * (float) (M_PI * 2 / 3072); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -4142,7 +4142,7 @@ void SeekerDroneUpdate(gentity_t *self)
 
 		elevated[2] -= 55-prefig;
 
-		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
+		angle = (level.time % 3072) * (float) (M_PI * 2 / 3072); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
@@ -4210,7 +4210,7 @@ void SeekerDroneUpdate(gentity_t *self)
 		VectorCopy(self->client->ps.origin, elevated);
 		elevated[2] += 40;
 
-		angle = ((level.time / 12) & 255) * (float) (M_PI * 2 / 255); //magical numbers make magic happen
+		angle = (level.time % 3072) * (float) (M_PI * 2 / 3072); //magical numbers make magic happen
 		dir[0] = cosf(angle) * 20;
 		dir[1] = sinf(angle) * 20;
 		dir[2] = cosf(angle) * 5;
