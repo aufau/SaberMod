@@ -185,33 +185,18 @@ static int G_GetMapTypeBits(const char *type)
 
 qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype)
 {
+	arena_t		arena;
+
+	arena = G_GetArenaByMap( mapname );
+	return G_DoesArenaSupportGametype( arena, gametype );
+}
+
+qboolean G_DoesArenaSupportGametype(arena_t arena, gametype_t gametype)
+{
 	int			typeBits = 0;
-	int			thisLevel = -1;
-	int			n = 0;
 	const char	*type;
 
-	if (!g_arenaInfos[0])
-	{
-		return qfalse;
-	}
-
-	if (!mapname || !mapname[0])
-	{
-		return qfalse;
-	}
-
-	for( n = 0; n < g_numArenas; n++ )
-	{
-		type = Info_ValueForKey( g_arenaInfos[n], "map" );
-
-		if (Q_stricmp(mapname, type) == 0)
-		{
-			thisLevel = n;
-			break;
-		}
-	}
-
-	if (thisLevel == -1)
+	if (arena < 0 || arena >= g_numArenas)
 	{
 		return qfalse;
 	}
@@ -227,7 +212,7 @@ qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype)
 		break;
 	}
 
-	type = Info_ValueForKey(g_arenaInfos[thisLevel], "type");
+	type = Info_ValueForKey(g_arenaInfos[arena], "type");
 
 	typeBits = G_GetMapTypeBits(type);
 	if (typeBits & (1 << gametype))
@@ -420,10 +405,39 @@ static void G_LoadArenas( void ) {
 	}
 }
 
+/*
+===============
+G_GetArenaByMap
+===============
+*/
+arena_t G_GetArenaByMap( const char *map ) {
+	int			n;
+
+	if (!map || !map[0]) {
+		return ARENA_INVALID;
+	}
+
+	for( n = 0; n < g_numArenas; n++ ) {
+		if( Q_stricmp( Info_ValueForKey( g_arenaInfos[n], "map" ), map ) == 0 ) {
+			return n;
+		}
+	}
+
+	return ARENA_INVALID;
+}
+
+const char *G_GetArenaInfo( arena_t arena ) {
+	if ( arena < 0 || arena >= g_numArenas ) {
+		return NULL;
+	}
+
+	return g_arenaInfos[arena];
+}
+
 #ifdef UNUSED
 /*
 ===============
-G_GetArenaInfoByNumber
+G_GetArenaInfoByMap
 ===============
 */
 const char *G_GetArenaInfoByMap( const char *map ) {

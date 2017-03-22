@@ -1772,6 +1772,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char			arg1[MAX_STRING_TOKENS];
 	const char		*arg2;
 	const char		*errorMsg;
+	const char		*mapInfo;
+	arena_t			arena;
 	char			s[MAX_STRING_CHARS];
 
 	static const char *voteCanonicalName[CV_MAX] = {
@@ -1916,8 +1918,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	case CV_MAP:
 		// special case for map changes, we want to reset the nextmap setting
 		// this allows a player to change maps, but not upset the map rotation
+		arena = G_GetArenaByMap( arg2 );
 
-		if (!G_DoesMapSupportGametype(arg2, level.gametype))
+		if ( !G_DoesArenaSupportGametype( arena, level.gametype ) )
 		{
 			//trap_SendServerCommand( ent-g_entities, "print \"You can't vote for this map, it isn't supported by the current gametype.\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", G_GetStripEdString("SVINGAME", "NOVOTE_MAPNOTSUPPORTEDBYGAME")) );
@@ -1930,7 +1933,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		} else {
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s", arg2 );
 		}
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
+
+		mapInfo = G_GetArenaInfo( arena );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
+			"%s %s" S_COLOR_WHITE " (%s" S_COLOR_WHITE ")", voteName,
+			Info_ValueForKey( mapInfo, "longname" ), Info_ValueForKey( mapInfo, "map" ) );
 		break;
 	case CV_KICK:
 		i = G_ClientNumberFromString( arg2, &errorMsg );

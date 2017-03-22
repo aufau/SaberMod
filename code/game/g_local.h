@@ -989,6 +989,9 @@ void UpdateTournamentInfo( void );
 //
 // g_bot.c
 //
+typedef int arena_t;
+#define ARENA_INVALID -1
+
 void G_InitBots( int restart );
 char *G_GetBotInfoByNumber( int num );
 char *G_GetBotInfoByName( const char *name );
@@ -999,7 +1002,11 @@ void Svcmd_AddBot_f( void );
 void Svcmd_BotList_f( void );
 void BotInterbreedEndMatch( void );
 qboolean G_DoesMapSupportGametype(const char *mapname, gametype_t gametype);
+qboolean G_DoesArenaSupportGametype(arena_t arena, gametype_t gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
+arena_t G_GetArenaByMap( const char *map );
+const char *G_GetArenaInfo( arena_t arena );
+
 
 // w_force.c / w_saber.c
 gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum);
