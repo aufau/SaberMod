@@ -350,6 +350,36 @@ void UI_LoadModes( void ) {
 	uiInfo.modeIndex = 0;
 }
 
+static int SortServerMapsLoadName( const void *a, const void *b ) {
+	const serverMapInfo *ai = (const serverMapInfo *)a;
+	const serverMapInfo *bi = (const serverMapInfo *)b;
+	char mapNameA[MAX_INFO_VALUE];
+	char mapNameB[MAX_INFO_VALUE];
+
+	Q_strncpyz( mapNameA, ai->mapLoadName, sizeof( mapNameA ) );
+	Q_CleanStr( mapNameA );
+
+	Q_strncpyz( mapNameB, bi->mapLoadName, sizeof( mapNameB ) );
+	Q_CleanStr( mapNameB );
+
+	return Q_stricmp( mapNameA, mapNameB );
+}
+
+static int SortServerMapsName( const void *a, const void *b ) {
+	const serverMapInfo *ai = (const serverMapInfo *)a;
+	const serverMapInfo *bi = (const serverMapInfo *)b;
+	char mapNameA[MAX_INFO_VALUE];
+	char mapNameB[MAX_INFO_VALUE];
+
+	Q_strncpyz( mapNameA, ai->mapName, sizeof( mapNameA ) );
+	Q_CleanStr( mapNameA );
+
+	Q_strncpyz( mapNameB, bi->mapName, sizeof( mapNameB ) );
+	Q_CleanStr( mapNameB );
+
+	return Q_stricmp( mapNameA, mapNameB );
+}
+
 void UI_LoadServerMaps( void ) {
 	char *p;
 	int i, n;
@@ -417,6 +447,12 @@ void UI_LoadServerMaps( void ) {
 
 	uiInfo.serverMapCount = i;
 	uiInfo.serverMapIndex = 0;
+
+	if ( ui_longMapName.integer ) {
+		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsName );
+	} else {
+		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsLoadName );
+	}
 }
 
 void UI_GetHTTPDownloads( void ) {
