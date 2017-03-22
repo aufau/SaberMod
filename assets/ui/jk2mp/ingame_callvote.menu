@@ -865,6 +865,7 @@
 		//----------------------------------
 		// MAP VOTE PANEL
 		//----------------------------------
+		/*
 		itemDef
 		{
 			name                    map
@@ -879,6 +880,30 @@
 			textscale               .8
 			forecolor               1 1 1 1
 			decoration
+			visible                 0
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+		}
+		*/
+
+		itemDef
+		{
+			name                    map
+			group                   grpCallVote
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DISPLAY_NAME
+			descText                @SABERMENUS_DISPLAY_NAME_DESC
+			cvar                    "ui_longMapName"
+			cvarFloatList           { @SABERMENUS_SHORT 0 @SABERMENUS_LONG 1 }
+			rect                    120 25 230 20
+			textalign               0
+			textalignx              5
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
 			visible                 0
 			action
 			{
