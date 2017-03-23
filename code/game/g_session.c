@@ -184,7 +184,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 
 	if ( sess->sessionTeam == TEAM_SPECTATOR )
 		sess->spectatorState = SPECTATOR_FREE;
-	else if ( level.round > 0 && level.gametype != GT_REDROVER )
+	else if ( level.round > 0 && !level.roundQueued && level.gametype != GT_REDROVER )
 		sess->spectatorState = SPECTATOR_FREE;
 	else
 		sess->spectatorState = SPECTATOR_NOT;
