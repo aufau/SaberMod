@@ -2877,11 +2877,18 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		return;
 	}
 
-	if (self->client->ps.weapon != WP_SABER ||
-		self->client->ps.weaponstate == WEAPON_RAISING ||
-		self->client->ps.weaponstate == WEAPON_DROPPING)
+	if (self->client->ps.weapon != WP_SABER)
 	{
 		returnAfterUpdate = 1;
+	}
+	else if (!self->client->ps.saberInFlight)
+	{
+		// fau - fix using force powers while throwing saber
+		if (self->client->ps.weaponstate == WEAPON_RAISING ||
+			self->client->ps.weaponstate == WEAPON_DROPPING)
+		{
+			returnAfterUpdate = 1;
+		}
 	}
 
 	if (self->client->ps.saberThrowDelay < level.time)
