@@ -30,6 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "anims.h"
 #include "../cgame/animtable.h"
 
+// for debuggers
+animNumber_t BG_Anim( int anim ) {
+	return ANIM(anim);
+}
+
 /*
 ==============================================================================
 BEGIN: Animation utility functions (sequence checking)

@@ -881,6 +881,7 @@ const char *BG_TeamName(team_t team, letterCase_t letterCase);
 qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled);
 
 //BG anim utility functions:
+animNumber_t BG_Anim( int anim );
 qboolean BG_InSpecialJump( animNumber_t anim );
 qboolean BG_InSaberStandAnim( animNumber_t anim );
 qboolean BG_DirectFlippingAnim( animNumber_t anim );
