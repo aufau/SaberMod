@@ -418,7 +418,6 @@ static void WP_FireBlaster( gentity_t *ent, qboolean altFire )
 	WP_FireBlasterMissile( ent, muzzle, dir, altFire );
 }
 
-
 /*
 ======================================================================
 
@@ -446,6 +445,10 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 	VectorMA( start, shotRange, forward, end );
 
+	if ( g_unlagged.integer ) {
+		G_RollbackWorld( ent->client->ps.commandTime, MASK_SHOT );
+	}
+
 //	trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	ignore = ent->s.number;
@@ -456,7 +459,15 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 		traceEnt = &g_entities[tr.entityNum];
 
-		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+		if (traceEnt->client && !traceEnt->inuse)
+		{ // not worth the effort to rollback client state, ignore
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+
+		if (traceEnt->client && traceEnt->client->ps.duelInProgress &&
 			traceEnt->client->ps.duelIndex != ent->s.number)
 		{
 			VectorCopy( tr.endpos, start );
@@ -472,7 +483,8 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 			traces++;
 			continue;
 		}
-		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
+
+		if (traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
 		{
 			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
@@ -491,11 +503,19 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 				}
 				te->s.eventParm = 0;
 
+				if ( g_unlagged.integer ) {
+					G_RestoreWorld( );
+				}
+
 				return;
 			}
 		}
 		//a Jedi is not dodging this shot
 		break;
+	}
+
+	if ( g_unlagged.integer ) {
+		G_RestoreWorld( );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -512,7 +532,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 	if ( render_impact )
 	{
-		if ( tr.entityNum < ENTITYNUM_WORLD && traceEnt->takedamage )
+		if ( tr.entityNum < ENTITYNUM_WORLD && traceEnt->inuse && traceEnt->takedamage )
 		{
 			// Create a simple impact type mark that doesn't last long in the world
 //			G_PlayEffect( G_EffectIndex( "disruptor/flesh_impact" ), tr.endpos, tr.plane.normal );

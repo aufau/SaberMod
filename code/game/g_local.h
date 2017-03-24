@@ -638,7 +638,6 @@ typedef struct {
 	int			idleTime;
 } level_locals_t;
 
-
 //
 // g_spawn.c
 //
@@ -1070,6 +1069,11 @@ unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
 
+// g_unlagged.c
+void G_BackupWorld( void );
+void G_RollbackWorld( int serverTime, int contents );
+void G_RestoreWorld( void );
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
@@ -1096,7 +1100,6 @@ int BotAIShutdownClient( int client, int restart );
 int BotAIStartFrame( int time );
 
 #include "g_team.h" // teamplay specific stuff
-
 
 extern	level_locals_t	level;
 extern	qboolean		mvapi;
@@ -1207,6 +1210,7 @@ extern  vmCvar_t	g_kickMethod;
 extern	vmCvar_t	g_infiniteAmmo;
 extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
+extern	vmCvar_t	g_unlagged;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
