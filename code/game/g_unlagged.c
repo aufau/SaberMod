@@ -86,6 +86,10 @@ void G_RollbackWorld( int serverTime, int contents ) {
 	int					i;
 	int					stateTail = stateNum & STATE_MASK;
 
+	if ( serverTime < level.time - g_unlaggedMaxPing.integer ) {
+		serverTime = level.time - g_unlaggedMaxPing.integer;
+	}
+
 	//
 	// find snapshots client was interpolating between
 	//

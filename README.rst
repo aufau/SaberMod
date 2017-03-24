@@ -265,6 +265,13 @@ g_spawnWeapons <bitmask>
 g_unlagged <0|1>
   Experimental "unlagged" disruptor hit detection.
 
+g_unlaggedMaxPing <msec>
+  Maximum lag compensation. Unlagged has subjective, counter-intuitive
+  side effects. For example a player can be hit some time after he hid
+  behind an obstacle. This cvar's value limits time period in which
+  this can happen, adding extra hit detection delay for players with
+  pings higher than `msec`.
+
 g_voteCooldown <seconds>
   How long a player has to wait before he can call another vote.
 
