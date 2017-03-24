@@ -573,6 +573,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 	int			i;
 	int			count;
 	int			traces = DISRUPTOR_ALT_TRACES;
+	int			tracesTotal = 0;
 	qboolean	fullCharge = qfalse;
 
 	damage = DISRUPTOR_ALT_DAMAGE-30;
@@ -627,11 +628,12 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 	skip = ent->s.number;
 
-	for (i = 0; i < traces; i++ )
+	for (i = 0; i < traces && tracesTotal < 10; i++ )
 	{
 		VectorMA( start, shotRange, forward, end );
 
 		trap_Trace ( &tr, start, NULL, NULL, end, skip, MASK_SHOT);
+		tracesTotal++;
 
 		if ( tr.surfaceFlags & SURF_NOIMPACT )
 		{
@@ -645,6 +647,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		{
 			skip = tr.entityNum;
 			VectorCopy(tr.endpos, start);
+			traces--;
 			continue;
 		}
 
