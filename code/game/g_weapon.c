@@ -583,9 +583,10 @@ void WP_DisruptorAltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
 	int			damage = 0, skip;
-	qboolean	render_impact = qtrue;
+	qboolean	render_impact[DISRUPTOR_ALT_TRACES] = { 0 };
+	trace_t		impact_trace[DISRUPTOR_ALT_TRACES];
 	vec3_t		start, end;
-	trace_t		tr;
+	trace_t		*tr;
 	gentity_t	*traceEnt, *tent;
 	float		shotRange = 8192;
 	// float	dist, shotDist;
@@ -648,145 +649,83 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 	skip = ent->s.number;
 
+	if ( g_unlagged.integer ) {
+		G_RollbackWorld( ent->client->ps.commandTime, MASK_SHOT );
+	}
+
 	for (i = 0; i < traces && tracesTotal < 10; i++ )
 	{
+		tr = &impact_trace[i];
+
 		VectorMA( start, shotRange, forward, end );
 
-		trap_Trace ( &tr, start, NULL, NULL, end, skip, MASK_SHOT);
+		trap_Trace ( tr, start, NULL, NULL, end, skip, MASK_SHOT);
 		tracesTotal++;
+		traceEnt = &g_entities[tr->entityNum];
 
-		if ( tr.surfaceFlags & SURF_NOIMPACT )
+		if (traceEnt->client && !traceEnt->inuse)
 		{
-			render_impact = qfalse;
+			skip = tr->entityNum;
+			VectorCopy(tr->endpos, start);
+			continue;
 		}
 
-		traceEnt = &g_entities[tr.entityNum];
-
-		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+		if (traceEnt->client && traceEnt->client->ps.duelInProgress &&
 			traceEnt->client->ps.duelIndex != ent->s.number)
 		{
-			skip = tr.entityNum;
-			VectorCopy(tr.endpos, start);
+			skip = tr->entityNum;
+			VectorCopy(tr->endpos, start);
 			traces--;
 			continue;
 		}
 
-		if (Jedi_DodgeEvasion(traceEnt, ent, &tr, G_GetHitLocation(traceEnt, tr.endpos)))
+		if (Jedi_DodgeEvasion(traceEnt, ent, tr, G_GetHitLocation(traceEnt, tr->endpos)))
 		{
-			skip = tr.entityNum;
-			VectorCopy(tr.endpos, start);
+			skip = tr->entityNum;
+			VectorCopy(tr->endpos, start);
 			continue;
 		}
-		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
+		else if (traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABERDEFEND] >= FORCE_LEVEL_3)
 		{
-			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, qtrue, 0))
+			if (WP_SaberCanBlock(traceEnt, tr->endpos, 0, qtrue, 0))
 			{ //broadcast and stop the shot because it was blocked
 				gentity_t *te;
 
-				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
+				tent = G_TempEntity( tr->endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
 				VectorCopy( muzzle, tent->s.origin2 );
 				tent->s.shouldtarget = fullCharge;
 				tent->s.eventParm = ent->s.number;
 
-				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK, ent->s.number );
-				VectorCopy(tr.endpos, te->s.origin);
-				VectorCopy(tr.plane.normal, te->s.angles);
+				te = G_TempEntity( tr->endpos, EV_SABER_BLOCK, ent->s.number );
+				VectorCopy(tr->endpos, te->s.origin);
+				VectorCopy(tr->plane.normal, te->s.angles);
 				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
 				{
 					te->s.angles[1] = 1;
 				}
 				te->s.eventParm = 0;
 
+				if ( g_unlagged.integer ) {
+					G_RestoreWorld( );
+				}
+
 				return;
 			}
 		}
 
 		// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
-		tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
+		tent = G_TempEntity( tr->endpos, EV_DISRUPTOR_SNIPER_SHOT, ent->s.number );
 		VectorCopy( muzzle, tent->s.origin2 );
 		tent->s.shouldtarget = fullCharge;
 		tent->s.eventParm = ent->s.number;
 
+		render_impact[i] = (qboolean)!( tr->surfaceFlags & SURF_NOIMPACT );
+
 		// If the beam hits a skybox, etc. it would look foolish to add impact effects
-		if ( render_impact )
+		if ( render_impact[i] )
 		{
-			if ( traceEnt->takedamage && traceEnt->client )
-			{
-				tent->s.otherEntityNum = traceEnt->s.number;
-
-				// Create a simple impact type mark
-//				G_PlayEffect( G_EffectIndex( "disruptor/alt_hit" ), tr.endpos, tr.plane.normal );
-				tent = G_TempEntity(tr.endpos, EV_MISSILE_MISS, ent->s.number);
-				tent->s.eventParm = DirToByte(tr.plane.normal);
-				tent->s.eFlags |= EF_ALT_FIRING;
-
-				if ( LogAccuracyHit( traceEnt, ent ))
-				{
-					ent->client->pers.accuracy_hits++;
-				}
-			}
-			else
-			{
-				 if ( traceEnt->r.svFlags & SVF_GLASS_BRUSH
-						|| traceEnt->takedamage
-						|| traceEnt->s.eType == ET_MOVER )
-				 {
-					//rww - is there some reason this was doing nothing?
-					if ( traceEnt->takedamage )
-					{
-						G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage,
-								DAMAGE_NO_KNOCKBACK/*|DAMAGE_HALF_ARMOR_REDUCTION*/, MOD_DISRUPTOR_SNIPER );
-
-						tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.number );
-						tent->s.eventParm = DirToByte( tr.plane.normal );
-					}
-				 }
-				 else
-				 {
-					 // Hmmm, maybe don't make any marks on things that could break
-					 tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.number );
-					tent->s.eventParm = DirToByte( tr.plane.normal );
-				 }
+			if ( !(traceEnt->takedamage && traceEnt->client) ) {
 				break; // and don't try any more traces
-			}
-
-			if ( traceEnt->takedamage )
-			{
-				vec3_t preAng;
-				int preHealth = traceEnt->health;
-				int preLegs = 0;
-				int preTorso = 0;
-
-				if (traceEnt->client)
-				{
-					preLegs = traceEnt->client->ps.legsAnim;
-					preTorso = traceEnt->client->ps.torsoAnim;
-					VectorCopy(traceEnt->client->ps.viewangles, preAng);
-				}
-
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
-
-				if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
-				{ //was killed by a fully charged sniper shot, so disintegrate
-					VectorCopy(preAng, traceEnt->client->ps.viewangles);
-
-					traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
-					VectorCopy(tr.endpos, traceEnt->client->ps.lastHitLoc);
-
-					traceEnt->client->ps.legsAnim = preLegs;
-					traceEnt->client->ps.torsoAnim = preTorso;
-
-					traceEnt->r.contents = 0;
-
-					VectorClear(traceEnt->client->ps.velocity);
-				}
-
-				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT, ent->s.number );
-				tent->s.eventParm = DirToByte( tr.plane.normal );
-				if (traceEnt->client)
-				{
-					tent->s.weapon = 1;
-				}
 			}
 		}
 		else // not rendering impact, must be a skybox or other similar thing?
@@ -795,9 +734,102 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		}
 
 		// Get ready for an attempt to trace through another person
-		VectorCopy( tr.endpos, muzzle );
-		VectorCopy( tr.endpos, start );
-		skip = tr.entityNum;
+		VectorCopy( tr->endpos, muzzle );
+		VectorCopy( tr->endpos, start );
+		skip = tr->entityNum;
+	}
+
+	if ( g_unlagged.integer ) {
+		G_RestoreWorld( );
+	}
+
+	for ( i = 0; i < DISRUPTOR_ALT_TRACES; i++ )
+	{
+		if ( !render_impact[i] ) {
+			continue;
+		}
+
+		tr = &impact_trace[i];
+		traceEnt = &g_entities[tr->entityNum];
+
+		if ( traceEnt->takedamage && traceEnt->client )
+		{
+			tent->s.otherEntityNum = traceEnt->s.number;
+
+			// Create a simple impact type mark
+//				G_PlayEffect( G_EffectIndex( "disruptor/alt_hit" ), tr->endpos, tr->plane.normal );
+			tent = G_TempEntity(tr->endpos, EV_MISSILE_MISS, ent->s.number);
+			tent->s.eventParm = DirToByte(tr->plane.normal);
+			tent->s.eFlags |= EF_ALT_FIRING;
+
+			if ( LogAccuracyHit( traceEnt, ent ))
+			{
+				ent->client->pers.accuracy_hits++;
+			}
+		}
+		else
+		{
+			if ( traceEnt->r.svFlags & SVF_GLASS_BRUSH
+				|| traceEnt->takedamage
+				|| traceEnt->s.eType == ET_MOVER )
+			{
+				//rww - is there some reason this was doing nothing?
+				if ( traceEnt->takedamage )
+				{
+					G_Damage( traceEnt, ent, ent, forward, tr->endpos, damage,
+						DAMAGE_NO_KNOCKBACK/*|DAMAGE_HALF_ARMOR_REDUCTION*/, MOD_DISRUPTOR_SNIPER );
+
+					tent = G_TempEntity( tr->endpos, EV_DISRUPTOR_HIT, ent->s.number );
+					tent->s.eventParm = DirToByte( tr->plane.normal );
+				}
+			}
+			else
+			{
+				// Hmmm, maybe don't make any marks on things that could break
+				tent = G_TempEntity( tr->endpos, EV_DISRUPTOR_SNIPER_MISS, ent->s.number );
+				tent->s.eventParm = DirToByte( tr->plane.normal );
+			}
+			break; // and don't try any more traces
+		}
+
+		if ( traceEnt->takedamage )
+		{
+			vec3_t preAng;
+			int preHealth = traceEnt->health;
+			int preLegs = 0;
+			int preTorso = 0;
+
+			if (traceEnt->client)
+			{
+				preLegs = traceEnt->client->ps.legsAnim;
+				preTorso = traceEnt->client->ps.torsoAnim;
+				VectorCopy(traceEnt->client->ps.viewangles, preAng);
+			}
+
+			G_Damage( traceEnt, ent, ent, forward, tr->endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
+
+			if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
+			{ //was killed by a fully charged sniper shot, so disintegrate
+				VectorCopy(preAng, traceEnt->client->ps.viewangles);
+
+				traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
+				VectorCopy(tr->endpos, traceEnt->client->ps.lastHitLoc);
+
+				traceEnt->client->ps.legsAnim = preLegs;
+				traceEnt->client->ps.torsoAnim = preTorso;
+
+				traceEnt->r.contents = 0;
+
+				VectorClear(traceEnt->client->ps.velocity);
+			}
+
+			tent = G_TempEntity( tr->endpos, EV_DISRUPTOR_HIT, ent->s.number );
+			tent->s.eventParm = DirToByte( tr->plane.normal );
+			if (traceEnt->client)
+			{
+				tent->s.weapon = 1;
+			}
+		}
 	}
 }
 
