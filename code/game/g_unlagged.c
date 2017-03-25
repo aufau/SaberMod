@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef struct {
 	trajectory_t	pos;
+	trajectory_t	apos;
 } savedEntityState_t;
 
 typedef struct {
@@ -65,6 +66,7 @@ void G_BackupWorld( void ) {
 	for ( i = 0; i < level.num_entities; i++ ) {
 		state->entities[i].r = g_entities[i].r;
 		state->entities[i].s.pos = g_entities[i].s.pos;
+		state->entities[i].s.apos = g_entities[i].s.apos;
 	}
 }
 
@@ -140,7 +142,6 @@ void G_RollbackWorld( int serverTime, int contents ) {
 		// time difference being less than 1000.
 		if ((ent->r.contents & contents) &&
 			(currEnt->r.linked || ent->r.linked) &&
-			!ent->r.bmodel &&
 			!ent->r.mIsRoffing)
 		{
 			savedEntities[i] = currEnt->r;
@@ -162,10 +163,24 @@ void G_RollbackWorld( int serverTime, int contents ) {
 				currEnt->r.currentOrigin[0] = current[0] + f * ( next[0] - current[0] );
 				currEnt->r.currentOrigin[1] = current[1] + f * ( next[1] - current[1] );
 				currEnt->r.currentOrigin[2] = current[2] + f * ( next[2] - current[2] );
+
+				// assume that ent->s.modelindex doesn't change
+				if ( ent->r.bmodel ) {
+					BG_EvaluateTrajectory( &ent->s.apos, state->time, current );
+					BG_EvaluateTrajectory( &nextEnt->s.apos, nextState->time, next );
+
+					currEnt->r.currentAngles[0] = LerpAngle( current[0], next[0], f );
+					currEnt->r.currentAngles[1] = LerpAngle( current[1], next[1], f );
+					currEnt->r.currentAngles[2] = LerpAngle( current[2], next[2], f );
+				}
 			}
 			else
 			{
 				BG_EvaluateTrajectory( &ent->s.pos, serverTime, currEnt->r.currentOrigin );
+
+				if ( ent->r.bmodel ) {
+					BG_EvaluateTrajectory( &ent->s.apos, serverTime, currEnt->r.currentAngles );
+				}
 			}
 
 			// TODO: Adjust for mover
@@ -182,7 +197,7 @@ void G_RollbackWorld( int serverTime, int contents ) {
 				trap_UnlinkEntity( currEnt );
 			}
 
-			// TODO: Prepare other fields - roffing, bmodel
+			// TODO: Prepare other fields - roffing
 		} else {
 			saved[i] = qfalse;
 		}
