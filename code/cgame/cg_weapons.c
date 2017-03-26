@@ -765,13 +765,11 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	weaponInfo_t	*weapon;
 	float	cgFov = cg_fov.value;
 
-	if (cgFov < 1)
-	{
-		cgFov = 1;
-	}
-	if (cgFov > MAX_FOV)
-	{
-		cgFov = MAX_FOV;
+	cgFov = CLAMP(1, MAX_FOV, cg_fov.value);
+
+	if ( cgs.dmflags & DF_FIXED_FOV ) {
+		// dmflag to use basejk fov limit
+		cgFov = MIN(97, cgFov);
 	}
 
 	if ( ps->pm_type == PM_SPECTATOR ) {
