@@ -156,6 +156,8 @@ vmCvar_t	g_kickMethod;
 vmCvar_t	g_infiniteAmmo;
 vmCvar_t	g_instagib;
 vmCvar_t	g_voteCooldown;
+vmCvar_t	g_unlagged;
+vmCvar_t	g_unlaggedMaxPing;
 
 
 int gDuelist1 = -1;
@@ -320,6 +322,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_unlagged, "g_unlagged", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_unlaggedMaxPing, "g_unlaggedMaxPing", "200", CVAR_ARCHIVE, 0, qtrue  },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -2940,6 +2944,10 @@ end = trap_Milliseconds();
 			gQueueScoreMessageTime = 0;
 			gQueueScoreMessage = qfalse;
 		}
+	}
+
+	if ( g_unlagged.integer ) {
+		G_BackupWorld();
 	}
 
 	g_LastFrameTime = level.time;

@@ -63,7 +63,7 @@ bg_panimate bg_slidemove bg_weapons bg_saber g_active g_bot g_client	\
 g_cmds g_combat g_items g_log g_mem g_misc g_missile g_mover g_object	\
 g_saga g_session g_spawn g_svcmds g_target g_team g_trigger g_utils		\
 g_weapon w_force w_saber q_math q_shared g_syscalls g_stats				\
-g_dimensions
+g_dimensions g_unlagged
 
 srcs_cgame = cg_main cg_consolecmds cg_draw cg_drawtools cg_effects	\
 cg_ents cg_event cg_info cg_light cg_localents cg_marks cg_players	\
