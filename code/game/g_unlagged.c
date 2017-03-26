@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef struct {
 	trajectory_t	pos;
 	trajectory_t	apos;
+	int				groundEntityNum;
 } savedEntityState_t;
 
 typedef struct {
@@ -67,6 +68,7 @@ void G_BackupWorld( void ) {
 		state->entities[i].r = g_entities[i].r;
 		state->entities[i].s.pos = g_entities[i].s.pos;
 		state->entities[i].s.apos = g_entities[i].s.apos;
+		state->entities[i].s.groundEntityNum = g_entities[i].s.groundEntityNum;
 	}
 }
 
@@ -183,7 +185,15 @@ void G_RollbackWorld( int serverTime, int contents ) {
 				}
 			}
 
-			// TODO: Adjust for mover
+			// adjust position for mover
+			if ( 0 <= ent->s.groundEntityNum && ent->s.groundEntityNum < ENTITYNUM_MAX_NORMAL ) {
+				const entityState_t	*mover = &g_entities[ent->s.groundEntityNum].s;
+
+				if ( mover->eType == ET_MOVER ) {
+					BG_AdjustPositionForMover( currEnt->r.currentOrigin, mover,
+						state->time, serverTime, currEnt->r.currentOrigin );
+				}
+			}
 
 			// If old is unlinked then it's a new entity and player
 			// didn't know about it - go through. If new is unlinked
