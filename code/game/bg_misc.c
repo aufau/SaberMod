@@ -2369,6 +2369,29 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 }
 
 /*
+=========================
+BG_AdjustPositionForMover
+=========================
+*/
+void BG_AdjustPositionForMover( vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out ) {
+	vec3_t	oldOrigin, origin, deltaOrigin;
+//	vec3_t	oldAngles, angles;
+
+	BG_EvaluateTrajectory( &mover->pos, fromTime, oldOrigin );
+//	BG_EvaluateTrajectory( &mover->apos, fromTime, oldAngles );
+
+	BG_EvaluateTrajectory( &mover->pos, toTime, origin );
+//	BG_EvaluateTrajectory( &mover->apos, toTime, angles );
+
+	VectorSubtract( origin, oldOrigin, deltaOrigin );
+//	VectorSubtract( angles, oldAngles, deltaAngles );
+
+	VectorAdd( in, deltaOrigin, out );
+
+	// FIXME: origin change when on a rotating object
+}
+
+/*
 =============================================================================
 
 PLAYER ANGLES

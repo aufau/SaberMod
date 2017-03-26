@@ -2233,10 +2233,8 @@ CG_AdjustPositionForMover
 Also called by client movement prediction code
 =========================
 */
-void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
-	centity_t	*cent;
-	vec3_t	oldOrigin, origin, deltaOrigin;
-	vec3_t	oldAngles, angles;
+void CG_AdjustPositionForMover( vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
+	const centity_t	*cent;
 
 	if ( moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL ) {
 		VectorCopy( in, out );
@@ -2249,18 +2247,7 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 		return;
 	}
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, fromTime, oldOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, fromTime, oldAngles );
-
-	BG_EvaluateTrajectory( &cent->currentState.pos, toTime, origin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, toTime, angles );
-
-	VectorSubtract( origin, oldOrigin, deltaOrigin );
-//	VectorSubtract( angles, oldAngles, deltaAngles );
-
-	VectorAdd( in, deltaOrigin, out );
-
-	// FIXME: origin change when on a rotating object
+	BG_AdjustPositionForMover( in, &cent->currentState, fromTime, toTime, out );
 }
 
 /*
