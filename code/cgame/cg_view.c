@@ -986,17 +986,16 @@ static int CG_CalcFov( void ) {
 
 	cgFov = CLAMP(1, MAX_FOV, cg_fov.value);
 
+	if ( cgs.dmflags & DF_FIXED_FOV ) {
+		// dmflag to use basejk fov limit
+		fov_x = MIN(97, cgFov);
+	}
+
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		// if in intermission, use a fixed value
 		fov_x = 80;//90;
 	} else {
-		// user selectable
-		if ( cgs.dmflags & DF_FIXED_FOV ) {
-			// dmflag to prevent wide fov for all clients
-			fov_x = 80;//90;
-		} else {
-			fov_x = cgFov;
-		}
+		fov_x = cgFov;
 
 		if (cg.predictedPlayerState.zoomMode == 2)
 		{ //binoculars

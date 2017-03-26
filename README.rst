@@ -160,7 +160,7 @@ dmflags <bitmask>
   Sum of values from the following list:
 
   =====================  =====================  =====================
-  8 - No fall damage     16 - Fixed fov (80)    32 - No footsteps
+  8 - No fall damage     16 - Limit FOV (97)    32 - No footsteps
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================
 
