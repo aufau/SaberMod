@@ -445,7 +445,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 	VectorMA( start, shotRange, forward, end );
 
-	if ( g_unlagged.integer ) {
+	if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 		G_RollbackWorld( ent->client->ps.commandTime, MASK_SHOT );
 	}
 
@@ -503,7 +503,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 				}
 				te->s.eventParm = 0;
 
-				if ( g_unlagged.integer ) {
+				if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 					G_RestoreWorld( );
 				}
 
@@ -514,7 +514,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		break;
 	}
 
-	if ( g_unlagged.integer ) {
+	if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 		G_RestoreWorld( );
 	}
 
@@ -649,7 +649,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 	skip = ent->s.number;
 
-	if ( g_unlagged.integer ) {
+	if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 		G_RollbackWorld( ent->client->ps.commandTime, MASK_SHOT );
 	}
 
@@ -705,7 +705,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 				}
 				te->s.eventParm = 0;
 
-				if ( g_unlagged.integer ) {
+				if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 					G_RestoreWorld( );
 				}
 
@@ -739,7 +739,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		skip = tr->entityNum;
 	}
 
-	if ( g_unlagged.integer ) {
+	if ( g_unlagged.integer && !(ent->r.svFlags & SVF_BOT) ) {
 		G_RestoreWorld( );
 	}
 
