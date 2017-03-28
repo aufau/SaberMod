@@ -1711,6 +1711,11 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	else if ( gameversion[0] == '\0' )
 		gameversion = "UNKNOWN";
 
+	// don't start as dead
+	if ( level.roundQueued || level.round == 0 )
+		if ( client->sess.sessionTeam != TEAM_SPECTATOR )
+			client->sess.spectatorState = SPECTATOR_NOT;
+
 	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s %s: %s joined the %s team\n",
 		clientNum, BG_TeamName(client->sess.sessionTeam, CASE_UPPER), gameversion,
 		client->pers.netname, BG_TeamName(client->sess.sessionTeam, CASE_NORMAL) );
