@@ -1049,9 +1049,6 @@ Handle manual respawn
 void G_Respawn( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 
-	if ( level.intermissionQueued )
-		return;
-
 	if ( level.gametype == GT_REDROVER ) {
 		if ( !level.roundQueued )
 			G_SwitchTeam(ent);
