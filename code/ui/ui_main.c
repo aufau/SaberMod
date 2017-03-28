@@ -3061,10 +3061,10 @@ static qboolean UI_Effects_HandleKey(int flags, float *special, int key) {
 				uiInfo.effectsColor = (saber_colors_t)(uiInfo.effectsColor - 1);
 			}
 		} else {
+			uiInfo.effectsColor = (saber_colors_t)(uiInfo.effectsColor + 1);
+
 			if ( uiInfo.effectsColor >= NUM_SABER_COLORS ) {
 				uiInfo.effectsColor = (saber_colors_t)0;
-			} else {
-				uiInfo.effectsColor = (saber_colors_t)(uiInfo.effectsColor + 1);
 			}
 		}
 
