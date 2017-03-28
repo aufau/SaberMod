@@ -1905,6 +1905,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 	gclient_t	*cl;
 	int			clientNum;
 
+	if ( ent->r.svFlags & SVF_BOT ) {
+		return;
+	}
+
 	clientNum = client->sess.spectatorClient;
 
 	// team follow1 and team follow2 go to the score leader and runner up
