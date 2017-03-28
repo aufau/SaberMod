@@ -37,8 +37,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		trap_Print(__FILE__ ":" STR(__LINE__) ": Assertion `" STR(exp) "' failed.\n");
 #endif
 
-#define static_assert(expr, msg) extern int static_assert_placeholder
-
 //
 
 typedef int			intptr_t;
