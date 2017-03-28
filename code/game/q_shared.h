@@ -63,6 +63,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PAD(base, alignment)	(((base)+(alignment)-1) & ~((alignment)-1))
 #define PADLEN(base, alignment)	(PAD((base), (alignment)) - (base))
 #define PADP(base, alignment)	((void *) PAD((intptr_t) (base), (alignment)))
+
+#ifndef static_assert
+#define static_assert(expr, msg) extern int static_assert_placeholder
+#endif
 #define q_static_assert(expr)	static_assert(expr, STR(expr))
 
 /**********************************************************************
