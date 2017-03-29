@@ -773,8 +773,6 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	if ( team == oldTeam ) {
 		// handle switching from/to SPECTATOR_NOT without changing teams
 		if ( newSpec != oldSpec ) {
-			ClientSpawn( ent );
-
 			if ( !newSpec ) {
 				gentity_t	*tent;
 
@@ -784,6 +782,8 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 				// restore persistant fields
 				blockcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
 			}
+
+			ClientSpawn( ent );
 		}
 		return qfalse;
 	}

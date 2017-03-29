@@ -1564,6 +1564,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gclient_t	*client;
 	gentity_t	*tent;
 	int			flags, i;
+	int			spawnCount;
 	char		userinfo[MAX_INFO_VALUE];
 	const char	*modelname;
 	const char	*gameversion;
@@ -1629,6 +1630,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	// so the viewpoint doesn't interpolate through the
 	// world to the new position
 	flags = client->ps.eFlags;
+	// save spawn count to make sure CG_Respawn is called
+	spawnCount = client->ps.persistant[PERS_SPAWN_COUNT];
 
 	i = 0;
 
@@ -1655,6 +1658,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	memset( &client->ps, 0, sizeof( client->ps ) );
 	client->ps.eFlags = flags;
+	client->ps.persistant[PERS_SPAWN_COUNT] = spawnCount;
 
 	client->ps.hasDetPackPlanted = qfalse;
 
@@ -1894,8 +1898,7 @@ void ClientSpawn(gentity_t *ent) {
 	blockcpy( client->ps.persistant, persistant, sizeof( persistant ) );
 	client->ps.eventSequence = eventSequence;
 	// increment the spawncount so the client will detect the respawn
-	if ( client->sess.spectatorState == SPECTATOR_NOT )
-		client->ps.persistant[PERS_SPAWN_COUNT]++;
+	client->ps.persistant[PERS_SPAWN_COUNT]++;
 	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
 
 	client->airOutTime = level.time + 12000;
