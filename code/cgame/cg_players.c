@@ -1472,11 +1472,13 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 			if (!doNotSet)
 			{
-				if ((cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN1 ||
-					(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_WALKBACK1 ||
-					(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1)
+				animNumber_t torsoAnim = ANIM(cent->currentState.torsoAnim);
+
+				if (torsoAnim == BOTH_RUN1 ||
+					torsoAnim == BOTH_WALKBACK1 ||
+					torsoAnim == BOTH_WALK1)
 				{
-					newAnimation = (cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT);
+					newAnimation = torsoAnim;
 				}
 				else
 				{

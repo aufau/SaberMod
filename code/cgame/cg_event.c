@@ -744,7 +744,7 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 		trap_G2API_CopySpecificGhoul2Model(g2WeaponInstances[knownWeapon], 0, cent->ghoul2, 1);
 	}
 
-	anim = &bgGlobalAnimations[ cent->currentState.torsoAnim ];
+	anim = &bgGlobalAnimations[ ANIM(cent->currentState.torsoAnim) ];
 	animSpeed = 50.0f / anim->frameLerp;
 
 	//this will just set us to the last frame of the animation, in theory
