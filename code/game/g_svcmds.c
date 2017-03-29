@@ -560,6 +560,7 @@ Svcmd_Mode_f
 mode <mode|default>
 ===================
 */
+void ExitLevel( void );
 static void	Svcmd_Mode_f( void )
 {
 	const char		*mode;
@@ -597,9 +598,9 @@ static void	Svcmd_Mode_f( void )
 	trap_SendServerCommand( -1, va("print \"Changing mode to %s.\n\"", mode) );
 	trap_Cvar_Set( "g_mode", mode );
 	trap_SendConsoleCommand( EXEC_APPEND, va("exec \"modes/%s\"\n", mode) );
-	// we don't realy know what gametype it's going to be and admin
-	// can set nextmap in mode config.
-	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
+
+	// exit gracefuly
+	ExitLevel( );
 }
 
 /*
