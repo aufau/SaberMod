@@ -696,7 +696,7 @@ static void CG_General( centity_t *cent ) {
 					//anim = &bgGlobalAnimations[ limb_anim ];
 					//I guess it looks better to continue the body anim on the severed limb. If not a bit strange. It's what
 					//SP seems to do anyway.
-					anim = &bgGlobalAnimations[ (clEnt->currentState.torsoAnim&~ANIM_TOGGLEBIT) ];
+					anim = &bgGlobalAnimations[ ANIM(clEnt->currentState.torsoAnim) ];
 				}
 				else
 				{ //a g2anim ent, maybe? For those, we can settle for generic limb anims.

@@ -670,8 +670,8 @@ int PM_AnimLength( animNumber_t anim )
 
 void PM_DebugLegsAnim(int anim)
 {
-	int oldAnim = (pm->ps->legsAnim & ~ANIM_TOGGLEBIT);
-	int newAnim = (anim & ~ANIM_TOGGLEBIT);
+	animNumber_t oldAnim = ANIM(pm->ps->legsAnim);
+	animNumber_t newAnim = ANIM(anim);
 
 	if (oldAnim < MAX_TOTALANIMATIONS && oldAnim >= BOTH_DEATH1 &&
 		newAnim < MAX_TOTALANIMATIONS && newAnim >= BOTH_DEATH1)
@@ -938,7 +938,7 @@ static void PM_StartLegsAnim( animNumber_t anim ) {
 }
 
 void PM_ContinueLegsAnim( animNumber_t anim ) {
-	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) {
+	if ( ANIM( pm->ps->legsAnim ) == anim ) {
 		return;
 	}
 	if ( pm->ps->legsTimer > 0 ) {
@@ -1077,7 +1077,7 @@ void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int 
 	if (setAnimParts & SETANIM_TORSO)
 	{
 		// Don't reset if it's already running the anim
-		if( !(setAnimFlags & SETANIM_FLAG_RESTART) && (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim )
+		if( !(setAnimFlags & SETANIM_FLAG_RESTART) && ANIM(pm->ps->torsoAnim) == anim )
 		{
 			goto setAnimLegs;
 		}
@@ -1125,7 +1125,7 @@ setAnimLegs:
 	if (setAnimParts & SETANIM_LEGS)
 	{
 		// Don't reset if it's already running the anim
-		if( !(setAnimFlags & SETANIM_FLAG_RESTART) && (pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim )
+		if( !(setAnimFlags & SETANIM_FLAG_RESTART) && ANIM(pm->ps->legsAnim) == anim )
 		{
 			goto setAnimDone;
 		}
@@ -1199,14 +1199,14 @@ void PM_SetAnim(int setAnimParts, animNumber_t anim, unsigned setAnimFlags, int 
 	{
 		if (setAnimParts & SETANIM_TORSO)
 		{
-			if( (setAnimFlags & SETANIM_FLAG_RESTART) || (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) != anim )
+			if( (setAnimFlags & SETANIM_FLAG_RESTART) || ANIM(pm->ps->torsoAnim) != anim )
 			{
 				PM_SetTorsoAnimTimer(0);
 			}
 		}
 		if (setAnimParts & SETANIM_LEGS)
 		{
-			if( (setAnimFlags & SETANIM_FLAG_RESTART) || (pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) != anim )
+			if( (setAnimFlags & SETANIM_FLAG_RESTART) || ANIM(pm->ps->legsAnim) != anim )
 			{
 				PM_SetLegsAnimTimer(0);
 			}

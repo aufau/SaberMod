@@ -962,14 +962,14 @@ static void PM_SaberLocked( void )
 
 				pm->ps->saberLockAdvance = qfalse;
 
-				anim = &pm->animations[pm->ps->torsoAnim&~ANIM_TOGGLEBIT];
+				anim = &pm->animations[ANIM(pm->ps->torsoAnim)];
 
 				currentFrame = pm->ps->saberLockFrame;
 
 				strength = pm->ps->fd.forcePowerLevel[FP_SABERATTACK]+1;
 
-				if ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CCWCIRCLELOCK ||
-					(pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF2LOCK )
+				if ( ANIM(pm->ps->torsoAnim) == BOTH_CCWCIRCLELOCK ||
+					ANIM(pm->ps->torsoAnim) == BOTH_BF2LOCK )
 				{
 					curFrame = currentFrame - strength;
 					//drop my frame one
@@ -1009,10 +1009,10 @@ static void PM_SaberLocked( void )
 				return;
 			}
 
-			anim = &pm->animations[(genemy->torsoAnim&~ANIM_TOGGLEBIT)];
+			anim = &pm->animations[ANIM(genemy->torsoAnim)];
 
-			if ( (genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_CWCIRCLELOCK ||
-				(genemy->torsoAnim&~ANIM_TOGGLEBIT) == BOTH_BF1LOCK )
+			if ( ANIM(genemy->torsoAnim) == BOTH_CWCIRCLELOCK ||
+				ANIM(genemy->torsoAnim) == BOTH_BF1LOCK )
 			{
 				if ( !PM_irand_timesync( 0, 2 ) )
 				{
@@ -1405,7 +1405,7 @@ void PM_WeaponLightsaber(void)
 			PM_SetSaberMove( LS_READY );
 		}
 
-		if ((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) != (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT))
+		if (ANIM(pm->ps->legsAnim) != ANIM(pm->ps->torsoAnim))
 		{
 			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
@@ -1479,10 +1479,10 @@ void PM_WeaponLightsaber(void)
 		}
 	}
 
-	if( (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN2 ||
-		(pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN1 )
+	if( ANIM(pm->ps->torsoAnim) == BOTH_RUN2 ||
+		ANIM(pm->ps->torsoAnim) == BOTH_RUN1 )
 	{
-		if ((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) != (pm->ps->legsAnim & ~ANIM_TOGGLEBIT))
+		if (ANIM(pm->ps->torsoAnim) != ANIM(pm->ps->legsAnim))
 		{
 			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
 		}
@@ -1676,16 +1676,18 @@ weapChecks:
 
 	if ( pm->ps->weaponstate == WEAPON_RAISING )
 	{//Just selected the weapon
+		animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
+
 		pm->ps->weaponstate = WEAPON_IDLE;
-		if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1 )
+		if(legsAnim == BOTH_WALK1 )
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_WALK1,SETANIM_FLAG_NORMAL, 100);
 		}
-		else if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN2 )
+		else if(legsAnim == BOTH_RUN2 )
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_RUN2,SETANIM_FLAG_NORMAL, 100);
 		}
-		else if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK2 )
+		else if(legsAnim == BOTH_WALK2 )
 		{
 			PM_SetAnim(SETANIM_TORSO,BOTH_WALK2,SETANIM_FLAG_NORMAL, 100);
 		}
@@ -1861,15 +1863,17 @@ weapChecks:
 
 			if ( anim == ANIM_INVALID)
 			{
-				if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1 )
+				animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
+
+				if(legsAnim == BOTH_WALK1 )
 				{
 					anim = BOTH_WALK1;
 				}
-				else if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN2 )
+				else if(legsAnim == BOTH_RUN2 )
 				{
 					anim = BOTH_RUN2;
 				}
-				else if((pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK2 )
+				else if(legsAnim == BOTH_WALK2 )
 				{
 					anim = BOTH_WALK2;
 				}
@@ -2018,7 +2022,7 @@ void PM_SetSaberMove( saberMoveName_t newMove )
 
 	PM_SetAnim(parts, anim, setflags, saberMoveData[newMove].blendTime);
 
-	if ( (pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == anim )
+	if ( ANIM(pm->ps->torsoAnim) == anim )
 	{//successfully changed anims
 	//special check for *starting* a saber swing
 		//playing at attack

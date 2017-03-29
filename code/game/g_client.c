@@ -742,7 +742,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 	VectorCopy (ent->r.absmin, body->r.absmin);
 	VectorCopy (ent->r.absmax, body->r.absmax);
 
-	body->s.torsoAnim = body->s.legsAnim = ent->client->ps.legsAnim & ~ANIM_TOGGLEBIT;
+	body->s.torsoAnim = body->s.legsAnim = ANIM(ent->client->ps.legsAnim);
 
 	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	body->r.contents = CONTENTS_CORPSE;
