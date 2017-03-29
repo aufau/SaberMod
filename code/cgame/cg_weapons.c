@@ -834,8 +834,8 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	} else {
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT );
+		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, ANIM(cent->currentState.torsoAnim) );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, ANIM(cent->currentState.torsoAnim) );
 		hand.backlerp = cent->pe.torso.backlerp;
 
 		// Handle the fringe situation where oldframe is invalid
@@ -2117,7 +2117,7 @@ qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
 	VectorCopy( cent->currentState.pos.trBase, muzzle );
 
 	AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+	anim = ANIM(cent->currentState.legsAnim);
 	if ( anim == BOTH_CROUCH1WALK || anim == BOTH_CROUCH1IDLE ) {
 		muzzle[2] += CROUCH_VIEWHEIGHT;
 	} else {

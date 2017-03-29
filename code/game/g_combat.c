@@ -1874,7 +1874,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 			{
 				G_LogPrintf(LOG_AUSTRIAN, "killer saber style: %d, killer saber anim %s\n",
 					attacker->client->ps.fd.saberAnimLevel,
-					animTable[(attacker->client->ps.torsoAnim&~ANIM_TOGGLEBIT)].name );
+					animTable[ANIM(attacker->client->ps.torsoAnim)].name );
 			}
 		}
 	}

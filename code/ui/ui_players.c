@@ -196,9 +196,9 @@ UI_TorsoSequencing
 ===============
 */
 static void UI_TorsoSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
+	animNumber_t		currentAnim;
 
-	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
+	currentAnim = ANIM(pi->torsoAnim);
 
 	if ( pi->weapon != pi->currentWeapon ) {
 		if ( currentAnim != TORSO_DROPWEAP1 ) {
@@ -241,9 +241,9 @@ UI_LegsSequencing
 ===============
 */
 static void UI_LegsSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
+	animNumber_t		currentAnim;
 
-	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
+	currentAnim = ANIM(pi->legsAnim);
 
 	if ( pi->legsAnimationTimer > 0 ) {
 		if ( currentAnim == BOTH_JUMP1 ) {
@@ -326,15 +326,16 @@ UI_SetLerpFrameAnimation
 */
 static void UI_SetLerpFrameAnimation( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
 	const animation_t	*anim;
+	animNumber_t		newAnim;
 
 	lf->animationNumber = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
+	newAnim = ANIM(newAnimation);
 
-	if ( newAnimation < 0 || newAnimation >= MAX_ANIMATIONS ) {
-		Com_Error( ERR_DROP, "Bad animation number: %i", newAnimation );
+	if ( newAnim < 0 || newAnim >= MAX_ANIMATIONS ) {
+		Com_Error( ERR_DROP, "Bad animation number: %i", newAnim );
 	}
 
-	anim = &ci->animations[ newAnimation ];
+	anim = &ci->animations[ newAnim ];
 
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
@@ -419,7 +420,7 @@ static void UI_PlayerAnimation( playerInfo_t *pi, int *legsOld, int *legs, float
 
 	UI_LegsSequencing( pi );
 
-	if ( pi->legs.yawing && ( pi->legsAnim & ~ANIM_TOGGLEBIT ) == TORSO_WEAPONREADY3 ) {
+	if ( pi->legs.yawing && ANIM( pi->legsAnim ) == TORSO_WEAPONREADY3 ) {
 		UI_RunLerpFrame( pi, &pi->legs, TORSO_WEAPONREADY3 );
 	} else {
 		UI_RunLerpFrame( pi, &pi->legs, pi->legsAnim );
@@ -567,8 +568,8 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], 
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( pi->legsAnim & ~ANIM_TOGGLEBIT ) != TORSO_WEAPONREADY3
-		|| ( pi->torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_WEAPONREADY3 ) {
+	if ( ANIM( pi->legsAnim ) != TORSO_WEAPONREADY3
+		|| ANIM( pi->torsoAnim  ) != TORSO_WEAPONREADY3 ) {
 		// if not standing still, always point all in the same direction
 		pi->torso.yawing = qtrue;	// always center
 		pi->torso.pitching = qtrue;	// always center
@@ -1313,7 +1314,7 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	}
 
 	// leg animation
-	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
+	currentAnim = ANIM(pi->legsAnim);
 	if ( legsAnim != BOTH_JUMP1 && ( currentAnim == BOTH_JUMP1 || currentAnim == BOTH_LAND1 ) ) {
 		pi->pendingLegsAnim = legsAnim;
 	}
@@ -1344,7 +1345,7 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 		//FIXME play firing sound here
 	}
 
-	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
+	currentAnim = ANIM(pi->torsoAnim);
 
 	if ( weaponNum != pi->currentWeapon || currentAnim == TORSO_RAISEWEAP1|| currentAnim == TORSO_DROPWEAP1 ) {
 		pi->pendingTorsoAnim = torsoAnim;

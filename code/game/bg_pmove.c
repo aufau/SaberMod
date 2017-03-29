@@ -550,7 +550,7 @@ void PM_SetPMViewAngle(playerState_t *ps, vec3_t angle, usercmd_t *ucmd)
 
 qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean doMove )
 {
-	if (( (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT || (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_LEFT ) && ps->legsTimer > 500 )
+	if (( ANIM(ps->legsAnim) == BOTH_WALL_RUN_RIGHT || ANIM(ps->legsAnim) == BOTH_WALL_RUN_LEFT ) && ps->legsTimer > 500 )
 	{//wall-running and not at end of anim
 		//stick to wall, if there is one
 		vec3_t	rt, traceTo, mins, maxs, fwdAngles;
@@ -562,7 +562,7 @@ qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean 
 		VectorSet(fwdAngles, 0, pm->ps->viewangles[YAW], 0);
 
 		AngleVectors( fwdAngles, NULL, rt, NULL );
-		if ( (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT )
+		if ( ANIM(ps->legsAnim) == BOTH_WALL_RUN_RIGHT )
 		{
 			dist = 128;
 			yawAdjust = -90;
@@ -578,7 +578,7 @@ qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean 
 
 		if ( trace.fraction < 1.0f )
 		{//still a wall there
-			if ( (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT )
+			if ( ANIM(ps->legsAnim) == BOTH_WALL_RUN_RIGHT )
 			{
 				ucmd->rightmove = 127;
 			}
@@ -627,11 +627,11 @@ qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean 
 		}
 		else if ( doMove )
 		{//stop it
-			if ( (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT )
+			if ( ANIM(ps->legsAnim) == BOTH_WALL_RUN_RIGHT )
 			{
 				PM_SetAnim(SETANIM_BOTH, BOTH_WALL_RUN_RIGHT_STOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
 			}
-			else if ( (ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_LEFT )
+			else if ( ANIM(ps->legsAnim) == BOTH_WALL_RUN_LEFT )
 			{
 				PM_SetAnim(SETANIM_BOTH, BOTH_WALL_RUN_LEFT_STOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
 			}
@@ -1220,11 +1220,13 @@ static qboolean PM_CheckJump( void )
 		&& pm->ps->weapon == WP_SABER
 		&& (pm->ps->weaponTime > 0||pm->cmd.buttons&BUTTON_ATTACK) )
 	{//okay, we just jumped and we're in an attack
-		if ( !BG_InRoll( pm->ps, ANIM(pm->ps->legsAnim) )
+		animNumber_t legsAnim = ANIM(pm->ps->legsAnim);
+
+		if ( !BG_InRoll( pm->ps, legsAnim )
 			&& !PM_InKnockDown( pm->ps )
-			&& !BG_InDeathAnim( ANIM(pm->ps->legsAnim) )
-			&& !BG_FlippingAnim( ANIM(pm->ps->legsAnim) )
-			&& !PM_SpinningAnim( ANIM(pm->ps->legsAnim) )
+			&& !BG_InDeathAnim( legsAnim )
+			&& !BG_FlippingAnim( legsAnim )
+			&& !PM_SpinningAnim( legsAnim )
 			&& !BG_SaberInSpecialAttack( ANIM(pm->ps->torsoAnim) )
 			&& ( BG_SaberInAttack( pm->ps->saberMove ) ) )
 		{//not in an anim we shouldn't interrupt
@@ -1238,7 +1240,7 @@ static qboolean PM_CheckJump( void )
 				if ( !pm->noYDFA && pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 )
 				{//using medium attacks
 					if (PM_GroundDistance() < 32 &&
-						!BG_InSpecialJump(ANIM(pm->ps->legsAnim)))
+						!BG_InSpecialJump(legsAnim))
 					{ //FLIP AND DOWNWARD ATTACK
 						trace_t tr;
 
@@ -1260,7 +1262,7 @@ static qboolean PM_CheckJump( void )
 					if ( pm->cmd.forwardmove > 0 && //going forward
 						(pm->cmd.buttons & BUTTON_ATTACK) && //must be holding attack still
 						PM_GroundDistance() < 32 &&
-						!BG_InSpecialJump(ANIM(pm->ps->legsAnim)))
+						!BG_InSpecialJump(legsAnim))
 					{//strong attack: jump-hack
 						PM_SetSaberMove( PM_SaberJumpAttackMove() );
 						pml.groundPlane = qfalse;
@@ -1975,8 +1977,8 @@ static void PM_CrashLand( void ) {
 
 	if (!BG_InSpecialJump(ANIM(pm->ps->legsAnim)) ||
 		pm->ps->legsTimer < 1 ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_LEFT ||
-		(pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_WALL_RUN_RIGHT)
+		ANIM(pm->ps->legsAnim) == BOTH_WALL_RUN_LEFT ||
+		ANIM(pm->ps->legsAnim) == BOTH_WALL_RUN_RIGHT)
 	{ //Only set the timer if we're in an anim that can be interrupted (this would not be, say, a flip)
 		if (!BG_InRoll(pm->ps, ANIM(pm->ps->legsAnim)) && pm->ps->inAirAnim)
 		{
@@ -2172,7 +2174,7 @@ static void PM_GroundTraceMissed( void ) {
 		PM_SetAnim(parts, BOTH_CHOKE3, SETANIM_FLAG_OVERRIDE, 100);
 	}
 	//If the anim is choke3, act like we just went into the air because we aren't in a float
-	else if ( pm->ps->groundEntityNum != ENTITYNUM_NONE || (pm->ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_CHOKE3 )
+	else if ( pm->ps->groundEntityNum != ENTITYNUM_NONE || ANIM(pm->ps->legsAnim) == BOTH_CHOKE3 )
 	{
 		// we just transitioned into freefall
 		if ( pm->debugLevel ) {
@@ -2506,9 +2508,9 @@ void PM_Use( void )
 	pm->ps->useTime = USE_DELAY;
 }
 
-qboolean PM_RunningAnim( int anim )
+static qboolean PM_RunningAnim( animNumber_t anim )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	switch ( anim )
 	{
 	case BOTH_RUN1:
 	case BOTH_RUN2:
@@ -2517,8 +2519,9 @@ qboolean PM_RunningAnim( int anim )
 	case BOTH_RUNAWAY1:
 		return qtrue;
 		break;
+	default:
+		return qfalse;
 	}
-	return qfalse;
 }
 
 /*
@@ -2577,7 +2580,7 @@ static void PM_Footsteps( void ) {
 		if (  pm->xyspeed < 5 ) {
 			pm->ps->bobCycle = 0;	// start at beginning of cycle again
 			if ( (pm->ps->pm_flags & PMF_DUCKED) || (pm->ps->pm_flags & PMF_ROLLING) ) {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1IDLE)
+				if (ANIM(pm->ps->legsAnim) != BOTH_CROUCH1IDLE)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_CROUCH1IDLE, setAnimFlags, 100);
 				}
@@ -2615,14 +2618,14 @@ static void PM_Footsteps( void ) {
 
 		bobmove = 0.5;	// ducked characters bob much faster
 
-		if ( PM_RunningAnim( pm->ps->legsAnim ) && !BG_InRoll(pm->ps, ANIM(pm->ps->legsAnim)) )
+		if ( PM_RunningAnim( ANIM(pm->ps->legsAnim) ) && !BG_InRoll(pm->ps, ANIM(pm->ps->legsAnim)) )
 		{//roll!
 			rolled = PM_TryRoll();
 		}
 		if ( rolled == ANIM_INVALID )
 		{ //if the roll failed or didn't attempt, do standard crouching anim stuff.
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1WALKBACK)
+				if (ANIM(pm->ps->legsAnim) != BOTH_CROUCH1WALKBACK)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_CROUCH1WALKBACK, setAnimFlags, 100);
 				}
@@ -2632,7 +2635,7 @@ static void PM_Footsteps( void ) {
 				}
 			}
 			else {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1WALK)
+				if (ANIM(pm->ps->legsAnim) != BOTH_CROUCH1WALK)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_CROUCH1WALK, setAnimFlags, 100);
 				}
@@ -2661,7 +2664,7 @@ static void PM_Footsteps( void ) {
 
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 		{
-			if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1WALKBACK)
+			if (ANIM(pm->ps->legsAnim) != BOTH_CROUCH1WALKBACK)
 			{
 				PM_SetAnim(SETANIM_LEGS, BOTH_CROUCH1WALKBACK, setAnimFlags, 100);
 			}
@@ -2672,7 +2675,7 @@ static void PM_Footsteps( void ) {
 		}
 		else
 		{
-			if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_CROUCH1WALK)
+			if (ANIM(pm->ps->legsAnim) != BOTH_CROUCH1WALK)
 			{
 				PM_SetAnim(SETANIM_LEGS, BOTH_CROUCH1WALK, setAnimFlags, 100);
 			}
@@ -2687,7 +2690,7 @@ static void PM_Footsteps( void ) {
 		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
 			bobmove = 0.4f;	// faster speeds bob faster
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_RUNBACK1)
+				if (ANIM(pm->ps->legsAnim) != BOTH_RUNBACK1)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_RUNBACK1, setAnimFlags, 100);
 				}
@@ -2697,7 +2700,7 @@ static void PM_Footsteps( void ) {
 				}
 			}
 			else {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_RUN1)
+				if (ANIM(pm->ps->legsAnim) != BOTH_RUN1)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_RUN1, setAnimFlags, 100);
 				}
@@ -2710,7 +2713,7 @@ static void PM_Footsteps( void ) {
 		} else {
 			bobmove = 0.2f;	// walking bobs slow
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_WALKBACK1)
+				if (ANIM(pm->ps->legsAnim) != BOTH_WALKBACK1)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_WALKBACK1, setAnimFlags, 100);
 				}
@@ -2720,7 +2723,7 @@ static void PM_Footsteps( void ) {
 				}
 			}
 			else {
-				if ((pm->ps->legsAnim&~ANIM_TOGGLEBIT) != BOTH_WALK1)
+				if (ANIM(pm->ps->legsAnim) != BOTH_WALK1)
 				{
 					PM_SetAnim(SETANIM_LEGS, BOTH_WALK1, setAnimFlags, 100);
 				}
@@ -2831,8 +2834,8 @@ void PM_BeginWeaponChange( int weapon ) {
 	// They are almost the same, looks stupid
 	if ( pm->ps->pm_type != PM_HARMLESS
 		 || !(weapon == WP_SABER || pm->ps->weapon == WP_SABER)
-		 || (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_WALK1
-		 || (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == BOTH_RUN1 ) {
+		 || ANIM(pm->ps->legsAnim) == BOTH_WALK1
+		 || ANIM(pm->ps->legsAnim) == BOTH_RUN1 ) {
 		PM_StartTorsoAnim( TORSO_DROPWEAP1 );
 	}
 }
@@ -3477,7 +3480,7 @@ static void PM_Weapon( void )
 	{
 		if (pm->ps->weapon == WP_THERMAL)
 		{
-			if ((pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == WeaponAttackAnim[pm->ps->weapon] &&
+			if (ANIM(pm->ps->torsoAnim) == WeaponAttackAnim[pm->ps->weapon] &&
 				(pm->ps->weaponTime-200) <= 0)
 			{
 				PM_StartTorsoAnim( WeaponReadyAnim[pm->ps->weapon] );
@@ -3485,7 +3488,7 @@ static void PM_Weapon( void )
 		}
 		else
 		{
-			if ((pm->ps->torsoAnim&~ANIM_TOGGLEBIT) == WeaponAttackAnim[pm->ps->weapon] &&
+			if (ANIM(pm->ps->torsoAnim) == WeaponAttackAnim[pm->ps->weapon] &&
 				(pm->ps->weaponTime-700) <= 0)
 			{
 				PM_StartTorsoAnim( WeaponReadyAnim[pm->ps->weapon] );
@@ -3675,8 +3678,8 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	if (((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == TORSO_WEAPONREADY4 ||
-		(pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == BOTH_ATTACK4) &&
+	if ((ANIM(pm->ps->torsoAnim) == TORSO_WEAPONREADY4 ||
+		ANIM(pm->ps->torsoAnim) == BOTH_ATTACK4) &&
 		(pm->ps->weapon != WP_DISRUPTOR || pm->ps->zoomMode != 1))
 	{
 		if (pm->ps->weapon == WP_EMPLACED_GUN)
@@ -3688,8 +3691,8 @@ static void PM_Weapon( void )
 			PM_StartTorsoAnim( WeaponReadyAnim[pm->ps->weapon] );
 		}
 	}
-	else if (((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_WEAPONREADY4 &&
-		(pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) != BOTH_ATTACK4) &&
+	else if ((ANIM(pm->ps->torsoAnim) != TORSO_WEAPONREADY4 &&
+		ANIM(pm->ps->torsoAnim) != BOTH_ATTACK4) &&
 		(pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1))
 	{
 		PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
@@ -4079,9 +4082,9 @@ void PM_AdjustAttackStates( pmove_t *pm )
 	}
 }
 
-void BG_CmdForRoll( int anim, usercmd_t *pCmd )
+static void BG_CmdForRoll( animNumber_t anim, usercmd_t *pCmd )
 {
-	switch ( (anim&~ANIM_TOGGLEBIT) )
+	switch ( anim )
 	{
 	case BOTH_ROLL_F:
 		pCmd->forwardmove = 127;
@@ -4098,6 +4101,8 @@ void BG_CmdForRoll( int anim, usercmd_t *pCmd )
 	case BOTH_ROLL_L:
 		pCmd->forwardmove = 0;
 		pCmd->rightmove = -127;
+		break;
+	default:
 		break;
 	}
 	pCmd->upmove = 0;
@@ -4291,8 +4296,8 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 
 	if ( BG_InRoll( ps, ANIM(ps->legsAnim) ) && ps->speed > 200 )
 	{ //can't roll unless you're able to move normally
-		BG_CmdForRoll( ps->legsAnim, cmd );
-		if ((ps->legsAnim&~ANIM_TOGGLEBIT) == BOTH_ROLL_B)
+		BG_CmdForRoll( ANIM(ps->legsAnim), cmd );
+		if (ANIM(ps->legsAnim) == BOTH_ROLL_B)
 		{ //backwards roll is pretty fast, should also be slower
 			ps->speed = ps->legsTimer / 2.5f;
 		}

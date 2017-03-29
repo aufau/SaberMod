@@ -777,7 +777,7 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 			aNum = (anim->firstFrame+anim->numFrames)-1;
 		}
 
-		//if (!cgs.clientinfo[source->currentState.number].frame || (cent->currentState.torsoAnim&~ANIM_TOGGLEBIT) != (source->currentState.torsoAnim&~ANIM_TOGGLEBIT) )
+		//if (!cgs.clientinfo[source->currentState.number].frame || ANIM(cent->currentState.torsoAnim) != ANIM(source->currentState.torsoAnim) )
 		//{
 		//	aNum = (anim->firstFrame+anim->numFrames)-1;
 		//}
