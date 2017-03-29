@@ -1812,7 +1812,7 @@ static int CG_FootstepForSurface( centity_t *cent, int skip )
 
 	//CG_TestLine(org, dOrg, 100, 0x0000ff, 3);
 
-	CG_Trace(&tr, org, playerMins, playerMaxs, dOrg, skip, MASK_PLAYERSOLID);
+	CG_DuelTrace(&tr, org, playerMins, playerMaxs, dOrg, skip, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -4157,7 +4157,7 @@ void CG_G2SaberEffects(vec3_t start, vec3_t end, centity_t *owner)
 			VectorCopy(start, endTr);
 		}
 
-		CG_Trace( &trace, startTr, NULL, NULL, endTr, owner->currentState.number, MASK_PLAYERSOLID );
+		CG_DuelTrace( &trace, startTr, NULL, NULL, endTr, owner->currentState.number, MASK_PLAYERSOLID );
 
 		if (trace.entityNum < MAX_CLIENTS)
 		{ //hit a client..
