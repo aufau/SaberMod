@@ -185,6 +185,9 @@ g_allowVote <0|1|bitmask>
 g_damagePlums <0|1>
   Allow clients with `cg_damagePlums` enabled to see damage plums.
 
+g_dismember <percentage>
+  Chance to dismemeber player killed with a lightsaber.
+
 g_infiniteAmmo <0|1>
   Players spawn with infinite ammo for all weapons.
 
