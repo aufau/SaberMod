@@ -1400,7 +1400,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 	const animation_t	*anim;
 	float animSpeed;
 	int	  flags=BONE_ANIM_OVERRIDE_FREEZE;
-	int oldAnim = -1;
+	animNumber_t oldAnim;
 	int blendTime = 150;
 
 	if (cent->currentState.number < MAX_CLIENTS &&
@@ -1541,7 +1541,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 		}
 	}
 
-	oldAnim = lf->animationNumber;
+	oldAnim = ANIM(lf->animationNumber);
 
 	lf->animationNumber = newAnimation;
 	newAnimation = ANIM(newAnimation);
@@ -1596,8 +1596,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
-			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
+			else if (/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
@@ -1608,8 +1607,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 				{
 					blendTime = 200;
 				}
-				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim((animNumber_t)oldAnim)) )
+				else if (BG_FlippingAnim(oldAnim))
 				{
 					blendTime = 200;
 				}
@@ -4874,7 +4872,7 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 	const animation_t	*anim;
 	float animSpeed;
 	int	  flags=BONE_ANIM_OVERRIDE_FREEZE;
-	int oldAnim = -1;
+	animNumber_t oldAnim;
 	int blendTime = 150;
 
 	if (cent->currentState.number < MAX_CLIENTS &&
@@ -4884,7 +4882,7 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 		return;
 	}
 
-	oldAnim = lf->animationNumber;
+	oldAnim = ANIM(lf->animationNumber);
 
 	lf->animationNumber = newAnimation;
 	newAnimation = ANIM(newAnimation);
@@ -4940,8 +4938,7 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
-			else if ( oldAnim != -1 &&
-				(/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim((animNumber_t)oldAnim)) )
+			else if (/*BG_FlippingAnim(oldAnim) ||*/ BG_InDeathAnim(oldAnim))
 			{
 				flags &= ~BONE_ANIM_BLEND;
 			}
@@ -4952,8 +4949,7 @@ static void CG_G2EntSetLerpFrameAnimation( centity_t *cent, lerpFrame_t *lf, int
 				{
 					blendTime = 200;
 				}
-				else if ( oldAnim != -1 &&
-					(BG_FlippingAnim((animNumber_t)oldAnim)) )
+				else if (BG_FlippingAnim(oldAnim))
 				{
 					blendTime = 200;
 				}
