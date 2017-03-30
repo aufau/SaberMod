@@ -1822,7 +1822,6 @@ reset_contents:
 		switch (other->client->ps.pm_type) {
 		case PM_NORMAL:
 		case PM_FLOAT:
-		case PM_NOCLIP:
 		case PM_FREEZE:
 		case PM_HARMLESS:
 			other->r.contents |= CONTENTS_BODY;
