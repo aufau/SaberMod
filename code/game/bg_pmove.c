@@ -1958,7 +1958,7 @@ static void PM_CrashLand( void ) {
 	if (pm->ps->weapon != WP_SABER)
 	{ //saber handles its own anims
 		//This will push us back into our weaponready stance from the land anim.
-		if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1)
+		if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR)
 		{
 			PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
 		}
@@ -2589,7 +2589,7 @@ static void PM_Footsteps( void ) {
 					PM_ContinueLegsAnim( BOTH_CROUCH1IDLE );
 				}
 			} else {
-				if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1)
+				if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR)
 				{
 					PM_ContinueLegsAnim( TORSO_WEAPONREADY4 );
 				}
@@ -2814,9 +2814,9 @@ void PM_BeginWeaponChange( int weapon ) {
 	}
 
 	// turn of any kind of zooming when weapon switching.
-	if (pm->ps->zoomMode)
+	if (pm->ps->zoomMode != ZOOM_NONE)
 	{
-		pm->ps->zoomMode = 0;
+		pm->ps->zoomMode = ZOOM_NONE;
 		pm->ps->zoomTime = pm->ps->commandTime;
 	}
 
@@ -3006,14 +3006,14 @@ static qboolean PM_DoChargedWeapons( void )
 
 	case WP_DISRUPTOR:
 		if ((pm->cmd.buttons & BUTTON_ATTACK) &&
-			pm->ps->zoomMode == 1 &&
+			pm->ps->zoomMode == ZOOM_DISRUPTOR &&
 			pm->ps->zoomLocked)
 		{
 			charging = qtrue;
 			altFire = qtrue;
 		}
 
-		if (pm->ps->zoomMode != 1 &&
+		if (pm->ps->zoomMode != ZOOM_DISRUPTOR &&
 			pm->ps->weaponstate == WEAPON_CHARGING_ALT)
 		{
 			pm->ps->weaponstate = WEAPON_READY;
@@ -3302,7 +3302,7 @@ static void PM_Weapon( void )
 	{ //reset into weapon stance
 		if (pm->ps->weapon != WP_SABER)
 		{ //saber handles its own anims
-			if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1)
+			if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR)
 			{
 				//PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
 				PM_StartTorsoAnim( TORSO_RAISEWEAP1);
@@ -3557,7 +3557,7 @@ static void PM_Weapon( void )
 
 	if (pm->ps->weapon == WP_SABER)
 	{ //we can't toggle zoom while using saber (for obvious reasons) so make sure it's always off
-		pm->ps->zoomMode = 0;
+		pm->ps->zoomMode = ZOOM_NONE;
 		pm->ps->zoomLocked = qfalse;
 		pm->ps->zoomLockTime = 0;
 	}
@@ -3659,7 +3659,7 @@ static void PM_Weapon( void )
 		if ( pm->ps->weapon == WP_SABER ) {
 			PM_StartTorsoAnim( PM_GetSaberStance() );
 		} else {
-			if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1)
+			if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR)
 			{
 				PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
 			}
@@ -3680,7 +3680,7 @@ static void PM_Weapon( void )
 
 	if ((ANIM(pm->ps->torsoAnim) == TORSO_WEAPONREADY4 ||
 		ANIM(pm->ps->torsoAnim) == BOTH_ATTACK4) &&
-		(pm->ps->weapon != WP_DISRUPTOR || pm->ps->zoomMode != 1))
+		(pm->ps->weapon != WP_DISRUPTOR || pm->ps->zoomMode != ZOOM_DISRUPTOR))
 	{
 		if (pm->ps->weapon == WP_EMPLACED_GUN)
 		{
@@ -3693,7 +3693,7 @@ static void PM_Weapon( void )
 	}
 	else if ((ANIM(pm->ps->torsoAnim) != TORSO_WEAPONREADY4 &&
 		ANIM(pm->ps->torsoAnim) != BOTH_ATTACK4) &&
-		(pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1))
+		(pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR))
 	{
 		PM_StartTorsoAnim( TORSO_WEAPONREADY4 );
 	}
@@ -3729,12 +3729,12 @@ static void PM_Weapon( void )
 
 	if (pm->ps->weapon == WP_DISRUPTOR &&
 		(pm->cmd.buttons & BUTTON_ALT_ATTACK) &&
-		pm->ps->zoomMode == 2)
+		pm->ps->zoomMode == ZOOM_BINOCULARS)
 	{ //can't use disruptor secondary while zoomed binoculars
 		return;
 	}
 
-	if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == 1)
+	if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode == ZOOM_DISRUPTOR)
 	{
 		PM_StartTorsoAnim( BOTH_ATTACK4 );
 	}
@@ -3778,7 +3778,7 @@ static void PM_Weapon( void )
 	}
 
 	if ( pm->cmd.buttons & BUTTON_ALT_ATTACK ) 	{
-		if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode != 1)
+		if (pm->ps->weapon == WP_DISRUPTOR && pm->ps->zoomMode != ZOOM_DISRUPTOR)
 		{
 			PM_AddEvent( EV_FIRE_WEAPON );
 			addTime = weaponData[pm->ps->weapon].fireTime;
@@ -3964,18 +3964,18 @@ void PM_AdjustAttackStates( pmove_t *pm )
 			pm->cmd.upmove <= 0 && !pm->cmd.forwardmove && !pm->cmd.rightmove*/)
 		{
 			// We just pressed the alt-fire key
-			if ( !pm->ps->zoomMode )
+			if ( pm->ps->zoomMode == ZOOM_NONE )
 			{
 				// not already zooming, so do it now
-				pm->ps->zoomMode = 1;
+				pm->ps->zoomMode = ZOOM_DISRUPTOR;
 				pm->ps->zoomLocked = qfalse;
 				pm->ps->zoomLockTime = pm->cmd.serverTime + 50;
 				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
 			}
-			else if (pm->ps->zoomMode == 1 && pm->ps->zoomLockTime < pm->cmd.serverTime)
+			else if (pm->ps->zoomMode == ZOOM_DISRUPTOR && pm->ps->zoomLockTime < pm->cmd.serverTime)
 			{ //check for == 1 so we can't turn binoculars off with disruptor alt fire
 				// already zooming, so must be wanting to turn it off
-				pm->ps->zoomMode = 0;
+				pm->ps->zoomMode = ZOOM_NONE;
 				pm->ps->zoomTime = pm->ps->commandTime;
 				pm->ps->zoomLocked = qfalse;
 				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
@@ -3984,7 +3984,7 @@ void PM_AdjustAttackStates( pmove_t *pm )
 		else if ( !(pm->cmd.buttons & BUTTON_ALT_ATTACK ) && pm->ps->zoomLockTime < pm->cmd.serverTime)
 		{
 			// Not pressing zoom any more
-			if ( pm->ps->zoomMode )
+			if ( pm->ps->zoomMode != ZOOM_NONE )
 			{
 				// were zooming in, so now lock the zoom
 				pm->ps->zoomLocked = qtrue;
@@ -4002,9 +4002,9 @@ void PM_AdjustAttackStates( pmove_t *pm )
 
 		if (pm->cmd.upmove > 0 || pm->cmd.forwardmove || pm->cmd.rightmove)
 		{
-			if (pm->ps->zoomMode == 1 && pm->ps->zoomLockTime < pm->cmd.serverTime)
+			if (pm->ps->zoomMode == ZOOM_DISRUPTOR && pm->ps->zoomLockTime < pm->cmd.serverTime)
 			{ //check for == 1 so we can't turn binoculars off with disruptor alt fire
-				pm->ps->zoomMode = 0;
+				pm->ps->zoomMode = ZOOM_NONE;
 				pm->ps->zoomTime = pm->ps->commandTime;
 				pm->ps->zoomLocked = qfalse;
 				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
@@ -4015,7 +4015,7 @@ void PM_AdjustAttackStates( pmove_t *pm )
 		{
 			// If we are zoomed, we should switch the ammo usage to the alt-fire, otherwise, we'll
 			//	just use whatever ammo was selected from above
-			if ( pm->ps->zoomMode )
+			if ( pm->ps->zoomMode != ZOOM_NONE )
 			{
 				amount = pm->ps->ammo[weaponData[ pm->ps->weapon ].ammoIndex] -
 							weaponData[pm->ps->weapon].altEnergyPerShot;
@@ -4031,9 +4031,9 @@ void PM_AdjustAttackStates( pmove_t *pm )
 	{
 		if (pm->cmd.upmove > 0 || pm->cmd.forwardmove || pm->cmd.rightmove)
 		{
-			if (pm->ps->zoomMode == 1 && pm->ps->zoomLockTime < pm->cmd.serverTime)
+			if (pm->ps->zoomMode == ZOOM_DISRUPTOR && pm->ps->zoomLockTime < pm->cmd.serverTime)
 			{ //check for == 1 so we can't turn binoculars off with disruptor alt fire
-				pm->ps->zoomMode = 0;
+				pm->ps->zoomMode = ZOOM_NONE;
 				pm->ps->zoomTime = pm->ps->commandTime;
 				pm->ps->zoomLocked = qfalse;
 				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
@@ -4068,13 +4068,13 @@ void PM_AdjustAttackStates( pmove_t *pm )
 	// disruptor should convert a main fire to an alt-fire if the gun is currently zoomed
 	if ( pm->ps->weapon == WP_DISRUPTOR)
 	{
-		if ( pm->cmd.buttons & BUTTON_ATTACK && pm->ps->zoomMode == 1 && pm->ps->zoomLocked)
+		if ( pm->cmd.buttons & BUTTON_ATTACK && pm->ps->zoomMode == ZOOM_DISRUPTOR && pm->ps->zoomLocked)
 		{
 			// converting the main fire to an alt-fire
 			pm->cmd.buttons |= BUTTON_ALT_ATTACK;
 			pm->ps->eFlags |= EF_ALT_FIRING;
 		}
-		else if ( pm->cmd.buttons & BUTTON_ALT_ATTACK && pm->ps->zoomMode == 1 && pm->ps->zoomLocked)
+		else if ( pm->cmd.buttons & BUTTON_ALT_ATTACK && pm->ps->zoomMode == ZOOM_DISRUPTOR && pm->ps->zoomLocked)
 		{
 			pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
 			pm->ps->eFlags &= ~EF_ALT_FIRING;

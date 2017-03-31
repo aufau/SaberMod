@@ -1373,7 +1373,7 @@ int G_PlayerBecomeATST(gentity_t *ent)
 		return 0;
 	}
 
-	if (ent->client->ps.zoomMode)
+	if (ent->client->ps.zoomMode != ZOOM_NONE)
 	{
 		return 0;
 	}

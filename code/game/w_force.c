@@ -4461,7 +4461,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 	if (self->client->ps.forceHandExtend == HANDEXTEND_KNOCKDOWN)
 	{
-		self->client->ps.zoomMode = 0;
+		self->client->ps.zoomMode = ZOOM_NONE;
 		self->client->ps.zoomLocked = qfalse;
 		self->client->ps.zoomTime = 0;
 	}

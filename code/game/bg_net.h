@@ -223,6 +223,12 @@ typedef enum {
 	LS_MOVE_MAX//
 } saberMoveName_t;
 
+typedef enum {
+	ZOOM_NONE,
+	ZOOM_DISRUPTOR,
+	ZOOM_BINOCULARS,
+} zoomMode_t;
+
 // playerState_t is the information needed by both the client and server
 // to predict player motion and actions
 // nothing outside of pmove should modify these, or some degree of prediction error
@@ -416,7 +422,7 @@ typedef struct playerState_s {
 	int				forceAllowDeactivateTime;
 
 	// zoom key
-	int				zoomMode;		// 0 - not zoomed, 1 - disruptor weapon
+	zoomMode_t		zoomMode;
 	int				zoomTime;
 	qboolean		zoomLocked;
 	int				zoomFov;		// unused, was float

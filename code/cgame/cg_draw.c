@@ -203,7 +203,7 @@ static void CG_DrawZoomMask( void )
 	float max, fi;
 
 	// Check for Binocular specific zooming since we'll want to render different bits in each case
-	if ( cg.predictedPlayerState.zoomMode == 2 )
+	if ( cg.predictedPlayerState.zoomMode == ZOOM_BINOCULARS )
 	{
 		int val, i;
 		float off;
@@ -301,7 +301,7 @@ static void CG_DrawZoomMask( void )
 			flip = (qboolean)!flip;
 		}
 	}
-	else if ( cg.predictedPlayerState.zoomMode)
+	else if ( cg.predictedPlayerState.zoomMode == ZOOM_DISRUPTOR )
 	{
 		// disruptor zoom mode
 		level = (float)(50.0f - zoomFov) / 50.0f;//(float)(80.0f - zoomFov) / 80.0f;
@@ -2682,7 +2682,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		return;
 	}
 
-	if ( cg.predictedPlayerState.zoomMode != 0 )
+	if ( cg.predictedPlayerState.zoomMode != ZOOM_NONE )
 	{//not while scoped
 		return;
 	}
@@ -2940,7 +2940,7 @@ static void CG_DrawHolocronIcons(void)
 	int endx = icon_size;
 	int endy = icon_size;
 
-	if (cg.snap->ps.zoomMode)
+	if (cg.snap->ps.zoomMode != ZOOM_NONE)
 	{ //don't display over zoom mask
 		return;
 	}
@@ -2995,7 +2995,7 @@ static void CG_DrawActivePowers(void)
 	int endx = icon_size;
 	int endy = icon_size;
 
-	if (cg.snap->ps.zoomMode)
+	if (cg.snap->ps.zoomMode != ZOOM_NONE)
 	{ //don't display over zoom mask
 		return;
 	}
