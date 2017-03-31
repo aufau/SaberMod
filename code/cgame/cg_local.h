@@ -936,6 +936,9 @@ typedef struct {
 	qhandle_t	bryarFrontFlash;
 	qhandle_t	greenFrontFlash;
 	qhandle_t	lightningFlash;
+	qhandle_t	redLine;
+	qhandle_t	whiteline2;
+	qhandle_t	smokeTrail;
 
 	qhandle_t	itemHoloModel;
 	qhandle_t	redFlagModel;

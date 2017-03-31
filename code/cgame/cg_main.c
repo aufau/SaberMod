@@ -1275,8 +1275,8 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.solidWhite = trap_R_RegisterShader( "gfx/effects/solidWhite_cull" );
 
-	cgs.media.lightEnglightDisableShader	= trap_R_RegisterShader("gfx/misc/mp_light_enlight_disable");
-	cgs.media.darkEnglightDisableShader		= trap_R_RegisterShader("gfx/misc/mp_dark_enlight_disable");
+	cgs.media.lightEnglightDisableShader	= trap_R_RegisterShaderNoMip("gfx/misc/mp_light_enlight_disable");
+	cgs.media.darkEnglightDisableShader		= trap_R_RegisterShaderNoMip("gfx/misc/mp_dark_enlight_disable");
 
 	trap_R_RegisterModel("models/items/remote.md3");
 
@@ -1503,9 +1503,9 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.HUDLeftStatic		= cgs.media.HUDLeftFrame;//trap_R_RegisterShaderNoMip( "gfx/hud/static_test" );
 	cgs.media.HUDLeft			= cgs.media.HUDInnerLeft;//trap_R_RegisterShaderNoMip( "gfx/hud/hudleft" );
 
-	cgs.media.HUDSaberStyle1	= trap_R_RegisterShader( "gfx/hud/saber_stylesFast"   );
-	cgs.media.HUDSaberStyle2	= trap_R_RegisterShader( "gfx/hud/saber_stylesMed"	  );
-	cgs.media.HUDSaberStyle3	= trap_R_RegisterShader( "gfx/hud/saber_stylesStrong" );
+	cgs.media.HUDSaberStyle1	= trap_R_RegisterShaderNoMip( "gfx/hud/saber_stylesFast"   );
+	cgs.media.HUDSaberStyle2	= trap_R_RegisterShaderNoMip( "gfx/hud/saber_stylesMed"	  );
+	cgs.media.HUDSaberStyle3	= trap_R_RegisterShaderNoMip( "gfx/hud/saber_stylesStrong" );
 
 	cgs.media.HUDRightFrame		= trap_R_RegisterShaderNoMip("gfx/hud/hudrightframe");
 	cgs.media.HUDInnerRight		= trap_R_RegisterShaderNoMip( "gfx/hud/hudright_innerframe" );
@@ -1524,7 +1524,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.chunkyNumberShaders[i]	= trap_R_RegisterShaderNoMip( sb_c_nums[i] );
 	}
 
-	cgs.media.balloonShader = trap_R_RegisterShader( "gfx/mp/chat_icon" );
+	cgs.media.balloonShader = trap_R_RegisterShaderNoMip( "gfx/mp/chat_icon" );
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
