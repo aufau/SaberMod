@@ -446,19 +446,19 @@ void CG_ToggleBinoculars(centity_t *cent, int forceZoom)
 	{
 		if (forceZoom == 2)
 		{
-			cg.snap->ps.zoomMode = 0;
+			cg.snap->ps.zoomMode = ZOOM_NONE;
 		}
 		else if (forceZoom == 1)
 		{
-			cg.snap->ps.zoomMode = 2;
+			cg.snap->ps.zoomMode = ZOOM_BINOCULARS;
 		}
 	}
 
-	if (cg.snap->ps.zoomMode == 0)
+	if (cg.snap->ps.zoomMode == ZOOM_NONE)
 	{
 		trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.zoomStart );
 	}
-	else if (cg.snap->ps.zoomMode == 2)
+	else if (cg.snap->ps.zoomMode == ZOOM_BINOCULARS)
 	{
 		trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.zoomEnd );
 	}
@@ -1636,7 +1636,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_DISRUPTOR_ZOOMSOUND");
 		if (es->number == cg.snap->ps.clientNum)
 		{
-			if (cg.snap->ps.zoomMode)
+			if (cg.snap->ps.zoomMode != ZOOM_NONE)
 			{
 				trap_S_StartLocalSound(trap_S_RegisterSound("sound/weapons/disruptor/zoomstart.wav"), CHAN_AUTO);
 			}

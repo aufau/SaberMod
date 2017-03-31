@@ -997,8 +997,8 @@ static int CG_CalcFov( void ) {
 	} else {
 		fov_x = cgFov;
 
-		if (cg.predictedPlayerState.zoomMode == 2)
-		{ //binoculars
+		switch (cg.predictedPlayerState.zoomMode) {
+		case ZOOM_BINOCULARS:
 			if (zoomFov > 40.0f)
 			{
 				zoomFov -= cg.frametime * 0.075f;
@@ -1014,9 +1014,8 @@ static int CG_CalcFov( void ) {
 			}
 
 			fov_x = zoomFov;
-		}
-		else if (cg.predictedPlayerState.zoomMode)
-		{
+			break;
+		case ZOOM_DISRUPTOR:
 			if (!cg.predictedPlayerState.zoomLocked)
 			{
 				if (zoomFov > 50)
@@ -1046,9 +1045,8 @@ static int CG_CalcFov( void ) {
 			}
 
 			fov_x = zoomFov;
-		}
-		else
-		{
+			break;
+		case ZOOM_NONE:
 			f = ( cg.serverTime - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
 			if ( f < 1.0f ) {
@@ -1058,6 +1056,7 @@ static int CG_CalcFov( void ) {
 			} else {
 				zoomFov = 80;
 			}
+			break;
 		}
 	}
 
@@ -1082,7 +1081,7 @@ static int CG_CalcFov( void ) {
 	cg.refdef.fov_x = fov_x;
 	cg.refdef.fov_y = fov_y;
 
-	if (cg.predictedPlayerState.zoomMode)
+	if (cg.predictedPlayerState.zoomMode != ZOOM_NONE)
 	{
 		cg.zoomSensitivity = zoomFov/cgFov;
 	}
@@ -1634,7 +1633,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// decide on third person view
 	if (cg.predictedPlayerState.pm_type == PM_SPECTATOR)
 		cg.renderingThirdPerson = qfalse;
-	else if (cg.snap->ps.zoomMode)
+	else if (cg.snap->ps.zoomMode != ZOOM_NONE)
 		cg.renderingThirdPerson = qfalse;
 	else if (cg.snap->ps.stats[STAT_HEALTH] <= 0)
 		cg.renderingThirdPerson = qtrue;

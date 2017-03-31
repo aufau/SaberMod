@@ -1619,7 +1619,7 @@ void ClientThink_real( gentity_t *ent ) {
 			G_ItemUsable(&ent->client->ps, HI_BINOCULARS) )
 		{
 			ItemUse_Binoculars(ent);
-			if (ent->client->ps.zoomMode == 0)
+			if (ent->client->ps.zoomMode == ZOOM_NONE)
 			{
 				G_AddEvent(ent, EV_USE_ITEM0+HI_BINOCULARS, 1);
 			}
@@ -1634,7 +1634,7 @@ void ClientThink_real( gentity_t *ent ) {
 			G_ItemUsable(&ent->client->ps, HI_BINOCULARS) )
 		{
 			ItemUse_Binoculars(ent);
-			if (ent->client->ps.zoomMode == 0)
+			if (ent->client->ps.zoomMode == ZOOM_NONE)
 			{
 				G_AddEvent(ent, EV_USE_ITEM0+HI_BINOCULARS, 1);
 			}

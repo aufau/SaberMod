@@ -942,7 +942,7 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.torsoTimer = 0;
 	client->ps.emplacedIndex = 0;
 	client->ps.isJediMaster = qfalse;
-	client->ps.zoomMode = 0;
+	client->ps.zoomMode = ZOOM_NONE;
 	client->ps.zoomLocked = qfalse;
 	client->ps.zoomLockTime = 0;
 	client->ps.fallingToDeath = 0;

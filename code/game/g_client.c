@@ -786,7 +786,7 @@ void ResetClientState( gentity_t *self )
 
 	self->s.weapon = WP_NONE;
 	self->s.powerups = 0;
-	self->client->ps.zoomMode = 0;
+	self->client->ps.zoomMode = ZOOM_NONE;
 	self->s.loopSound = 0;
 
 	if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF

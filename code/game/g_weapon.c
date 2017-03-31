@@ -838,7 +838,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 static void WP_FireDisruptor( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
-	if (!ent->client || ent->client->ps.zoomMode != 1)
+	if (!ent->client || ent->client->ps.zoomMode != ZOOM_BINOCULARS)
 	{ //do not ever let it do the alt fire when not zoomed
 		altFire = qfalse;
 	}
