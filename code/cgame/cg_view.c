@@ -988,7 +988,7 @@ static int CG_CalcFov( void ) {
 
 	if ( cgs.dmflags & DF_FIXED_FOV ) {
 		// dmflag to use basejk fov limit
-		fov_x = MIN(97, cgFov);
+		cgFov = MIN(97, cgFov);
 	}
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
