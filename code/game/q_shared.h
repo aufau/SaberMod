@@ -91,7 +91,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #else
 
-#include <assert.h>
+#define assert(exp) \
+	if (!(exp)) \
+		Com_Printf(__FILE__ ":" STR(__LINE__) ": Assertion `" STR(exp) "' failed.\n");
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
