@@ -462,7 +462,7 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 					item = BG_FindItemForPowerup( j );
 
 					if (item) {
-						CG_DrawPic( xx, y, PIC_WIDTH, PIC_WIDTH, trap_R_RegisterShader( item->icon ) );
+						CG_DrawPic( xx, y, PIC_WIDTH, PIC_WIDTH, cg_items[ ITEM_INDEX(item) ].icon );
 						xx += PIC_WIDTH;
 					}
 				}

@@ -2135,7 +2135,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 					if (item) {
 						CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-						trap_R_RegisterShader( item->icon ) );
+							cg_items[ ITEM_INDEX(item) ].icon );
 						if (right) {
 							xx -= TINYCHAR_WIDTH;
 						} else {
@@ -2192,7 +2192,7 @@ static void CG_DrawPowerupIcons(int y)
 				}
 				else
 				{
-					icoShader = trap_R_RegisterShader( item->icon );
+					icoShader = cg_items[ ITEM_INDEX(item) ].icon;
 				}
 
 				CG_DrawPic( (640-(ico_size*1.1)), y, ico_size, ico_size, icoShader );

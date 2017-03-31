@@ -6639,7 +6639,7 @@ doEssentialTwo:
 
 			legs.shaderRGBA[3] = ((cg_entities[cent->currentState.number].teamPowerEffectTime - cg.time)/8);
 
-			legs.customShader = trap_R_RegisterShader( "powerups/ysalimarishell" );
+			legs.customShader = cgs.media.ysalimariShader;
 			trap_R_AddRefEntityToScene(&legs);
 
 			legs.customShader = 0;

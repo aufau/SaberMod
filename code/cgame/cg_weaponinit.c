@@ -77,8 +77,8 @@ void CG_RegisterWeapon( int weaponNum) {
 		weaponInfo->weaponMidpoint[i] = mins[i] + 0.5f * ( maxs[i] - mins[i] );
 	}
 
-	weaponInfo->weaponIcon = trap_R_RegisterShader( item->icon );
-	weaponInfo->ammoIcon = trap_R_RegisterShader( item->icon );
+	weaponInfo->weaponIcon = trap_R_RegisterShaderNoMip( item->icon );
+	weaponInfo->ammoIcon = trap_R_RegisterShaderNoMip( item->icon );
 
 	for ( ammo = bg_itemlist + 1 ; ammo->classname ; ammo++ ) {
 		if ( ammo->giType == IT_AMMO && ammo->giTag == weaponNum ) {
@@ -264,18 +264,18 @@ void CG_RegisterWeapon( int weaponNum) {
 		cgs.effects.disruptorAltMissEffect		= trap_FX_RegisterEffect( "disruptor/alt_miss" );
 		cgs.effects.disruptorAltHitEffect		= trap_FX_RegisterEffect( "disruptor/alt_hit" );
 
-		trap_R_RegisterShader( "gfx/effects/redLine" );
-		trap_R_RegisterShader( "gfx/misc/whiteline2" );
-		trap_R_RegisterShader( "gfx/effects/smokeTrail" );
+		cgs.media.redLine = trap_R_RegisterShader( "gfx/effects/redLine" );
+		cgs.media.whiteline2 = trap_R_RegisterShader( "gfx/misc/whiteline2" );
+		cgs.media.smokeTrail = trap_R_RegisterShader( "gfx/effects/smokeTrail" );
 
 		trap_S_RegisterSound("sound/weapons/disruptor/zoomstart.wav");
 		trap_S_RegisterSound("sound/weapons/disruptor/zoomend.wav");
 
 		// Disruptor gun zoom interface
-		cgs.media.disruptorMask			= trap_R_RegisterShader( "gfx/2d/cropCircle2");
-		cgs.media.disruptorInsert		= trap_R_RegisterShader( "gfx/2d/cropCircle");
-		cgs.media.disruptorLight		= trap_R_RegisterShader( "gfx/2d/cropCircleGlow" );
-		cgs.media.disruptorInsertTick	= trap_R_RegisterShader( "gfx/2d/insertTick" );
+		cgs.media.disruptorMask			= trap_R_RegisterShaderNoMip("gfx/2d/cropCircle2");
+		cgs.media.disruptorInsert		= trap_R_RegisterShaderNoMip("gfx/2d/cropCircle");
+		cgs.media.disruptorLight		= trap_R_RegisterShaderNoMip("gfx/2d/cropCircleGlow");
+		cgs.media.disruptorInsertTick	= trap_R_RegisterShaderNoMip("gfx/2d/insertTick");
 		cgs.media.disruptorChargeShader	= trap_R_RegisterShaderNoMip("gfx/2d/crop_charge");
 
 		cgs.media.disruptorZoomLoop		= trap_S_RegisterSound( "sound/weapons/disruptor/zoomloop.wav" );
