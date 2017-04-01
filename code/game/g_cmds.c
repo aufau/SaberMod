@@ -773,7 +773,9 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	if ( team == oldTeam ) {
 		// handle switching from/to SPECTATOR_NOT without changing teams
 		if ( newSpec != oldSpec ) {
-			if ( !newSpec ) {
+			if ( newSpec ) {
+				trap_UnlinkEntity( ent );
+			} else {
 				gentity_t	*tent;
 
 				tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
