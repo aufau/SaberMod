@@ -239,7 +239,6 @@ static void CG_ShaderStateChanged( const char *o ) {
 	char timeOffset[16];
 	const char *n,*t;
 
-	o = CG_ConfigString( CS_SHADERSTATE );
 	while (o && *o) {
 		n = strstr(o, "=");
 		if (n && *n) {
