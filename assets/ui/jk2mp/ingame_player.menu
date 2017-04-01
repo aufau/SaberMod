@@ -1081,7 +1081,7 @@
 			{
 				play                    "sound/interface/button1.wav" ;
 				uiScript                update "ui_SetName" ;
-				uiScript                setForce ;
+				uiScript                setForce none ;
 				hide                    highlights ;
 				uiScript                closeingame
 			}
