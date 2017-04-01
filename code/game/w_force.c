@@ -393,8 +393,9 @@ void WP_InitForcePowers( gentity_t *ent )
 					ent->client->pers.teamState.state = TEAM_BEGIN;
 
 					// Update CS_PLAYERS string
-					if ( team != TEAM_SPECTATOR )
+					if ( team != TEAM_SPECTATOR ) {
 						ClientUserinfoChanged( ent->s.number );
+					}
 				}
 			}
 

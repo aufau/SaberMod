@@ -1378,7 +1378,8 @@ If a new client connects, this will be called after the spawn function.
 void MoveClientToIntermission( gentity_t *ent ) {
 	// take out of follow mode if needed
 	if (ent->client->sess.spectatorState == SPECTATOR_FOLLOW &&
-		ent->client->sess.spectatorClient >= 0 )
+		ent->client->sess.spectatorClient != FOLLOW_FIRST &&
+		ent->client->sess.spectatorClient != FOLLOW_SECOND )
 	{
 		StopFollowing( ent );
 	}

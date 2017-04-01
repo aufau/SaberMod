@@ -83,17 +83,29 @@ static const playerStat_t ictfColumns[] =
 
 static void GetStats( int *stats, gclient_t *cl )
 {
-	stats[STATS_SCORE] = cl->ps.persistant[PERS_SCORE];
-	stats[STATS_CAPS] = cl->ps.persistant[PERS_CAPTURES];
-	stats[STATS_DEFEND] = cl->ps.persistant[PERS_DEFEND_COUNT];
-	stats[STATS_ASSIST] = cl->ps.persistant[PERS_ASSIST_COUNT];
+	const int *persistant;
+
+	if (cl->sess.sessionTeam != TEAM_SPECTATOR &&
+		cl->sess.spectatorState != SPECTATOR_NOT)
+	{
+		persistant = cl->pers.saved;
+	}
+	else
+	{
+		persistant = cl->ps.persistant;
+	}
+
+	stats[STATS_SCORE] = persistant[PERS_SCORE];
+	stats[STATS_CAPS] = persistant[PERS_CAPTURES];
+	stats[STATS_DEFEND] = persistant[PERS_DEFEND_COUNT];
+	stats[STATS_ASSIST] = persistant[PERS_ASSIST_COUNT];
 	if (cl->pers.accuracy_shots > 0)
 		stats[STATS_ACC] = 100.0f * cl->pers.accuracy_hits / cl->pers.accuracy_shots;
 	else
 		stats[STATS_ACC] = 0;
-	stats[STATS_IMPRESSIVE] = cl->ps.persistant[PERS_IMPRESSIVE_COUNT];
-	stats[STATS_KILLED] = cl->ps.persistant[PERS_KILLED];
-	stats[STATS_KILLS] = cl->ps.persistant[PERS_KILLS];
+	stats[STATS_IMPRESSIVE] = persistant[PERS_IMPRESSIVE_COUNT];
+	stats[STATS_KILLED] = persistant[PERS_KILLED];
+	stats[STATS_KILLS] = persistant[PERS_KILLS];
 	stats[STATS_NET_DMG] = cl->pers.totalDamageDealtToEnemies
 		- cl->pers.totalDamageTakenFromEnemies;
 	stats[STATS_DMG] = cl->pers.totalDamageDealtToEnemies;

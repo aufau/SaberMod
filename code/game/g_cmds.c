@@ -748,7 +748,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 	assert( !(team == TEAM_SPECTATOR && specState == SPECTATOR_NOT) );
 
-	if ( client->sess.spectatorState == SPECTATOR_NOT && specState != SPECTATOR_NOT ) {
+	if ( !oldSpec && newSpec ) {
 		// save persistant fields for following spectators
 		blockcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
 
