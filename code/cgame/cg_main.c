@@ -2561,7 +2561,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	// Update config strings
 	for ( i = 0; i < CS_MODELS; i++ ) {
-		CG_UpdateConfigString( i, qtrue );
+		if ( i != CS_SHADERSTATE ) {
+			CG_UpdateConfigString( i, qtrue );
+		}
 	}
 
 	// load the new map
@@ -2606,6 +2608,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 #ifdef MISSIONPACK
 	CG_InitTeamChat();
 #endif
+
+	CG_UpdateConfigString( CS_SHADERSTATE, qtrue );
+
 	trap_S_ClearLoopingSounds( qtrue );
 }
 
