@@ -3641,7 +3641,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, team_t
 }
 
 #define MAX_SHIELD_TIME	2000
-#define MIN_SHIELD_TIME	2000
+#define MIN_SHIELD_TIME	500
 
 
 void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
