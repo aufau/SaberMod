@@ -603,6 +603,10 @@ void G_UpdateCvars( void ) {
 	cvarTable_t *cv;
 	qboolean remapped = qfalse;
 
+	// don't announce changed cvars
+	if ( level.restarting )
+		return;
+
 	for ( cv = gameCvarTable ; cv < end ; cv++ ) {
 		if ( cv->vmCvar ) {
 			trap_Cvar_Update( cv->vmCvar );
@@ -1647,6 +1651,7 @@ void ExitLevel (void) {
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
+	level.restarting = qtrue;
 	level.changemap = NULL;
 	level.intermissiontime = 0;
 
