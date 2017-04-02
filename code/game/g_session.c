@@ -121,10 +121,8 @@ Called on a first-time connect
 void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 	clientSession_t	*sess;
 	const char		*value;
-	int				clientNum;
 
 	sess = &client->sess;
-	clientNum = client - level.clients;
 
 	// initial team determination
 	if ( GT_Team(level.gametype) ) {
