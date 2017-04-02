@@ -219,6 +219,9 @@ g_modeDefault <mode>
   Default server mode. Read `Server Modes`_ section to learn how to
   use it properly.
 
+g_modeDefaultMap <map>
+  Map for default mode. Leave blank to not change map.
+
 g_modeIdleTime <minutes>
   Reset to default mode if server has been idle for this many minutes.
 

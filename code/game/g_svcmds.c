@@ -585,8 +585,15 @@ static void	Svcmd_Mode_f( void )
 
 	mode = ConcatArgs(1);
 
-	if ( !Q_stricmp(mode, "default") )
+	if ( !Q_stricmp(mode, "default") ) {
+		char map[MAX_QPATH];
+
 		mode = g_modeDefault.string;
+		trap_Cvar_VariableStringBuffer( "g_modeDefaultMap", map, sizeof( map ) );
+
+		if ( strcmp( map, "" ) && strcmp( map, "0" ) && strcmp( map, "none" ) )
+			trap_Cvar_Set( "nextmap", va( "map %s", map ) );
+	}
 
 	if ( trap_FS_FOpenFile( va( "modes/%s.cfg", mode), &f, FS_READ) < 0 ) {
 		G_Printf( "Invalid mode.\n" );
