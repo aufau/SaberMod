@@ -167,8 +167,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 			case GT_HOLOCRON:
 			case GT_JEDIMASTER:
 			case GT_SINGLE_PLAYER:
-				sess->sessionTeam = ValidateTeam( clientNum, TEAM_FREE ) ?
-					TEAM_FREE : TEAM_SPECTATOR;
+				sess->sessionTeam = TEAM_SPECTATOR;
 				break;
 			case GT_TOURNAMENT:
 				// if the game is full, go into a waiting mode

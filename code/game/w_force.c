@@ -378,7 +378,7 @@ void WP_InitForcePowers( gentity_t *ent )
 			te->s.bolt1 = 0;
 #endif
 			didEvent = qtrue;
-
+			/* fau - didn't work anyway
 			if (!(ent->r.svFlags & SVF_BOT) && level.gametype != GT_TOURNAMENT)
 			{
 				if (!GT_Team(level.gametype) || !g_teamAutoJoin.integer)
@@ -387,7 +387,7 @@ void WP_InitForcePowers( gentity_t *ent )
 					SetTeam( ent, TEAM_SPECTATOR );
 				}
 			}
-
+			*/
 #ifdef EVENT_FORCE_RANK
 			te->s.bolt2 = ent->client->sess.sessionTeam;
 #else
