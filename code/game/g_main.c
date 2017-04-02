@@ -584,6 +584,8 @@ void G_RegisterCvars( void ) {
 	// always execute default mode cfg
 	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
 
+	trap_Cvar_Register( NULL, "g_modeDefaultMap", "", CVAR_ARCHIVE );
+
 	if (remapped) {
 		G_RemapTeamShaders();
 	}
