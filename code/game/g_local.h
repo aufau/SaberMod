@@ -636,6 +636,7 @@ typedef struct {
 	qboolean	teamLock[TEAM_NUM_TEAMS];
 	int			round;
 	int			idleTime;
+	qboolean	restarting;				// server is about to restart
 } level_locals_t;
 
 //
