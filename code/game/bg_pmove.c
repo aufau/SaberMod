@@ -1233,7 +1233,13 @@ static qboolean PM_CheckJump( void )
 			//see if it's not too late to start a special jump-attack
 			//SDKBUG: PM_AnimLength doesn't remove ANIM_TOGGLEBIT
 			int animLength = PM_AnimLength( (animNumber_t)pm->ps->torsoAnim );
-			assert(pm->ps->torsoAnim == ANIM(pm->ps->torsoAnim));
+
+			if (pm->ps->torsoAnim & ANIM_TOGGLEBIT) {
+				if ( PM_AnimLength(ANIM(pm->ps->torsoAnim)) - pm->ps->torsoTimer >= 500 ) {
+					Com_Printf( "Yellow DFA bug in animation %d\n", pm->ps->torsoAnim );
+				}
+			}
+
 			if ( animLength - pm->ps->torsoTimer < 500 )
 			{//just started the saberMove
 				//check for special-case jump attacks
