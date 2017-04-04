@@ -1405,14 +1405,13 @@ void PM_WeaponLightsaber(void)
 			PM_SetSaberMove( LS_READY );
 		}
 
-		if (ANIM(pm->ps->legsAnim) != ANIM(pm->ps->torsoAnim))
+		if (BG_InSaberStandAnim(ANIM(pm->ps->legsAnim)))
+		{
+			PM_SetAnim(SETANIM_BOTH,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
+		}
+		else if (ANIM(pm->ps->legsAnim) != ANIM(pm->ps->torsoAnim))
 		{
 			PM_SetAnim(SETANIM_TORSO, ANIM(pm->ps->legsAnim), SETANIM_FLAG_OVERRIDE, 100);
-		}
-
-		if (BG_InSaberStandAnim(ANIM(pm->ps->torsoAnim)))
-		{
-			PM_SetAnim(SETANIM_TORSO,BOTH_STAND1,SETANIM_FLAG_OVERRIDE, 100);
 		}
 
 		if (pm->ps->weaponTime < 1 && ((pm->cmd.buttons & BUTTON_ALT_ATTACK) || (pm->cmd.buttons & BUTTON_ATTACK)))
