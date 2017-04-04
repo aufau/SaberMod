@@ -1910,7 +1910,7 @@ void CG_UpdateConfigString( int num, qboolean init );
 // cg_playerstate.c
 //
 int CG_IsMindTricked(int trickIndex1, int trickIndex2, int trickIndex3, int trickIndex4, int client);
-void CG_Respawn( void );
+void CG_Respawn( const playerState_t *ps );
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 

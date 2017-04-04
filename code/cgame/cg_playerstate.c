@@ -193,7 +193,7 @@ CG_Respawn
 A respawn happened this snapshot
 ================
 */
-void CG_Respawn( void ) {
+void CG_Respawn( const playerState_t *ps ) {
 	// no error decay on player movement
 	cg.thisFrameTeleport = qtrue;
 
@@ -201,7 +201,7 @@ void CG_Respawn( void ) {
 	cg.weaponSelectTime = cg.time;
 
 	// select the weapon the server says we are using
-	cg.weaponSelect = cg.snap->ps.weapon;
+	cg.weaponSelect = ps->weapon;
 }
 
 /*
@@ -485,11 +485,11 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 
 	// respawning
 	if ( ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT] ) {
-		CG_Respawn();
+		CG_Respawn( ps );
 	}
 
 	if ( cg.mapRestart ) {
-		CG_Respawn();
+		CG_Respawn( ps );
 		cg.mapRestart = qfalse;
 	}
 
