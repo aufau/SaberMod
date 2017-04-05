@@ -2049,7 +2049,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", voteName, arg2 );
 	}
 
-	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s (%s" S_COLOR_WHITE ")\n\"",
+	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s: %s\n\"",
 			ent->client->pers.netname,
 			G_GetStripEdString("SVINGAME", "PLCALLEDVOTE"),
 			level.voteDisplayString) );
