@@ -233,12 +233,17 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 		}
 	}
 
+	cg.nextFrameTeleport = qfalse;
+
 	// if the next frame is a teleport for the playerstate, we
 	// can't interpolate during demos
-	if ( cg.snap && ( ( snap->ps.eFlags ^ cg.snap->ps.eFlags ) & EF_TELEPORT_BIT ) ) {
+	if ( ( snap->ps.eFlags ^ cg.snap->ps.eFlags ) & EF_TELEPORT_BIT ) {
 		cg.nextFrameTeleport = qtrue;
-	} else {
-		cg.nextFrameTeleport = qfalse;
+	}
+
+	// if respawning, don't interpolate
+	if ( snap->ps.persistant[PERS_SPAWN_COUNT] != cg.snap->ps.persistant[PERS_SPAWN_COUNT] ) {
+		cg.nextFrameTeleport = qtrue;
 	}
 
 	// if changing follow mode, don't interpolate
