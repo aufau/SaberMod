@@ -44,14 +44,23 @@ Called on game shutdown
 void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
+	int			wins, losses;
+
+	if ( level.gametype == GT_TOURNAMENT ) {
+		wins = client->sess.wins;
+		losses = client->sess.losses;
+	} else {
+		wins = 0;
+		losses = 0;
+	}
 
 	s = va("%i %i %i %i %i %i %i %i %i %i",
 		client->sess.sessionTeam,
 		client->sess.spectatorTime,
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
-		client->sess.wins,
-		client->sess.losses,
+		wins,
+		losses,
 		client->sess.teamLeader,
 		client->sess.setForce,
 		client->sess.saberLevel,
@@ -108,6 +117,11 @@ void G_ReadSessionData( gclient_t *client ) {
 
 	client->ps.fd.saberAnimLevel = client->sess.saberLevel;
 	client->ps.fd.forcePowerSelected = client->sess.selectedFP;
+
+	if ( level.gametype != GT_TOURNAMENT ) {
+		client->sess.wins = 0;
+		client->sess.losses = 0;
+	}
 }
 
 
