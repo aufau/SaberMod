@@ -1593,12 +1593,12 @@ static void NextRound( void )
 			else
 				SetTeam( ent, ent->client->sess.sessionTeam );
 		}
+	}
 
-		// clean up dead bodies
-		for ( i = 0; i < BODY_QUEUE_SIZE ; i++ ) {
-			trap_UnlinkEntity( level.bodyQue[i] );
-			level.bodyQue[i]->physicsObject = qfalse;
-		}
+	// clean up dead bodies
+	for ( i = 0; i < BODY_QUEUE_SIZE ; i++ ) {
+		trap_UnlinkEntity( level.bodyQue[i] );
+		level.bodyQue[i]->physicsObject = qfalse;
 	}
 }
 
