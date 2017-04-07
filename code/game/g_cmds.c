@@ -783,6 +783,8 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 				// restore persistant fields
 				blockcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
+				// don't keep force powers of last followed player
+				ent->client->ps.fd.forceDoInit = qtrue;
 			}
 
 			ClientSpawn( ent );
@@ -961,6 +963,7 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
 	for (i = 0; i < PW_NUM_POWERUPS; i++)
 		client->ps.powerups[i] = 0;
+	client->ps.fd.forceDoInit = qtrue;
 
 	SetClientViewAngle( ent, client->ps.viewangles );
 }
