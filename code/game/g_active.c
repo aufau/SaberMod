@@ -1049,6 +1049,9 @@ Handle manual respawn
 void G_Respawn( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
 
+	if ( level.intermissionQueued )
+		return;
+
 	if ( level.gametype == GT_REDROVER ) {
 		if ( !level.roundQueued )
 			G_SwitchTeam(ent);
@@ -1373,12 +1376,12 @@ void ClientThink_real( gentity_t *ent ) {
 		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 
-	if (ent->client && ent->client->ps.fallingToDeath &&
+	if (!level.intermissionQueued &&
+		ent->client && ent->client->ps.fallingToDeath &&
 		(level.time - FALL_FADE_TIME) > ent->client->ps.fallingToDeath)
 	{ //die!
 		player_die(ent, ent, ent, 100000, MOD_FALLING);
 		G_Respawn(ent);
-		ent->client->ps.fallingToDeath = 0;
 
 		G_MuteSound(ent->s.number, CHAN_VOICE); //stop screaming, because you are dead!
 

@@ -2174,9 +2174,8 @@ void CheckExitRules( void ) {
 	}
 
 	if ( GT_Round(level.gametype) ) {
-		qboolean	countDead = (qboolean)(level.gametype == GT_REDROVER && g_forcerespawn.integer <= 5);
-		int			redCount = TeamCount( -1, TEAM_RED, countDead );
-		int			blueCount = TeamCount( -1, TEAM_BLUE, countDead );
+		int			redCount = TeamCount( -1, TEAM_RED, qfalse );
+		int			blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
 
 		// begin first round of the game
 		if ( level.round == 0 ) {
