@@ -746,6 +746,9 @@ typedef struct {
 	float		constrict;
 	int			doConstrict;
 
+	qboolean	hasFallVector;
+	vec3_t		fallVector;
+
 	// zoom key
 	qboolean	zoomed;
 	int			zoomTime;

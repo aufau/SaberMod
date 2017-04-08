@@ -270,9 +270,6 @@ cg.refdefViewAngles
 ===============
 */
 
-extern qboolean gCGHasFallVector;
-extern vec3_t gCGFallVector;
-
 /*
 ===============
 CG_CalcTargetThirdPersonViewLocation
@@ -289,9 +286,9 @@ static void CG_CalcIdealThirdPersonViewTarget(void)
 #endif
 
 	// Initialize IdealTarget
-	if (gCGHasFallVector)
+	if (cg.hasFallVector)
 	{
-		VectorCopy(gCGFallVector, cam.focus);
+		VectorCopy(cg.fallVector, cam.focus);
 	}
 	else
 	{
@@ -1243,8 +1240,23 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 */
+
+	// fall vector
+	if ( ps->fallingToDeath ) {
+		if ( !cg.hasFallVector ) {
+			VectorCopy(cg.snap->ps.origin, cg.fallVector);
+			cg.hasFallVector = qtrue;
+		}
+	} else {
+		if ( cg.hasFallVector ) {
+			cg.hasFallVector = qfalse;
+			VectorClear(cg.fallVector);
+		}
+	}
+
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION ) {
+		cg.hasFallVector = qfalse;
 		VectorCopy( ps->origin, cg.refdef.vieworg );
 		VectorCopy( ps->viewangles, cg.refdefViewAngles );
 		AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
@@ -1691,7 +1703,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// if there are any entities flagged as sound trackers and attached to other entities, update their sound pos
 	CG_UpdateSoundTrackers();
 
-	if (gCGHasFallVector)
+	if (cg.hasFallVector)
 	{
 		vec3_t lookAng;
 
@@ -1699,7 +1711,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		VectorNormalize(lookAng);
 		vectoangles(lookAng, lookAng);
 
-		VectorCopy(gCGFallVector, cg.refdef.vieworg);
+		VectorCopy(cg.fallVector, cg.refdef.vieworg);
 		AnglesToAxis(lookAng, cg.refdef.viewaxis);
 	}
 

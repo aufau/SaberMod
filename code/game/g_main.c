@@ -1407,6 +1407,9 @@ void MoveClientToIntermission( gentity_t *ent ) {
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
 	ent->r.contents = 0;
+
+	ent->client->ps.fallingToDeath = qfalse;
+	// G_MuteSound(ent->s.number, CHAN_VOICE);
 }
 
 /*
