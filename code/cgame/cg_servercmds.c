@@ -1389,6 +1389,13 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	if ( !strcmp( cmd, "cpp" ) ) {
+		cg.centerPrintLock = qfalse;
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.30f );
+		cg.centerPrintLock = qtrue;
+		return;
+	}
+
 	if ( !strcmp( cmd, "map_restart" ) ) {
 		CG_MapRestart();
 		return;

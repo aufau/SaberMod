@@ -785,6 +785,7 @@ typedef struct {
 	int			centerPrintY;
 	char		centerPrint[MAX_INFO_STRING];
 	int			centerPrintLines;
+	qboolean	centerPrintLock;
 
 	// low ammo warning state
 	int			lowAmmoWarning;		// 1 = low, 2 = empty

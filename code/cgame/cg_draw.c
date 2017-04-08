@@ -2566,6 +2566,10 @@ void CG_CenterPrint( const char *str, int y ) {
 	char	*lastLine;
 	char	*lastSpace;
 
+	if ( cg.centerPrintLock ) {
+		return;
+	}
+
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
 	cg.centerPrintTime = cg.time;
@@ -2629,6 +2633,8 @@ static void CG_DrawCenterString( void ) {
 
 	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg_centertime.value );
 	if ( !color ) {
+		cg.centerPrintTime = 0;
+		cg.centerPrintLock = qfalse;
 		return;
 	}
 
