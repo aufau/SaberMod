@@ -768,8 +768,7 @@ void CG_PredictPlayerState( void ) {
 			} else {
 				vec3_t	adjusted;
 				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
-					cg.predictedPlayerState.groundEntityNum, cg.physicsTime,
-					oldPlayerState.commandTime, adjusted );
+					cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted );
 
 				if ( cg_showmiss.integer ) {
 					if (!VectorCompare( oldPlayerState.origin, adjusted )) {
@@ -868,8 +867,7 @@ void CG_PredictPlayerState( void ) {
 	// adjust for the movement of the groundentity
 	CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
 		cg.predictedPlayerState.groundEntityNum,
-		cg.physicsTime, cg.predictedPlayerState.commandTime,
-		cg.predictedPlayerState.origin );
+		cg.physicsTime, cg.serverTime, cg.predictedPlayerState.origin );
 
 	if ( cg_showmiss.integer ) {
 		if (cg.predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS) {
