@@ -2288,7 +2288,7 @@ static void CheckIdle( void ) {
 	if ( level.numVotingClients == 0 && g_modeIdleTime.integer > 0 && defaultMode ) {
 		if ( level.idleTime > 0 ) {
 			if ( level.idleTime + g_modeIdleTime.integer * 60000 < level.time + 15000 ) {
-				trap_SendServerCommand( -1, "print \"Server idle. Changing to default mode in 15 seconds...\n" );
+				trap_SendServerCommand( -1, "print \"Server idle. Changing to default mode in 15 seconds...\n\"" );
 				level.idleTime = - level.idleTime; // change sign after annoncement
 			}
 		} else {
@@ -2299,7 +2299,7 @@ static void CheckIdle( void ) {
 		}
 	} else {
 		if ( level.idleTime < 0 ) // mode change has been announced already
-			trap_SendServerCommand( -1, "print \"Mode change aborted.\n" );
+			trap_SendServerCommand( -1, "print \"Mode change aborted.\n\"" );
 		level.idleTime = level.time;
 	}
 }
