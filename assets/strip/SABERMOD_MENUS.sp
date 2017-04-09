@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 53
+COUNT 54
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -478,4 +478,13 @@ INDEX 52
    TEXT_LANGUAGE3 "Choose display name style."
    TEXT_LANGUAGE6 "Choose display name style."
    TEXT_LANGUAGE8 "Choose display name style."
+}
+INDEX 53
+{
+   REFERENCE SHOW_MOTD
+   TEXT_LANGUAGE1 "Show Message of the Day"
+   TEXT_LANGUAGE2 "Show Message of the Day"
+   TEXT_LANGUAGE3 "Show Message of the Day"
+   TEXT_LANGUAGE6 "Show Message of the Day"
+   TEXT_LANGUAGE8 "Show Message of the Day"
 }
