@@ -2565,6 +2565,8 @@ void CG_CenterPrint( const char *str, int y ) {
 	char	*s;
 	char	*lastLine;
 	char	*lastSpace;
+	qboolean	inWord;
+	int			words;
 
 	if ( cg.centerPrintLock ) {
 		return;
@@ -2582,11 +2584,14 @@ void CG_CenterPrint( const char *str, int y ) {
 	// Wrap long lines on word boundary
 	lastLine = s;
 	lastSpace = NULL;
+	words = 0;
+	inWord = qfalse;
 	while( *s ) {
 		char c = *s;
 
 		if (c == ' ' || c == '\t') {
 			*s = '\0';
+			inWord = qfalse;
 
 			if (CG_Text_Width(lastLine, 1.0f, FONT_MEDIUM) > MAX_CP_WIDTH) {
 				if (lastSpace) {
@@ -2607,11 +2612,29 @@ void CG_CenterPrint( const char *str, int y ) {
 		else if (c == '\n')
 		{
 			*s = '\0';
+			inWord = qfalse;
 			lastSpace = NULL;
 			lastLine = s + 1;
 			cg.centerPrintLines++;
 		}
+		else if ( !inWord )
+		{
+			words++;
+			inWord = qtrue;
+		}
+
 		s++;
+	}
+
+	{
+		const float	wpm = 200.0f;	// words per minute
+
+		cg.centerPrintMsec = 1000 * 60 * words / wpm;
+		cg.centerPrintMsec *= cg_centertime.value / DEFAULT_CENTERTIME;
+
+		if ( cg.centerPrintMsec < 1000 * cg_centertime.value ) {
+			cg.centerPrintMsec = 1000 * cg_centertime.value;
+		}
 	}
 }
 
@@ -2631,7 +2654,7 @@ static void CG_DrawCenterString( void ) {
 		return;
 	}
 
-	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg_centertime.value );
+	color = CG_FadeColor( cg.centerPrintTime, cg.centerPrintMsec );
 	if ( !color ) {
 		cg.centerPrintTime = 0;
 		cg.centerPrintLock = qfalse;

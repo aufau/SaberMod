@@ -108,6 +108,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define DEFAULT_REDTEAM_NAME		"Empire"
 #define DEFAULT_BLUETEAM_NAME		"Rebellion"
 
+#define DEFAULT_CENTERTIME		3
+
 #define CAMERA_MIN_FPS		15
 
 typedef enum {
@@ -782,6 +784,7 @@ typedef struct {
 #endif
 	// centerprinting
 	int			centerPrintTime;
+	float		centerPrintMsec;
 	int			centerPrintY;
 	char		centerPrint[MAX_INFO_STRING];
 	int			centerPrintLines;
