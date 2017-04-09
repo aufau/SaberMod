@@ -482,7 +482,6 @@ static void CG_Players_f( void ) {
 				BG_TeamName(cgs.clientinfo[i].team, CASE_NORMAL), name);
 		}
 	}
-
 }
 
 typedef struct {

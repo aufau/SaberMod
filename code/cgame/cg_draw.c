@@ -2657,6 +2657,16 @@ static void CG_DrawCenterString( void ) {
 }
 
 
+/*
+==================
+CG_PrintMotd_f
+==================
+*/
+void CG_PrintMotd_f( void ) {
+	cg.centerPrintLock = qfalse;
+	CG_CenterPrint( CG_ConfigString( CS_INGAME_MOTD ), SCREEN_HEIGHT * 0.30f );
+	cg.centerPrintLock = qtrue;
+}
 
 /*
 ================================================================================

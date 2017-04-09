@@ -133,8 +133,8 @@ Server-Side
 Server Commands
 ...............
 
-announce <message>
-  Print `message` on everyone's screen.
+announce <message|motd>
+  Print `message` or ingame message of the day on everyone's screen.
 
 forceteam <player> <team>
   Little known original command allowing admin to move players between
