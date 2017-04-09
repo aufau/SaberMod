@@ -28,6 +28,9 @@ follow [first|second]
   Follow first or second best player on the server. Can be used to
   stay on spectator team in Tournament gametype.
 
+motd
+  Show server Message of the Day.
+
 players [?]
   List players connected to server with some additional info.
 
