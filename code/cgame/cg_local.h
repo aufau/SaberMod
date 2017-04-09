@@ -783,7 +783,7 @@ typedef struct {
 	// centerprinting
 	int			centerPrintTime;
 	int			centerPrintY;
-	char		centerPrint[1024];
+	char		centerPrint[MAX_INFO_STRING];
 	int			centerPrintLines;
 
 	// low ammo warning state

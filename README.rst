@@ -191,6 +191,10 @@ g_dismember <percentage>
 g_infiniteAmmo <0|1>
   Players spawn with infinite ammo for all weapons.
 
+g_ingameMotd <message|none>
+  Ingame message of the day shown to all players. May contain \n for
+  newline and \\ for backslash.
+
 g_instagib <0|1>
   Enable simple instagib mode for all weapons. Splash does no damage.
 
