@@ -2460,6 +2460,19 @@ void CheckTournament( void ) {
 	}
 }
 
+static void G_AnnouncePollResults( void ) {
+	int	withdrew = level.numVotingClients - level.voteYes - level.voteNo;
+
+	trap_SendServerCommand( -1, va( "cp \"%s\n\n"
+			S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
+			S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\n"
+			S_COLOR_WHITE "Withdrew: " S_COLOR_CYAN "%d\"",
+			level.voteDisplayString, level.voteYes, level.voteNo, withdrew ) );
+	G_LogPrintf( LOG_VOTE, "Poll: %d %d %d: %s\n", level.voteYes, level.voteNo,
+		withdrew, level.voteString );
+	trap_SendServerCommand( -1, va("print \"Poll finished. Yes: %d, No: %d, Withdrew: %d\n\"",
+			level.voteYes, level.voteNo, withdrew ) );
+}
 
 /*
 ==================
@@ -2470,15 +2483,6 @@ void CheckVote( void ) {
 	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
 		level.voteExecuteTime = 0;
 		level.voteCooldown = level.time + g_voteCooldown.integer * 1000;
-
-		if (level.voteCmd == CV_POLL)
-		{
-			trap_SendServerCommand( -1, va( "cp \"%s\n\n"
-					S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
-					S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\"",
-					level.voteDisplayString, level.voteYes, level.voteNo ) );
-			return;
-		}
 
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
 
@@ -2531,7 +2535,22 @@ void CheckVote( void ) {
 	}
 	else if ( level.time - level.voteTime >= VOTE_TIME )
 	{
-		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
+		if ( level.voteCmd == CV_POLL ) {
+			G_AnnouncePollResults();
+		} else {
+			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
+		}
+	}
+	else if ( level.voteCmd == CV_POLL )
+	{
+		// assume question is formulated in such a way that owner votes "yes"
+		if ( level.voteYes == 0 ) {
+			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
+		} else if ( level.voteYes + level.voteNo == level.numVotingClients ) {
+			G_AnnouncePollResults();
+		} else {
+			return;
+		}
 	}
 	else
 	{
