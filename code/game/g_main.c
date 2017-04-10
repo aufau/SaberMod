@@ -158,6 +158,7 @@ vmCvar_t	g_instagib;
 vmCvar_t	g_voteCooldown;
 vmCvar_t	g_unlagged;
 vmCvar_t	g_unlaggedMaxPing;
+vmCvar_t	g_ingameMotd;
 
 
 int gDuelist1 = -1;
@@ -324,6 +325,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_unlagged, "g_unlagged", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_unlaggedMaxPing, "g_unlaggedMaxPing", "200", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_ingameMotd, "g_ingameMotd", "none", CVAR_ARCHIVE, 0, qfalse  },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -2707,14 +2709,26 @@ CheckCvars
 ==================
 */
 void CheckCvars( void ) {
-	static int lastMod = -1;
+	static int passwordMod = -1;
+	static int motdMod = -1;
 
-	if ( g_password.modificationCount != lastMod ) {
-		lastMod = g_password.modificationCount;
+	if ( g_password.modificationCount != passwordMod ) {
+		passwordMod = g_password.modificationCount;
 		if ( *g_password.string && Q_stricmp( g_password.string, "none" ) ) {
 			trap_Cvar_Set( "g_needpass", "1" );
 		} else {
 			trap_Cvar_Set( "g_needpass", "0" );
+		}
+	}
+
+	if ( g_ingameMotd.modificationCount != motdMod ) {
+		if ( g_ingameMotd.string[0] && Q_stricmp( g_ingameMotd.string, "none" ) ) {
+			char	motd[MAX_INFO_STRING];
+
+			Q_strncpyz( motd, g_ingameMotd.string, sizeof( motd ) );
+			trap_SetConfigstring( CS_INGAME_MOTD, Q_SanitizeStr( motd ) );
+		} else {
+			trap_SetConfigstring( CS_INGAME_MOTD, "" );
 		}
 	}
 }

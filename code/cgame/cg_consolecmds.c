@@ -482,7 +482,6 @@ static void CG_Players_f( void ) {
 				BG_TeamName(cgs.clientinfo[i].team, CASE_NORMAL), name);
 		}
 	}
-
 }
 
 typedef struct {
@@ -542,7 +541,8 @@ static const consoleCommand_t	commands[] = {
 	{ "invprev", CG_PrevInventory_f },
 	{ "forcenext", CG_NextForcePower_f },
 	{ "forceprev", CG_PrevForcePower_f },
-	{ "players", CG_Players_f }
+	{ "players", CG_Players_f },
+	{ "motd", CG_PrintMotd_f },
 };
 
 

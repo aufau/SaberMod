@@ -408,6 +408,7 @@ typedef struct {
 	qboolean			teamLeader;			// true when this client is a team leader
 	qipv4_t				ip;					// parsed "ip" info key
 	int					qport;				// parsed "qport" info key
+	qboolean			motdSeen;
 } clientSession_t;
 
 //

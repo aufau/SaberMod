@@ -534,11 +534,29 @@ void	Svcmd_Remove_f( void )
 	ent->client->prof.switchTeamTime = level.time + delay;
 }
 
+static void G_CenterPrintPersistant( const char *str ) {
+	const char	*cmd[2];
+	int			i;
+
+	cmd[0] = va( "cp \"%s\"", str );
+	cmd[1] = va( "cpp \"%s\"", str );
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		const gclient_t	*client = &level.clients[i];
+
+		if ( client->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+
+		trap_SendServerCommand( i, cmd[client->pers.registered] );
+	}
+}
+
 /*
 ===================
 Svcmd_Announce_f
 
-announce "<message>"
+announce "<message|motd>"
 ===================
 */
 void	Svcmd_Announce_f( void )
@@ -546,11 +564,15 @@ void	Svcmd_Announce_f( void )
 	char	*str = ConcatArgs(1);
 
 	if ( !str[0] ) {
-		trap_Print( "Usage: announce <message>\n" );
+		trap_Print( "Usage: announce <message|motd>\n" );
 		return;
 	}
 
-	trap_SendServerCommand(-1, va("cp \"%s\n\"", Q_SanitizeStr(str)));
+	if ( !Q_stricmp( str, "motd" ) ) {
+		trap_SendServerCommand( -1, "motd" );
+	} else {
+		G_CenterPrintPersistant( Q_SanitizeStr( str ) );
+	}
 }
 
 /*

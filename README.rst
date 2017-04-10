@@ -28,6 +28,9 @@ follow [first|second]
   Follow first or second best player on the server. Can be used to
   stay on spectator team in Tournament gametype.
 
+motd
+  Show server Message of the Day.
+
 players [?]
   List players connected to server with some additional info.
 
@@ -133,8 +136,8 @@ Server-Side
 Server Commands
 ...............
 
-announce <message>
-  Print `message` on everyone's screen.
+announce <message|motd>
+  Print `message` or ingame message of the day on everyone's screen.
 
 forceteam <player> <team>
   Little known original command allowing admin to move players between
@@ -190,6 +193,10 @@ g_dismember <percentage>
 
 g_infiniteAmmo <0|1>
   Players spawn with infinite ammo for all weapons.
+
+g_ingameMotd <message|none>
+  Ingame message of the day shown to all players. May contain \n for
+  newline and \\ for backslash.
 
 g_instagib <0|1>
   Enable simple instagib mode for all weapons. Splash does no damage.

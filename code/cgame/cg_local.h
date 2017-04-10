@@ -108,6 +108,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define DEFAULT_REDTEAM_NAME		"Empire"
 #define DEFAULT_BLUETEAM_NAME		"Rebellion"
 
+#define DEFAULT_CENTERTIME		3
+
 #define CAMERA_MIN_FPS		15
 
 typedef enum {
@@ -782,9 +784,11 @@ typedef struct {
 #endif
 	// centerprinting
 	int			centerPrintTime;
+	float		centerPrintMsec;
 	int			centerPrintY;
-	char		centerPrint[1024];
+	char		centerPrint[MAX_INFO_STRING];
 	int			centerPrintLines;
+	qboolean	centerPrintLock;
 
 	// low ammo warning state
 	int			lowAmmoWarning;		// 1 = low, 2 = empty
@@ -1710,6 +1714,7 @@ extern	int	numSortedTeamPlayers;
 void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_CenterPrint( const char *str, int y );
+void CG_PrintMotd_f( void );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles );
 void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean force2D );
@@ -1897,6 +1902,7 @@ void CG_DrawOldTourneyScoreboard( void );
 //
 qboolean CG_ConsoleCommand( void );
 void CG_InitConsoleCommands( void );
+void CG_PrintMotd_f( void );
 
 //
 // cg_servercmds.c

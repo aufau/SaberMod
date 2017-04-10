@@ -1683,7 +1683,12 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
 	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 ? qtrue : qfalse;
-	if (!client->pers.registered) {
+	if (client->pers.registered) {
+		if (client->sess.sessionTeam != TEAM_SPECTATOR && !client->sess.motdSeen) {
+			trap_SendServerCommand( clientNum, "motd" );
+			client->sess.motdSeen = qtrue;
+		}
+	} else {
 		if (gameversion[0] == '\0') {
 			trap_SendServerCommand( clientNum, "cp \"Please download\n" GAME_VERSION " clientside\"");
 		} else {

@@ -1389,6 +1389,13 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	if ( !strcmp( cmd, "cpp" ) ) {
+		cg.centerPrintLock = qfalse;
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.30f );
+		cg.centerPrintLock = qtrue;
+		return;
+	}
+
 	if ( !strcmp( cmd, "map_restart" ) ) {
 		CG_MapRestart();
 		return;
@@ -1403,6 +1410,11 @@ static void CG_ServerCommand( void ) {
 	// loaddeferred can be both a servercmd and a consolecmd
 	if ( !strcmp( cmd, "loaddefered" ) ) {	// FIXME: spelled wrong, but not changing for demo
 		CG_LoadDeferredPlayers();
+		return;
+	}
+
+	if ( !strcmp( cmd, "motd" ) ) {
+		CG_PrintMotd_f();
 		return;
 	}
 
