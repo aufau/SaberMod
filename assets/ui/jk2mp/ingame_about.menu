@@ -279,7 +279,7 @@
 				"3"
 			}
 			maxPaintChars           12
-			cvar                    "ui_about_duellimit"
+			cvar                    "ui_about_roundlimit"
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              160
 			textaligny              2
