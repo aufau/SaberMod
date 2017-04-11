@@ -1258,6 +1258,9 @@ typedef struct {
 	qhandle_t	qhMediumFont;
 	qhandle_t	qhBigFont;
 #endif
+	// Other SaberMod
+	qhandle_t	download;
+	qhandle_t	missing;
 } cgMedia_t;
 
 
@@ -1377,6 +1380,7 @@ typedef struct {
 	int				voteNo;
 	qboolean		voteModified;			// beep whenever changed
 	char			voteString[MAX_STRING_TOKENS];
+	qboolean		voteMapMissing;
 
 	int				teamVoteTime[2];
 	int				teamVoteYes[2];

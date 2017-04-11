@@ -3469,12 +3469,44 @@ static void CG_DrawSpectator(void)
 
 /*
 =================
+CG_GetHTTPDownloads
+
+Copy of UI_GetHTTPDownloads
+=================
+*/
+static qboolean CG_GetHTTPDownloads( void ) {
+	const char	*info;
+	const char	*serverJK2MV;
+	const char	*mv_httpdownloads;
+	char		clientJK2MV[2];
+	char		mv_allowdownload[2];
+
+	info = CG_ConfigString( CS_SERVERINFO );
+	serverJK2MV = Info_ValueForKey( info, "JK2MV" );
+	mv_httpdownloads = Info_ValueForKey( info, "mv_httpdownloads" );
+	trap_Cvar_VariableStringBuffer( "JK2MV", clientJK2MV, sizeof(clientJK2MV) );
+	trap_Cvar_VariableStringBuffer( "mv_allowdownload", mv_allowdownload, sizeof(mv_allowdownload) );
+
+	if (clientJK2MV[0] != '\0' && atoi( mv_allowdownload ) &&
+		serverJK2MV[0] != '\0' && atoi( mv_httpdownloads ) )
+	{
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/*
+=================
 CG_DrawVote
 =================
 */
 static void CG_DrawVote(void) {
 	const char	*s;
 	int		sec;
+	int		offset;
 	char sYes[20];
 	char sNo[20];
 
@@ -3496,8 +3528,21 @@ static void CG_DrawVote(void) {
 	trap_SP_GetStringTextString("MENUS0_YES", sYes, sizeof(sYes) );
 	trap_SP_GetStringTextString("MENUS0_NO",  sNo,  sizeof(sNo) );
 
-	s = va("VOTE(%i):%s" S_COLOR_WHITE " %s:%i %s:%i", sec, cgs.voteString, sYes, cgs.voteYes, sNo, cgs.voteNo);
+	s = va( "VOTE(%i):%s" S_COLOR_WHITE, sec, cgs.voteString );
 	CG_DrawSmallString( 4, 58, s, 1.0F );
+	offset = SMALLCHAR_WIDTH * ( CG_DrawStrlen( s ) );
+
+	if ( cgs.voteMapMissing ) {
+		qhandle_t	icon = CG_GetHTTPDownloads() ? cgs.media.download : cgs.media.missing;
+
+		offset += SMALLCHAR_WIDTH;
+		CG_DrawPic( 4 + offset, 58, SMALLCHAR_HEIGHT, SMALLCHAR_HEIGHT, icon );
+		offset += SMALLCHAR_HEIGHT;
+	}
+
+	s = va( " %s:%i %s:%i", sYes, cgs.voteYes, sNo, cgs.voteNo);
+	CG_DrawSmallString( 4 + offset, 58, s, 1.0F );
+
 	s = CG_GetStripEdString("INGAMETEXT", "OR_PRESS_ESC_THEN_CLICK_VOTE");	//	s = "or press ESC then click Vote";
 	CG_DrawSmallString( 4, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
 }

@@ -300,6 +300,48 @@ static void CG_ShaderStateChanged( const char *o ) {
 
 /*
 ================
+CG_VoteStringChanged
+================
+*/
+static void CG_VoteStringChanged( const char *str )
+{
+	Q_strncpyz( cgs.voteString, str, sizeof( cgs.voteString ) );
+
+	// hackish "download" icon
+	cgs.voteMapMissing = qfalse;
+
+	if ( !strncmp( str, "Map", 3 ) ) {
+		const char	*open = strrchr( str, '(' );
+
+		if ( open ) {
+			char		map[MAX_QPATH];
+			size_t		len;
+
+			Q_strncpyz( map, open + 1, sizeof( map ) );
+			Q_CleanStr( map );
+			len = strlen( map );
+
+			if ( map[len - 1] == ')' ) {
+				char			path[MAX_QPATH];
+				fileHandle_t	f;
+
+				map[len - 1] = '\0';
+				Com_sprintf( path, sizeof( path ), "maps/%s.bsp", map );
+
+				if ( trap_FS_FOpenFile( path, &f, FS_READ ) > 0 ) {
+					trap_FS_FCloseFile( f );
+
+					cgs.voteMapMissing = qfalse;
+				} else {
+					cgs.voteMapMissing = qtrue;
+				}
+			}
+		}
+	}
+}
+
+/*
+================
 CG_ConfigStringModified
 
 ================
@@ -429,7 +471,7 @@ void CG_UpdateConfigString( int num, qboolean init )
 			cgs.voteModified = qtrue;
 			break;
 		case CS_VOTE_STRING:
-			Q_strncpyz( cgs.voteString, str, sizeof( cgs.voteString ) );
+			CG_VoteStringChanged( str );
 			break;
 		case CS_TEAMVOTE_TIME:
 		case CS_TEAMVOTE_TIME + 1:

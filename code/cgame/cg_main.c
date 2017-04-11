@@ -1780,6 +1780,8 @@ Ghoul2 Insert End
 	cgs.media.halfShieldModel	= trap_R_RegisterModel ( "models/weaphits/testboom.md3" );
 	cgs.media.halfShieldShader	= trap_R_RegisterShader( "halfShieldShell" );
 
+	cgs.media.download	= trap_R_RegisterShaderNoMip( "gfx/menus/download" );
+	cgs.media.missing	= trap_R_RegisterShaderNoMip( "gfx/menus/missing" );
 
 	// CG_ClearParticles ();
 /*
