@@ -750,7 +750,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 	if ( !oldSpec && newSpec ) {
 		// save persistant fields for following spectators
-		blockcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
+		memcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
 
 		// if the player was dead leave the body
 		CopyToBodyQue(ent);
@@ -782,7 +782,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 				tent->s.clientNum = ent->s.number;
 
 				// restore persistant fields
-				blockcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
+				memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
 				// don't keep force powers of last followed player
 				ent->client->ps.fd.forceDoInit = qtrue;
 			}
@@ -926,12 +926,11 @@ to free floating spectator mode
 */
 void StopFollowing( gentity_t *ent ) {
 	gclient_t	*client = ent->client;
-	int			i;
 
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
 	client->sess.spectatorState = SPECTATOR_FREE;
-	blockcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
+	memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
 	client->ps.persistant[ PERS_TEAM ] = client->sess.sessionTeam;
 	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;
@@ -961,8 +960,7 @@ void StopFollowing( gentity_t *ent ) {
 	client->ps.saberBlocked = BLOCKED_NONE;
 	client->ps.saberBlocking = BLK_NO;
 	client->ps.saberEntityNum = ENTITYNUM_NONE;
-	for (i = 0; i < PW_NUM_POWERUPS; i++)
-		client->ps.powerups[i] = 0;
+	memset( client->ps.powerups, 0, sizeof( client->ps.powerups ) );
 	client->ps.fd.forceDoInit = qtrue;
 
 	SetClientViewAngle( ent, client->ps.viewangles );
