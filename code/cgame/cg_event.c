@@ -543,6 +543,7 @@ static void CG_ItemPickup( int itemNum ) {
 	cg.itemPickupBlendTime = cg.time;
 	// see if it should be the grabbed weapon
 	if ( cg.snap && bg_itemlist[itemNum].giType == IT_WEAPON ) {
+		weapon_t weapon = (weapon_t)bg_itemlist[itemNum].giTag;
 
 		// 0 == no switching
 		// 1 == automatically switch to best SAFE weapon
@@ -555,8 +556,6 @@ static void CG_ItemPickup( int itemNum ) {
 		}
 		else if ( cg_autoswitch.integer == 1)
 		{ //only autoselect if not explosive ("safe")
-			weapon_t weapon = (weapon_t)bg_itemlist[itemNum].giTag;
-
 			if (weapon != WP_TRIP_MINE &&
 				weapon != WP_DET_PACK &&
 				weapon != WP_THERMAL &&
@@ -568,19 +567,19 @@ static void CG_ItemPickup( int itemNum ) {
 				{
 					cg.weaponSelectTime = cg.time;
 				}
-				cg.weaponSelect = bg_itemlist[itemNum].giTag;
+				cg.weaponSelect = weapon;
 			}
 		}
 		else if ( cg_autoswitch.integer == 2)
 		{ //autoselect if better
-			if ((weapon_t)bg_itemlist[itemNum].giTag > cg.snap->ps.weapon &&
+			if (weapon > cg.snap->ps.weapon &&
 				cg.snap->ps.weapon != WP_SABER)
 			{
 				if (!cg.snap->ps.emplacedIndex)
 				{
 					cg.weaponSelectTime = cg.time;
 				}
-				cg.weaponSelect = bg_itemlist[itemNum].giTag;
+				cg.weaponSelect = weapon;
 			}
 		}
 		/*
@@ -1354,7 +1353,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 //		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.noAmmoSound );
 		if ( es->number == cg.snap->ps.clientNum )
 		{
-			int weap = 0;
+			weapon_t weap = WP_NONE;
 
 			if (es->eventParm && es->eventParm < WP_NUM_WEAPONS)
 			{
@@ -1363,7 +1362,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 			else if (es->eventParm)
 			{
-				weap = (es->eventParm-WP_NUM_WEAPONS);
+				weap = (weapon_t)(es->eventParm-WP_NUM_WEAPONS);
 			}
 			CG_OutOfAmmoChange(weap);
 		}

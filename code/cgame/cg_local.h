@@ -729,7 +729,7 @@ typedef struct {
 	int			landTime;
 
 	// input state sent to server
-	int			weaponSelect;
+	weapon_t	weaponSelect;
 
 	forcePowers_t	forceSelect;		// FP_NONE or selectable force (see FP_Selectable macro)
 	holdable_t		itemSelect;
@@ -1820,7 +1820,7 @@ void CG_NextWeapon_f( void );
 void CG_PrevWeapon_f( void );
 void CG_Weapon_f( void );
 
-void CG_RegisterWeapon( int weaponNum);
+void CG_RegisterWeapon( weapon_t weaponNum);
 void CG_RegisterItemVisuals( int itemNum );
 
 void CG_FireWeapon( centity_t *cent, qboolean alt_fire );
@@ -1832,7 +1832,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 void CG_DrawWeaponSelect( void );
 void CG_DrawIconBackground(void);
 
-void CG_OutOfAmmoChange( int oldWeapon );	// should this be in pmove?
+void CG_OutOfAmmoChange( weapon_t oldWeapon );	// should this be in pmove?
 
 //
 // cg_marks.c

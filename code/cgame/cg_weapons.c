@@ -1005,7 +1005,7 @@ void CG_DrawIconBackground(void)
 
 }
 
-qboolean CG_WeaponCheck(int weap)
+qboolean CG_WeaponCheck(weapon_t weap)
 {
 	if (cg.snap->ps.ammo[weaponData[weap].ammoIndex] < weaponData[weap].energyPerShot &&
 		cg.snap->ps.ammo[weaponData[weap].ammoIndex] < weaponData[weap].altEnergyPerShot)
@@ -1021,11 +1021,11 @@ qboolean CG_WeaponCheck(int weap)
 CG_WeaponSelectable
 ===============
 */
-static qboolean CG_WeaponSelectable( int i ) {
+static qboolean CG_WeaponSelectable( weapon_t i ) {
 	/*if ( !cg.snap->ps.ammo[weaponData[i].ammoIndex] ) {
 		return qfalse;
 	}*/
-	if (!i)
+	if (i == WP_NONE)
 	{
 		return qfalse;
 	}
@@ -1094,7 +1094,7 @@ void CG_DrawWeaponSelect( void ) {
 		count++;
 	}
 
-	for ( i = 1 ; i < 16 ; i++ )
+	for ( i = WP_STUN_BATON ; i < WP_NUM_WEAPONS ; i++ )
 	{
 		if ( bits & ( 1 << i ) )
 		{
@@ -1132,9 +1132,9 @@ void CG_DrawWeaponSelect( void ) {
 	}
 
 	i = cg.weaponSelect - 1;
-	if (i<1)
+	if (i <= WP_NONE)
 	{
-		i = 13;
+		i = WP_MAX_NORMAL;
 	}
 
 	smallIconSize = 40;
@@ -1156,9 +1156,9 @@ void CG_DrawWeaponSelect( void ) {
 
 	for (iconCnt=1;iconCnt<(sideLeftIconCnt+1);i--)
 	{
-		if (i<1)
+		if (i <= WP_NONE)
 		{
-			i = 13;
+			i = WP_MAX_NORMAL;
 		}
 
 		if ( !(bits & ( 1 << i )))	// Does he have this weapon?
@@ -1210,9 +1210,9 @@ void CG_DrawWeaponSelect( void ) {
 	}
 
 	i = cg.weaponSelect + 1;
-	if (i> 13)
+	if (i > WP_MAX_NORMAL)
 	{
-		i = 1;
+		i = WP_STUN_BATON;
 	}
 
 	// Right side ICONS
@@ -1220,9 +1220,9 @@ void CG_DrawWeaponSelect( void ) {
 	holdX = x + (bigIconSize/2) + pad;
 	for (iconCnt=1;iconCnt<(sideRightIconCnt+1);i++)
 	{
-		if (i>13)
+		if (i > WP_MAX_NORMAL)
 		{
-			i = 1;
+			i = WP_STUN_BATON;
 		}
 
 		if ( !(bits & ( 1 << i )))	// Does he have this weapon?
@@ -1283,8 +1283,8 @@ CG_NextWeapon_f
 ===============
 */
 void CG_NextWeapon_f( void ) {
-	int		i;
-	int		original;
+	int			i;
+	weapon_t	original;
 
 	if ( !cg.snap ) {
 		return;
@@ -1301,10 +1301,10 @@ void CG_NextWeapon_f( void ) {
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
 
-	for ( i = 0 ; i < 16 ; i++ ) {
+	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
 		cg.weaponSelect++;
-		if ( cg.weaponSelect == 16 ) {
-			cg.weaponSelect = 0;
+		if ( cg.weaponSelect == WP_NUM_WEAPONS ) {
+			cg.weaponSelect = WP_NONE;
 		}
 	//	if ( cg.weaponSelect == WP_STUN_BATON ) {
 	//		continue;		// never cycle to gauntlet
@@ -1313,7 +1313,7 @@ void CG_NextWeapon_f( void ) {
 			break;
 		}
 	}
-	if ( i == 16 ) {
+	if ( i == WP_NUM_WEAPONS ) {
 		cg.weaponSelect = original;
 	}
 	else
@@ -1328,8 +1328,8 @@ CG_PrevWeapon_f
 ===============
 */
 void CG_PrevWeapon_f( void ) {
-	int		i;
-	int		original;
+	int			i;
+	weapon_t	original;
 
 	if ( !cg.snap ) {
 		return;
@@ -1346,11 +1346,11 @@ void CG_PrevWeapon_f( void ) {
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
 
-	for ( i = 0 ; i < 16 ; i++ ) {
-		cg.weaponSelect--;
-		if ( cg.weaponSelect == -1 ) {
-			cg.weaponSelect = 15;
+	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
+		if ( cg.weaponSelect == WP_NONE ) {
+			cg.weaponSelect = WP_NUM_WEAPONS;
 		}
+		cg.weaponSelect--;
 	//	if ( cg.weaponSelect == WP_STUN_BATON ) {
 	//		continue;		// never cycle to gauntlet
 	//	}
@@ -1358,7 +1358,7 @@ void CG_PrevWeapon_f( void ) {
 			break;
 		}
 	}
-	if ( i == 16 ) {
+	if ( i == WP_NUM_WEAPONS ) {
 		cg.weaponSelect = original;
 	}
 	else
@@ -1389,11 +1389,11 @@ void CG_Weapon_f( void ) {
 
 	num = atoi( CG_Argv( 1 ) );
 
-	if ( num < 1 || num > 15 ) {
+	if ( num <= WP_NONE || num >= WP_NUM_WEAPONS ) {
 		return;
 	}
 
-	if (num == 1 && cg.snap->ps.weapon == WP_SABER)
+	if (num == WP_STUN_BATON && cg.snap->ps.weapon == WP_SABER)
 	{
 		if (cg.snap->ps.weaponTime < 1)
 		{
@@ -1484,7 +1484,7 @@ void CG_Weapon_f( void ) {
 		}
 	}
 
-	if (cg.weaponSelect != num)
+	if (cg.weaponSelect != (weapon_t)num)
 	{
 		trap_S_MuteSound(cg.snap->ps.clientNum, CHAN_WEAPON);
 	}
@@ -1499,13 +1499,13 @@ CG_OutOfAmmoChange
 The current weapon has just run out of ammo
 ===================
 */
-void CG_OutOfAmmoChange( int oldWeapon )
+void CG_OutOfAmmoChange( weapon_t oldWeapon )
 {
 	int		i;
 
 	cg.weaponSelectTime = cg.time;
 
-	for ( i = WP_DET_PACK ; i > 0 ; i-- )	//We don't want the emplaced or turret
+	for ( i = WP_MAX_NORMAL ; i > WP_NONE ; i-- )	//We don't want the emplaced or turret
 	{
 		if ( CG_WeaponSelectable( i ) )
 		{
@@ -1516,7 +1516,7 @@ void CG_OutOfAmmoChange( int oldWeapon )
 			//rww - Don't we want to make sure i != one of these if autoswitch is 1 (safe)?
 			if (cg_autoswitch.integer != 1 || (i != WP_TRIP_MINE && i != WP_DET_PACK && i != WP_THERMAL && i != WP_ROCKET_LAUNCHER))
 			{
-				if (i != oldWeapon)
+				if ((weapon_t)i != oldWeapon)
 				{ //don't even do anything if we're just selecting the weapon we already have/had
 					cg.weaponSelect = i;
 					break;
