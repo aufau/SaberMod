@@ -2759,7 +2759,7 @@ static void Scroll_TextScroll_ThumbFunc(void *p)
 		r.w = SCROLLBAR_SIZE;
 		max = Item_TextScroll_MaxScroll(si->item);
 		//
-		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE) + 0.5f;
+		pos = roundf((DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE));
 		if (pos < 0)
 		{
 			pos = 0;
@@ -2827,7 +2827,7 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		r.w = si->item->window.rect.w - (SCROLLBAR_SIZE*2) - 2;
 		max = Item_ListBox_MaxScroll(si->item);
 		//
-		pos = (DC->cursorx - r.x - SCROLLBAR_SIZE/2) * max / (r.w - SCROLLBAR_SIZE) + 0.5f;
+		pos = roundf((DC->cursorx - r.x - SCROLLBAR_SIZE/2) * max / (r.w - SCROLLBAR_SIZE));
 		if (pos < 0) {
 			pos = 0;
 		}
@@ -2846,7 +2846,7 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		max = Item_ListBox_MaxScroll(si->item);
 		// should match Item_ListBox_ThumbPosition as closely as possible after rounding:
 		// cursory - r.y - SCROLLBAR_SIZE / 2 = pos * (r.h - SCROLLBAR_SIZE) / max
-		pos = (DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE) + 0.5f;
+		pos = roundf((DC->cursory - r.y - SCROLLBAR_SIZE/2) * max / (r.h - SCROLLBAR_SIZE));
 		if (pos < 0) {
 			pos = 0;
 		}
