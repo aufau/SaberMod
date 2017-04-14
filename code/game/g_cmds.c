@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "g_local.h"
+#include "bg_version.h"
 
 #ifdef MISSIONPACK
 #include "../../assets/ui/jk2mp/menudef.h"			// for the voice chats
