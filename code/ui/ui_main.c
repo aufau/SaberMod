@@ -4665,7 +4665,7 @@ static void UI_RunMenuScript(const char **args)
 		{
 			const char *teamArg;
 
-			if (String_Parse(args, &teamArg) && strcmp(teamArg, ";"))
+			if (String_Parse(args, &teamArg) && strcmp(teamArg, ";") != 0)
 			{
 				if ( Q_stricmp( "none", teamArg ) == 0 )
 				{

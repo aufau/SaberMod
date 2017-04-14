@@ -2550,7 +2550,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	trap_GetGameState( &cgs.gameState );
 
 	s = CG_ConfigString( CS_GAME_VERSION );
-	if ( strcmp( s, "basejk-1" ) ) {
+	if ( strcmp( s, "basejk-1" ) != 0 ) {
 		CG_Error( "Client/Server game mismatch: %s/%s", "basejk-1", s );
 	}
 

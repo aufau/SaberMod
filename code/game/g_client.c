@@ -1297,7 +1297,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 	}
 
-	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->pers.netname) ) {
+	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->pers.netname) != 0 ) {
 		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"",
 				oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
 				client->pers.netname) );
@@ -1403,7 +1403,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	trap_GetConfigstring( CS_PLAYERS+clientNum, oldUserinfo, sizeof( oldUserinfo ) );
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
-	if ( strcmp( oldUserinfo, s ) )
+	if ( strcmp( oldUserinfo, s ) != 0 )
 		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i %s\n", clientNum, s );
 	else
 		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i <no change>\n", clientNum );

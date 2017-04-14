@@ -1417,7 +1417,7 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 					vtos(path->s.origin) );
 				return;
 			}
-		} while ( strcmp( next->classname, "path_corner" ) );
+		} while ( strcmp( next->classname, "path_corner" ) != 0 );
 
 		path->nextTrain = next;
 	}
