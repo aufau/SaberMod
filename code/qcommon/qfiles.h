@@ -326,8 +326,8 @@ typedef struct {
 #define	MAX_VALUE			1024
 
 // the editor uses these predefined yaw angles to orient entities up or down
-#define	ANGLE_UP			-1
-#define	ANGLE_DOWN			-2
+#define	ANGLE_UP			(-1)
+#define	ANGLE_DOWN			(-2)
 
 #define	LIGHTMAP_WIDTH		128
 #define	LIGHTMAP_HEIGHT		128

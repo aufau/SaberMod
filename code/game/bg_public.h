@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define AUTHOR				"fau"
 
 #define	DEFAULT_GRAVITY		800
-#define	GIB_HEALTH			-40
+#define	GIB_HEALTH			(-40)
 #define ARMOR_PROTECTION		0.5f // Shields only stop 50% of armor-piercing dmg
 #define ARMOR_REDUCTION_FACTOR	0.5f // Certain damage doesn't take off armor as efficiently
 
@@ -52,19 +52,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define	ITEM_RADIUS			15		// item sizes are needed for client side pickup detection
 
-#define	SCORE_NOT_PRESENT	-9999	// for the CS_SCORES[12] when only one player is present
+#define	SCORE_NOT_PRESENT	(-9999)	// for the CS_SCORES[12] when only one player is present
 
 #define	VOTE_TIME			30000	// 30 seconds before vote times out
 
-#define DEFAULT_MINS_2		-24
+#define DEFAULT_MINS_2		(-24)
 #define DEFAULT_MAXS_2		40
 #define CROUCH_MAXS_2		16
-#define	STANDARD_VIEWHEIGHT_OFFSET -4
+#define	STANDARD_VIEWHEIGHT_OFFSET (-4)
 
-#define	MINS_Z				-24
+#define	MINS_Z				(-24)
 #define	DEFAULT_VIEWHEIGHT	(DEFAULT_MAXS_2+STANDARD_VIEWHEIGHT_OFFSET)//26
 #define CROUCH_VIEWHEIGHT	(CROUCH_MAXS_2+STANDARD_VIEWHEIGHT_OFFSET)//12
-#define	DEAD_VIEWHEIGHT		-16
+#define	DEAD_VIEWHEIGHT		(-16)
 
 #define MAX_CLIENT_SCORE_SEND 20
 
@@ -298,7 +298,7 @@ extern	pmove_t		*pm;
 
 #define SETANIM_TORSO 1
 #define SETANIM_LEGS  2
-#define SETANIM_BOTH  SETANIM_TORSO|SETANIM_LEGS//3
+#define SETANIM_BOTH  (SETANIM_TORSO|SETANIM_LEGS)
 
 #define SETANIM_FLAG_NORMAL		0//Only set if timer is 0
 #define SETANIM_FLAG_OVERRIDE	1//Override previous

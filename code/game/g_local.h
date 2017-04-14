@@ -388,9 +388,9 @@ typedef struct {
 
 // the auto following clients don't follow a specific client
 // number, but instead follow two top scoring clients
-#define	FOLLOW_FIRST	-1
-#define	FOLLOW_SECOND	-2
-#define FOLLOW_TEAM		-3
+#define	FOLLOW_FIRST	(-1)
+#define	FOLLOW_SECOND	(-2)
+#define FOLLOW_TEAM		(-3)
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -991,7 +991,7 @@ void UpdateTournamentInfo( void );
 // g_bot.c
 //
 typedef int arena_t;
-#define ARENA_INVALID -1
+#define ARENA_INVALID (-1)
 
 void G_InitBots( int restart );
 char *G_GetBotInfoByNumber( int num );
