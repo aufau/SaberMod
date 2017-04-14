@@ -809,7 +809,7 @@ float Q_rsqrt( float f );		// reciprocal square root
 signed char ClampChar( int i );
 signed short ClampShort( int i );
 
-float Q_pown(float x, int n);
+float Q_pown(float base, int exp);
 
 // this isn't a real cheap function to call!
 int DirToByte( const vec3_t dir );
@@ -989,7 +989,7 @@ void AxisClear( vec3_t axis[3] );
 void AxisCopy( const vec3_t in[3], vec3_t out[3] );
 
 void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
+int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p);
 
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
@@ -1028,7 +1028,7 @@ void	COM_BeginParseSession( const char *name );
 int		COM_GetCurrentParseLine( void );
 const char	*SkipWhitespace( const char *data, qboolean *hasNewLines );
 char	*COM_Parse( const char **data_p );
-char	*COM_ParseExt( const char **data_p, qboolean allowLineBreak );
+char	*COM_ParseExt( const char **data_p, qboolean allowLineBreaks );
 int		COM_Compress( char *data_p );
 void	COM_ParseError( char *format, ... );
 void	COM_ParseWarning( char *format, ... );
@@ -1156,7 +1156,7 @@ void Info_RemoveKey_big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );
 void Info_SetValueForKey_Big( char *s, const char *key, const char *value );
 qboolean Info_Validate( const char *s );
-void Info_NextPair( const char **s, char *key, char *value );
+void Info_NextPair( const char **head, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
 Q_NORETURN void	QDECL Com_Error( errorParm_t level, const char *error, ... );

@@ -727,7 +727,7 @@ void	G_EntitySound( gentity_t *ent, soundChannel_t channel, int soundIndex );
 void	TryUse( gentity_t *ent );
 void	G_SendG2KillQueue(void);
 void	G_KillG2Queue(int entNum);
-void	G_FreeEntity( gentity_t *e );
+void	G_FreeEntity( gentity_t *ed );
 qboolean	G_EntitiesFree( void );
 
 void	G_TouchTriggers (gentity_t *ent);
@@ -792,7 +792,7 @@ Ghoul2 Insert End
 // g_combat.c
 //
 qboolean CanDamage (gentity_t *targ, vec3_t origin);
-void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const vec3_t directio, const vec3_t point, int damage, int dflags, meansOfDeath_t mod);
+void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const vec3_t direction, const vec3_t point, int damage, int dflags, meansOfDeath_t mod);
 qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, int damage, int radius, gentity_t *ignore, meansOfDeath_t mod);
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath );
 void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
@@ -883,7 +883,7 @@ void respawn (gentity_t *ent);
 void BeginIntermission (void);
 void InitBodyQue (void);
 void ClientSpawn( gentity_t *ent );
-void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t mod);
+void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath);
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
@@ -907,9 +907,9 @@ void BlowDetpacks(gentity_t *ent);
 //
 // p_hud.c
 //
-void MoveClientToIntermission (gentity_t *client);
+void MoveClientToIntermission (gentity_t *ent);
 void G_SetStats (gentity_t *ent);
-void DeathmatchScoreboardMessage (gentity_t *client);
+void DeathmatchScoreboardMessage (gentity_t *ent);
 
 //
 // g_cmds.c
@@ -1233,7 +1233,7 @@ void	trap_Cvar_Set( const char *var_name, const char *value );
 int		trap_Cvar_VariableIntegerValue( const char *var_name );
 float	trap_Cvar_VariableValue( const char *var_name );
 void	trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-void	trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *gameClients, int sizeofGameClient );
+void	trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient );
 void	trap_DropClient( int clientNum, const char *reason );
 void	trap_SendServerCommand( int clientNum, const char *text );
 void	trap_SetConfigstring( int num, const char *string );
@@ -1277,7 +1277,7 @@ int		trap_BotLibTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3);
 
 int		trap_BotGetSnapshotEntity( int clientNum, int sequence );
 int		trap_BotGetServerCommand(int clientNum, char *message, int size);
-void	trap_BotUserCommand(int client, usercmd_t *ucmd);
+void	trap_BotUserCommand(int clientNum, usercmd_t *ucmd);
 
 int		trap_AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int *areas, int maxareas);
 int		trap_AAS_AreaInfo( int areanum, void /* struct aas_areainfo_s */ *info );

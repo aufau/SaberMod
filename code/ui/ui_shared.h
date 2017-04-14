@@ -467,7 +467,7 @@ void  Menus_Activate(menuDef_t *menu);
 
 displayContextDef_t *Display_GetContext();
 menuDef_t *Display_CaptureItem(int x, int y);
-qboolean Display_MouseMove(menuDef_t *p, int x, int y);
+qboolean Display_MouseMove(menuDef_t *menu, int x, int y);
 int Display_CursorType(int x, int y);
 qboolean Display_KeyBindPending();
 void Menus_OpenByName(const char *p);

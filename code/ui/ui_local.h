@@ -872,7 +872,6 @@ extern void			UI_PopMenu (void);
 extern void			UI_ForceMenuOff (void);
 extern char			*UI_Argv( int arg );
 extern char			*UI_Cvar_VariableString( const char *var_name );
-extern void			UI_Refresh( int time );
 extern void			UI_KeyEvent( int key );
 extern void			UI_StartDemoLoop( void );
 void UI_LoadBestScores(const char *map, int game);
@@ -909,8 +908,8 @@ void UI_SPSkillMenu_Cache( void );
 void			trap_Print( const char *string );
 Q_NORETURN void	trap_Error( const char *string );
 int				trap_Milliseconds( void );
-void			trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
-void			trap_Cvar_Update( vmCvar_t *vmCvar );
+void			trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
+void			trap_Cvar_Update( vmCvar_t *cvar );
 void			trap_Cvar_Set( const char *var_name, const char *value );
 float			trap_Cvar_VariableValue( const char *var_name );
 void			trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
@@ -982,7 +981,7 @@ qboolean		trap_VerifyCDKey( const char *key, const char *chksum);
 
 #endif // USE_CD_KEY
 
-qhandle_t		trap_R_RegisterFont( const char *name );
+qhandle_t		trap_R_RegisterFont( const char *fontName );
 int				trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int				trap_R_Font_StrLenChars(const char *text);
 int				trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
