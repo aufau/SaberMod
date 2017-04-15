@@ -114,7 +114,6 @@ void _UI_MVAPI_Init( int apilevel )
 	}
 }
 
-menuDef_t *Menus_FindByName(const char *p);
 void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow);
 void UpdateForceUsed();
 
@@ -6560,6 +6559,9 @@ void _UI_Init( qboolean inGameLoad ) {
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.RegisterFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.PC_ReadToken = &trap_PC_ReadToken;
+	uiInfo.uiDC.PC_SourceFileAndLine = &trap_PC_SourceFileAndLine;
+	uiInfo.uiDC.SP_GetStringTextString = &trap_SP_GetStringTextString;
 	uiInfo.uiDC.Font_StrLenPixels = trap_R_Font_StrLenPixels;
 	uiInfo.uiDC.Font_StrLenChars = trap_R_Font_StrLenChars;
 	uiInfo.uiDC.Font_HeightPixels = trap_R_Font_HeightPixels;

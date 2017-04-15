@@ -2006,7 +2006,6 @@ void SP_func_glass( gentity_t *ent ) {
 
 void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator);
 
-extern gentity_t	*G_TestEntityPosition( gentity_t *ent );
 void func_wait_return_solid( gentity_t *self )
 {
 	//once a frame, see if it's clear.

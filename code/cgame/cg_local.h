@@ -1906,7 +1906,6 @@ void CG_DrawOldTourneyScoreboard( void );
 //
 qboolean CG_ConsoleCommand( void );
 void CG_InitConsoleCommands( void );
-void CG_PrintMotd_f( void );
 
 //
 // cg_servercmds.c

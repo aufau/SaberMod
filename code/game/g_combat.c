@@ -2392,8 +2392,6 @@ static void G_GetDismemberLoc(gentity_t *self, vec3_t boltPoint, g2ModelParts_t 
 	default:
 		break;
 	}
-
-	return;
 }
 
 void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, g2ModelParts_t limbType)

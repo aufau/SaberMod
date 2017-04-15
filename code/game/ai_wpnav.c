@@ -679,8 +679,6 @@ void TeleportToWP(gentity_t *pl, int afterindex)
 	}
 
 	VectorCopy(gWPArray[foundindex]->origin, pl->client->ps.origin);
-
-	return;
 }
 
 void WPFlagsModify(int wpnum, int flags)

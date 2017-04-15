@@ -1183,7 +1183,6 @@ void SP_misc_model_health_power_converter( gentity_t *ent )
 
 void DmgBoxHit( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	return;
 }
 
 void DmgBoxUpdateSelf(gentity_t *self)
@@ -1596,9 +1595,6 @@ static int gJanSound_Alert[JAN_ALERT_SOUNDS];
 
 animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t damage, int mod, hitLoc_t hitLoc );
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
-int GetNearestVisibleWP(vec3_t org, int ignore);
-int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
-extern qboolean gBotEdit;
 
 #define ANIMENT_ALIGNED_UNKNOWN		0
 #define ANIMENT_ALIGNED_BAD			1
