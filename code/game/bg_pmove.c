@@ -243,7 +243,7 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;
@@ -341,7 +341,7 @@ PM_Accelerate
 Handles user intended acceleration
 ==============
 */
-static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
+static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel ) {
 #if 1
 	// q2 style
 	int			i;
@@ -534,7 +534,7 @@ static void PM_JumpForDir( void )
 	}
 }
 
-void PM_SetPMViewAngle(playerState_t *ps, vec3_t angle, usercmd_t *ucmd)
+static void PM_SetPMViewAngle(playerState_t *ps, const vec3_t angle, usercmd_t *ucmd)
 {
 	int			i;
 

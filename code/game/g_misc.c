@@ -1183,7 +1183,6 @@ void SP_misc_model_health_power_converter( gentity_t *ent )
 
 void DmgBoxHit( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	return;
 }
 
 void DmgBoxUpdateSelf(gentity_t *self)
@@ -1596,9 +1595,6 @@ static int gJanSound_Alert[JAN_ALERT_SOUNDS];
 
 animNumber_t G_PickDeathAnim( gentity_t *self, vec3_t point, meansOfDeath_t damage, int mod, hitLoc_t hitLoc );
 void AnimEntFireWeapon( gentity_t *ent, qboolean altFire );
-int GetNearestVisibleWP(vec3_t org, int ignore);
-int InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
-extern qboolean gBotEdit;
 
 #define ANIMENT_ALIGNED_UNKNOWN		0
 #define ANIMENT_ALIGNED_BAD			1
@@ -1615,8 +1611,8 @@ typedef struct animentCustomInfo_s
 	int							aeAlignment;
 	int							aeIndex;
 	int							aeWeapon;
-	char						*modelPath;
-	char						*soundPath;
+	const char					*modelPath;
+	const char					*soundPath;
 	struct animentCustomInfo_s	*next;
 } animentCustomInfo_t;
 
@@ -1641,8 +1637,8 @@ animentCustomInfo_t *ExampleAnimEntCustomData(gentity_t *self)
 	return NULL;
 }
 
-animentCustomInfo_t *ExampleAnimEntCustomDataExists(gentity_t *self, int alignment, int weapon, char *modelname,
-												   char *soundpath)
+static animentCustomInfo_t *ExampleAnimEntCustomDataExists(gentity_t *self, int alignment, int weapon, const char *modelname,
+												   const char *soundpath)
 {
 	animentCustomInfo_t *iter = animEntRoot;
 	int safetyCheck = 0;
@@ -1664,7 +1660,7 @@ animentCustomInfo_t *ExampleAnimEntCustomDataExists(gentity_t *self, int alignme
 	return NULL;
 }
 
-void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, char *modelname, char *soundpath)
+static void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, const char *modelname, const char *soundpath)
 {
 	animentCustomInfo_t *find = ExampleAnimEntCustomDataExists(self, alignment, weapon, modelname, soundpath);
 	animentCustomInfo_t *lastValid = NULL;
@@ -1687,6 +1683,9 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 
 	if (!find)
 	{
+		char	*modelPath;
+		char	*soundPath;
+
 		find = (animentCustomInfo_t *)BG_Alloc(sizeof(animentCustomInfo_t));
 
 		if (!find)
@@ -1700,20 +1699,22 @@ void ExampleAnimEntCustomDataEntry(gentity_t *self, int alignment, int weapon, c
 		find->aeWeapon = weapon;
 		find->next = NULL;
 
-		find->modelPath = (char *)BG_Alloc(strlen(modelname)+1);
-		find->soundPath = (char *)BG_Alloc(strlen(soundpath)+1);
+		modelPath = (char *)BG_Alloc(strlen(modelname)+1);
+		soundPath = (char *)BG_Alloc(strlen(soundpath)+1);
 
-		if (!find->modelPath || !find->soundPath)
+		if (!modelPath || !soundPath)
 		{
+			find->modelPath = modelPath;
+			find->soundPath = soundPath;
 			find->aeIndex = -1;
 			return;
 		}
 
-		strcpy(find->modelPath, modelname);
-		strcpy(find->soundPath, soundpath);
+		strcpy(modelPath, modelname);
+		strcpy(soundPath, soundpath);
 
-		find->modelPath[strlen(modelname)] = 0;
-		find->soundPath[strlen(modelname)] = 0;
+		find->modelPath = modelPath;
+		find->soundPath = soundPath;
 
 		if (lastValid)
 		{
@@ -1980,7 +1981,7 @@ void ExampleAnimEntTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 
 //We can use this method of movement without horrible choppiness, because
 //we are smoothing out the lerpOrigin on the client when rendering this eType.
-int ExampleAnimEntMove(gentity_t *self, vec3_t moveTo, float stepSize)
+static int ExampleAnimEntMove(gentity_t *self, const vec3_t moveTo, float stepSize)
 {
 	trace_t tr;
 	vec3_t stepTo;
@@ -2101,7 +2102,7 @@ float ExampleAnimEntYaw(gentity_t *self, float idealYaw, float yawSpeed)
 	return curYaw;
 }
 
-void ExampleAnimEntLook(gentity_t *self, vec3_t lookTo)
+static void ExampleAnimEntLook(gentity_t *self, const vec3_t lookTo)
 {
 	vec3_t lookSub;
 

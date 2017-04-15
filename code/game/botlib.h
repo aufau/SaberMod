@@ -51,7 +51,7 @@ struct weaponinfo_s;
 
 #define BOTFILESBASEFOLDER		"botfiles"
 //debug line colors
-#define LINECOLOR_NONE			-1
+#define LINECOLOR_NONE			(-1)
 #define LINECOLOR_RED			1//0xf2f2f0f0L
 #define LINECOLOR_GREEN			2//0xd0d1d2d3L
 #define LINECOLOR_BLUE			3//0xf3f3f1f1L

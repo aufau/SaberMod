@@ -47,7 +47,7 @@ This is the only way control passes into the module.
 ================
 */
 
-void _UI_Init( qboolean );
+void _UI_Init( qboolean inGameLoad );
 void _UI_MVAPI_Init( int apilevel );
 void _UI_Shutdown( void );
 void _UI_KeyEvent( int key, qboolean down );
@@ -114,7 +114,6 @@ void _UI_MVAPI_Init( int apilevel )
 	}
 }
 
-menuDef_t *Menus_FindByName(const char *p);
 void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow);
 void UpdateForceUsed();
 
@@ -1444,7 +1443,7 @@ static void UI_DrawTeamName(rectDef_t *rect, float scale, vec4_t color, qboolean
   }
 }
 
-static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboolean blue, int num, int textStyle, font_t iMenuFont)
+static void UI_DrawTeamMember(rectDef_t *rect, float scale, const vec4_t color, qboolean blue, int num, int textStyle, font_t iMenuFont)
 {
 	// 0 - None
 	// 1 - Human
@@ -4665,7 +4664,7 @@ static void UI_RunMenuScript(const char **args)
 		{
 			const char *teamArg;
 
-			if (String_Parse(args, &teamArg) && strcmp(teamArg, ";"))
+			if (String_Parse(args, &teamArg) && strcmp(teamArg, ";") != 0)
 			{
 				if ( Q_stricmp( "none", teamArg ) == 0 )
 				{
@@ -6560,6 +6559,9 @@ void _UI_Init( qboolean inGameLoad ) {
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.RegisterFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.PC_ReadToken = &trap_PC_ReadToken;
+	uiInfo.uiDC.PC_SourceFileAndLine = &trap_PC_SourceFileAndLine;
+	uiInfo.uiDC.SP_GetStringTextString = &trap_SP_GetStringTextString;
 	uiInfo.uiDC.Font_StrLenPixels = trap_R_Font_StrLenPixels;
 	uiInfo.uiDC.Font_StrLenChars = trap_R_Font_StrLenChars;
 	uiInfo.uiDC.Font_HeightPixels = trap_R_Font_HeightPixels;

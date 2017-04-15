@@ -45,7 +45,7 @@ extern vmCvar_t	ui_freeSaber, ui_forcePowerDisable;
 void UI_InitForceShaders(void);
 void UI_ReadLegalForce(void);
 void UI_DrawTotalForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle);
-void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle, int findex, int val, int min, int max) ;
+void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle, int forceindex, int val, int min, int max) ;
 void UI_UpdateClientForcePowers(const char *teamArg);
 void UI_SaveForceTemplate();
 void UI_UpdateForcePowers();

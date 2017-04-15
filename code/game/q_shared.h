@@ -498,9 +498,9 @@ typedef enum
 } forceLevel_t;
 
 #define ATST_HEADSIZE		90
-#define ATST_MINS0			-40
-#define ATST_MINS1			-40
-#define ATST_MINS2			-24
+#define ATST_MINS0			(-40)
+#define ATST_MINS1			(-40)
+#define ATST_MINS2			(-24)
 #define ATST_MAXS0			40
 #define ATST_MAXS1			40
 #define ATST_MAXS2			248
@@ -764,8 +764,8 @@ extern const vec4_t		colorDkBlue;
 
 extern const vec4_t	g_color_table[8];
 
-#define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
-#define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
+#define	MAKERGB( v, r, g, b ) ((v)[0]=(r),(v)[1]=(g),(v)[2]=(b))
+#define	MAKERGBA( v, r, g, b, a ) ((v)[0]=(r),(v)[1]=(g),(v)[2]=(b),(v)[3]=(a))
 
 #define DEG2RAD( a ) ( (a) * (float) ( M_PI / 180.0 ) )
 #define RAD2DEG( a ) ( (a) * (float) ( 180.0 / M_PI ) )
@@ -809,7 +809,7 @@ float Q_rsqrt( float f );		// reciprocal square root
 signed char ClampChar( int i );
 signed short ClampShort( int i );
 
-float Q_pown(float x, int n);
+float Q_pown(float base, int exp);
 
 // this isn't a real cheap function to call!
 int DirToByte( const vec3_t dir );
@@ -875,7 +875,7 @@ typedef struct {
 #define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
 #define Vector4Copy(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
 
-#define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
+#define	SnapVector(v) ((v)[0]=(int)(v)[0],(v)[1]=(int)(v)[1],(v)[2]=(int)(v)[2])
 // just in case you do't want to use the macros
 vec_t _DotProduct( const vec3_t v1, const vec3_t v2 );
 void _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
@@ -970,7 +970,7 @@ void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
 vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
+void VectorRotate( const vec3_t in, const vec3_t matrix[3], vec3_t out );
 int Q_log2(int val);
 
 float Q_acos(float c);
@@ -989,7 +989,7 @@ void AxisClear( vec3_t axis[3] );
 void AxisCopy( const vec3_t in[3], vec3_t out[3] );
 
 void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
+int BoxOnPlaneSide (const vec3_t emins, const vec3_t emaxs, const struct cplane_s *p);
 
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
@@ -1028,7 +1028,7 @@ void	COM_BeginParseSession( const char *name );
 int		COM_GetCurrentParseLine( void );
 const char	*SkipWhitespace( const char *data, qboolean *hasNewLines );
 char	*COM_Parse( const char **data_p );
-char	*COM_ParseExt( const char **data_p, qboolean allowLineBreak );
+char	*COM_ParseExt( const char **data_p, qboolean allowLineBreaks );
 int		COM_Compress( char *data_p );
 void	COM_ParseError( char *format, ... );
 void	COM_ParseWarning( char *format, ... );
@@ -1156,7 +1156,7 @@ void Info_RemoveKey_big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );
 void Info_SetValueForKey_Big( char *s, const char *key, const char *value );
 qboolean Info_Validate( const char *s );
-void Info_NextPair( const char **s, char *key, char *value );
+void Info_NextPair( const char **head, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
 Q_NORETURN void	QDECL Com_Error( errorParm_t level, const char *error, ... );
@@ -1248,7 +1248,7 @@ PlaneTypeForNormal
 =================
 */
 
-#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
+#define PlaneTypeForNormal(x) ((x)[0] == 1 ? PLANE_X : ((x)[1] == 1 ? PLANE_Y : ((x)[2] == 1 ? PLANE_Z : PLANE_NON_AXIAL) ) )
 
 // plane_t structure
 // !!! if this is changed, it must be changed in asm code too !!!
@@ -1509,7 +1509,7 @@ typedef enum {
 
 #define PS_PMOVEFRAMECOUNTBITS	6
 
-#define MAX_FORCE_RANK			7
+#define MAX_FORCE_RANK			FORCE_MASTERY_JEDI_MASTER
 
 #define FALL_FADE_TIME			3000
 

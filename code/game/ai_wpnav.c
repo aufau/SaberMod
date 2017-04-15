@@ -227,7 +227,7 @@ fend:
 	return flagstr;
 }
 
-void G_TestLine(vec3_t start, vec3_t end, int color, int time)
+void G_TestLine(vec3_t start, const vec3_t end, int color, int time)
 {
 	gentity_t *te;
 
@@ -386,7 +386,7 @@ void TransferWPData(int from, int to)
 	VectorCopy(gWPArray[from]->origin, gWPArray[to]->origin);
 }
 
-void CreateNewWP(vec3_t origin, int flags)
+static void CreateNewWP(const vec3_t origin, int flags)
 {
 	if (gWPNum >= MAX_WPARRAY_SIZE)
 	{
@@ -564,7 +564,7 @@ void RemoveWP_InTrail(int afterindex)
 	gWPNum--;
 }
 
-int CreateNewWP_InTrail(vec3_t origin, int flags, int afterindex)
+static int CreateNewWP_InTrail(const vec3_t origin, int flags, int afterindex)
 {
 	int foundindex;
 	int foundanindex;
@@ -679,8 +679,6 @@ void TeleportToWP(gentity_t *pl, int afterindex)
 	}
 
 	VectorCopy(gWPArray[foundindex]->origin, pl->client->ps.origin);
-
-	return;
 }
 
 void WPFlagsModify(int wpnum, int flags)
@@ -709,7 +707,7 @@ int NotWithinRange(int base, int extent)
 	return 1;
 }
 
-int NodeHere(vec3_t spot)
+static int NodeHere(const vec3_t spot)
 {
 	int i;
 

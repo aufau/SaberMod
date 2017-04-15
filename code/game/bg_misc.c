@@ -2373,7 +2373,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 BG_AdjustPositionForMover
 =========================
 */
-void BG_AdjustPositionForMover( vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out ) {
+void BG_AdjustPositionForMover( const vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out ) {
 	vec3_t	oldOrigin, origin, deltaOrigin;
 //	vec3_t	oldAngles, angles;
 

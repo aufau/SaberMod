@@ -36,7 +36,7 @@ G_ReflectMissile
 ================
 */
 float RandFloat(float min, float max);
-void G_ReflectMissile( gentity_t *ent, gentity_t *missile, vec3_t forward )
+void G_ReflectMissile( gentity_t *ent, gentity_t *missile, const vec3_t forward )
 {
 	vec3_t	bounce_dir;
 	int		i;
@@ -105,7 +105,7 @@ void G_ReflectMissile( gentity_t *ent, gentity_t *missile, vec3_t forward )
 	}
 }
 
-void G_DeflectMissile( gentity_t *ent, gentity_t *missile, vec3_t forward )
+static void G_DeflectMissile( gentity_t *ent, gentity_t *missile, const vec3_t forward )
 {
 	vec3_t	bounce_dir;
 	int		i;
@@ -300,7 +300,7 @@ void G_BounceProjectile( vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout 
 #endif
 
 //-----------------------------------------------------------------------------
-gentity_t *CreateMissile( vec3_t org, vec3_t dir, float vel, int life,
+gentity_t *CreateMissile( vec3_t org, const vec3_t dir, float vel, int life,
 							gentity_t *owner, qboolean altFire)
 //-----------------------------------------------------------------------------
 {

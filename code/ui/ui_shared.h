@@ -75,9 +75,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CURSOR_SIZER				0x00000004
 
 #ifdef CGAME
-#define STRING_POOL_SIZE 128*1024
+#define STRING_POOL_SIZE (128*1024)
 #else
-#define STRING_POOL_SIZE 384*1024
+#define STRING_POOL_SIZE (384*1024)
 #endif
 #define MAX_STRING_HANDLES 4096
 
@@ -370,6 +370,11 @@ typedef struct {
   void (*addRefEntityToScene) (const refEntity_t *re );
   void (*renderScene) ( const refdef_t *fd );
 
+	int		(*PC_ReadToken) (int handle, pc_token_t *pc_token);
+	int		(*PC_SourceFileAndLine) (int handle, char *filename, int *line);
+
+	int		(*SP_GetStringTextString) (const char *text, char *buffer, int bufferLength);
+
 	qhandle_t (*RegisterFont)( const char *fontName );
 	int		(*Font_StrLenPixels) (const char *text, const qhandle_t iFontIndex, const float scale);
 	int		(*Font_StrLenChars) (const char *text);
@@ -467,7 +472,7 @@ void  Menus_Activate(menuDef_t *menu);
 
 displayContextDef_t *Display_GetContext();
 menuDef_t *Display_CaptureItem(int x, int y);
-qboolean Display_MouseMove(menuDef_t *p, int x, int y);
+qboolean Display_MouseMove(menuDef_t *menu, int x, int y);
 int Display_CursorType(int x, int y);
 qboolean Display_KeyBindPending();
 void Menus_OpenByName(const char *p);
@@ -487,24 +492,4 @@ qboolean UI_OutOfMemory();
 
 void Controls_GetConfig( void );
 void Controls_SetConfig(qboolean restart);
-
-int			trap_PC_AddGlobalDefine			( char *define );
-int			trap_PC_LoadSource				( const char *filename );
-int			trap_PC_FreeSource				( int handle );
-int			trap_PC_ReadToken				( int handle, pc_token_t *pc_token );
-int			trap_PC_SourceFileAndLine		( int handle, char *filename, int *line );
-int			trap_PC_LoadGlobalDefines		( const char* filename );
-void		trap_PC_RemoveAllGlobalDefines	( void );
-
-int			trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
-int			trap_R_Font_StrLenChars(const char *text);
-int			trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
-void		trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
-qboolean	trap_Language_IsAsian(void);
-qboolean	trap_Language_UsesSpaces(void);
-unsigned int trap_AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation );
-
-qboolean	trap_SP_RegisterServer( const char *package );
-qboolean	trap_SP_Register( const char *file );
-int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength);
 #endif

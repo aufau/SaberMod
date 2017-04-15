@@ -2403,6 +2403,9 @@ void CG_LoadHudMenu()
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
 	cgDC.RegisterFont = &trap_R_RegisterFont;
+	cgDC.PC_ReadToken = &trap_PC_ReadToken;
+	cgDC.PC_SourceFileAndLine = &trap_PC_SourceFileAndLine;
+	cgDC.SP_GetStringTextString = &trap_SP_GetStringTextString;
 	cgDC.Font_StrLenPixels = &trap_R_Font_StrLenPixels;
 	cgDC.Font_StrLenChars = &trap_R_Font_StrLenChars;
 	cgDC.Font_HeightPixels = &trap_R_Font_HeightPixels;
@@ -2550,7 +2553,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	trap_GetGameState( &cgs.gameState );
 
 	s = CG_ConfigString( CS_GAME_VERSION );
-	if ( strcmp( s, "basejk-1" ) ) {
+	if ( strcmp( s, "basejk-1" ) != 0 ) {
 		CG_Error( "Client/Server game mismatch: %s/%s", "basejk-1", s );
 	}
 
