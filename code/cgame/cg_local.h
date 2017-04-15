@@ -697,7 +697,7 @@ typedef struct {
 	int			serverTime;		// cl.serverTime
 	int			time;			// time since an initialization of CGame module
 								// used for renderer, effects and ghoul2 submodules
-	int			oldTime;		// time at last frame
+	int			oldServerTime;	// server time at last frame
 
 	int			physicsTime;	// either cg.snap->time or cg.nextSnap->time
 

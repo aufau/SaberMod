@@ -1720,11 +1720,11 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
 	if ( stereoView != STEREO_RIGHT ) {
-		cg.frametime = cg.time - cg.oldTime;
+		cg.frametime = cg.serverTime - cg.oldServerTime;
 		if ( cg.frametime < 0 ) {
 			cg.frametime = 0;
 		}
-		cg.oldTime = cg.time;
+		cg.oldServerTime = cg.serverTime;
 		CG_AddLagometerFrameInfo();
 	}
 	if (cg_timescale.value != cg_timescaleFadeEnd.value) {
