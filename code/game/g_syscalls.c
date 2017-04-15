@@ -941,9 +941,9 @@ void trap_G2API_CollisionDetect (
 	const vec3_t position,
 	int frameNumber,
 	int entNum,
-	vec3_t rayStart,
-	vec3_t rayEnd,
-	vec3_t scale,
+	const vec3_t rayStart,
+	const vec3_t rayEnd,
+	const vec3_t scale,
 	int traceFlags,
 	int useLod,
 	float fRadius

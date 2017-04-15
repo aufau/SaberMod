@@ -1980,7 +1980,7 @@ void ExampleAnimEntTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 
 //We can use this method of movement without horrible choppiness, because
 //we are smoothing out the lerpOrigin on the client when rendering this eType.
-int ExampleAnimEntMove(gentity_t *self, vec3_t moveTo, float stepSize)
+static int ExampleAnimEntMove(gentity_t *self, const vec3_t moveTo, float stepSize)
 {
 	trace_t tr;
 	vec3_t stepTo;
@@ -2101,7 +2101,7 @@ float ExampleAnimEntYaw(gentity_t *self, float idealYaw, float yawSpeed)
 	return curYaw;
 }
 
-void ExampleAnimEntLook(gentity_t *self, vec3_t lookTo)
+static void ExampleAnimEntLook(gentity_t *self, const vec3_t lookTo)
 {
 	vec3_t lookSub;
 
