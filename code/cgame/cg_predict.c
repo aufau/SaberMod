@@ -768,7 +768,8 @@ void CG_PredictPlayerState( void ) {
 			} else {
 				vec3_t	adjusted;
 				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
-					cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted );
+					cg.predictedPlayerState.groundEntityNum, cg.physicsTime,
+					cg.oldServerTime, adjusted );
 
 				if ( cg_showmiss.integer ) {
 					if (!VectorCompare( oldPlayerState.origin, adjusted )) {
@@ -798,7 +799,7 @@ void CG_PredictPlayerState( void ) {
 						VectorClear( cg.predictedError );
 					}
 					VectorAdd( delta, cg.predictedError, cg.predictedError );
-					cg.predictedErrorTime = cg.oldTime;
+					cg.predictedErrorTime = cg.oldServerTime;
 				}
 			}
 		}
