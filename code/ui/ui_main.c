@@ -47,7 +47,7 @@ This is the only way control passes into the module.
 ================
 */
 
-void _UI_Init( qboolean );
+void _UI_Init( qboolean inGameLoad );
 void _UI_MVAPI_Init( int apilevel );
 void _UI_Shutdown( void );
 void _UI_KeyEvent( int key, qboolean down );
