@@ -346,7 +346,7 @@ int PassLovedOneCheck(bot_state_t *bs, gentity_t *ent);
 
 void ExitLevel( void );
 
-void QDECL BotAI_Print(int type, const char *fmt, ...) { return; }
+void QDECL BotAI_Print(int type, const char *fmt, ...) { }
 
 qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower );
 
@@ -5686,9 +5686,6 @@ int BotWeaponBlockable(int weapon)
 		return 1;
 	}
 }
-
-void Cmd_EngageDuel_f(gentity_t *ent);
-void Cmd_ToggleSaber_f(gentity_t *ent);
 
 void StandardBotAI(bot_state_t *bs, float thinktime)
 {

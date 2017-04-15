@@ -872,7 +872,6 @@ extern void			UI_PopMenu (void);
 extern void			UI_ForceMenuOff (void);
 extern char			*UI_Argv( int arg );
 extern char			*UI_Cvar_VariableString( const char *var_name );
-extern void			UI_KeyEvent( int key );
 extern void			UI_StartDemoLoop( void );
 void UI_LoadBestScores(const char *map, int game);
 extern uiStatic_t	uis;
@@ -981,6 +980,15 @@ qboolean		trap_VerifyCDKey( const char *key, const char *chksum);
 
 #endif // USE_CD_KEY
 
+int				trap_PC_AddGlobalDefine			( char *define );
+int				trap_PC_LoadSource				( const char *filename );
+int				trap_PC_FreeSource				( int handle );
+int				trap_PC_ReadToken				( int handle, pc_token_t *pc_token );
+int				trap_PC_SourceFileAndLine		( int handle, char *filename, int *line );
+int				trap_PC_LoadGlobalDefines		( const char* filename );
+void			trap_PC_RemoveAllGlobalDefines	( void );
+int				trap_SP_GetStringTextString		( const char *text, char *buffer, int bufferLength );
+qboolean		trap_SP_Register				( const char *file );
 qhandle_t		trap_R_RegisterFont( const char *fontName );
 int				trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int				trap_R_Font_StrLenChars(const char *text);

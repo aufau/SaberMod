@@ -296,8 +296,6 @@ void JMSaberTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	te->s.eventParm = self->s.number;
 	*/
 	G_KillG2Queue(self->s.number);
-
-	return;
 }
 
 gentity_t *gJMSaberEnt = NULL;

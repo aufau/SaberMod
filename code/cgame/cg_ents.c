@@ -2731,6 +2731,4 @@ defaultoffsetposition:
 
 functionend:
 	Com_Printf("^3Type-specific notetrack error: %s\n", errMsg);
-	return;
 }
-

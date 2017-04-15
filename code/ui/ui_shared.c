@@ -305,7 +305,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 
 	filename[0] = '\0';
 	line = 0;
-	trap_PC_SourceFileAndLine(handle, filename, &line);
+	DC->PC_SourceFileAndLine(handle, filename, &line);
 
 	Com_Printf(S_COLOR_YELLOW "WARNING: %s, line %d: %s\n", filename, line, string);
 }
@@ -327,7 +327,7 @@ static void PC_SourceError(int handle, const char *format, ...) {
 
 	filename[0] = '\0';
 	line = 0;
-	trap_PC_SourceFileAndLine(handle, filename, &line);
+	DC->PC_SourceFileAndLine(handle, filename, &line);
 
 	Com_Printf(S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string);
 }
@@ -377,10 +377,10 @@ qboolean PC_Float_Parse(int handle, float *f) {
 	pc_token_t token;
 	int negative = qfalse;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (token.string[0] == '-') {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!DC->PC_ReadToken(handle, &token))
 			return qfalse;
 		negative = qtrue;
 	}
@@ -457,10 +457,10 @@ qboolean PC_Int_Parse(int handle, int *i) {
 	pc_token_t token;
 	int negative = qfalse;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (token.string[0] == '-') {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!DC->PC_ReadToken(handle, &token))
 			return qfalse;
 		negative = qtrue;
 	}
@@ -536,7 +536,7 @@ qboolean PC_String_Parse(int handle, const char **out)
 	static const char *squiggy = "}";
 	pc_token_t		token;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 	{
 		return qfalse;
 	}
@@ -548,8 +548,8 @@ qboolean PC_String_Parse(int handle, const char **out)
 		temp = &token.string[0];
 
 									// The +1 is to offset the @ at the beginning of the text
-//		trap_SP_GetStringTextString(va("%s_%s",stripedFile,(temp+1)), text, sizeof(text));
-		trap_SP_GetStringTextString(                        temp+1  , text, sizeof(text));	// findmeste
+//		DC->SP_GetStringTextString(va("%s_%s",stripedFile,(temp+1)), text, sizeof(text));
+		DC->SP_GetStringTextString(                        temp+1  , text, sizeof(text));	// findmeste
 
 		if (text[0] == 0)		// Couldn't find it
 		{
@@ -590,14 +590,14 @@ qboolean PC_Script_Parse(int handle, const char **out) {
 	// scripts start with { and have ; separated command lists.. commands are command, arg..
 	// basically we want everything between the { } as it will be interpreted at run time
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (Q_stricmp(token.string, "{") != 0) {
 	    return qfalse;
 	}
 
 	while ( 1 ) {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!DC->PC_ReadToken(handle, &token))
 			return qfalse;
 
 		if (Q_stricmp(token.string, "}") == 0) {
@@ -3835,8 +3835,8 @@ void Item_YesNo_Paint(itemDef_t *item) {
 	}
 
 
-	trap_SP_GetStringTextString("MENUS0_YES",sYES, sizeof(sYES));
-	trap_SP_GetStringTextString("MENUS0_NO", sNO,  sizeof(sNO));
+	DC->SP_GetStringTextString("MENUS0_YES",sYES, sizeof(sYES));
+	DC->SP_GetStringTextString("MENUS0_NO", sNO,  sizeof(sNO));
 
 	if (item->text) {
 		Item_Text_Paint(item);
@@ -4129,7 +4129,7 @@ void BindingFromName(const char *cvar) {
 					DC->keynumToStringBuf( b2, g_nameBind2, 32 );
 // do NOT do this or it corrupts asian text!!!					Q_strupr(g_nameBind2);
 
-					trap_SP_GetStringTextString("MENUS3_KEYBIND_OR",sOR, sizeof(sOR));
+					DC->SP_GetStringTextString("MENUS3_KEYBIND_OR",sOR, sizeof(sOR));
 
 					Q_strcat( g_nameBind1, sizeof(g_nameBind1), va(" %s ",sOR));
 					Q_strcat( g_nameBind1, sizeof(g_nameBind2), g_nameBind2 );
@@ -6156,7 +6156,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle ) {
 	multiPtr->count = 0;
 	multiPtr->strDef = qtrue;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (*token.string != '{') {
 		return qfalse;
@@ -6166,7 +6166,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle ) {
 	while ( 1 ) {
 		const char* psString;
 
-//		if (!trap_PC_ReadToken(handle, &token)) {
+//		if (!DC->PC_ReadToken(handle, &token)) {
 //			PC_SourceError(handle, "end of file inside menu item\n");
 //			return qfalse;
 //		}
@@ -6218,7 +6218,7 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 	multiPtr->count = 0;
 	multiPtr->strDef = qfalse;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 	{
 		return qfalse;
 	}
@@ -6445,13 +6445,13 @@ qboolean Item_Parse(int handle, itemDef_t *item) {
 	keywordHash_t *key;
 
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (*token.string != '{') {
 		return qfalse;
 	}
 	while ( 1 ) {
-		if (!trap_PC_ReadToken(handle, &token)) {
+		if (!DC->PC_ReadToken(handle, &token)) {
 			PC_SourceError(handle, "end of file inside menu item\n");
 			return qfalse;
 		}
@@ -6510,7 +6510,7 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item )
 
 			// read letter...
 			//
-			uiLetter = trap_AnyLanguage_ReadCharFromString(psCurrentTextReadPos, &iAdvanceCount, &bIsTrailingPunctuation);
+			uiLetter = DC->AnyLanguage_ReadCharFromString(psCurrentTextReadPos, &iAdvanceCount, &bIsTrailingPunctuation);
 			psCurrentTextReadPos += iAdvanceCount;
 
 			// concat onto string so far...
@@ -6548,7 +6548,7 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item )
 			{
 				// reached screen edge, so cap off string at bytepos after last good position...
 				//
-				if (uiLetter > 255 && bIsTrailingPunctuation && !trap_Language_UsesSpaces())
+				if (uiLetter > 255 && bIsTrailingPunctuation && !DC->Language_UsesSpaces())
 				{
 					// Special case, don't consider line breaking if you're on an asian punctuation char of
 					//	a language that doesn't use spaces...
@@ -6581,7 +6581,7 @@ static void Item_TextScroll_BuildLines ( itemDef_t* item )
 
 			// record last-good linebreak pos...  (ie if we've just concat'd a punctuation point (western or asian) or space)
 			//
-			if (bIsTrailingPunctuation || uiLetter == ' ' || (uiLetter > 255 && !trap_Language_UsesSpaces()))
+			if (bIsTrailingPunctuation || uiLetter == ' ' || (uiLetter > 255 && !DC->Language_UsesSpaces()))
 			{
 				psBestLineBreakSrcPos = psCurrentTextReadPos;
 			}
@@ -7177,14 +7177,14 @@ qboolean Menu_Parse(int handle, menuDef_t *menu) {
 	pc_token_t token;
 	keywordHash_t *key;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!DC->PC_ReadToken(handle, &token))
 		return qfalse;
 	if (*token.string != '{') {
 		return qfalse;
 	}
 
 	while ( 1 ) {
-		if (!trap_PC_ReadToken(handle, &token)) {
+		if (!DC->PC_ReadToken(handle, &token)) {
 			PC_SourceError(handle, "end of file inside menu\n");
 			return qfalse;
 		}

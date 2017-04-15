@@ -177,7 +177,6 @@ G_RunObject
 ================
 */
 extern void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf );
-extern void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope );
 void G_RunObject( gentity_t *ent )
 {
 	vec3_t		origin, oldOrg;

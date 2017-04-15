@@ -1634,7 +1634,6 @@ void rocketThink( gentity_t *ent )
 	}
 
 	ent->nextthink = level.time + ROCKET_ALT_THINK_TIME;	// Nothing at all spectacular happened, continue.
-	return;
 }
 
 //---------------------------------------------------------

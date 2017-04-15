@@ -120,8 +120,6 @@ void ShieldRemove(gentity_t *self)
 	// Play kill sound...
 	G_AddEvent(self, EV_GENERAL_SOUND, shieldDeactivateSound);
 	self->s.loopSound = 0;
-
-	return;
 }
 
 
@@ -136,7 +134,6 @@ void ShieldThink(gentity_t *self)
 	{
 		ShieldRemove(self);
 	}
-	return;
 }
 
 
@@ -161,8 +158,6 @@ void ShieldPain(gentity_t *self, gentity_t *attacker, int damage)
 	G_AddEvent(self, EV_GENERAL_SOUND, shieldDamageSound);
 
 	self->s.trickedentindex = 1;
-
-	return;
 }
 
 
@@ -200,8 +195,6 @@ void ShieldGoSolid(gentity_t *self)
 		G_AddEvent(self, EV_GENERAL_SOUND, shieldActivateSound);
 		self->s.loopSound = shieldLoopSound;
 	}
-
-	return;
 }
 
 
@@ -357,8 +350,6 @@ void CreateShield(gentity_t *ent)
 	}
 
 	ShieldGoSolid(ent);
-
-	return;
 }
 
 qboolean PlaceShield(gentity_t *playerent)
@@ -491,7 +482,6 @@ void ItemUse_Shield(gentity_t *ent)
 
 void SentryTouch(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
-	return;
 }
 
 //----------------------------------------------------------------
