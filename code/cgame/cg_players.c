@@ -3516,7 +3516,7 @@ static void CG_PlayerSplash( centity_t *cent ) {
 	trap_R_AddPolyToScene( cgs.media.wakeMarkShader, 4, verts );
 }
 
-void CG_ForcePushBlur( vec3_t org )
+static void CG_ForcePushBlur( const vec3_t org )
 {
 	localEntity_t	*ex;
 
@@ -3554,7 +3554,7 @@ void CG_ForcePushBlur( vec3_t org )
 	ex->refEntity.customShader = cgs.media.forcePushShader;
 }
 
-void CG_ForceGripEffect( vec3_t org )
+static void CG_ForceGripEffect( const vec3_t org )
 {
 	localEntity_t	*ex;
 	float wv = sinf( cg.time * 0.004f ) * 0.08f + 0.1f;
@@ -3674,7 +3674,7 @@ void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
 }
 
 
-void CG_DrawPlayerShield(centity_t *cent, vec3_t origin)
+static void CG_DrawPlayerShield(centity_t *cent, const vec3_t origin)
 {
 	refEntity_t ent;
 	int			alpha;
@@ -3781,7 +3781,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 }
 #endif // UNUSED
 
-static void CG_DoSaber( vec3_t origin, vec3_t dir, float length, saber_colors_t color, int rfx )
+static void CG_DoSaber( const vec3_t origin, const vec3_t dir, float length, saber_colors_t color, int rfx )
 {
 	vec3_t		mid, rgb={1,1,1};
 	qhandle_t	blade = 0, glow = 0;
@@ -3922,7 +3922,7 @@ void CG_GetTagWorldPosition( refEntity_t *model, char *tag, vec3_t pos, vec3_t a
 #define	MAX_MARK_POINTS		384
 extern markPoly_t *CG_AllocMark();
 
-void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
+static void CG_CreateSaberMarks( const vec3_t start, const vec3_t end, const vec3_t normal )
 {
 //	byte			colors[4];
 	int				i, j;
@@ -4140,7 +4140,7 @@ qboolean CG_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t lastValidE
 	return qfalse;
 }
 
-void CG_G2SaberEffects(vec3_t start, vec3_t end, centity_t *owner)
+static void CG_G2SaberEffects(const vec3_t start, const vec3_t end, centity_t *owner)
 {
 	trace_t trace;
 	vec3_t startTr;
@@ -4188,7 +4188,7 @@ void CG_G2SaberEffects(vec3_t start, vec3_t end, centity_t *owner)
 #define SABER_TRAIL_TIME	40.0f
 #define FX_USE_ALPHA		0x08000000
 
-void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, int renderfx, int modelIndex, vec3_t origin, vec3_t angles, qboolean fromSaber)
+static void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, int renderfx, int modelIndex, const vec3_t origin, const vec3_t angles, qboolean fromSaber)
 {
 	vec3_t	org_, end, v,
 		axis_[3] = {{0}};	// shut the compiler up
@@ -4671,7 +4671,7 @@ int CG_IsMindTricked(int trickIndex1, int trickIndex2, int trickIndex3, int tric
 
 #define SPEED_TRAIL_DISTANCE 6
 
-void CG_DrawPlayerSphere(centity_t *cent, vec3_t origin, float scale, int shader)
+static void CG_DrawPlayerSphere(centity_t *cent, const vec3_t origin, float scale, int shader)
 {
 	refEntity_t ent;
 
@@ -5506,7 +5506,7 @@ static void CG_G2AnimEntAngles( centity_t *cent, vec3_t legs[3], vec3_t legsAngl
 
 #define SMOOTH_G2ANIM_LERPORIGIN
 
-void CG_DrawNoForceSphere(centity_t *cent, vec3_t origin, float scale, int shader)
+static void CG_DrawNoForceSphere(centity_t *cent, const vec3_t origin, float scale, int shader)
 {
 	refEntity_t ent;
 

@@ -156,7 +156,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	return le;
 }
 
-void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int radius) {
+void CG_TestLine( const vec3_t start, const vec3_t end, int time, unsigned int color, int radius) {
 	localEntity_t	*le;
 	refEntity_t		*re;
 
@@ -201,7 +201,7 @@ void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int ra
 CG_ThrowChunk
 ==================
 */
-void CG_ThrowChunk( vec3_t origin, vec3_t velocity, qhandle_t hModel, int optionalSound, int startalpha ) {
+static void CG_ThrowChunk( const vec3_t origin, const vec3_t velocity, qhandle_t hModel, int optionalSound, int startalpha ) {
 	localEntity_t	*le;
 	refEntity_t		*re;
 
@@ -251,7 +251,7 @@ static float offX[20][20],
 #define FX_APPLY_PHYSICS	0x02000000
 #define FX_USE_ALPHA		0x08000000
 
-static void CG_DoGlassQuad( vec3_t p[4], vec2_t uv[4], qboolean stick, int time, vec3_t dmgDir )
+static void CG_DoGlassQuad( vec3_t p[4], vec2_t uv[4], qboolean stick, int time, const vec3_t dmgDir )
 {
 	float	bounce;
 	vec3_t	rotDelta;
@@ -756,7 +756,7 @@ int dbModels_Wood[NUM_DEBRIS_MODELS_WOOD];
 int dbModels_Chunks[NUM_DEBRIS_MODELS_CHUNKS];
 int dbModels_Rocks[NUM_DEBRIS_MODELS_ROCKS];
 
-void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debrissound, int debrismodel)
+void CG_CreateDebris(int entnum, const vec3_t org, const vec3_t mins, const vec3_t maxs, int debrissound, int debrismodel)
 {
 	vec3_t velocity, a, shardorg, dif, difx;
 	float windowmass;
@@ -896,7 +896,7 @@ void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debri
 CG_ScorePlum
 ==================
 */
-void CG_ScorePlum( int client, vec3_t org, int score ) {
+void CG_ScorePlum( int client, const vec3_t org, int score ) {
 	localEntity_t	*le;
 	refEntity_t		*re;
 	vec3_t			angles;

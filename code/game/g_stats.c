@@ -161,7 +161,7 @@ static void PrintStatsSeparator( const playerStat_t *columns, const char *colorS
 		va("print \"%s%s\n\"", colorString, line));
 }
 
-static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, int *bestStats )
+static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, const int *bestStats )
 {
 	char		line[2 * DEFAULT_CONSOLE_WIDTH + 1]; // extra space for color codes
 	char		*p = line;

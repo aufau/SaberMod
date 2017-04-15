@@ -2078,7 +2078,7 @@ void TrapThink(gentity_t *ent)
 	G_RunObject(ent);
 }
 
-void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
+static void CreateLaserTrap( gentity_t *laserTrap, const vec3_t start, gentity_t *owner )
 {
 	laserTrap->classname = "laserTrap";
 	laserTrap->s.eFlags = EF_BOUNCE_HALF;
@@ -2237,7 +2237,7 @@ DET PACK
 
 ======================================================================
 */
-void VectorNPos(vec3_t in, vec3_t out)
+static void VectorNPos(const vec3_t in, vec3_t out)
 {
 	if (in[0] < 0) { out[0] = -in[0]; } else { out[0] = in[0]; }
 	if (in[1] < 0) { out[1] = -in[1]; } else { out[1] = in[1]; }
@@ -2649,7 +2649,7 @@ rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
-void SnapVectorTowards( vec3_t v, vec3_t to ) {
+void SnapVectorTowards( vec3_t v, const vec3_t to ) {
 	int		i;
 
 	for ( i = 0 ; i < 3 ; i++ ) {
@@ -2706,7 +2706,7 @@ CalcMuzzlePoint
 set muzzle location relative to pivoting eye
 ===============
 */
-void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint )
+void CalcMuzzlePoint ( const gentity_t *ent, const vec3_t forward, const vec3_t right, const vec3_t up, vec3_t muzzlePoint )
 {
 	int weapontype;
 	vec3_t muzzleOffPoint;
@@ -2905,7 +2905,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire ) {
 	G_LogWeaponFire(ent->s.number, ent->s.weapon);
 }
 
-void AnimEntCalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint )
+static void AnimEntCalcMuzzlePoint ( const gentity_t *ent, const vec3_t forward, const vec3_t right, const vec3_t up, vec3_t muzzlePoint )
 {
 	int weapontype;
 	vec3_t muzzleOffPoint;

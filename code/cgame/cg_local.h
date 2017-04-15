@@ -1743,7 +1743,7 @@ void CG_InitTeamChat(void);
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText(void);
 const char *CG_GetKillerText(void);
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles );
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles );
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending(void);
 qhandle_t CG_StatusHandle(int task);
@@ -1866,8 +1866,8 @@ localEntity_t *CG_SmokePuff( const vec3_t p,
 				   int leFlags,
 				   qhandle_t hShader );
 void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, int maxShards);
-void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debrissound, int debrismodel);
-void CG_ScorePlum( int client, vec3_t org, int score );
+void CG_CreateDebris(int entnum, const vec3_t org, const vec3_t mins, const vec3_t maxs, int debrissound, int debrismodel);
+void CG_ScorePlum( int client, const vec3_t org, int score );
 #ifdef UNUSED
 void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_Bleed( vec3_t origin, int entityNum );
@@ -1878,7 +1878,7 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 
 void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shake_speed, qboolean smoke );
 #endif
-void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int radius);
+void CG_TestLine( const vec3_t start, const vec3_t end, int time, unsigned int color, int radius);
 
 void CG_InitGlass( void );
 

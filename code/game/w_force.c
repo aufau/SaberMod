@@ -52,7 +52,7 @@ gentity_t *G_PreDefSound(vec3_t org, pdSounds_t pdSound, int blameEntityNum)
 	return te;
 }
 
-qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold )
+qboolean InFront( const vec3_t spot, const vec3_t from, const vec3_t fromAngles, float threshHold )
 {
 	vec3_t	dir, forward, angles;
 	float	dot;

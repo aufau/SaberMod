@@ -836,7 +836,7 @@ qboolean G_BotConnect( int clientNum, qboolean restart ) {
 G_AddBot
 ===============
 */
-static void G_AddBot( const char *name, float skill, const char *team, int delay, char *altname) {
+static void G_AddBot( const char *name, float skill, const char *team, int delay, const char *altname) {
 	int				clientNum;
 	const char		*botinfo;
 	const char		*key;

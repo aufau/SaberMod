@@ -588,7 +588,7 @@ TossClientItems
 rww - Toss the weapon away from the player in the specified direction
 =================
 */
-void TossClientWeapon(gentity_t *self, vec3_t direction, float speed)
+void TossClientWeapon(gentity_t *self, const vec3_t direction, float speed)
 {
 	vec3_t vel;
 	gitem_t *item;
@@ -2164,7 +2164,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 }
 
 
-void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
+void G_ApplyKnockback( gentity_t *targ, const vec3_t newDir, float knockback )
 {
 	vec3_t	kvel;
 	float	mass;
@@ -2512,7 +2512,7 @@ void G_GetDismemberBolt(gentity_t *self, vec3_t boltPoint, g2ModelParts_t limbTy
 	}
 }
 
-void G_Dismember( gentity_t *ent, vec3_t point, g2ModelParts_t limbType, float limbRollBase, float limbPitchBase, animNumber_t deathAnim )
+static void G_Dismember( gentity_t *ent, const vec3_t point, g2ModelParts_t limbType, float limbRollBase, float limbPitchBase, animNumber_t deathAnim )
 {
 	vec3_t	dir, newPoint, vel;
 	gentity_t *limb;
@@ -2669,7 +2669,7 @@ void DismembermentByNum(gentity_t *self, int num)
 }
 #endif // _DEBUG
 
-static g2ModelParts_t G_GetHitQuad( gentity_t *self, vec3_t hitloc )
+static g2ModelParts_t G_GetHitQuad( gentity_t *self, const vec3_t hitloc )
 {
 	vec3_t diff, fwdangles={0,0,0}, right;
 	vec3_t clEye;

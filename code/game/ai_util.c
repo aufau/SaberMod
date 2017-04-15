@@ -535,7 +535,7 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 	return 1;
 }
 
-void ParseEmotionalAttachments(bot_state_t *bs, char *buf)
+static void ParseEmotionalAttachments(bot_state_t *bs, const char *buf)
 {
 	int i = 0;
 	int i_c = 0;

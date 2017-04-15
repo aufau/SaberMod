@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SABER_BOX_SIZE 16.0f
 
 extern bot_state_t *botstates[MAX_CLIENTS];
-extern qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold );
+extern qboolean InFront( const vec3_t spot, const vec3_t from, const vec3_t fromAngles, float threshHold );
 
 static int saberSpinSound = 0;
 int saberOffSound = 0;
@@ -465,7 +465,7 @@ typedef enum
 #define LOCK_IDEAL_DIST_CIRCLE 48.0f
 
 #define SABER_HITDAMAGE 35
-void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
+static void WP_SaberBlockNonRandom( gentity_t *self, const vec3_t hitloc, qboolean missileBlock );
 
 qboolean WP_SabersCheckLock2( gentity_t *attacker, gentity_t *defender, sabersLockMode_t lockMode )
 {
@@ -1334,7 +1334,7 @@ qboolean G_ClientIdleInWorld(gentity_t *ent)
 }
 
 #ifdef G2_COLLISION_ENABLED
-qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t lastValidEnd, vec3_t traceMins, vec3_t traceMaxs)
+static qboolean G_G2TraceCollide(trace_t *tr, const vec3_t lastValidStart, const vec3_t lastValidEnd, const vec3_t traceMins, const vec3_t traceMaxs)
 {
 	if (!g_saberGhoul2Collision.integer)
 	{
@@ -3444,7 +3444,7 @@ saberBlockedType_t WP_MissileBlockForBlock( saberBlockedType_t saberBlock )
 	}
 }
 
-void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock )
+static void WP_SaberBlockNonRandom( gentity_t *self, const vec3_t hitloc, qboolean missileBlock )
 {
 	vec3_t diff, fwdangles={0,0,0}, right;
 	vec3_t clEye;

@@ -1444,7 +1444,7 @@ static void UI_DrawTeamName(rectDef_t *rect, float scale, vec4_t color, qboolean
   }
 }
 
-static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboolean blue, int num, int textStyle, font_t iMenuFont)
+static void UI_DrawTeamMember(rectDef_t *rect, float scale, const vec4_t color, qboolean blue, int num, int textStyle, font_t iMenuFont)
 {
 	// 0 - None
 	// 1 - Human
