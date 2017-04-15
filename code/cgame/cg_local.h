@@ -1743,7 +1743,7 @@ void CG_InitTeamChat(void);
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText(void);
 const char *CG_GetKillerText(void);
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles );
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles );
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending(void);
 qhandle_t CG_StatusHandle(int task);
@@ -1758,7 +1758,7 @@ void CG_ResetPlayerEntity( centity_t *cent );
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, team_t team );
 void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized );
 sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
-void CG_PlayerShieldHit(int entitynum, vec3_t angles, int amount);
+void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount);
 
 
 //
@@ -1823,9 +1823,9 @@ void CG_Weapon_f( void );
 void CG_RegisterWeapon( weapon_t weaponNum);
 void CG_RegisterItemVisuals( int itemNum );
 
-void CG_FireWeapon( centity_t *cent, qboolean alt_fire );
-void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
-void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
+void CG_FireWeapon( centity_t *cent, qboolean altFire );
+void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean altFire, int charge);
+void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean altFire);
 
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson );
@@ -1842,7 +1842,7 @@ void	CG_AddMarks( void );
 void	CG_ImpactMark( qhandle_t markShader,
 				    const vec3_t origin, const vec3_t dir,
 					float orientation,
-				    float r, float g, float b, float a,
+				    float red, float green, float blue, float alpha,
 					qboolean alphaFade,
 					float radius, qboolean temporary );
 
@@ -1866,8 +1866,8 @@ localEntity_t *CG_SmokePuff( const vec3_t p,
 				   int leFlags,
 				   qhandle_t hShader );
 void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, int maxShards);
-void CG_CreateDebris(int entnum, vec3_t org, vec3_t mins, vec3_t maxs, int debrissound, int debrismodel);
-void CG_ScorePlum( int client, vec3_t org, int score );
+void CG_CreateDebris(int entnum, const vec3_t org, const vec3_t mins, const vec3_t maxs, int debrissound, int debrismodel);
+void CG_ScorePlum( int client, const vec3_t org, int score );
 #ifdef UNUSED
 void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_Bleed( vec3_t origin, int entityNum );
@@ -1878,7 +1878,7 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 
 void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shake_speed, qboolean smoke );
 #endif
-void CG_TestLine( vec3_t start, vec3_t end, int time, unsigned int color, int radius);
+void CG_TestLine( const vec3_t start, const vec3_t end, int time, unsigned int color, int radius);
 
 void CG_InitGlass( void );
 
@@ -1906,7 +1906,6 @@ void CG_DrawOldTourneyScoreboard( void );
 //
 qboolean CG_ConsoleCommand( void );
 void CG_InitConsoleCommands( void );
-void CG_PrintMotd_f( void );
 
 //
 // cg_servercmds.c
@@ -2017,7 +2016,7 @@ int			trap_CM_MarkFragments( int numPoints, const vec3_t *points,
 // moves and the listener moves
 void		trap_S_MuteSound( int entityNum, int entchannel );
 void		trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx );
-void		trap_S_StopLoopingSound(int entnum);
+void		trap_S_StopLoopingSound(int entityNum);
 
 // a local sound is always played full volume
 void		trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
@@ -2042,7 +2041,7 @@ qhandle_t	trap_R_RegisterModel( const char *name );			// returns rgb axis if not
 qhandle_t	trap_R_RegisterSkin( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterShader( const char *name );			// returns all white if not found
 qhandle_t	trap_R_RegisterShaderNoMip( const char *name );			// returns all white if not found
-qhandle_t	trap_R_RegisterFont( const char *name );
+qhandle_t	trap_R_RegisterFont( const char *fontName );
 int			trap_R_Font_StrLenPixels(const char *text, const qhandle_t iFontIndex, const float scale);
 int			trap_R_Font_StrLenChars(const char *text);
 int			trap_R_Font_HeightPixels(const qhandle_t iFontIndex, const float scale);
@@ -2060,7 +2059,7 @@ void		trap_R_AddRefEntityToScene( const refEntity_t *re );
 // polys are intended for simple wall marks, not really for doing
 // significant construction
 void		trap_R_AddPolyToScene( qhandle_t hShader , int numVerts, const polyVert_t *verts );
-void		trap_R_AddPolysToScene( qhandle_t hShader , int numVerts, const polyVert_t *verts, int numPolys );
+void		trap_R_AddPolysToScene( qhandle_t hShader , int numVerts, const polyVert_t *verts, int num );
 void		trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b );
 int			trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 void		trap_R_RenderScene( const refdef_t *fd );

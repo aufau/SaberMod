@@ -209,7 +209,7 @@ void P_WorldEffects( gentity_t *ent ) {
 
 
 //==============================================================
-extern void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback );
+extern void G_ApplyKnockback( gentity_t *targ, const vec3_t newDir, float knockback );
 void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf )
 {
 	float magnitude, my_mass;
@@ -533,7 +533,7 @@ Find all trigger entities that ent's current position touches.
 Spectators will only interact with teleporters.
 ============
 */
-void G_MoverTouchPushTriggers( gentity_t *ent, vec3_t oldOrg )
+void G_MoverTouchPushTriggers( gentity_t *ent, const vec3_t oldOrg )
 {
 	int			i, num;
 	float		step, stepSize, dist;

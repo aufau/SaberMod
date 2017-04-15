@@ -207,7 +207,7 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 G_RadiusList - given an origin and a radius, return all entities that are in use that are within the list
 ============
 */
-int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean takeDamage, gentity_t *ent_list[MAX_GENTITIES])
+int G_RadiusList ( const vec3_t origin, float radius,	gentity_t *ignore, qboolean takeDamage, gentity_t *ent_list[MAX_GENTITIES])
 {
 	float		dist;
 	gentity_t	*ent;
@@ -696,7 +696,7 @@ G_SoundTempEntity
 Special event entity that keeps sound trackers in mind
 =================
 */
-gentity_t *G_SoundTempEntity( vec3_t origin, int event, int channel, int blameEntityNum ) {
+static gentity_t *G_SoundTempEntity( const vec3_t origin, int event, int channel, int blameEntityNum ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
@@ -821,7 +821,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 G_PlayEffect
 =============
 */
-gentity_t *G_PlayEffect(effectTypes_t fxID, vec3_t org, vec3_t ang, int blameEntityNum)
+gentity_t *G_PlayEffect(effectTypes_t fxID, const vec3_t org, const vec3_t ang, int blameEntityNum)
 {
 	gentity_t	*te;
 
@@ -1029,7 +1029,7 @@ void TryUse( gentity_t *ent )
 	}
 }
 
-qboolean G_PointInBounds( vec3_t point, vec3_t mins, vec3_t maxs )
+qboolean G_PointInBounds( const vec3_t point, const vec3_t mins, const vec3_t maxs )
 {
 	int i;
 
@@ -1079,7 +1079,7 @@ qboolean G_BoxInBounds( const vec3_t point, const vec3_t mins, const vec3_t maxs
 }
 
 
-void G_SetAngles( gentity_t *ent, vec3_t angles )
+void G_SetAngles( gentity_t *ent, const vec3_t angles )
 {
 	VectorCopy( angles, ent->r.currentAngles );
 	VectorCopy( angles, ent->s.angles );
@@ -1108,7 +1108,7 @@ G_SetOrigin
 Sets the pos trajectory for a fixed position
 ================
 */
-void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
+void G_SetOrigin( gentity_t *ent, const vec3_t origin ) {
 	VectorCopy( origin, ent->s.pos.trBase );
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
@@ -1126,7 +1126,7 @@ DebugLine
   with r_debugSurface set to 2
 ================
 */
-int DebugLine(vec3_t start, vec3_t end, int color) {
+int DebugLine(const vec3_t start, const vec3_t end, int color) {
 	static const vec3_t up = {0, 0, 1};
 	vec3_t points[4], dir, cross;
 	float dot;

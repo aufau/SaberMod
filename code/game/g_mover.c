@@ -121,7 +121,7 @@ G_TryPushingEntity
 Returns qfalse if the move is blocked
 ==================
 */
-qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove ) {
+static qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, const vec3_t move, vec3_t amove ) {
 	vec3_t		matrix[3], transpose[3];
 	vec3_t		org, org2, move2;
 	gentity_t	*block;
@@ -1417,7 +1417,7 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 					vtos(path->s.origin) );
 				return;
 			}
-		} while ( strcmp( next->classname, "path_corner" ) );
+		} while ( strcmp( next->classname, "path_corner" ) != 0 );
 
 		path->nextTrain = next;
 	}
@@ -2006,7 +2006,6 @@ void SP_func_glass( gentity_t *ent ) {
 
 void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator);
 
-extern gentity_t	*G_TestEntityPosition( gentity_t *ent );
 void func_wait_return_solid( gentity_t *self )
 {
 	//once a frame, see if it's clear.

@@ -89,7 +89,7 @@ qboolean PM_SomeoneInFront(trace_t *tr);
 saberMoveName_t PM_SaberFlipOverAttackMove(trace_t *tr);
 saberMoveName_t PM_SaberJumpAttackMove( void );
 
-void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce );
 void PM_AddTouchEnt( int entityNum );
 void PM_AddEvent( entity_event_t newEvent );
 

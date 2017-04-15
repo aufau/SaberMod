@@ -263,7 +263,7 @@ void FX_DEMP2_AltBeam( vec3_t start, vec3_t end, vec3_t normal, //qboolean spark
 #endif
 
 //---------------------------------------------
-void FX_DEMP2_AltDetonate( vec3_t org, float size )
+void FX_DEMP2_AltDetonate( const vec3_t org, float size )
 {
 	localEntity_t	*ex;
 

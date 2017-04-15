@@ -612,7 +612,7 @@ static void	Svcmd_Mode_f( void )
 		mode = g_modeDefault.string;
 		trap_Cvar_VariableStringBuffer( "g_modeDefaultMap", map, sizeof( map ) );
 
-		if ( strcmp( map, "" ) && strcmp( map, "0" ) && strcmp( map, "none" ) )
+		if ( strcmp( map, "" ) != 0 && strcmp( map, "0" ) != 0 && strcmp( map, "none" ) != 0 )
 			trap_Cvar_Set( "nextmap", va( "map %s", map ) );
 	}
 

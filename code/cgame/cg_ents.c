@@ -178,7 +178,7 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 }
 
-static localEntity_t *FX_AddOrientedLine(vec3_t start, vec3_t end, vec3_t normal, float stScale, float scale,
+static localEntity_t *FX_AddOrientedLine(const vec3_t start, const vec3_t end, const vec3_t normal, float stScale, float scale,
 								  float dscale, float startalpha, float endalpha, int killTime, qhandle_t shader)
 {
 	localEntity_t	*le;
@@ -2731,6 +2731,4 @@ defaultoffsetposition:
 
 functionend:
 	Com_Printf("^3Type-specific notetrack error: %s\n", errMsg);
-	return;
 }
-

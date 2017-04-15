@@ -83,9 +83,9 @@ void UpdateTournamentInfo( void ) {
 			score1 = level.teamScores[TEAM_RED];
 			score2 = level.teamScores[TEAM_BLUE];
 			if (level.clients[playerClientNum].sess.sessionTeam	== TEAM_RED) {
-				won = (level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]);
+				won = (qboolean)(level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]);
 			} else {
-				won = (level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]);
+				won = (qboolean)(level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]);
 			}
 		} else {
 			if (&level.clients[playerClientNum] == &level.clients[ level.sortedClients[0] ]) {

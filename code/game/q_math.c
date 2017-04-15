@@ -539,7 +539,7 @@ void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up) {
 }
 
 
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out )
+void VectorRotate( const vec3_t in, const vec3_t matrix[3], vec3_t out )
 {
 	out[0] = DotProduct( in, matrix[0] );
 	out[1] = DotProduct( in, matrix[1] );
@@ -552,14 +552,14 @@ void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out )
 /*
 ** float q_rsqrt( float number )
 */
-float Q_rsqrt( float number )
+float Q_rsqrt( float f )
 {
 	floatint_t t;
 	float x2, y;
 	const float threehalfs = 1.5F;
 
-	x2 = number * 0.5F;
-	t.f  = number;
+	x2 = f * 0.5F;
+	t.f  = f;
 	t.i  = 0x5f3759df - ( t.i >> 1 );               // what the fuck?
 	y  = t.f;
 	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
@@ -742,7 +742,7 @@ int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 ==================
 */
 
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
+int BoxOnPlaneSide (const vec3_t emins, const vec3_t emaxs, const struct cplane_s *p)
 {
 	float	dist1, dist2;
 	int		sides;

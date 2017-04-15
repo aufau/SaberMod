@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // leave this line at the top for all g_xxxx.cpp files...
 #include "g_local.h"
 
-extern void G_MoverTouchPushTriggers( gentity_t *ent, vec3_t oldOrg );
+extern void G_MoverTouchPushTriggers( gentity_t *ent, const vec3_t oldOrg );
 void G_StopObjectMoving( gentity_t *object );
 
 /*
@@ -177,7 +177,6 @@ G_RunObject
 ================
 */
 extern void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf );
-extern void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope );
 void G_RunObject( gentity_t *ent )
 {
 	vec3_t		origin, oldOrg;

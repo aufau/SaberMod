@@ -115,7 +115,7 @@ Ghoul2 Insert End
 	}
 
 	if ( item->giType == IT_WEAPON ) {
-		CG_RegisterWeapon( item->giTag );
+		CG_RegisterWeapon( (weapon_t)item->giTag );
 	}
 
 	//
@@ -1098,7 +1098,7 @@ void CG_DrawWeaponSelect( void ) {
 	{
 		if ( bits & ( 1 << i ) )
 		{
-			if ( CG_WeaponSelectable(i) ||
+			if ( CG_WeaponSelectable((weapon_t)i) ||
 				(i != WP_THERMAL && i != WP_TRIP_MINE) )
 			{
 				count++;
@@ -1166,7 +1166,7 @@ void CG_DrawWeaponSelect( void ) {
 			continue;
 		}
 
-		if ( !CG_WeaponSelectable(i) &&
+		if ( !CG_WeaponSelectable((weapon_t)i) &&
 			(i == WP_THERMAL || i == WP_TRIP_MINE) )
 		{ //Don't show thermal and tripmine when out of them
 			continue;
@@ -1177,10 +1177,10 @@ void CG_DrawWeaponSelect( void ) {
 		if (cgs.media.weaponIcons[i])
 		{
 			// weaponInfo_t	*weaponInfo = &cg_weapons[i];
-			CG_RegisterWeapon( i );
+			CG_RegisterWeapon( (weapon_t)i );
 
 			trap_R_SetColor(colorTable[CT_WHITE]);
-			if (!CG_WeaponCheck(i))
+			if (!CG_WeaponCheck((weapon_t)i))
 			{
 				CG_DrawPic( holdX, y+10, smallIconSize, smallIconSize, /*weaponInfo->weaponIconNoAmmo*/cgs.media.weaponIcons_NA[i] );
 			}
@@ -1230,7 +1230,7 @@ void CG_DrawWeaponSelect( void ) {
 			continue;
 		}
 
-		if ( !CG_WeaponSelectable(i) &&
+		if ( !CG_WeaponSelectable((weapon_t)i) &&
 			(i == WP_THERMAL || i == WP_TRIP_MINE) )
 		{ //Don't show thermal and tripmine when out of them
 			continue;
@@ -1240,10 +1240,10 @@ void CG_DrawWeaponSelect( void ) {
 
 		if (/*weaponData[i].weaponIcon[0]*/cgs.media.weaponIcons[i])
 		{
-			CG_RegisterWeapon( i );
+			CG_RegisterWeapon( (weapon_t)i );
 			// No ammo for this weapon?
 			trap_R_SetColor( colorTable[CT_WHITE]);
-			if (!CG_WeaponCheck(i))
+			if (!CG_WeaponCheck((weapon_t)i))
 			{
 				CG_DrawPic( holdX, y+10, smallIconSize, smallIconSize, cgs.media.weaponIcons_NA[i] );
 			}
@@ -1302,7 +1302,7 @@ void CG_NextWeapon_f( void ) {
 	original = cg.weaponSelect;
 
 	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
-		cg.weaponSelect++;
+		cg.weaponSelect = (weapon_t)(cg.weaponSelect + 1);
 		if ( cg.weaponSelect == WP_NUM_WEAPONS ) {
 			cg.weaponSelect = WP_NONE;
 		}
@@ -1350,7 +1350,7 @@ void CG_PrevWeapon_f( void ) {
 		if ( cg.weaponSelect == WP_NONE ) {
 			cg.weaponSelect = WP_NUM_WEAPONS;
 		}
-		cg.weaponSelect--;
+		cg.weaponSelect = (weapon_t)(cg.weaponSelect - 1);
 	//	if ( cg.weaponSelect == WP_STUN_BATON ) {
 	//		continue;		// never cycle to gauntlet
 	//	}
@@ -1449,7 +1449,7 @@ void CG_Weapon_f( void ) {
 				weap = WP_THERMAL;
 			}
 
-			if (CG_WeaponSelectable(weap))
+			if (CG_WeaponSelectable((weapon_t)weap))
 			{
 				num = weap;
 				break;
@@ -1460,7 +1460,7 @@ void CG_Weapon_f( void ) {
 		}
 	}
 
-	if (!CG_WeaponSelectable(num))
+	if (!CG_WeaponSelectable((weapon_t)num))
 	{
 		return;
 	}
@@ -1489,7 +1489,7 @@ void CG_Weapon_f( void ) {
 		trap_S_MuteSound(cg.snap->ps.clientNum, CHAN_WEAPON);
 	}
 
-	cg.weaponSelect = num;
+	cg.weaponSelect = (weapon_t)num;
 }
 
 /*
@@ -1507,7 +1507,7 @@ void CG_OutOfAmmoChange( weapon_t oldWeapon )
 
 	for ( i = WP_MAX_NORMAL ; i > WP_NONE ; i-- )	//We don't want the emplaced or turret
 	{
-		if ( CG_WeaponSelectable( i ) )
+		if ( CG_WeaponSelectable( (weapon_t)i ) )
 		{
 			/*
 			if ( 1 == cg_autoswitch.integer &&
@@ -1518,7 +1518,7 @@ void CG_OutOfAmmoChange( weapon_t oldWeapon )
 			{
 				if ((weapon_t)i != oldWeapon)
 				{ //don't even do anything if we're just selecting the weapon we already have/had
-					cg.weaponSelect = i;
+					cg.weaponSelect = (weapon_t)i;
 					break;
 				}
 			}

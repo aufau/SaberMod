@@ -346,7 +346,7 @@ int PassLovedOneCheck(bot_state_t *bs, gentity_t *ent);
 
 void ExitLevel( void );
 
-void QDECL BotAI_Print(int type, const char *fmt, ...) { return; }
+void QDECL BotAI_Print(int type, const char *fmt, ...) { }
 
 qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower );
 
@@ -540,7 +540,7 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 BotInputToUserCommand
 ==============
 */
-void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3], int time, int useTime) {
+static void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, const int delta_angles[3], int time, int useTime) {
 	vec3_t angles, forward, right;
 	short temp;
 	int j;
@@ -1485,7 +1485,7 @@ void MoveTowardIdealAngles(bot_state_t *bs)
 #define STRAFEAROUND_RIGHT			1
 #define STRAFEAROUND_LEFT			2
 
-int BotTrace_Strafe(bot_state_t *bs, vec3_t traceto)
+static int BotTrace_Strafe(bot_state_t *bs, const vec3_t traceto)
 {
 	static const vec3_t playerMins = {-15, -15, /*DEFAULT_MINS_2*/-8};
 	static const vec3_t playerMaxs = {15, 15, DEFAULT_MAXS_2};
@@ -1565,7 +1565,7 @@ int BotTrace_Strafe(bot_state_t *bs, vec3_t traceto)
 }
 #endif
 
-int BotTrace_Jump(bot_state_t *bs, vec3_t traceto)
+static int BotTrace_Jump(bot_state_t *bs, const vec3_t traceto)
 {
 	vec3_t mins, maxs, a, fwd, traceto_mod, tracefrom_mod;
 	trace_t tr;
@@ -1628,7 +1628,7 @@ int BotTrace_Jump(bot_state_t *bs, vec3_t traceto)
 	return 0;
 }
 
-int BotTrace_Duck(bot_state_t *bs, vec3_t traceto)
+static int BotTrace_Duck(bot_state_t *bs, const vec3_t traceto)
 {
 	vec3_t mins, maxs, a, fwd, traceto_mod, tracefrom_mod;
 	trace_t tr;
@@ -2142,7 +2142,7 @@ int ScanForEnemies(bot_state_t *bs)
 	return bestindex;
 }
 
-int WaitingForNow(bot_state_t *bs, vec3_t goalpos)
+static int WaitingForNow(bot_state_t *bs, const vec3_t goalpos)
 { //checks if the bot is doing something along the lines of waiting for an elevator to raise up
 	vec3_t xybot, xywp, a;
 
@@ -4452,7 +4452,7 @@ float BotWeaponCanLead(bot_state_t *bs)
 	return 0;
 }
 
-void BotAimLeading(bot_state_t *bs, vec3_t headlevel, float leadAmount)
+static void BotAimLeading(bot_state_t *bs, const vec3_t headlevel, float leadAmount)
 {
 	int x;
 	vec3_t predictedSpot;
@@ -5686,9 +5686,6 @@ int BotWeaponBlockable(int weapon)
 		return 1;
 	}
 }
-
-void Cmd_EngageDuel_f(gentity_t *ent);
-void Cmd_ToggleSaber_f(gentity_t *ent);
 
 void StandardBotAI(bot_state_t *bs, float thinktime)
 {

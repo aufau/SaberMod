@@ -720,7 +720,7 @@ void COM_MatchToken( const char **buf_p, const char *match ) {
 	const char	*token;
 
 	token = COM_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
+	if ( strcmp( token, match ) != 0 ) {
 		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
 	}
 }

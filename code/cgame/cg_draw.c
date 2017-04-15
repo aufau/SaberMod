@@ -35,7 +35,7 @@ extern displayContextDef_t cgDC;
 menuDef_t *menuScoreboard = NULL;
 #endif
 
-qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y);
+qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y);
 qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle );
 
 static const vec4_t	bluehudtint = {0.5, 0.5, 1.0, 1.0};
@@ -430,7 +430,7 @@ CG_Draw3DModel
 
 ================
 */
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles ) {
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
 
@@ -2857,7 +2857,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		w, h, 0, 0, 1, 1, hShader );
 }
 
-qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y)
+qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y)
 {
 	int	xcenter, ycenter;
 	vec3_t	local, transformed;

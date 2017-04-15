@@ -58,7 +58,7 @@ int UI_ParseInfos( const char *buf, int max, char *infos[] ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( strcmp( token, "{" ) ) {
+		if ( strcmp( token, "{" ) != 0 ) {
 			Com_Printf( "Missing { in info file\n" );
 			break;
 		}
