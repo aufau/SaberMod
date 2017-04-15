@@ -73,8 +73,8 @@ static const char rcsid[] =
 typedef int		 cmp_t(const void *, const void *);
 #endif
 
-static char* med3(char *, char *, char *, cmp_t *);
-static void	 swapfunc(char *, char *, int, int);
+static char* med3(char *a, char *b, char *c, cmp_t *cmp);
+static void	 swapfunc(char *a, char *b, int n, int swaptype);
 
 /*
  * Qsort routine from Bentley & McIlroy's "Engineering a Sort Function".
