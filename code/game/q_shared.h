@@ -1509,7 +1509,7 @@ typedef enum {
 
 #define PS_PMOVEFRAMECOUNTBITS	6
 
-#define MAX_FORCE_RANK			7
+#define MAX_FORCE_RANK			FORCE_MASTERY_JEDI_MASTER
 
 #define FALL_FADE_TIME			3000
 

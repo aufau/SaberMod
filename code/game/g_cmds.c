@@ -2324,7 +2324,7 @@ int G_ItemUsable(playerState_t *ps, holdable_t forcedUse)
 
 	if (!forcedUse)
 	{
-		forcedUse = bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag;
+		forcedUse = (holdable_t)bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag;
 	}
 
 	switch (forcedUse)
@@ -2728,12 +2728,12 @@ static void Cmd_DebugSetSaberMove_f(gentity_t *self)
 		return;
 	}
 
-	self->client->ps.saberMove = atoi(arg);
+	self->client->ps.saberMove = (saberMoveName_t)atoi(arg);
 	self->client->ps.saberBlocked = BLOCKED_BOUNCE_MOVE;
 
 	if (self->client->ps.saberMove >= LS_MOVE_MAX)
 	{
-		self->client->ps.saberMove = LS_MOVE_MAX-1;
+		self->client->ps.saberMove = (saberMoveName_t)(LS_MOVE_MAX - 1);
 	}
 
 	Com_Printf("Anim for move: %s\n", animTable[saberMoveData[self->client->ps.saberMove].animToUse].name);
@@ -2861,7 +2861,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 
 				StandardSetBodyAnim(ent, BOTH_KISSER1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				ent->client->ps.saberMove = LS_NONE;
-				ent->client->ps.saberBlocked = 0;
+				ent->client->ps.saberBlocked = BLOCKED_NONE;
 				ent->client->ps.saberBlocking = BLK_NO;
 
 				VectorSubtract( ent->client->ps.origin, other->client->ps.origin, entDir );
@@ -2871,7 +2871,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 
 				StandardSetBodyAnim(other, BOTH_KISSEE1LOOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 				other->client->ps.saberMove = LS_NONE;
-				other->client->ps.saberBlocked = 0;
+				other->client->ps.saberBlocked = BLOCKED_NONE;
 				other->client->ps.saberBlocking = BLK_NO;
 			}
 		}
