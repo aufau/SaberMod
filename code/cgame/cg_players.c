@@ -5619,7 +5619,7 @@ void CG_G2Animated( centity_t *cent )
 	{
 		weaponInfo_t *weapon;
 
-		CG_RegisterWeapon(cent->currentState.weapon);
+		CG_RegisterWeapon((weapon_t)cent->currentState.weapon);
 
 		weapon = &cg_weapons[cent->currentState.weapon];
 		if (weapon)

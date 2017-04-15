@@ -583,7 +583,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
 	int			damage = 0, skip;
-	qboolean	render_impact[DISRUPTOR_ALT_TRACES] = { 0 };
+	qboolean	render_impact[DISRUPTOR_ALT_TRACES] = { qfalse };
 	trace_t		impact_trace[DISRUPTOR_ALT_TRACES];
 	vec3_t		start, end;
 	trace_t		*tr;

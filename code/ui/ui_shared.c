@@ -158,7 +158,7 @@ UI_Alloc
 ===============
 */
 void *UI_Alloc( size_t size ) {
-	char	*p = PADP(allocPoint, sizeof(void *));
+	char	*p = (char *)PADP(allocPoint, sizeof(void *));
 
 	allocPoint = p + size;
 
