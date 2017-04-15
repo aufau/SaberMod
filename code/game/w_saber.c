@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SABER_BOX_SIZE 16.0f
 
 extern bot_state_t *botstates[MAX_CLIENTS];
-extern qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold );
+extern qboolean InFront( const vec3_t spot, const vec3_t from, const vec3_t fromAngles, float threshHold );
 
 static int saberSpinSound = 0;
 int saberOffSound = 0;
