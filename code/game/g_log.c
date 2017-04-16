@@ -940,13 +940,13 @@ qboolean CalculateUntouchable(gentity_t *ent)
 		return qfalse;
 	}
 	//------------------------------------------------------ MUST HAVE ACHIEVED 2 KILLS PER MINUTE
-	if ( ent->client->ps.persistant[PERS_SCORE] < 2 * playTime )
+	if ( ent->client->pers.persistant[PERS_SCORE] < 2 * playTime )
 		return qfalse;
 	//------------------------------------------------------ MUST HAVE ACHIEVED 2 KILLS PER MINUTE
 
 
 	// if this guy was never killed...  Award Away!!!
-	if (ent->client->ps.persistant[PERS_KILLED]==0)
+	if (ent->client->pers.persistant[PERS_KILLED]==0)
 		return qtrue;
 
 	return qfalse;
@@ -1029,7 +1029,7 @@ qboolean CalculateTactician(gentity_t *ent, int *kills)
 	if (playTime == 0)
 		return qfalse;
 
-	if ( ent->client->ps.persistant[PERS_SCORE] < 2 * playTime )
+	if ( ent->client->pers.persistant[PERS_SCORE] < 2 * playTime )
 		return qfalse;
 	//------------------------------------------------------ MUST HAVE ACHIEVED 2 KILLS PER MINUTE
 
@@ -1162,19 +1162,19 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 int CalculateStreak(gentity_t *ent)
 {
 #if 0
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_CHAMPION)
+	if (ent->client->pers.persistant[PERS_STREAK_COUNT] >= STREAK_CHAMPION)
 	{
 		return STREAK_CHAMPION;
 	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_MASTER)
+	if (ent->client->pers.persistant[PERS_STREAK_COUNT] >= STREAK_MASTER)
 	{
 		return STREAK_MASTER;
 	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_EXPERT)
+	if (ent->client->pers.persistant[PERS_STREAK_COUNT] >= STREAK_EXPERT)
 	{
 		return STREAK_EXPERT;
 	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_ACE)
+	if (ent->client->pers.persistant[PERS_STREAK_COUNT] >= STREAK_ACE)
 	{
 		return STREAK_ACE;
 	}
@@ -1186,16 +1186,16 @@ int CalculateStreak(gentity_t *ent)
 qboolean CalculateTeamMVP(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	for (i = 0; i < level.maxclients; i++)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
-		nScore = player->client->ps.persistant[PERS_SCORE];
+		nScore = player->client->pers.persistant[PERS_SCORE];
 		if (nScore > nHighestScore)
 		{
 			nHighestScore = nScore;
@@ -1216,12 +1216,12 @@ qboolean CalculateTeamMVP(gentity_t *ent)
 qboolean CalculateTeamMVPByRank(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_RANK]+1;
+				team = ent->client->pers.persistant[PERS_RANK]+1;
 	qboolean	bTied = (team == 3);
 	gentity_t	*player = NULL;
 
 	/*
-	if ( team == ent->client->ps.persistant[PERS_TEAM] && ent->client->ps.persistant[PERS_CLASS] == PC_BORG )
+	if ( team == ent->client->pers.persistant[PERS_TEAM] && ent->client->pers.persistant[PERS_CLASS] == PC_BORG )
 	{//only the queen can be the MVP
 		if ( borgQueenClientNum == ent->s.number )
 		{
@@ -1242,12 +1242,12 @@ qboolean CalculateTeamMVPByRank(gentity_t *ent)
 			continue;
 		if (!bTied)
 		{
-			 if (player->client->ps.persistant[PERS_TEAM] != team)
+			 if (player->client->pers.persistant[PERS_TEAM] != team)
 			 {
 				 continue;
 			 }
 		}
-		nScore = player->client->ps.persistant[PERS_SCORE];
+		nScore = player->client->pers.persistant[PERS_SCORE];
 		if (nScore > nHighestScore)
 		{
 			nHighestScore = nScore;
@@ -1268,7 +1268,7 @@ qboolean CalculateTeamMVPByRank(gentity_t *ent)
 qboolean CalculateTeamDefender(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	/*
@@ -1281,7 +1281,7 @@ qboolean CalculateTeamDefender(gentity_t *ent)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
 		nScore = player->client->pers.teamState.basedefense;
 		if (nScore > nHighestScore)
@@ -1304,7 +1304,7 @@ qboolean CalculateTeamDefender(gentity_t *ent)
 qboolean CalculateTeamWarrior(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	/*
@@ -1317,9 +1317,9 @@ qboolean CalculateTeamWarrior(gentity_t *ent)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
-		nScore = player->client->ps.persistant[PERS_SCORE];
+		nScore = player->client->pers.persistant[PERS_SCORE];
 		if (nScore > nHighestScore)
 		{
 			nHighestScore = nScore;
@@ -1340,7 +1340,7 @@ qboolean CalculateTeamWarrior(gentity_t *ent)
 qboolean CalculateTeamCarrier(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	/*
@@ -1353,7 +1353,7 @@ qboolean CalculateTeamCarrier(gentity_t *ent)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
 		nScore = player->client->pers.teamState.captures;
 		if (nScore > nHighestScore)
@@ -1376,7 +1376,7 @@ qboolean CalculateTeamCarrier(gentity_t *ent)
 qboolean CalculateTeamInterceptor(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	/*
@@ -1390,7 +1390,7 @@ qboolean CalculateTeamInterceptor(gentity_t *ent)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
 		nScore = player->client->pers.teamState.flagrecovery;
 		nScore += player->client->pers.teamState.fragcarrier;
@@ -1414,7 +1414,7 @@ qboolean CalculateTeamInterceptor(gentity_t *ent)
 qboolean CalculateTeamRedShirt(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
-				team = ent->client->ps.persistant[PERS_TEAM];
+				team = ent->client->pers.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
 	/*
@@ -1428,9 +1428,9 @@ qboolean CalculateTeamRedShirt(gentity_t *ent)
 	{
 		nScore = 0;
 		player = g_entities + i;
-		if (!player->inuse || (player->client->ps.persistant[PERS_TEAM] != team))
+		if (!player->inuse || (player->client->pers.persistant[PERS_TEAM] != team))
 			continue;
-		nScore = player->client->ps.persistant[PERS_KILLED];
+		nScore = player->client->pers.persistant[PERS_KILLED];
 		nScore -= player->client->ps.fd.suicides; // suicides don't count, you big cheater.
 		if (nScore > nHighestScore)
 		{

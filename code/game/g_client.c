@@ -1562,7 +1562,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	gclient_t	*client;
 	gentity_t	*tent;
 	int			flags, i;
-	int			spawnCount;
 	char		userinfo[MAX_INFO_VALUE];
 	const char	*modelname;
 	const char	*gameversion;
@@ -1596,7 +1595,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 			trap_SetUserinfo( clientNum, userinfo );
 
-			ent->client->ps.persistant[ PERS_TEAM ] = ent->client->sess.sessionTeam;
+			ent->client->pers.persistant[ PERS_TEAM ] = ent->client->sess.sessionTeam;
 
 			preSess = ent->client->sess.sessionTeam;
 			G_ReadSessionData( ent->client );
@@ -1628,8 +1627,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	// so the viewpoint doesn't interpolate through the
 	// world to the new position
 	flags = client->ps.eFlags;
-	// save spawn count to make sure CG_Respawn is called
-	spawnCount = client->ps.persistant[PERS_SPAWN_COUNT];
 
 	i = 0;
 
@@ -1656,7 +1653,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	memset( &client->ps, 0, sizeof( client->ps ) );
 	client->ps.eFlags = flags;
-	client->ps.persistant[PERS_SPAWN_COUNT] = spawnCount;
 
 	client->ps.hasDetPackPlanted = qfalse;
 
@@ -1789,7 +1785,6 @@ void ClientSpawn(gentity_t *ent) {
 	clientPersistant_t	saved;
 	clientSession_t		savedSess;
 	clientProfile_t		savedProf;
-	int		persistant[MAX_PERSISTANT];
 	gentity_t	*spawnPoint;
 	int		flags;
 	int		savedPing;
@@ -1870,7 +1865,6 @@ void ClientSpawn(gentity_t *ent) {
 	savedProf = client->prof;
 	savedPing = client->ps.ping;
 //	savedAreaBits = client->areabits;
-	memcpy( persistant, client->ps.persistant, sizeof( persistant ) );
 	eventSequence = client->ps.eventSequence;
 
 	savedForce = client->ps.fd;
@@ -1898,11 +1892,10 @@ void ClientSpawn(gentity_t *ent) {
 //	client->areabits = savedAreaBits;
 	client->lastkilled_client = -1;
 
-	memcpy( client->ps.persistant, persistant, sizeof( persistant ) );
 	client->ps.eventSequence = eventSequence;
 	// increment the spawncount so the client will detect the respawn
-	client->ps.persistant[PERS_SPAWN_COUNT]++;
-	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
+	client->pers.persistant[PERS_SPAWN_COUNT]++;
+	client->pers.persistant[PERS_TEAM] = client->sess.sessionTeam;
 
 	client->airOutTime = level.time + 12000;
 
@@ -2336,12 +2329,12 @@ void ClientDisconnect( int clientNum ) {
 		&& !level.intermissiontime
 		&& !level.warmupTime ) {
 		if ( level.sortedClients[1] == clientNum ) {
-			level.clients[ level.sortedClients[0] ].ps.persistant[PERS_SCORE] = 0;
+			level.clients[ level.sortedClients[0] ].pers.persistant[PERS_SCORE] = 0;
 			level.clients[ level.sortedClients[0] ].sess.wins++;
 			ClientUserinfoChanged( level.sortedClients[0] );
 		}
 		else if ( level.sortedClients[0] == clientNum ) {
-			level.clients[ level.sortedClients[1] ].ps.persistant[PERS_SCORE] = 0;
+			level.clients[ level.sortedClients[1] ].pers.persistant[PERS_SCORE] = 0;
 			level.clients[ level.sortedClients[1] ].sess.wins++;
 			ClientUserinfoChanged( level.sortedClients[1] );
 		}
@@ -2352,7 +2345,7 @@ void ClientDisconnect( int clientNum ) {
 	ent->inuse = qfalse;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
-	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
+	ent->client->pers.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "");

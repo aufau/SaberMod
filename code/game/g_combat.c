@@ -575,9 +575,9 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	// show score plum
 	//ScorePlum(ent, origin, score);
 	//
-	ent->client->ps.persistant[PERS_SCORE] += score;
+	ent->client->pers.persistant[PERS_SCORE] += score;
 	if ( level.gametype == GT_TEAM )
-		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
+		level.teamScores[ ent->client->pers.persistant[PERS_TEAM] ] += score;
 	CalculateRanks();
 }
 
@@ -915,9 +915,9 @@ void CheckAlmostCapture( gentity_t *self, gentity_t *attacker ) {
 			// if the player was *very* close
 			VectorSubtract( self->client->ps.origin, ent->s.origin, dir );
 			if ( VectorLength(dir) < 200 ) {
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+				self->client->pers.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
 				if ( attacker->client ) {
-					attacker->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
+					attacker->client->pers.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
 				}
 			}
 		}
@@ -1752,12 +1752,12 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 		AddScore( attacker, self->r.currentOrigin, 1 );
 	}
 
-	attacker->client->ps.persistant[PERS_KILLS]++;
+	attacker->client->pers.persistant[PERS_KILLS]++;
 
 	if( meansOfDeath == MOD_STUN_BATON ) {
 
 		// play humiliation on player
-		attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+		attacker->client->pers.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 
 		// add the sprite over the player's head
 		attacker->client->ps.eFlags &= ~EF_AWARDS;
@@ -1765,14 +1765,14 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
 		// also play humiliation on target
-		self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
+		self->client->pers.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
 	}
 
 	// check for two kills in a short amount of time
 	// if this is close enough to the last kill, give a reward sound
 	if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
 		// play excellent on player
-		attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
+		attacker->client->pers.persistant[PERS_EXCELLENT_COUNT]++;
 
 		// add the sprite over the player's head
 		attacker->client->ps.eFlags &= ~EF_AWARDS;
@@ -1863,12 +1863,12 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		G_LogPrintf(LOG_AUSTRIAN, "Duel Kill Details:\n");
 		G_LogPrintf(LOG_AUSTRIAN, "Kill Time: %d\n", level.time-spawnTime );
 		G_LogPrintf(LOG_AUSTRIAN, "victim: %s, hits on enemy %d\n",
-			self->client->pers.netname, self->client->ps.persistant[PERS_HITS] );
+			self->client->pers.netname, self->client->pers.persistant[PERS_HITS] );
 		if ( attacker && attacker->client )
 		{
 			G_LogPrintf(LOG_AUSTRIAN, "killer: %s, hits on enemy %d, health: %d\n",
 				attacker->client->pers.netname,
-				attacker->client->ps.persistant[PERS_HITS], attacker->health );
+				attacker->client->pers.persistant[PERS_HITS], attacker->health );
 			//also - if MOD_SABER, list the animation and saber style
 			if ( meansOfDeath == MOD_SABER )
 			{
@@ -2031,7 +2031,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	self->enemy = attacker;
 
-	self->client->ps.persistant[PERS_KILLED]++;
+	self->client->pers.persistant[PERS_KILLED]++;
 
 	if (self == attacker)
 	{
@@ -3196,9 +3196,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			&& targ->s.eType != ET_GENERAL
 			&& client) {
 		if ( OnSameTeam( targ, attacker ) ) {
-			attacker->client->ps.persistant[PERS_HITS]--;
+			attacker->client->pers.persistant[PERS_HITS]--;
 		} else {
-			attacker->client->ps.persistant[PERS_HITS]++;
+			attacker->client->pers.persistant[PERS_HITS]++;
 		}
 	}
 
@@ -3249,9 +3249,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// at the end of the frame
 	if ( client ) {
 		if ( attacker ) {
-			client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
+			client->pers.persistant[PERS_ATTACKER] = attacker->s.number;
 		} else {
-			client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
+			client->pers.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
 		}
 		client->damage_armor += asave;
 		client->damage_blood += take;

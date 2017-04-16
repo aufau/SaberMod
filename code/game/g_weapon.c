@@ -567,7 +567,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		// reload time is only 600ms so make it harder than in q3a
 		if ( ent->client->accurateCount >= 3 ) {
 			ent->client->accurateCount = 0;
-			ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+			ent->client->pers.persistant[PERS_IMPRESSIVE_COUNT]++;
 			ent->client->ps.eFlags &= ~EF_AWARDS;
 			ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
 			ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;

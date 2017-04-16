@@ -43,7 +43,6 @@ DeathmatchScoreboardMessage
 ==================
 */
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
-	const int	*persistant;
 	char		entry[1024];
 	char		string[1400];
 	int			stringlength;
@@ -68,16 +67,6 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 		cl = &level.clients[level.sortedClients[i]];
 
-		if (cl->sess.sessionTeam != TEAM_SPECTATOR &&
-			cl->sess.spectatorState != SPECTATOR_NOT)
-		{
-			persistant = cl->pers.saved;
-		}
-		else
-		{
-			persistant = cl->ps.persistant;
-		}
-
 		if ( cl->pers.connected == CON_CONNECTING ) {
 			ping = -1;
 		} else {
@@ -100,23 +89,23 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		Com_sprintf (entry, sizeof(entry),
 			" %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
 			level.sortedClients[i],
-			persistant[PERS_SCORE],
+			cl->pers.persistant[PERS_SCORE],
 			ping,
 			(level.time - cl->pers.enterTime)/60000,
 			scoreFlags,
 			g_entities[level.sortedClients[i]].s.powerups,
 			accuracy,
-			persistant[PERS_KILLED],
-			persistant[PERS_KILLS],
+			cl->pers.persistant[PERS_KILLED],
+			cl->pers.persistant[PERS_KILLS],
 			netDamage,
 //			persistant[PERS_IMPRESSIVE_COUNT],
 //			persistant[PERS_EXCELLENT_COUNT],
 //			persistant[PERS_GAUNTLET_FRAG_COUNT],
-			persistant[PERS_DEFEND_COUNT],
-			persistant[PERS_ASSIST_COUNT],
+			cl->pers.persistant[PERS_DEFEND_COUNT],
+			cl->pers.persistant[PERS_ASSIST_COUNT],
 			dead,
 //			perfect,
-			persistant[PERS_CAPTURES]);
+			cl->pers.persistant[PERS_CAPTURES]);
 		j = strlen(entry);
 		if (stringlength + j > 1022)
 			break;
@@ -466,14 +455,14 @@ void Cmd_Give_f (gentity_t *ent)
 	}
 
 	if (Q_stricmp(name, "excellent") == 0) {
-		ent->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
+		ent->client->pers.persistant[PERS_EXCELLENT_COUNT]++;
 		ent->client->ps.eFlags &= ~EF_AWARDS;
 		ent->client->ps.eFlags |= EF_AWARD_EXCELLENT;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "impressive") == 0) {
-		ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+		ent->client->pers.persistant[PERS_IMPRESSIVE_COUNT]++;
 		ent->client->ps.eFlags &= ~EF_AWARDS;
 		ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
@@ -481,35 +470,35 @@ void Cmd_Give_f (gentity_t *ent)
 	}
 	if (Q_stricmp(name, "gauntletaward") == 0 ||
 		Q_stricmp(name, "humiliation") == 0) {
-		ent->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+		ent->client->pers.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 		ent->client->ps.eFlags &= ~EF_AWARDS;
 		ent->client->ps.eFlags |= EF_AWARD_GAUNTLET;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "denied") == 0) {
-		ent->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
+		ent->client->pers.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
 		ent->s.eFlags &= ~EF_AWARDS;
 		ent->s.eFlags |= EF_AWARD_DENIED;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "capture") == 0) {
-		ent->client->ps.persistant[PERS_CAPTURES]++;
+		ent->client->pers.persistant[PERS_CAPTURES]++;
 		ent->s.eFlags &= ~EF_AWARDS;
 		ent->s.eFlags |= EF_AWARD_CAP;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "defend") == 0) {
-		ent->client->ps.persistant[PERS_DEFEND_COUNT]++;
+		ent->client->pers.persistant[PERS_DEFEND_COUNT]++;
 		ent->s.eFlags &= ~EF_AWARDS;
 		ent->s.eFlags |= EF_AWARD_DEFEND;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "assist") == 0) {
-		ent->client->ps.persistant[PERS_ASSIST_COUNT]++;
+		ent->client->pers.persistant[PERS_ASSIST_COUNT]++;
 		ent->s.eFlags &= ~EF_AWARDS;
 		ent->s.eFlags |= EF_AWARD_ASSIST;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
@@ -750,9 +739,6 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	assert( !(team == TEAM_SPECTATOR && specState == SPECTATOR_NOT) );
 
 	if ( !oldSpec && newSpec ) {
-		// save persistant fields for following spectators
-		memcpy( client->pers.saved, client->ps.persistant, sizeof( client->ps.persistant ) );
-
 		// if the player was dead leave the body
 		CopyToBodyQue(ent);
 
@@ -782,8 +768,6 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 				tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN, clientNum );
 				tent->s.clientNum = ent->s.number;
 
-				// restore persistant fields
-				memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
 				// don't keep force powers of last followed player
 				ent->client->ps.fd.forceDoInit = qtrue;
 			}
@@ -931,8 +915,7 @@ void StopFollowing( gentity_t *ent ) {
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
 	client->sess.spectatorState = SPECTATOR_FREE;
-	memcpy(client->ps.persistant, client->pers.saved, sizeof( client->ps.persistant ) );
-	client->ps.persistant[ PERS_TEAM ] = client->sess.sessionTeam;
+	memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;
 	client->ps.eFlags &= ~EF_DISINTEGRATION;

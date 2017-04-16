@@ -1908,6 +1908,8 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 	int			clientNum;
 
 	if ( ent->r.svFlags & SVF_BOT ) {
+		// always update ps.persistant before returning
+		memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 		return;
 	}
 
@@ -1989,6 +1991,8 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 	} else {
 		client->ps.pm_flags &= ~PMF_SCOREBOARD;
 	}
+
+	memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 }
 
 /*
@@ -2001,6 +2005,7 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 ==============
 */
 void ClientEndFrame( gentity_t *ent ) {
+	gclient_t	*client = ent->client;
 	int			i;
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT ) {
@@ -2028,6 +2033,7 @@ void ClientEndFrame( gentity_t *ent ) {
 	// the player any normal movement attributes
 	//
 	if ( level.intermissiontime ) {
+		memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 		return;
 	}
 
@@ -2056,6 +2062,8 @@ void ClientEndFrame( gentity_t *ent ) {
 		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qtrue );
 	}
 	SendPendingPredictableEvents( &ent->client->ps );
+
+	memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 
 	// set the bit for the reachability area the client is currently in
 //	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );

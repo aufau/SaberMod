@@ -441,7 +441,9 @@ typedef struct {
 	vote_t		vote;
 	vote_t		teamVote;
 
-	int			saved[MAX_PERSISTANT];	// saved ps.persistant
+	int			persistant[MAX_PERSISTANT];	// persistant fields for current
+											// player. ps.persistant is updated
+											// in ClientEndFrame
 } clientPersistant_t;
 
 // client data that stays across reconnections.

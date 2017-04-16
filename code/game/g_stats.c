@@ -83,17 +83,7 @@ static const playerStat_t ictfColumns[] =
 
 static void GetStats( int *stats, gclient_t *cl )
 {
-	const int *persistant;
-
-	if (cl->sess.sessionTeam != TEAM_SPECTATOR &&
-		cl->sess.spectatorState != SPECTATOR_NOT)
-	{
-		persistant = cl->pers.saved;
-	}
-	else
-	{
-		persistant = cl->ps.persistant;
-	}
+	const int *persistant = cl->pers.persistant;
 
 	stats[STATS_SCORE] = persistant[PERS_SCORE];
 	stats[STATS_CAPS] = persistant[PERS_CAPTURES];
