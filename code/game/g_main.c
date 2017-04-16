@@ -1127,8 +1127,8 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	// if ( tb )       return -1;
 
 	// sort special clients last
-	ta = (int)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0);
-	tb = (int)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0);
+	ta = (int)(ca->sess.spectatorState == SPECTATOR_SCOREBOARD);
+	tb = (int)(cb->sess.spectatorState == SPECTATOR_SCOREBOARD);
 	if (ta || tb) {
 		return ta - tb;
 	}
@@ -1144,6 +1144,13 @@ int QDECL SortRanks( const int *a, const int *b ) {
 	ta = (int)(ca->sess.sessionTeam == TEAM_SPECTATOR);
 	tb = (int)(cb->sess.sessionTeam == TEAM_SPECTATOR);
 	if (ta && tb) {
+		ta = (int)(ca->sess.spectatorClient < 0);
+		tb = (int)(cb->sess.spectatorClient < 0);
+
+		// dedicated followers are last (GT_TOURNAMENT)
+		if (ta && !tb)	return 1;
+		if (!ta && tb)	return -1;
+
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
 		}
