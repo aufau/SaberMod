@@ -791,6 +791,7 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "ui_about_hostname",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_needpass",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_botminplayers",	"0", CVAR_ROM|CVAR_INTERNAL );
+	trap_Cvar_Register(NULL, "ui_about_motd",			"0", CVAR_ROM|CVAR_INTERNAL );
 }
 
 /*
@@ -2570,6 +2571,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 			CG_UpdateConfigString( i, qtrue );
 		}
 	}
+
+	// new config strings
+	CG_UpdateConfigString( CS_INGAME_MOTD, qtrue );
 
 	// load the new map
 	CG_LoadingString( "collision map" );

@@ -505,6 +505,9 @@ void CG_UpdateConfigString( int num, qboolean init )
 		case CS_SHADERSTATE:
 			CG_ShaderStateChanged( str );
 			break;
+		case CS_INGAME_MOTD:
+			trap_Cvar_Set( "ui_about_motd", va( "%d", (int)( str[0] != '\0' ) ) );
+			break;
 		default:
 			break;
 		}
