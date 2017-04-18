@@ -1196,7 +1196,7 @@ void CalculateRanks( void ) {
 	int		score;
 	int		newScore;
 	int		voteCount[VOTE_MAX] = { 0 };
-	int		teamVoteCount[2][VOTE_MAX] = { 0 };
+	int		teamVoteCount[2][VOTE_MAX] = { { 0 } };
 	// int		preNumSpec = level.numNonSpectatorClients;
 	// int		nonSpecIndex = -1;
 	gclient_t	*cl;
