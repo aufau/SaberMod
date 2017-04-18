@@ -270,12 +270,12 @@ void trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba,
 
 qboolean trap_Language_IsAsian(void)
 {
-	return syscall( CG_LANGUAGE_ISASIAN );
+	return (qboolean)syscall( CG_LANGUAGE_ISASIAN );
 }
 
 qboolean trap_Language_UsesSpaces(void)
 {
-	return syscall( CG_LANGUAGE_USESSPACES );
+	return (qboolean)syscall( CG_LANGUAGE_USESSPACES );
 }
 
 unsigned int trap_AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation/* = NULL*/ )
@@ -389,11 +389,11 @@ void		trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime ) {
 }
 
 qboolean	trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
-	return syscall( CG_GETSNAPSHOT, snapshotNumber, snapshot );
+	return (qboolean)syscall( CG_GETSNAPSHOT, snapshotNumber, snapshot );
 }
 
 qboolean	trap_GetServerCommand( int serverCommandNumber ) {
-	return syscall( CG_GETSERVERCOMMAND, serverCommandNumber );
+	return (qboolean)syscall( CG_GETSERVERCOMMAND, serverCommandNumber );
 }
 
 int			trap_GetCurrentCmdNumber( void ) {
@@ -401,7 +401,7 @@ int			trap_GetCurrentCmdNumber( void ) {
 }
 
 qboolean	trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
-	return syscall( CG_GETUSERCMD, cmdNumber, ucmd );
+	return (qboolean)syscall( CG_GETUSERCMD, cmdNumber, ucmd );
 }
 
 void		trap_SetUserCmdValue( int stateValue, float sensitivityScale, int fpSel, int invenSel ) {
@@ -436,7 +436,7 @@ int trap_MemoryRemaining( void ) {
 }
 
 qboolean trap_Key_IsDown( int keynum ) {
-	return syscall( CG_KEY_ISDOWN, keynum );
+	return (qboolean)syscall( CG_KEY_ISDOWN, keynum );
 }
 
 int trap_Key_GetCatcher( void ) {
@@ -501,13 +501,13 @@ int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int
 // stops playing the cinematic and ends it.  should always return FMV_EOF
 // cinematics must be stopped in reverse order of when they are started
 e_status trap_CIN_StopCinematic(int handle) {
-  return syscall(CG_CIN_STOPCINEMATIC, handle);
+  return (e_status)syscall(CG_CIN_STOPCINEMATIC, handle);
 }
 
 
 // will run a frame of the cinematic but will not draw it.  Will return FMV_EOF if the end of the cinematic has been reached.
 e_status trap_CIN_RunCinematic (int handle) {
-  return syscall(CG_CIN_RUNCINEMATIC, handle);
+  return (e_status)syscall(CG_CIN_RUNCINEMATIC, handle);
 }
 
 
@@ -523,11 +523,11 @@ void trap_CIN_SetExtents (int handle, int x, int y, int w, int h) {
 }
 
 qboolean trap_GetEntityToken( char *buffer, int bufferSize ) {
-	return syscall( CG_GET_ENTITY_TOKEN, buffer, bufferSize );
+	return (qboolean)syscall( CG_GET_ENTITY_TOKEN, buffer, bufferSize );
 }
 
 qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 ) {
-	return syscall( CG_R_INPVS, p1, p2 );
+	return (qboolean)syscall( CG_R_INPVS, p1, p2 );
 }
 
 int	trap_FX_RegisterEffect(const char *file)
@@ -584,7 +584,7 @@ int	trap_FX_InitSystem( void )
 
 qboolean trap_FX_FreeSystem( void )
 {
-	return syscall( CG_FX_FREE_SYSTEM );
+	return (qboolean)syscall( CG_FX_FREE_SYSTEM );
 }
 
 void trap_FX_AdjustTime( int time, vec3_t vieworg, vec3_t viewaxis[3] )
@@ -624,12 +624,12 @@ int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength
 
 qboolean trap_SP_Register(const char *file )
 {
-	return syscall( CG_SP_REGISTER,file );
+	return (qboolean)syscall( CG_SP_REGISTER,file );
 }
 
 qboolean trap_ROFF_Clean( void )
 {
-	return syscall( CG_ROFF_CLEAN );
+	return (qboolean)syscall( CG_ROFF_CLEAN );
 }
 
 void trap_ROFF_UpdateEntities( void )
@@ -644,12 +644,12 @@ int trap_ROFF_Cache( char *file )
 
 qboolean trap_ROFF_Play( int entID, int roffID, qboolean doTranslation )
 {
-	return syscall( CG_ROFF_PLAY, entID, roffID, doTranslation );
+	return (qboolean)syscall( CG_ROFF_PLAY, entID, roffID, doTranslation );
 }
 
 qboolean trap_ROFF_Purge_Ent( int entID )
 {
-	return syscall( CG_ROFF_PURGE_ENT, entID );
+	return (qboolean)syscall( CG_ROFF_PURGE_ENT, entID );
 }
 
 /*
@@ -732,13 +732,13 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 								const int up, const int right, const int forward, qhandle_t *modelList,
 								int blendTime , int currentTime )
 {
-	return (syscall(CG_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime));
+	return (qboolean)syscall(CG_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime);
 }
 
 qboolean trap_G2API_SetBoneAnim(void *ghoul2, const int modelIndex, const char *boneName, const int startFrame, const int endFrame,
 							  const int flags, const float animSpeed, const int currentTime, const float setFrame , const int blendTime )
 {
-	return syscall(CG_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
+	return (qboolean)syscall(CG_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
 }
 
 void trap_G2API_GetGLAName(void *ghoul2, int modelIndex, char *fillBuf)
@@ -763,12 +763,12 @@ void trap_G2API_DuplicateGhoul2Instance(void *g2From, void **g2To)
 
 qboolean trap_G2API_HasGhoul2ModelOnIndex(void *ghlInfo, int modelIndex)
 {
-	return syscall(CG_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
+	return (qboolean)syscall(CG_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
 }
 
 qboolean trap_G2API_RemoveGhoul2Model(void *ghlInfo, int modelIndex)
 {
-	return syscall(CG_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
+	return (qboolean)syscall(CG_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
 }
 
 int	trap_G2API_AddBolt(void *ghoul2, int modelIndex, const char *boneName)
@@ -783,17 +783,17 @@ void trap_G2API_SetBoltInfo(void *ghoul2, int modelIndex, int boltInfo)
 
 qboolean trap_G2API_SetRootSurface(void *ghoul2, const int modelIndex, const char *surfaceName)
 {
-	return syscall(CG_G2_SETROOTSURFACE, ghoul2, modelIndex, surfaceName);
+	return (qboolean)syscall(CG_G2_SETROOTSURFACE, ghoul2, modelIndex, surfaceName);
 }
 
 qboolean trap_G2API_SetSurfaceOnOff(void *ghoul2, const char *surfaceName, const int flags)
 {
-	return syscall(CG_G2_SETSURFACEONOFF, ghoul2, surfaceName, flags);
+	return (qboolean)syscall(CG_G2_SETSURFACEONOFF, ghoul2, surfaceName, flags);
 }
 
 qboolean trap_G2API_SetNewOrigin(void *ghoul2, const int boltIndex)
 {
-	return syscall(CG_G2_SETNEWORIGIN, ghoul2, boltIndex);
+	return (qboolean)syscall(CG_G2_SETNEWORIGIN, ghoul2, boltIndex);
 }
 
 void trap_CG_RegisterSharedMemory(char *memory)
@@ -806,5 +806,5 @@ Ghoul2 Insert End
 */
 
 qboolean trap_MVAPI_ControlFixes(int fixes) {
-	return syscall(MVAPI_CONTROL_FIXES, fixes);
+	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }

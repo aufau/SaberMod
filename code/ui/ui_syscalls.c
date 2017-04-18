@@ -157,12 +157,12 @@ void trap_R_Font_DrawString(int ox, int oy, const char *text, const float *rgba,
 
 qboolean trap_Language_IsAsian(void)
 {
-	return syscall( UI_LANGUAGE_ISASIAN );
+	return (qboolean)syscall( UI_LANGUAGE_ISASIAN );
 }
 
 qboolean trap_Language_UsesSpaces(void)
 {
-	return syscall( UI_LANGUAGE_USESSPACES );
+	return (qboolean)syscall( UI_LANGUAGE_USESSPACES );
 }
 
 unsigned int trap_AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation )
@@ -235,11 +235,11 @@ void trap_Key_SetBinding( int keynum, const char *binding ) {
 }
 
 qboolean trap_Key_IsDown( int keynum ) {
-	return syscall( UI_KEY_ISDOWN, keynum );
+	return (qboolean)syscall( UI_KEY_ISDOWN, keynum );
 }
 
 qboolean trap_Key_GetOverstrikeMode( void ) {
-	return syscall( UI_KEY_GETOVERSTRIKEMODE );
+	return (qboolean)syscall( UI_KEY_GETOVERSTRIKEMODE );
 }
 
 void trap_Key_SetOverstrikeMode( qboolean state ) {
@@ -331,7 +331,7 @@ int trap_LAN_ServerIsVisible( int source, int n) {
 }
 
 qboolean trap_LAN_UpdateVisiblePings( int source ) {
-	return syscall( UI_LAN_UPDATEVISIBLEPINGS, source );
+	return (qboolean)syscall( UI_LAN_UPDATEVISIBLEPINGS, source );
 }
 
 int trap_LAN_AddServer(int source, const char *name, const char *addr) {
@@ -416,13 +416,13 @@ int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int
 // stops playing the cinematic and ends it.  should always return FMV_EOF
 // cinematics must be stopped in reverse order of when they are started
 e_status trap_CIN_StopCinematic(int handle) {
-  return syscall(UI_CIN_STOPCINEMATIC, handle);
+  return (e_status)syscall(UI_CIN_STOPCINEMATIC, handle);
 }
 
 
 // will run a frame of the cinematic but will not draw it.  Will return FMV_EOF if the end of the cinematic has been reached.
 e_status trap_CIN_RunCinematic (int handle) {
-  return syscall(UI_CIN_RUNCINEMATIC, handle);
+  return (e_status)syscall(UI_CIN_RUNCINEMATIC, handle);
 }
 
 
@@ -444,7 +444,7 @@ void	trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 
 qboolean trap_SP_Register( const char *file )
 {
-	return syscall( UI_SP_REGISTER,file );
+	return (qboolean)syscall( UI_SP_REGISTER,file );
 }
 
 int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength)
@@ -458,7 +458,7 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 								const int up, const int right, const int forward, qhandle_t *modelList,
 								int blendTime , int currentTime )
 {
-	return (syscall(UI_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime));
+	return (qboolean)syscall(UI_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime);
 }
 
 /*

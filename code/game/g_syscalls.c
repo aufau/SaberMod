@@ -148,11 +148,11 @@ int trap_PointContents( const vec3_t point, int passEntityNum ) {
 
 
 qboolean trap_InPVS( const vec3_t p1, const vec3_t p2 ) {
-	return syscall( G_IN_PVS, p1, p2 );
+	return (qboolean)syscall( G_IN_PVS, p1, p2 );
 }
 
 qboolean trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 ) {
-	return syscall( G_IN_PVS_IGNORE_PORTALS, p1, p2 );
+	return (qboolean)syscall( G_IN_PVS_IGNORE_PORTALS, p1, p2 );
 }
 
 void trap_AdjustAreaPortalState( gentity_t *ent, qboolean open ) {
@@ -160,7 +160,7 @@ void trap_AdjustAreaPortalState( gentity_t *ent, qboolean open ) {
 }
 
 qboolean trap_AreasConnected( int area1, int area2 ) {
-	return syscall( G_AREAS_CONNECTED, area1, area2 );
+	return (qboolean)syscall( G_AREAS_CONNECTED, area1, area2 );
 }
 
 void trap_LinkEntity( gentity_t *ent ) {
@@ -176,7 +176,7 @@ int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int *entityList, i
 }
 
 qboolean trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent ) {
-	return syscall( G_ENTITY_CONTACT, mins, maxs, ent );
+	return (qboolean)syscall( G_ENTITY_CONTACT, mins, maxs, ent );
 }
 
 int trap_BotAllocateClient( void ) {
@@ -192,7 +192,7 @@ void trap_GetUsercmd( int clientNum, usercmd_t *cmd ) {
 }
 
 qboolean trap_GetEntityToken( char *buffer, int bufferSize ) {
-	return syscall( G_GET_ENTITY_TOKEN, buffer, bufferSize );
+	return (qboolean)syscall( G_GET_ENTITY_TOKEN, buffer, bufferSize );
 }
 
 int trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize ) {
@@ -220,12 +220,12 @@ void trap_TraceCapsule( trace_t *results, const vec3_t start, const vec3_t mins,
 }
 
 qboolean trap_EntityContactCapsule( const vec3_t mins, const vec3_t maxs, const gentity_t *ent ) {
-	return syscall( G_ENTITY_CONTACTCAPSULE, mins, maxs, ent );
+	return (qboolean)syscall( G_ENTITY_CONTACTCAPSULE, mins, maxs, ent );
 }
 
 qboolean trap_SP_RegisterServer( const char *package )
 {
-	return syscall( SP_REGISTER_SERVER_CMD, package );
+	return (qboolean)syscall( SP_REGISTER_SERVER_CMD, package );
 }
 
 int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength)
@@ -235,7 +235,7 @@ int trap_SP_GetStringTextString(const char *text, char *buffer, int bufferLength
 
 qboolean trap_ROFF_Clean( void )
 {
-	return syscall( G_ROFF_CLEAN );
+	return (qboolean)syscall( G_ROFF_CLEAN );
 }
 
 void trap_ROFF_UpdateEntities( void )
@@ -250,12 +250,12 @@ int trap_ROFF_Cache( char *file )
 
 qboolean trap_ROFF_Play( int entID, int roffID, qboolean doTranslation )
 {
-	return syscall( G_ROFF_PLAY, entID, roffID, doTranslation );
+	return (qboolean)syscall( G_ROFF_PLAY, entID, roffID, doTranslation );
 }
 
 qboolean trap_ROFF_Purge_Ent( int entID )
 {
-	return syscall( G_ROFF_PURGE_ENT, entID );
+	return (qboolean)syscall( G_ROFF_PURGE_ENT, entID );
 }
 
 // BotLib traps start here
@@ -890,13 +890,13 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 								const int up, const int right, const int forward, qhandle_t *modelList,
 								int blendTime , int currentTime )
 {
-	return (syscall(G_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime));
+	return (qboolean)syscall(G_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime);
 }
 
 qboolean trap_G2API_SetBoneAnim(void *ghoul2, const int modelIndex, const char *boneName, const int startFrame, const int endFrame,
 							  const int flags, const float animSpeed, const int currentTime, const float setFrame , const int blendTime )
 {
-	return syscall(G_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
+	return (qboolean)syscall(G_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
 }
 
 void trap_G2API_GetGLAName(void *ghoul2, int modelIndex, char *fillBuf)
@@ -921,12 +921,12 @@ void trap_G2API_DuplicateGhoul2Instance(void *g2From, void **g2To)
 
 qboolean trap_G2API_HasGhoul2ModelOnIndex(void *ghlInfo, int modelIndex)
 {
-	return syscall(G_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
+	return (qboolean)syscall(G_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
 }
 
 qboolean trap_G2API_RemoveGhoul2Model(void *ghlInfo, int modelIndex)
 {
-	return syscall(G_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
+	return (qboolean)syscall(G_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
 }
 
 void trap_G2API_CleanGhoul2Models(void **ghoul2Ptr)
@@ -958,16 +958,16 @@ Ghoul2 Insert End
 
 qboolean trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message)
 {
-	return syscall(MVAPI_SEND_CONNECTIONLESSPACKET, addr, message);
+	return (qboolean)syscall(MVAPI_SEND_CONNECTIONLESSPACKET, addr, message);
 }
 qboolean trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize)
 {
-	return syscall(MVAPI_GET_CONNECTIONLESSPACKET, addr, buf, bufsize);
+	return (qboolean)syscall(MVAPI_GET_CONNECTIONLESSPACKET, addr, buf, bufsize);
 }
 qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t)
 {
-	return syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
+	return (qboolean)syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
 }
 qboolean trap_MVAPI_ControlFixes(int fixes) {
-	return syscall(MVAPI_CONTROL_FIXES, fixes);
+	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }
