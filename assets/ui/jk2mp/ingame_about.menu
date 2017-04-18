@@ -294,13 +294,24 @@
 		itemDef
 		{
 			name                    about
-			rect                    10 180 300 20
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 185 300 25
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_about_motd
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 185 300 20
 			type                    1
 			style                   0
 			text                    @SABERMENUS_SHOW_MOTD
 			textalign               ITEM_ALIGN_CENTER
 			textalignx              150
-			textaligny              6
 			font                    2
 			textscale               .8
 			forecolor               0.65 0.65 1 1
@@ -315,6 +326,7 @@
 				play                    "sound/interface/button1.wav" ;
 				exec                    "motd" ;
 				uiScript                closeingame
+				setCvar                 ui_visited_about_motd 1 ;
 			}
 		}
 

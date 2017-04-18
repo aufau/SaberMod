@@ -7293,6 +7293,19 @@ void UI_RegisterCvars( void ) {
 	for ( cv = cvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
+
+	trap_Cvar_Register( NULL, "ui_visited_about", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_about_motd", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_join", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_setup", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_setup_modoptions", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_misc", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_rules", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_mode", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_kick", "0", CVAR_ARCHIVE );
 }
 
 /*

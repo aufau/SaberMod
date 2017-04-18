@@ -42,6 +42,18 @@
 
 		itemDef
 		{
+			name                    aboutButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    5 0 70 32
+			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_about
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    aboutButton
 			group                   none
 			style                   WINDOW_STYLE_SHADER
@@ -71,6 +83,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_about 1 ;
 				open                    ingame_about ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
@@ -83,6 +96,18 @@
 			{
 				hide                    aboutButton
 			}
+		}
+
+		itemDef
+		{
+			name                    joinButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    75 0 70 32
+			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_join
+			hideCvar                { 1 }
 		}
 
 		itemDef
@@ -121,6 +146,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_join 1 ;
 				open                    ingame_join ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
@@ -277,6 +303,18 @@
 
 		itemDef
 		{
+			name                    setupButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    355 0 70 32
+			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_setup
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    setupButton
 			group                   none
 			style                   WINDOW_STYLE_SHADER
@@ -308,6 +346,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_setup 1 ;
 				open                    ingame_setup ;
 				close					ingame_setup_original ;
 			}
@@ -407,6 +446,18 @@
 
 		itemDef
 		{
+			name                    callvoteButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    495 0 70 32
+			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_callvote
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    callvoteButton
 			group                   none
 			style                   WINDOW_STYLE_SHADER
@@ -442,6 +493,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_callvote 1 ;
 				open                    ingame_callvote ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
