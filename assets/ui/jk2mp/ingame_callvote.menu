@@ -61,6 +61,18 @@
 		// BUTTONS //
 		itemDef
 		{
+			name                    misc_glow_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 43 103 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_misc
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    misc_glow
 			group                   glows
 			style                   WINDOW_STYLE_SHADER
@@ -95,6 +107,7 @@
 				show                    misc ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            miscbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_callvote_misc 1 ;
 			}
 			mouseEnter
 			{
@@ -104,6 +117,18 @@
 			{
 				hide                    misc_glow
 			}
+		}
+
+		itemDef
+		{
+			name                    rules_glow_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 73 103 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_rules
+			hideCvar                { 1 }
 		}
 
 		itemDef
@@ -142,6 +167,7 @@
 				show                    rules ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            rulesbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_callvote_rules 1 ;
 				setCvar                 ui_voteRule 0 ;
 				uiScript                rulesInit
 			}
@@ -153,6 +179,18 @@
 			{
 				hide                    rules_glow
 			}
+		}
+
+		itemDef
+		{
+			name                    mode_glow_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 103 103 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_mode
+			hideCvar                { 1 }
 		}
 
 		itemDef
@@ -192,6 +230,7 @@
 				show                    mode ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            modebutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_callvote_mode 1 ;
 			}
 			mouseEnter
 			{
@@ -201,6 +240,18 @@
 			{
 				hide                    mode_glow
 			}
+		}
+
+		itemDef
+		{
+			name                    changemap_glow_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 133 103 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_map
+			hideCvar                { 1 }
 		}
 
 		itemDef
@@ -240,6 +291,7 @@
 				show                    map ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            changemapbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_callvote_map 1 ;
 			}
 			mouseEnter
 			{
@@ -249,6 +301,18 @@
 			{
 				hide                    changemap_glow
 			}
+		}
+
+		itemDef
+		{
+			name                    kick_glow_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    10 163 103 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_kick
+			hideCvar                { 1 }
 		}
 
 		itemDef
@@ -287,6 +351,7 @@
 				show                    kick ;
 				setitemcolor            grpbutton forecolor 0.65 0.65 1 1 ;
 				setitemcolor            kickbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_callvote_kick 1 ;
 			}
 			mouseEnter
 			{
@@ -892,6 +957,19 @@
 		{
 			name                    map
 			group                   grpCallVote
+			style                   WINDOW_STYLE_SHADER
+			rect                    120 25 -230 20
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			visible                 1
+			decoration
+			cvarTest                ui_visited_callvote_map_display
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
+			name                    map
+			group                   grpCallVote
 			type                    ITEM_TYPE_MULTI
 			text                    @SABERMENUS_DISPLAY_NAME
 			descText                @SABERMENUS_DISPLAY_NAME_DESC
@@ -908,6 +986,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_callvote_map_display 1 ;
 			}
 		}
 

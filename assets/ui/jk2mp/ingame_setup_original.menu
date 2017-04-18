@@ -333,6 +333,19 @@
 		// mod options button
 		itemDef
 		{
+			name                    modoptionsbutton_new
+			style                   WINDOW_STYLE_SHADER
+			rect                    20 163 170 30
+			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+			cvarTest                ui_visited_setup_modoptions
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    modoptionsbutton_glow
 			style                   WINDOW_STYLE_SHADER
 			rect                    20 163 170 30
@@ -389,6 +402,7 @@
 
 				setitemcolor            setup_submenu forecolor 0.65 0.65 1 1 ;
 				setitemcolor            modoptionsbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_setup_modoptions 1 ;
 			}
 		}
 
