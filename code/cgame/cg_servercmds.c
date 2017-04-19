@@ -181,7 +181,6 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
-	cgs.duel_fraglimit = atoi( Info_ValueForKey( info, "duel_fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
@@ -202,7 +201,6 @@ static void CG_ParseServerinfo( const char *info ) {
 
 	trap_Cvar_Set ( "ui_about_gametype", va("%i", cgs.gametype ) );
 	trap_Cvar_Set ( "ui_about_fraglimit", va("%i", cgs.fraglimit ) );
-	trap_Cvar_Set ( "ui_about_duellimit", va("%i", cgs.duel_fraglimit ) );
 	trap_Cvar_Set ( "ui_about_capturelimit", va("%i", cgs.capturelimit ) );
 	trap_Cvar_Set ( "ui_about_timelimit", va("%i", cgs.timelimit ) );
 	trap_Cvar_Set ( "ui_about_roundlimit", va("%i", cgs.roundlimit ) );

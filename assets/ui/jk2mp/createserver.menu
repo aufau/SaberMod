@@ -420,7 +420,7 @@
 			type                    ITEM_TYPE_NUMERICFIELD
 			text                    @MENUS0_DUEL_LIMIT
 			descText                @MENUS0_VALUE_ADJUSTS_THE_TOTAL
-			cvar                    "duel_fraglimit"
+			cvar                    "roundlimit"
 			// ownerdrawflag UI_SHOW_NETANYNONTEAMGAME
 			cvarTest                "ui_netGameType"
 			showCvar
