@@ -281,7 +281,7 @@ void CG_DrawInformation( void ) {
 
 		if (cgs.gametype == GT_TOURNAMENT)
 		{
-			value = atoi( Info_ValueForKey( info, "duel_fraglimit" ) );
+			value = atoi( Info_ValueForKey( info, "roundlimit" ) );
 			if ( value ) {
 				UI_DrawProportionalString( 320, y, va( "%s %i", CG_GetStripEdString("INGAMETEXT", "WINLIMIT"), value ),
 					UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );

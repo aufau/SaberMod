@@ -1359,7 +1359,6 @@ typedef struct {
 	int				dmflags;
 	int				teamflags;
 	int				fraglimit;
-	int				duel_fraglimit;
 	int				capturelimit;
 	int				timelimit;
 	int				roundlimit;
