@@ -7295,6 +7295,7 @@ void UI_RegisterCvars( void ) {
 	}
 
 	trap_Cvar_Register( NULL, "ui_visited_about", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_about_motd", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_join", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_setup", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_setup_modoptions", "0", CVAR_ARCHIVE );
