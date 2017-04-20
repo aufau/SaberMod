@@ -7294,17 +7294,17 @@ void UI_RegisterCvars( void ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
 
-	trap_Cvar_Register( NULL, "ui_visited_about", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_join", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_setup", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_setup_modoptions", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_misc", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_rules", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_mode", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_kick", "", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_about", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_join", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_setup", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_setup_modoptions", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_misc", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_rules", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_mode", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_kick", "0", CVAR_ARCHIVE );
 }
 
 /*
