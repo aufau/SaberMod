@@ -1,9 +1,9 @@
-gfx/menus/menu_buttonbackr
+gfx/menus/menu_buttonback_new
 {
 	nopicmip
 	nomipmaps
     {
-        map gfx/menus/menu_buttonbackr
+        map gfx/menus/menu_buttonback_new
         blendFunc add
     }
     {
@@ -28,12 +28,12 @@ gfx/menus/menu_buttonbackr
     }
 }
 
-gfx/menus/menu_blendbox2r
+gfx/menus/menu_blendbox2_new
 {
 	nopicmip
 	nomipmaps
     {
-        map gfx/menus/menu_buttonback2r
+        map gfx/menus/menu_buttonback2_new
         blendFunc add
     }
     {

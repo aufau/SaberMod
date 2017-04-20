@@ -336,7 +336,7 @@
 			name                    modoptionsbutton_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    20 163 170 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			forecolor               1 1 1 1
 			visible                 1
 			decoration

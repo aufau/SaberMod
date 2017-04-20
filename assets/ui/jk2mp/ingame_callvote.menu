@@ -64,7 +64,7 @@
 			name                    misc_glow_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 43 103 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_misc
@@ -124,7 +124,7 @@
 			name                    rules_glow_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 73 103 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_rules
@@ -186,7 +186,7 @@
 			name                    mode_glow_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 103 103 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_mode
@@ -247,7 +247,7 @@
 			name                    changemap_glow_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 133 103 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_map
@@ -308,7 +308,7 @@
 			name                    kick_glow_new
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 163 103 30
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_kick
@@ -959,7 +959,7 @@
 			group                   grpCallVote
 			style                   WINDOW_STYLE_SHADER
 			rect                    120 25 -230 20
-			background              "gfx/menus/menu_blendbox2r" // Frame around button
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
 			visible                 1
 			decoration
 			cvarTest                ui_visited_callvote_map_display
