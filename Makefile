@@ -102,8 +102,8 @@ ui/jk2mp/setup.menu ui/jk2mp/ingame.menu							 \
 ui/jk2mp/ingame_setup_original.menu strip/SABERMOD_INGAME.sp		 \
 strip/SABERMOD_MENUS.sp shaders/sabermod.shader_mv					 \
 shaders/sabermod.shader gfx/2d/crosshairj.tga gfx/menus/download.tga \
-gfx/menus/missing.tga gfx/menus/menu_buttonbackr.jpg				 \
-gfx/menus/menu_buttonback2r.jpg
+gfx/menus/missing.tga gfx/menus/menu_buttonback_new.jpg				 \
+gfx/menus/menu_buttonback2_new.jpg
 
 svs_zip		:= $(name)-$(VERSION).zip
 svs_assets	:= server.cfg reset.cfg modes/

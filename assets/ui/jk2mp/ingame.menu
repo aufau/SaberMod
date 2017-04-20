@@ -45,7 +45,7 @@
 			name                    aboutButtonNew
 			style                   WINDOW_STYLE_SHADER
 			rect                    5 0 70 32
-			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
 			decoration
 			visible                 1
 			cvarTest                ui_visited_about
@@ -103,7 +103,7 @@
 			name                    joinButtonNew
 			style                   WINDOW_STYLE_SHADER
 			rect                    75 0 70 32
-			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
 			decoration
 			visible                 1
 			cvarTest                ui_visited_join
@@ -306,7 +306,7 @@
 			name                    setupButtonNew
 			style                   WINDOW_STYLE_SHADER
 			rect                    355 0 70 32
-			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
 			decoration
 			visible                 1
 			cvarTest                ui_visited_setup
@@ -449,7 +449,7 @@
 			name                    callvoteButtonNew
 			style                   WINDOW_STYLE_SHADER
 			rect                    495 0 70 32
-			background              "gfx/menus/menu_buttonbackr" // Frame around button
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
 			decoration
 			visible                 1
 			cvarTest                ui_visited_callvote
