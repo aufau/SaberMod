@@ -1496,6 +1496,7 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	client->pers.connected = CON_CONNECTING;
+	client->pers.enterTime = level.time;
 
 	// read or initialize the session data
 	if ( firstTime || level.newSession ) {
