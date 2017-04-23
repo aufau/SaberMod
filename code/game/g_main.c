@@ -2021,6 +2021,72 @@ qboolean ScoreIsTied( void ) {
 	return (qboolean)(a == b);
 }
 
+
+/*
+=============
+GetStrongerTeam
+
+Returns stronger team out of red and blue, or spectator on draw
+=============
+*/
+static team_t GetRoundWinner( const char **explanation )
+{
+	static char	expl[128];
+	team_t		winner;
+	int			health[TEAM_NUM_TEAMS] = { 0 };
+	int			count[TEAM_NUM_TEAMS] = { 0 };
+	int			i;
+
+	*explanation = expl;
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		gclient_t *client = &level.clients[i];
+
+		if ( client->pers.connected == CON_CONNECTED &&
+			client->sess.spectatorState == SPECTATOR_NOT &&
+			client->ps.stats[STAT_HEALTH] > 0 &&
+			client->ps.fallingToDeath == qfalse )
+		{
+			team_t team = client->sess.sessionTeam;
+			count[team]++;
+			health[team] += client->ps.stats[STAT_HEALTH];
+			health[team] += client->ps.stats[STAT_ARMOR];
+		}
+	}
+
+	winner = TEAM_SPECTATOR;
+
+	if ( count[TEAM_RED] > count[TEAM_BLUE] ) {
+		winner = TEAM_RED;
+	} else if ( count[TEAM_BLUE] > count[TEAM_RED] ) {
+		winner = TEAM_BLUE;
+	}
+
+	if ( winner != TEAM_SPECTATOR ) {
+		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+			" won the round (%d player%s remaining)", teamColorString[winner],
+			BG_TeamName( winner, CASE_NORMAL ), count[winner],
+			count[winner] > 1 ? "s" : "" );
+		return winner;
+	}
+
+	if ( health[TEAM_RED] > health[TEAM_BLUE] ) {
+		winner = TEAM_RED;
+	} else if ( health[TEAM_BLUE] > health[TEAM_RED] ) {
+		winner = TEAM_BLUE;
+	}
+
+	if ( winner != TEAM_SPECTATOR ) {
+		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+			" won the round (%d hp remaining)", teamColorString[winner],
+			BG_TeamName( winner, CASE_NORMAL ), health[winner] );
+		return winner;
+	}
+
+	Q_strncpyz( expl, S_COLOR_YELLOW "Round draw" S_COLOR_WHITE, sizeof( expl ) );
+	return winner;
+}
+
 /*
 =================
 CheckExitRules
@@ -2163,19 +2229,17 @@ void CheckExitRules( void ) {
 	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 			if ( GT_Round(level.gametype) ) {
-				team_t winner = GetStrongerTeam();
-				const char	*msg;
-
-				if ( winner == TEAM_SPECTATOR ) {
-					msg = "Round draw";
-				} else {
-					msg = va( "%s%s" S_COLOR_WHITE " team won the round\"",
-						teamColorString[winner], BG_TeamName( winner, CASE_NORMAL ) );
-				}
+				const char	*explanation;
+				team_t		winner = GetRoundWinner( &explanation );
 
 				AddTeamScore( level.intermission_origin, winner, 1 );
-				trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
-						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), msg ) );
+				if ( level.gametype == GT_REDROVER ) {
+					trap_SendServerCommand( -1, va( "print \"%s.\n\"",
+							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
+				} else {
+					trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
+							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation ) );
+				}
 				LogRoundExit( "Timelimit hit." );
 			} else {
 				trap_SendServerCommand( -1, va( "print \"%s.\n\"",
@@ -2197,25 +2261,15 @@ void CheckExitRules( void ) {
 				NextRound();
 			return;
 		} else if ( redCount == 0 || blueCount == 0 ) {
-			const char	*msg;
-			team_t		winner = TEAM_SPECTATOR;
-
-			if ( redCount > 0 ) {
-				winner = TEAM_RED;
-			}
-			if ( blueCount > 0 ) {
-				winner = TEAM_BLUE;
-			}
-
-			if ( blueCount == 0 && redCount == 0 ) {
-				msg = "Round draw";
-			} else {
-				msg = va( "%s%s" S_COLOR_WHITE " team won the round\"",
-					teamColorString[winner], BG_TeamName( winner, CASE_NORMAL ) );
-			}
+			const char	*explanation;
+			team_t		winner = GetRoundWinner( &explanation );
 
 			AddTeamScore( level.intermission_origin, winner, 1 );
-			trap_SendServerCommand( -1, va( "print \"Team eliminated. %s.\n\"", msg ) );
+			if ( level.gametype == GT_REDROVER ) {
+				trap_SendServerCommand( -1, "print \"Team eliminated.\n\"" );
+			} else {
+				trap_SendServerCommand( -1, va( "print \"Team eliminated. %s.\n\"", explanation ) );
+			}
 			LogRoundExit( "Team eliminated." );
 			return;
 		}
