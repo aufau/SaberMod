@@ -234,11 +234,13 @@ team_t GetStrongerTeam( void )
 	int count[TEAM_NUM_TEAMS] = { 0 };
 	int	i;
 
-	for ( i = 0; i < level.numPlayingClients; i++ ) {
-		gclient_t *client = level.clients + level.sortedClients[i];
+	for ( i = 0; i < level.maxclients; i++ ) {
+		gclient_t *client = &level.clients[i];
 
-		if ( client->sess.spectatorState == SPECTATOR_NOT &&
-			client->ps.stats[STAT_HEALTH] > 0 )
+		if ( client->pers.connected == CON_CONNECTED &&
+			client->sess.spectatorState == SPECTATOR_NOT &&
+			client->ps.stats[STAT_HEALTH] > 0 &&
+			client->ps.fallingToDeath == qfalse )
 		{
 			team_t team = client->sess.sessionTeam;
 			count[team]++;

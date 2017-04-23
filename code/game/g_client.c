@@ -860,7 +860,7 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	int		count = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if (level.clients[i].pers.connected == CON_DISCONNECTED ||
+		if (level.clients[i].pers.connected != CON_CONNECTED ||
 			level.clients[i].sess.sessionTeam != team ||
 			i == ignoreClientNum ) {
 			continue;
