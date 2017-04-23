@@ -221,49 +221,6 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 	return qfalse;
 }
 
-/*
-=============
-GetStrongerTeam
-
-Returns stronger team out of red and blue, or spectator on draw
-=============
-*/
-team_t GetStrongerTeam( void )
-{
-	int	health[TEAM_NUM_TEAMS] = { 0 };
-	int count[TEAM_NUM_TEAMS] = { 0 };
-	int	i;
-
-	for ( i = 0; i < level.maxclients; i++ ) {
-		gclient_t *client = &level.clients[i];
-
-		if ( client->pers.connected == CON_CONNECTED &&
-			client->sess.spectatorState == SPECTATOR_NOT &&
-			client->ps.stats[STAT_HEALTH] > 0 &&
-			client->ps.fallingToDeath == qfalse )
-		{
-			team_t team = client->sess.sessionTeam;
-			count[team]++;
-			health[team] += client->ps.stats[STAT_HEALTH];
-			health[team] += client->ps.stats[STAT_ARMOR];
-		}
-	}
-
-	if ( count[TEAM_RED] > count[TEAM_BLUE] ) {
-		return TEAM_RED;
-	} else if ( count[TEAM_BLUE] > count[TEAM_RED] ) {
-		return TEAM_BLUE;
-	}
-
-	if ( health[TEAM_RED] > health[TEAM_BLUE] ) {
-		return TEAM_RED;
-	} else if ( health[TEAM_BLUE] > health[TEAM_RED] ) {
-		return TEAM_BLUE;
-	}
-
-	return TEAM_SPECTATOR;
-}
-
 static void Team_SetFlagStatus( team_t team, flagStatus_t status ) {
 	static const char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
 	qboolean modified = qfalse;

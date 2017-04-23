@@ -963,7 +963,6 @@ void G_Respawn				( gentity_t *ent );
 // g_team.c
 //
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
-team_t GetStrongerTeam( void );
 void Team_CheckDroppedItem( gentity_t *dropped );
 
 //
