@@ -1058,7 +1058,7 @@ static void CG_PreloadMedia( void ) {
 	cgs.media.loadBarLEDCap		= trap_R_RegisterShaderNoMip( "gfx/hud/load_tick_cap" );
 	cgs.media.loadBarLEDSurround= trap_R_RegisterShaderNoMip( "gfx/hud/mp_levelload" );
 
-	trap_SP_Register( "sabermod_ingame" );
+	trap_SP_Register( "sabermod2_ingame" );
 }
 
 /*
