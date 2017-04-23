@@ -665,6 +665,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.time = levelTime;
 	level.startTime = levelTime;
 	level.idleTime = levelTime;
+	level.snapnum = 1;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
@@ -2089,6 +2090,28 @@ static team_t GetRoundWinner( const char **explanation )
 
 /*
 =================
+G_QueueServerCommand
+
+Queue server command to be sent in next snapshot
+=================
+*/
+static void G_QueueServerCommand( const char *fmt, ... ) {
+	va_list	argptr;
+
+	if ( level.queuedCmdSnap ) {
+		// there is a queued message already, send it now
+		trap_SendServerCommand( -1, level.queuedCmd );
+	}
+
+	va_start( argptr, fmt );
+	vsnprintf( level.queuedCmd, sizeof( level.queuedCmd ), fmt, argptr );
+	va_end( argptr );
+
+	level.queuedCmdSnap = level.snapnum + 1;
+}
+
+/*
+=================
 CheckExitRules
 
 There will be a delay between the time the exit is qualified for
@@ -2266,9 +2289,9 @@ void CheckExitRules( void ) {
 
 			AddTeamScore( level.intermission_origin, winner, 1 );
 			if ( level.gametype == GT_REDROVER ) {
-				trap_SendServerCommand( -1, "print \"Team eliminated.\n\"" );
+				G_QueueServerCommand( "print \"Team eliminated.\n\"" );
 			} else {
-				trap_SendServerCommand( -1, va( "print \"Team eliminated. %s.\n\"", explanation ) );
+				G_QueueServerCommand( "print \"Team eliminated. %s.\n\"", explanation );
 			}
 			LogRoundExit( "Team eliminated." );
 			return;
@@ -2281,15 +2304,15 @@ void CheckExitRules( void ) {
 
 	if ( !GT_Flag(level.gametype) && !GT_Round(level.gametype) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"" S_COLOR_RED "Red" S_COLOR_WHITE " %s\n\"",
-					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
+			G_QueueServerCommand( "print \"" S_COLOR_RED "Red" S_COLOR_WHITE " %s\n\"",
+				G_GetStripEdString( "SVINGAME", "HIT_THE_KILL_LIMIT" ) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
-			trap_SendServerCommand( -1, va("print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " %s\n\"",
-					G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")) );
+			G_QueueServerCommand( "print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " %s\n\"",
+				G_GetStripEdString( "SVINGAME", "HIT_THE_KILL_LIMIT" ) );
 			LogExit( "Kill limit hit." );
 			return;
 		}
@@ -2307,19 +2330,16 @@ void CheckExitRules( void ) {
 			{
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
-				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
-					cl->pers.netname ) );
+				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
+					cl->pers.netname );
 				return;
 			}
 
 			if ( cl->pers.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
 				gDuelExit = qfalse;
-				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"",
-												cl->pers.netname,
-												G_GetStripEdString("SVINGAME", "HIT_THE_KILL_LIMIT")
-												)
-										);
+				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " %s\n\"", cl->pers.netname,
+					G_GetStripEdString( "SVINGAME", "HIT_THE_KILL_LIMIT" ) );
 				return;
 			}
 		}
@@ -2328,13 +2348,13 @@ void CheckExitRules( void ) {
 	if ( GT_Flag(level.gametype) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, "print \"" S_COLOR_RED "Red" S_COLOR_WHITE " hit the capturelimit.\n\"");
+			G_QueueServerCommand( "print \"" S_COLOR_RED "Red" S_COLOR_WHITE " hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
-			trap_SendServerCommand( -1, "print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " hit the capturelimit.\n\"");
+			G_QueueServerCommand( "print \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " hit the capturelimit.\n\"" );
 			LogExit( "Capturelimit hit." );
 			return;
 		}
@@ -2910,6 +2930,12 @@ void G_RunFrame( int levelTime ) {
 		return;
 	}
 
+	// send queued server command to all players now
+	if ( level.snapnum == level.queuedCmdSnap ) {
+		trap_SendServerCommand( -1, level.queuedCmd );
+		level.queuedCmdSnap = 0;
+	}
+
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
@@ -3062,6 +3088,8 @@ end = trap_Milliseconds();
 	if ( g_unlagged.integer ) {
 		G_BackupWorld();
 	}
+
+	level.snapnum++;
 
 	g_LastFrameTime = level.time;
 

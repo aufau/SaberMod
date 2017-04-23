@@ -563,6 +563,7 @@ typedef struct {
 	gametype_t	gametype;
 
 	int			framenum;
+	int			snapnum;				// snapshot currently being prepared
 	int			time;					// in msec
 	int			previousTime;			// so movers can back up when blocked
 
@@ -640,6 +641,9 @@ typedef struct {
 	int			round;
 	int			idleTime;
 	qboolean	restarting;				// server is about to restart
+
+	char		queuedCmd[1024];
+	int			queuedCmdSnap;
 } level_locals_t;
 
 //
