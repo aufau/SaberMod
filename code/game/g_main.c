@@ -2162,53 +2162,62 @@ void CheckExitRules( void ) {
 
 	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
-			trap_SendServerCommand( -1, va("print \"%s.\n\"",G_GetStripEdString("SVINGAME", "TIMELIMIT_HIT")));
-
 			if ( GT_Round(level.gametype) ) {
 				team_t winner = GetStrongerTeam();
+				const char	*msg;
 
 				if ( winner == TEAM_SPECTATOR ) {
-					trap_SendServerCommand( -1, "cp \"Round draw\"");
+					msg = "Round draw";
 				} else {
-					level.teamScores[winner]++;
-					trap_SendServerCommand( -1,
-						va("cp \"%s%s" S_COLOR_WHITE " team wins the round\"",
-							teamColorString[winner], BG_TeamName(winner, CASE_NORMAL)) );
+					msg = va( "%s%s" S_COLOR_WHITE " team won the round\"",
+						teamColorString[winner], BG_TeamName( winner, CASE_NORMAL ) );
 				}
 
+				AddTeamScore( level.intermission_origin, winner, 1 );
+				trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
+						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), msg ) );
 				LogRoundExit( "Timelimit hit." );
-				return;
+			} else {
+				trap_SendServerCommand( -1, va( "print \"%s.\n\"",
+						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
+				LogExit( "Timelimit hit." );
 			}
 
-			LogExit( "Timelimit hit." );
 			return;
 		}
 	}
 
 	if ( GT_Round(level.gametype) ) {
-		int			redCount = TeamCount( -1, TEAM_RED, qfalse );
-		int			blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
+		int redCount = TeamCount( -1, TEAM_RED, qfalse );
+		int blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
 
 		// begin first round of the game
 		if ( level.round == 0 ) {
 			if ( redCount > 0 && blueCount > 0 )
 				NextRound();
 			return;
-		} else {
-			// usually these centerprints get overwritten by orbituary
-			// or dead player scoreboard
-			if ( redCount == 0 ) {
-				level.teamScores[TEAM_BLUE]++;
-				trap_SendServerCommand( -1, "cp \"" S_COLOR_RED "Red" S_COLOR_WHITE " team eliminated\n\"" );
-				LogRoundExit( "Red team eliminated." );
-				return;
+		} else if ( redCount == 0 || blueCount == 0 ) {
+			const char	*msg;
+			team_t		winner = TEAM_SPECTATOR;
+
+			if ( redCount > 0 ) {
+				winner = TEAM_RED;
 			}
-			if ( blueCount == 0 ) {
-				level.teamScores[TEAM_RED]++;
-				trap_SendServerCommand( -1, "cp \"" S_COLOR_BLUE "Blue" S_COLOR_WHITE " team eliminated\n\"" );
-				LogRoundExit( "Blue team eliminated." );
-				return;
+			if ( blueCount > 0 ) {
+				winner = TEAM_BLUE;
 			}
+
+			if ( blueCount == 0 && redCount == 0 ) {
+				msg = "Round draw";
+			} else {
+				msg = va( "%s%s" S_COLOR_WHITE " team won the round\"",
+					teamColorString[winner], BG_TeamName( winner, CASE_NORMAL ) );
+			}
+
+			AddTeamScore( level.intermission_origin, winner, 1 );
+			trap_SendServerCommand( -1, va( "print \"Team eliminated. %s.\n\"", msg ) );
+			LogRoundExit( "Team eliminated." );
+			return;
 		}
 	}
 
