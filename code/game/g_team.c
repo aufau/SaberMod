@@ -134,6 +134,15 @@ AddTeamScore
 void AddTeamScore(vec3_t origin, team_t team, int score) {
 	gentity_t	*te;
 
+	if ( level.gametype == GT_REDROVER ) {
+		level.teamScores[ team ] += score;
+		return;
+	}
+	if ( team != TEAM_BLUE && team != TEAM_RED ) {
+		level.teamScores[ team ] += score;
+		return;
+	}
+
 	te = G_TempEntity(origin, EV_GLOBAL_TEAM_SOUND, ENTITYNUM_WORLD );
 	te->r.svFlags |= SVF_BROADCAST;
 
@@ -152,7 +161,7 @@ void AddTeamScore(vec3_t origin, team_t team, int score) {
 			te->s.eventParm = GTS_REDTEAM_SCORED;
 		}
 	}
-	else {
+	else if ( team == TEAM_BLUE ) {
 		if ( level.teamScores[ TEAM_BLUE ] + score == level.teamScores[ TEAM_RED ] ) {
 			//teams are tied sound
 			te->s.eventParm = GTS_TEAMS_ARE_TIED;
