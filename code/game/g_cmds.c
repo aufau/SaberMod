@@ -214,7 +214,7 @@ static int G_ClientNumberFromPattern ( const char *pattern ) {
 			continue;
 		}
 
-		name = cl->pers.netname;
+		name = cl->info.netname;
 
 		Q_strncpyz(ciName, name, sizeof(ciName));
 		Q_CleanStr(ciName);
@@ -673,16 +673,16 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 
 	if ( client->sess.sessionTeam == TEAM_RED ) {
 		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-			client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEREDTEAM")) );
+			client->info.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEREDTEAM")) );
 	} else if ( client->sess.sessionTeam == TEAM_BLUE ) {
 		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-		client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBLUETEAM")));
+		client->info.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBLUETEAM")));
 	} else if ( client->sess.sessionTeam == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR ) {
 		for ( clientnum = 0; clientnum < level.maxclients; clientnum++ ) {
 			if ( level.clients[ clientnum ].pers.connected == CON_CONNECTED
 			     && !level.clients[ clientnum ].ps.duelInProgress ) {
 				trap_SendServerCommand( clientnum, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-				client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHESPECTATORS")));
+				client->info.netname, G_GetStripEdString("SVINGAME", "JOINEDTHESPECTATORS")));
 			}
 		}
 	} else if ( client->sess.sessionTeam == TEAM_FREE ) {
@@ -694,12 +694,12 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 			if (currentWinner && currentWinner->client)
 			{
 				trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s %s\n\"",
-				currentWinner->client->pers.netname, G_GetStripEdString("SVINGAME", "VERSUS"), client->pers.netname));
+				currentWinner->client->info.netname, G_GetStripEdString("SVINGAME", "VERSUS"), client->info.netname));
 			}
 			else
 			{
 				trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-				client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
+				client->info.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
 			}
 			*/
 			//NOTE: Just doing a vs. once it counts two players up
@@ -710,7 +710,7 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 				if ( level.clients[ clientnum ].pers.connected == CON_CONNECTED
 				     && !level.clients[ clientnum ].ps.duelInProgress ) {
 					trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"",
-					client->pers.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
+					client->info.netname, G_GetStripEdString("SVINGAME", "JOINEDTHEBATTLE")));
 				}
 			}
 		}
@@ -1348,28 +1348,28 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	switch ( mode ) {
 	default:
 	case SAY_ALL:
-		G_LogPrintf( LOG_SAY, "Say: %i: %s: %s\n", ent->s.number, ent->client->pers.netname, chatText );
-		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+		G_LogPrintf( LOG_SAY, "Say: %i: %s: %s\n", ent->s.number, ent->client->info.netname, chatText );
+		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->info.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;
 	case SAY_TEAM:
 		G_LogPrintf( LOG_SAY_TEAM, "SayTeam: %i %s: %s: %s\n", ent->s.number,
-			BG_TeamName(ent->client->sess.sessionTeam, CASE_UPPER), ent->client->pers.netname, chatText );
+			BG_TeamName(ent->client->sess.sessionTeam, CASE_UPPER), ent->client->info.netname, chatText );
 		if (Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ",
-				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
+				ent->client->info.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 		else
 			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
-				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+				ent->client->info.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
 		if (target && GT_Team(level.gametype) &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
 			Team_GetLocationMsg(ent, location, sizeof(location)))
-			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
+			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->info.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
 		else
-			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->info.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_MAGENTA;
 		break;
 	}
@@ -1461,8 +1461,8 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 		char *name;
 		p = ConcatArgs( 2 );
 		G_LogPrintf( LOG_TELL, "Tell: %i %i: %s to server: %s\n",
-			ent->s.number, ent->s.number, ent->client->pers.netname, p );
-		name = va(EC"[%s" S_COLOR_WHITE EC "]"EC": ", ent->client->pers.netname);
+			ent->s.number, ent->s.number, ent->client->info.netname, p );
+		name = va(EC"[%s" S_COLOR_WHITE EC "]"EC": ", ent->client->info.netname);
 		trap_SendServerCommand( ent-g_entities, va("chat \"%s" S_COLOR_MAGENTA "%s\"", name, p) );
 		return;
 	}
@@ -1498,7 +1498,7 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	G_LogPrintf( LOG_TELL, "Tell: %i %i: %s to %s: %s\n", ent->s.number, target->s.number,
-		ent->client->pers.netname, target->client->pers.netname, p );
+		ent->client->info.netname, target->client->info.netname, p );
 	G_Say( ent, target, SAY_TELL, p );
 	// don't tell to the player self if it was already directed to this player
 	// also don't send the chat back to a bot
@@ -1560,7 +1560,7 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 
 	// echo the text to the console
 	if ( g_dedicated.integer ) {
-		G_Printf( "voice: %s %s\n", ent->client->pers.netname, id);
+		G_Printf( "voice: %s %s\n", ent->client->info.netname, id);
 	}
 
 	// send it to all the apropriate clients
@@ -1625,7 +1625,7 @@ static void Cmd_VoiceTell_f( gentity_t *ent, qboolean voiceonly ) {
 	id = ConcatArgs( 2 );
 
 	G_LogPrintf( LOG_VTELL, "VTell: %i %i: %s to %s: %s\n", ent->s.number,
-		target->s.number, ent->client->pers.netname, target->client->pers.netname, id );
+		target->s.number, ent->client->info.netname, target->client->info.netname, id );
 	G_Voice( ent, target, SAY_TELL, id, voiceonly );
 	// don't tell to the player self if it was already directed to this player
 	// also don't send the chat back to a bot
@@ -1939,7 +1939,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
-			voteName, g_entities[i].client->pers.netname );
+			voteName, g_entities[i].client->info.netname );
 		break;
 	case CV_NEXTMAP:
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
@@ -1971,7 +1971,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
-			voteName, g_entities[i].client->pers.netname );
+			voteName, g_entities[i].client->info.netname );
 		break;
 	case CV_KICK_MODE:
 		if ( !Q_stricmp( arg1, "nk" ) )
@@ -2035,7 +2035,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	}
 
 	trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s: %s\n\"",
-			ent->client->pers.netname,
+			ent->client->info.netname,
 			G_GetStripEdString("SVINGAME", "PLCALLEDVOTE"),
 			level.voteDisplayString) );
 
@@ -2169,7 +2169,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 						continue;
 					if (level.clients[i].sess.sessionTeam != team)
 						continue;
-					Q_strncpyz(netname, level.clients[i].pers.netname, sizeof(netname));
+					Q_strncpyz(netname, level.clients[i].info.netname, sizeof(netname));
 					Q_CleanStr(netname);
 					if ( !Q_stricmp(netname, leader) ) {
 						break;
@@ -2195,7 +2195,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		if (level.clients[i].sess.sessionTeam == team)
 			trap_SendServerCommand( i,
 				va("print \"%s" S_COLOR_WHITE " called a team vote (Leader %s" S_COLOR_WHITE ")\n\"",
-					ent->client->pers.netname, level.clients[i].pers.netname ) );
+					ent->client->info.netname, level.clients[i].info.netname ) );
 	}
 
 	// start the voting, the caller autoamtically votes yes
@@ -2578,8 +2578,8 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	{
 		unsigned dimension;
 
-		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->pers.netname,
-			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->pers.netname);
+		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->info.netname,
+			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->info.netname);
 		trap_SendServerCommand(-1, s);
 
 		dimension = G_GetFreeDuelDimension();
@@ -2623,8 +2623,8 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	else
 	{
 		//Print the message that a player has been challenged in private, only announce the actual duel initiation in private
-		trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->pers.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
-		trap_SendServerCommand( ent-g_entities, va("cp \"%s\n%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->pers.netname) );
+		trap_SendServerCommand( challenged-g_entities, va("cp \"%s" S_COLOR_WHITE "\n%s\n\"", ent->client->info.netname, G_GetStripEdString("SVINGAME", "PLDUELCHALLENGE")) );
+		trap_SendServerCommand( ent-g_entities, va("cp \"%s\n%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELCHALLENGED"), challenged->client->info.netname) );
 		ent->client->ps.duelTime = level.time + 5000;
 	}
 

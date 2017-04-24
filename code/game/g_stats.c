@@ -162,8 +162,8 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, const 
 
 	GetStats(stats, cl);
 
-	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->pers.netname);
-	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->pers.netname, Spaces(pad));
+	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->info.netname);
+	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->info.netname, Spaces(pad));
 
 	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
@@ -341,7 +341,7 @@ static void G_LogStatsRow(int clientNum)
 
 	G_LogPrintf(LOG_GAME_STATS, "%s %-4s %s\n", row,
 		BG_TeamName(client->sess.sessionTeam, CASE_UPPER),
-		client->pers.netname);
+		client->info.netname);
 }
 
 void G_LogStats(void)

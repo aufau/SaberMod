@@ -1833,7 +1833,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 	if ( attacker ) {
 		killer = attacker->s.number;
 		if ( attacker->client ) {
-			killerName = attacker->client->pers.netname;
+			killerName = attacker->client->info.netname;
 		} else {
 			killerName = "<non-client>";
 		}
@@ -1855,7 +1855,7 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 
 	G_LogPrintf(LOG_KILL, "Kill: %i %i %i: %s killed %s by %s\n",
 				killer, self->s.number, meansOfDeath, killerName,
-				self->client->pers.netname, obit );
+				self->client->info.netname, obit );
 
 	if ( level.gametype == GT_TOURNAMENT && level.numPlayingClients >= 2 )
 	{
@@ -1863,11 +1863,11 @@ static int G_LogPlayerDie( gentity_t *self, gentity_t *attacker, meansOfDeath_t 
 		G_LogPrintf(LOG_AUSTRIAN, "Duel Kill Details:\n");
 		G_LogPrintf(LOG_AUSTRIAN, "Kill Time: %d\n", level.time-spawnTime );
 		G_LogPrintf(LOG_AUSTRIAN, "victim: %s, hits on enemy %d\n",
-			self->client->pers.netname, self->client->pers.persistant[PERS_HITS] );
+			self->client->info.netname, self->client->pers.persistant[PERS_HITS] );
 		if ( attacker && attacker->client )
 		{
 			G_LogPrintf(LOG_AUSTRIAN, "killer: %s, hits on enemy %d, health: %d\n",
-				attacker->client->pers.netname,
+				attacker->client->info.netname,
 				attacker->client->pers.persistant[PERS_HITS], attacker->health );
 			//also - if MOD_SABER, list the animation and saber style
 			if ( meansOfDeath == MOD_SABER )
@@ -2842,7 +2842,7 @@ void G_CheckForDismemberment(gentity_t *ent, vec3_t point, int damage, animNumbe
 		if ( level.gametype == GT_TOURNAMENT )
 		{
 			G_LogPrintf(LOG_AUSTRIAN, "Duel Dismemberment: %s dismembered at %s\n",
-				ent->client->pers.netname, hitLocName[hitLoc] );
+				ent->client->info.netname, hitLocName[hitLoc] );
 		}
 	}
 	else

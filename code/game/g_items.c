@@ -1441,9 +1441,9 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	G_LogPrintf( LOG_ITEM, "Item: %i %s: %s picked up %s\n", other->s.number,
-		ent->item->classname, other->client->pers.netname, ent->item->classname );
+		ent->item->classname, other->client->info.netname, ent->item->classname );
 
-	predict = other->client->pers.predictItemPickup;
+	predict = other->client->info.predictItemPickup;
 
 	// call the item-specific pickup function
 	switch( ent->item->giType ) {

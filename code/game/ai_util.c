@@ -501,9 +501,9 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 			{
 				inc_n = 0;
 
-				while (cobject->client->pers.netname[inc_n])
+				while (cobject->client->info.netname[inc_n])
 				{
-					bs->currentChat[inc_2] = cobject->client->pers.netname[inc_n];
+					bs->currentChat[inc_2] = cobject->client->info.netname[inc_n];
 					inc_2++;
 					inc_n++;
 				}

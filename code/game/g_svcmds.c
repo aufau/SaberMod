@@ -530,7 +530,7 @@ void	Svcmd_Remove_f( void )
 	else
 		SetTeam( ent, TEAM_SPECTATOR );
 	// overwrite "joined the spectators" message
-	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->pers.netname) );
+	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->info.netname) );
 	ent->client->prof.switchTeamTime = level.time + delay;
 }
 
@@ -659,7 +659,7 @@ void	Svcmd_Tell_f( void )
 
 	message = ConcatArgs( 2 );
 	G_LogPrintf( LOG_TELL, "Tell: %i %i: server to %s: %s\n", clientNum, clientNum,
-		level.clients[clientNum].pers.netname, message );
+		level.clients[clientNum].info.netname, message );
 	trap_SendServerCommand( clientNum, va("chat \"[server]: %s\"", message) );
 }
 

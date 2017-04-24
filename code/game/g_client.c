@@ -260,7 +260,7 @@ void JMSaberTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		other->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
 	}
 
-	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"", other->client->pers.netname, G_GetStripEdString("SVINGAME", "BECOMEJM")) );
+	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s\n\"", other->client->info.netname, G_GetStripEdString("SVINGAME", "BECOMEJM")) );
 
 	other->client->ps.isJediMaster = qtrue;
 	other->client->ps.saberIndex = self->s.number;
@@ -1064,7 +1064,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
         strncpy( cleanName, "Padawan", sizeof(cleanName) );
     }
 
-	name = client->pers.netname;
+	name = client->info.netname;
 	Q_strncpyz(name, cleanName, MAX_NETNAME);
 	clientNum = client - level.clients;
 	num = 1;
@@ -1077,7 +1077,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 			if (i == clientNum) {
 				continue;
 			}
-			if (!strncmp(name, level.clients[i].pers.netname, MAX_NETNAME)) {
+			if (!strncmp(name, level.clients[i].info.netname, MAX_NETNAME)) {
 				free = qfalse;
 				break;
 			}
@@ -1272,44 +1272,37 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// check for local client
 	s = Info_ValueForKey( userinfo, "ip" );
-	if ( !strcmp( s, "localhost" ) ) {
-		client->pers.localClient = qtrue;
-	}
+	client->info.localClient = (qboolean)!strcmp( s, "localhost" );
 
 	// check the item prediction
 	s = Info_ValueForKey( userinfo, "cg_predictItems" );
-	if ( !atoi( s ) ) {
-		client->pers.predictItemPickup = qfalse;
-	} else {
-		client->pers.predictItemPickup = qtrue;
-	}
+	client->info.predictItemPickup = (qboolean)!atoi( s );
 
 	// set name
-	Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
+	Q_strncpyz ( oldname, client->info.netname, sizeof( oldname ) );
 	s = Info_ValueForKey (userinfo, "name");
 	ClientSetName( client, s );
 
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
-			Q_strncpyz( client->pers.netname, "scoreboard", sizeof(client->pers.netname) );
+			Q_strncpyz( client->info.netname, "scoreboard", sizeof(client->info.netname) );
 		}
 	}
 
-	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->pers.netname) != 0 ) {
+	if ( client->pers.connected == CON_CONNECTED && strcmp(oldname, client->info.netname) != 0 ) {
 		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s %s\n\"",
 				oldname, G_GetStripEdString("SVINGAME", "PLRENAME"),
-				client->pers.netname) );
+				client->info.netname) );
 		G_LogPrintf( LOG_RENAME, "ClientRename: %i %s: %s renamed to %s\n",
-			clientNum, client->pers.netname, oldname, client->pers.netname );
+			clientNum, client->info.netname, oldname, client->info.netname );
 	}
 
 	// set max health
 	health = atoi( Info_ValueForKey( userinfo, "handicap" ) );
-	client->pers.maxHealth = health;
-	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-		client->pers.maxHealth = 100;
+	if ( health < 1 || health > 100 ) {
+		health = 100;
 	}
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
+	client->info.maxHealth = client->ps.stats[STAT_MAX_HEALTH] = health;
 
 	// set model
 	if( GT_Team(level.gametype) ) {
@@ -1347,9 +1340,9 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
 	if ( ! *s || atoi( s ) != 0 ) {
-		client->pers.teamInfo = qtrue;
+		client->info.teamInfo = qtrue;
 	} else {
-		client->pers.teamInfo = qfalse;
+		client->info.teamInfo = qfalse;
 	}
 
 	/*
@@ -1363,8 +1356,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	*/
 	s = Info_ValueForKey( userinfo, "cg_privateDuel" );
 	privateDuel = ( *s && atoi( s ) ) ? qtrue : qfalse;
-	if (privateDuel != client->pers.privateDuel) {
-		client->pers.privateDuel = privateDuel;
+	if (privateDuel != client->info.privateDuel) {
+		client->info.privateDuel = privateDuel;
 
 		if (privateDuel) {
 			G_StartPrivateDuel( ent );
@@ -1389,13 +1382,13 @@ void ClientUserinfoChanged( int clientNum ) {
 	// print scoreboards, display models, and play custom sounds
 	if ( ent->r.svFlags & SVF_BOT ) {
 		s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model,  c1, c2,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses,
+			client->info.netname, team, model,  c1, c2,
+			client->info.maxHealth, client->sess.wins, client->sess.losses,
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
 		s = va("n\\%s\\t\\%i\\model\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->pers.netname, client->sess.sessionTeam, model, redTeam, blueTeam, c1, c2,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
+			client->info.netname, client->sess.sessionTeam, model, redTeam, blueTeam, c1, c2,
+			client->info.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
 	}
 
 	trap_GetConfigstring( CS_PLAYERS+clientNum, oldUserinfo, sizeof( oldUserinfo ) );
@@ -1516,15 +1509,15 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	ClientUserinfoChanged( clientNum );
 	if ( isBot ) {
 		G_LogPrintf( LOG_CONNECT, "BotConnect: %i: %s connected\n",
-			clientNum, client->pers.netname);
+			clientNum, client->info.netname);
 	} else {
 		G_LogPrintf( LOG_CONNECT, "ClientConnect: %i %s: %s connected\n",
-			clientNum, address, client->pers.netname);
+			clientNum, address, client->info.netname);
 	}
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime ) {
-		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLCONNECT")) );
+		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->info.netname, G_GetStripEdString("SVINGAME", "PLCONNECT")) );
 	}
 
 	if ( GT_Team(level.gametype) && client->sess.sessionTeam != TEAM_SPECTATOR ) {
@@ -1618,6 +1611,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	ent->pain = 0;
 	ent->client = client;
 
+	memset( &client->pers, 0, sizeof( client->pers ) );
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
@@ -1722,7 +1716,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s %s: %s joined the %s team\n",
 		clientNum, BG_TeamName(client->sess.sessionTeam, CASE_UPPER), gameversion,
-		client->pers.netname, BG_TeamName(client->sess.sessionTeam, CASE_NORMAL) );
+		client->info.netname, BG_TeamName(client->sess.sessionTeam, CASE_NORMAL) );
 
 	// locate ent at a spawn point
 	ClientSpawn( ent );
@@ -1733,17 +1727,12 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		tent->s.clientNum = ent->s.number;
 
 		if ( level.gametype != GT_TOURNAMENT  ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->pers.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
+			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " %s\n\"", client->info.netname, G_GetStripEdString("SVINGAME", "PLENTER")) );
 		}
 	}
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-
-	ent->client->pers.totalDamageTakenFromEnemies = 0;
-	ent->client->pers.totalDamageDealtToEnemies = 0;
-	ent->client->pers.totalDamageTakenFromAllies = 0;
-	ent->client->pers.totalDamageDealtToAllies = 0;
 
 	G_ClearClientLog(clientNum);
 }
@@ -1785,6 +1774,7 @@ void ClientSpawn(gentity_t *ent) {
 	int		i;
 	clientPersistant_t	saved;
 	clientSession_t		savedSess;
+	clientUserinfo_t	savedInfo;
 	clientProfile_t		savedProf;
 	gentity_t	*spawnPoint;
 	int		flags;
@@ -1828,7 +1818,7 @@ void ClientSpawn(gentity_t *ent) {
 	else {
 		do {
 			// the first spawn should be at a good looking spot
-			if ( !client->pers.initialSpawn && client->pers.localClient ) {
+			if ( !client->pers.initialSpawn && client->info.localClient ) {
 				client->pers.initialSpawn = qtrue;
 				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
 			} else {
@@ -1863,6 +1853,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	saved = client->pers;
 	savedSess = client->sess;
+	savedInfo = client->info;
 	savedProf = client->prof;
 	savedPing = client->ps.ping;
 //	savedAreaBits = client->areabits;
@@ -1887,6 +1878,7 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.duelIndex = ENTITYNUM_NONE;
 
 	client->pers = saved;
+	client->info = savedInfo;
 	client->sess = savedSess;
 	client->prof = savedProf;
 	client->ps.ping = savedPing;
@@ -1901,7 +1893,7 @@ void ClientSpawn(gentity_t *ent) {
 	client->airOutTime = level.time + 12000;
 
 	// clear entity values
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
+	client->ps.stats[STAT_MAX_HEALTH] = client->info.maxHealth;
 	client->ps.eFlags = flags;
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
@@ -2193,7 +2185,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	G_LogPrintf( LOG_SPAWN, "ClientSpawn: %d %s %d: %s spawned in the %s team as %s\n",
 		index, BG_TeamName(client->sess.sessionTeam, CASE_UPPER),
-		client->sess.spectatorState, client->pers.netname,
+		client->sess.spectatorState, client->info.netname,
 		BG_TeamName(client->sess.sessionTeam, CASE_NORMAL),
 		(client->sess.spectatorState == SPECTATOR_NOT) ? "player" : "spectator" );
 
@@ -2318,10 +2310,10 @@ void ClientDisconnect( int clientNum ) {
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		G_LogPrintf( LOG_CONNECT, "BotDisconnect: %i: %s disconnected\n",
-			clientNum, ent->client->pers.netname );
+			clientNum, ent->client->info.netname );
 	} else {
 		G_LogPrintf( LOG_CONNECT, "ClientDisconnect: %i: %s disconnected\n",
-			clientNum, ent->client->pers.netname );
+			clientNum, ent->client->info.netname );
 	}
 
 	// if we are playing in tourney mode, give a win to the other player and clear his frags for this round

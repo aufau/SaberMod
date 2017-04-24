@@ -506,7 +506,7 @@ void G_AddRandomBot( int team ) {
 			if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 				continue;
 			}
-			if ( !Q_stricmp( value, cl->pers.netname ) ) {
+			if ( !Q_stricmp( value, cl->info.netname ) ) {
 				break;
 			}
 		}
@@ -529,7 +529,7 @@ void G_AddRandomBot( int team ) {
 			if ( team >= 0 && cl->sess.sessionTeam != (team_t)team ) {
 				continue;
 			}
-			if ( !Q_stricmp( value, cl->pers.netname ) ) {
+			if ( !Q_stricmp( value, cl->info.netname ) ) {
 				break;
 			}
 		}

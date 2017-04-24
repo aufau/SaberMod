@@ -677,7 +677,7 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 		(client->pers.cmd.buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK)) ) {
 		client->inactivityTime = level.time + g_inactivity.integer * 1000;
 		client->inactivityWarning = qfalse;
-	} else if ( !client->pers.localClient ) {
+	} else if ( !client->info.localClient ) {
 		if ( level.time > client->inactivityTime ) {
 			trap_DropClient( client - level.clients, "Dropped due to inactivity" );
 			return qfalse;
@@ -1138,7 +1138,7 @@ void ClientThink_real( gentity_t *ent ) {
 		trap_Cvar_Set("pmove_msec", "33");
 	}
 
-	if ( pmove_fixed.integer || client->pers.pmoveFixed ) {
+	if ( pmove_fixed.integer || client->info.pmoveFixed ) {
 		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 		//if (ucmd->serverTime - client->ps.commandTime <= 0)
 		//	return;
@@ -1258,16 +1258,16 @@ void ClientThink_real( gentity_t *ent ) {
 					"DuelWin: %i %i %i %i: %s has defeated %s in %02i:%02i with %i/%i left\n",
 					ent->s.number, duelAgainst->s.number,
 					ent->client->ps.stats[STAT_HEALTH],	ent->client->ps.stats[STAT_ARMOR],
-					ent->client->pers.netname, duelAgainst->client->pers.netname,
+					ent->client->info.netname, duelAgainst->client->info.netname,
 					minutes, seconds,
 					ent->client->ps.stats[STAT_HEALTH],	ent->client->ps.stats[STAT_ARMOR]);
 
 				s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE
 					" in " S_COLOR_CYAN "%02i" S_COLOR_WHITE ":" S_COLOR_CYAN "%02i" S_COLOR_WHITE
 					" with " S_COLOR_RED "%i" S_COLOR_WHITE "/" S_COLOR_GREEN "%i" S_COLOR_WHITE " left!\n\"",
-					ent->client->pers.netname,
+					ent->client->info.netname,
 					G_GetStripEdString("SVINGAME", "PLDUELWINNER"),
-					duelAgainst->client->pers.netname,
+					duelAgainst->client->info.netname,
 					minutes,
 					seconds,
 					ent->client->ps.stats[STAT_HEALTH],
@@ -1278,7 +1278,7 @@ void ClientThink_real( gentity_t *ent ) {
 				G_LogPrintf(LOG_PRIVATE_DUEL,
 					"DuelTie: %i %i: The duel between %s and %s is ended in a draw, both fighters have died\n",
 					ent->s.number, duelAgainst->s.number,
-					ent->client->pers.netname, duelAgainst->client->pers.netname);
+					ent->client->info.netname, duelAgainst->client->info.netname);
 
 				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
 			}
@@ -1324,7 +1324,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 				G_LogPrintf(LOG_PRIVATE_DUEL, "DuelStop: %i %i: The duel between %s and %s has been severed\n",
 					ent->s.number, duelAgainst->s.number,
-					ent->client->pers.netname, duelAgainst->client->pers.netname);
+					ent->client->info.netname, duelAgainst->client->info.netname);
 				trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELSTOP")) );
 			}
 		}
@@ -1433,7 +1433,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.noKick = (qboolean)((g_dmflags.integer & DF_NO_KICK) > 0);
 	pm.noYDFA = (qboolean)((g_dmflags.integer & DF_NO_YDFA) > 0);
 
-	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
+	pm.pmove_fixed = pmove_fixed.integer | client->info.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;
 
 	pm.animations = bgGlobalAnimations;//NULL;
