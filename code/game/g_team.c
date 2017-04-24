@@ -87,7 +87,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 //Printing messages to players via this method is no longer done, StripEd stuff is client only.
 
 
-//plIndex used to print pl->client->pers.netname
+//plIndex used to print pl->client->info.netname
 //teamIndex used to print team name
 static void PrintCTFMessage(int plIndex, int teamIndex, ctfMsg_t ctfMessage)
 {
@@ -345,7 +345,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS);
 		attacker->client->pers.teamState.fragcarrier++;
 		//PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
-		//	attacker->client->pers.netname, TeamName(team));
+		//	attacker->client->info.netname, TeamName(team));
 		PrintCTFMessage(attacker->s.number, team, CTFMESSAGE_FRAGGED_FLAG_CARRIER);
 
 		// the target had the flag, clear the hurt carrier
@@ -364,7 +364,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS * tokens * tokens);
 		attacker->client->pers.teamState.fragcarrier++;
 		//PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n",
-		//	attacker->client->pers.netname, TeamName(team));
+		//	attacker->client->info.netname, TeamName(team));
 
 		// the target had the flag, clear the hurt carrier
 		// field on the other team
@@ -712,7 +712,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if ( ent->flags & FL_DROPPED_ITEM ) {
 		// hey, its not home.  return it by teleporting it back
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %i %s: %s returned the %s flag\n",
-			other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER), cl->pers.netname,
+			other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER), cl->info.netname,
 			BG_TeamName(otherTeam[team], CASE_LOWER));
 		PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_RETURNED_FLAG);
 
@@ -730,7 +730,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 		return 0; // We don't have the flag
 	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag\n",
 		other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER),
-		cl->pers.netname, BG_TeamName(otherTeam[team], CASE_LOWER));
+		cl->info.netname, BG_TeamName(otherTeam[team], CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
 
 	cl->ps.powerups[enemy_flag] = 0;
@@ -802,9 +802,9 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	gclient_t *cl = other->client;
 
 	//PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
-	//	other->client->pers.netname, TeamName(team));
+	//	other->client->info.netname, TeamName(team));
 	G_LogPrintf(LOG_FLAG, "FlagGrab: %i %s: %s got the %s flag\n", other->s.number,
-		BG_TeamName(otherTeam[team], CASE_UPPER), cl->pers.netname,
+		BG_TeamName(otherTeam[team], CASE_UPPER), cl->info.netname,
 		BG_TeamName(otherTeam[team], CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_GOT_FLAG);
 
@@ -1051,7 +1051,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	int			clients[TEAM_MAXOVERLAY];
 	gclient_t	*client = ent->client;
 
-	if ( !client->pers.teamInfo )
+	if ( !client->info.teamInfo )
 		return;
 
 	// figure out what client should be on the display

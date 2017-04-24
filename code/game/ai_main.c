@@ -2030,7 +2030,7 @@ int PassLovedOneCheck(bot_state_t *bs, gentity_t *ent)
 
 	while (i < bs->lovednum)
 	{
-		if (strcmp(level.clients[loved->client].pers.netname, bs->loved[i].name) == 0)
+		if (strcmp(level.clients[loved->client].info.netname, bs->loved[i].name) == 0)
 		{
 			if (!IsTeamplay() && bs->loved[i].level < 2)
 			{ //if FFA and level of love is not greater than 1, just don't care
@@ -5122,7 +5122,7 @@ int GetLoveLevel(bot_state_t *bs, bot_state_t *love)
 		return 1;
 	}
 
-	lname = g_entities[love->client].client->pers.netname;
+	lname = g_entities[love->client].client->info.netname;
 
 	if (!lname)
 	{
@@ -5231,7 +5231,7 @@ void BotDeathNotify(bot_state_t *bs)
 			ltest = 0;
 			while (ltest < botstates[i]->lovednum)
 			{
-				if (strcmp(level.clients[bs->client].pers.netname, botstates[i]->loved[ltest].name) == 0)
+				if (strcmp(level.clients[bs->client].info.netname, botstates[i]->loved[ltest].name) == 0)
 				{
 					BotLovedOneDied(botstates[i], bs, botstates[i]->loved[ltest].level);
 					break;

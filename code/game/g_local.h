@@ -419,17 +419,11 @@ typedef struct {
 typedef struct {
 	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
-	qboolean	localClient;		// true if "ip" info key is "localhost"
 	qboolean	initialSpawn;		// the first spawn should be at a cool location
-	qboolean	predictItemPickup;	// based on cg_predictItems userinfo
-	qboolean	pmoveFixed;			//
-	char		netname[MAX_NETNAME];
-	int			maxHealth;			// for handicapping
 	int			enterTime;			// level.time the client entered the game
 	playerTeamState_t teamState;	// status in teamplay games
 //	int			voteCount;			// to prevent people from constantly calling votes
 //	int			teamVoteCount;		// to prevent people from constantly calling votes
-	qboolean	teamInfo;			// send team overlay updates?
 	int			totalDamageTakenFromEnemies;
 	int			totalDamageDealtToEnemies;
 	int			totalDamageTakenFromAllies;
@@ -437,7 +431,6 @@ typedef struct {
 	qboolean	registered;
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
-	qboolean	privateDuel;
 	vote_t		vote;
 	vote_t		teamVote;
 
@@ -445,6 +438,17 @@ typedef struct {
 											// player. ps.persistant is updated
 											// in ClientEndFrame
 } clientPersistant_t;
+
+// client data parsed from userinfo
+typedef struct {
+	qboolean	localClient;		// true if "ip" info key is "localhost"
+	qboolean	predictItemPickup;	// based on cg_predictItems userinfo
+	qboolean	pmoveFixed;			//
+	char		netname[MAX_NETNAME];
+	int			maxHealth;			// for handicapping
+	qboolean	teamInfo;			// send team overlay updates?
+	qboolean	privateDuel;		// based on cg_privateDuel userinfo
+} clientUserinfo_t;
 
 // client data that stays across reconnections.
 typedef struct {
@@ -462,6 +466,7 @@ struct gclient_s {
 	// the rest of the structure is private to game
 	clientPersistant_t	pers;
 	clientSession_t		sess;
+	clientUserinfo_t	info;
 	clientProfile_t		prof;
 
 	int			invulnerableTimer;

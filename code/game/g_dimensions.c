@@ -59,7 +59,7 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 				gclient_t	*client = level.clients + i;
 
 				if (client->pers.connected == CON_CONNECTED &&
-					client->pers.privateDuel && client->ps.duelInProgress &&
+					client->info.privateDuel && client->ps.duelInProgress &&
 					blame != i && blame != client->ps.duelIndex) {
 					snapshotIgnore[i] = 1;
 				} else {
@@ -140,7 +140,7 @@ void G_StartPrivateDuel(gentity_t *ent)
 		int opponentNum;
 		int	i;
 
-		if (!ent->client->pers.privateDuel) {
+		if (!ent->client->info.privateDuel) {
 			return;
 		}
 		if (!ent->client->ps.duelInProgress) {

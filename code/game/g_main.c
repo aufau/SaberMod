@@ -1260,7 +1260,7 @@ void CalculateRanks( void ) {
 		if (currentWinner && currentWinner->client)
 		{
 			trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " %s %s\n\"",
-			currentWinner->client->pers.netname, G_GetStripEdString("SVINGAME", "VERSUS"), level.clients[nonSpecIndex].pers.netname));
+			currentWinner->client->info.netname, G_GetStripEdString("SVINGAME", "VERSUS"), level.clients[nonSpecIndex].info.netname));
 		}
 	}
 	*/
@@ -1774,7 +1774,7 @@ void LogExit( const char *string ) {
 				break;
 			}
 			G_LogPrintf( LOG_GAME, "Winner: %i: %s\n",
-				level.sortedClients[i], client->pers.netname );
+				level.sortedClients[i], client->info.netname );
 		}
 	}
 
@@ -1855,12 +1855,12 @@ void CheckIntermissionExit( void ) {
 		G_LogPrintf( LOG_AUSTRIAN, "Duel Results:\n");
 		//G_LogPrintf( LOG_AUSTRIAN, "Duel Time: %d\n", level.time );
 		G_LogPrintf( LOG_AUSTRIAN, "winner: %s, score: %d, wins/losses: %d/%d\n",
-			level.clients[level.sortedClients[0]].pers.netname,
+			level.clients[level.sortedClients[0]].info.netname,
 			level.clients[level.sortedClients[0]].pers.persistant[PERS_SCORE],
 			level.clients[level.sortedClients[0]].sess.wins,
 			level.clients[level.sortedClients[0]].sess.losses );
 		G_LogPrintf( LOG_AUSTRIAN, "loser: %s, score: %d, wins/losses: %d/%d\n",
-			level.clients[level.sortedClients[1]].pers.netname,
+			level.clients[level.sortedClients[1]].info.netname,
 			level.clients[level.sortedClients[1]].pers.persistant[PERS_SCORE],
 			level.clients[level.sortedClients[1]].sess.wins,
 			level.clients[level.sortedClients[1]].sess.losses );
@@ -1884,10 +1884,10 @@ void CheckIntermissionExit( void ) {
 			AddTournamentPlayer();
 
 			G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
-				level.clients[level.sortedClients[0]].pers.netname,
+				level.clients[level.sortedClients[0]].info.netname,
 				level.clients[level.sortedClients[0]].sess.wins,
 				level.clients[level.sortedClients[0]].sess.losses,
-				level.clients[level.sortedClients[1]].pers.netname,
+				level.clients[level.sortedClients[1]].info.netname,
 				level.clients[level.sortedClients[1]].sess.wins,
 				level.clients[level.sortedClients[1]].sess.losses,
 				g_fraglimit.integer );
@@ -1905,7 +1905,7 @@ void CheckIntermissionExit( void ) {
 		}
 
 		G_LogPrintf( LOG_AUSTRIAN, "Duel Tournament Winner: %s wins/losses: %d/%d\n",
-			level.clients[level.sortedClients[0]].pers.netname,
+			level.clients[level.sortedClients[0]].info.netname,
 			level.clients[level.sortedClients[0]].sess.wins,
 			level.clients[level.sortedClients[0]].sess.losses );
 
@@ -2331,14 +2331,14 @@ void CheckExitRules( void ) {
 				LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
 				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
-					cl->pers.netname );
+					cl->info.netname );
 				return;
 			}
 
 			if ( cl->pers.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
 				gDuelExit = qfalse;
-				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " %s\n\"", cl->pers.netname,
+				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " %s\n\"", cl->info.netname,
 					G_GetStripEdString( "SVINGAME", "HIT_THE_KILL_LIMIT" ) );
 				return;
 			}
@@ -2435,10 +2435,10 @@ void CheckTournament( void ) {
 				gDuelist2 = level.sortedClients[1];
 
 				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
-					level.clients[level.sortedClients[0]].pers.netname,
+					level.clients[level.sortedClients[0]].info.netname,
 					level.clients[level.sortedClients[0]].sess.wins,
 					level.clients[level.sortedClients[0]].sess.losses,
-					level.clients[level.sortedClients[1]].pers.netname,
+					level.clients[level.sortedClients[1]].info.netname,
 					level.clients[level.sortedClients[1]].sess.wins,
 					level.clients[level.sortedClients[1]].sess.losses,
 					g_fraglimit.integer );
@@ -2689,11 +2689,11 @@ void SetLeader(team_t team, int client) {
 	int i;
 
 	if ( level.clients[client].pers.connected == CON_DISCONNECTED ) {
-		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not connected\n\"", level.clients[client].pers.netname) );
+		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not connected\n\"", level.clients[client].info.netname) );
 		return;
 	}
 	if (level.clients[client].sess.sessionTeam != team) {
-		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not on the team anymore\n\"", level.clients[client].pers.netname) );
+		PrintTeam(team, va("print \"%s" S_COLOR_WHITE " is not on the team anymore\n\"", level.clients[client].info.netname) );
 		return;
 	}
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
@@ -2706,7 +2706,7 @@ void SetLeader(team_t team, int client) {
 	}
 	level.clients[client].sess.teamLeader = qtrue;
 	ClientUserinfoChanged( client );
-	PrintTeam(team, va("print \"%s" S_COLOR_WHITE " %s\n\"", level.clients[client].pers.netname, G_GetStripEdString("SVINGAME", "NEWTEAMLEADER")) );
+	PrintTeam(team, va("print \"%s" S_COLOR_WHITE " %s\n\"", level.clients[client].info.netname, G_GetStripEdString("SVINGAME", "NEWTEAMLEADER")) );
 }
 
 /*
@@ -2773,7 +2773,7 @@ static void CheckTeamVote( team_t team ) {
 				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s is the new %s team leader\n",
 					BG_TeamName(team, CASE_UPPER), clientNum,
 					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
-					level.clients[clientNum].pers.netname, BG_TeamName(team, CASE_LOWER) );
+					level.clients[clientNum].info.netname, BG_TeamName(team, CASE_LOWER) );
 			}
 			else {
 				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );

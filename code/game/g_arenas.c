@@ -130,7 +130,7 @@ static gentity_t *SpawnModelOnVictoryPad( gentity_t *pad, vec3_t offset, gentity
 		return NULL;
 	}
 
-	body->classname = ent->client->pers.netname;
+	body->classname = ent->client->info.netname;
 	body->client = ent->client;
 	body->s = ent->s;
 	body->s.eType = ET_PLAYER;		// could be ET_INVISIBLE

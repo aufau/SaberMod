@@ -385,7 +385,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -440,7 +440,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -495,7 +495,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -551,7 +551,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -621,7 +621,7 @@ void G_LogWeaponOutput(void)
 
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -690,7 +690,7 @@ void G_LogWeaponOutput(void)
 
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -746,7 +746,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -802,7 +802,7 @@ void G_LogWeaponOutput(void)
 		{	// Ignore any entity/clients we don't care about!
 			if ( g_entities[i].client )
 			{
-				nameptr = g_entities[i].client->pers.netname;
+				nameptr = g_entities[i].client->info.netname;
 			}
 			else
 			{
@@ -1521,7 +1521,7 @@ qboolean CalculateSection31Award(gentity_t *ent)
 //
 //	kef -- heh.
 //
-//		if (strcmp("JaxxonPhred", ent->client->pers.netname))
+//		if (strcmp("JaxxonPhred", ent->client->info.netname))
 //		{
 //			continue;
 //		}
