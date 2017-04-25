@@ -1770,7 +1770,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		"Map",			// CV_MAP
 		"Gametype",		// CV_GAMETYPE
 		"Kick",			// CV_KICK
-		"Unused",		// CV_UNUSED
+		"Shuffle",		// CV_SHUFFLE
 		"Do Warmup",	// CV_DOWARMUP
 		"Timelimit",	// CV_TIMELIMIT
 		"Fraglimit",	// CV_FRAGLIMIT
@@ -1797,6 +1797,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "gametype",		CV_GAMETYPE },
 		{ "kick",			CV_KICK },
 		{ "clientkick",		CV_KICK },
+		{ "shuffle",		CV_SHUFFLE },
 		{ "g_dowarmup",		CV_DOWARMUP },
 		{ "dowarmup",		CV_DOWARMUP },
 		{ "timelimit",		CV_TIMELIMIT },
@@ -1853,7 +1854,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	if ( voteCmd == CV_INVALID ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>, shuffle.\n\"" );
 		return;
 	}
 
@@ -2018,16 +2019,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Match Mode" );
 		}
 		break;
-	case CV_MAP_RESTART:
-		// no argument vote
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart" );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
-		break;
 	case CV_POLL:
 		if (arg2[0] == '\0') {
 			trap_SendServerCommand( ent-g_entities, "print \"Usage: callvote poll <question>\n\"" );
 		}
 		Q_strncpyz( level.voteDisplayString, arg2, sizeof( level.voteDisplayString ) );
+		break;
+	case CV_MAP_RESTART:
+	case CV_SHUFFLE:
+		// no argument votes
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s", arg1 );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
 		break;
 	default:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

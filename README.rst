@@ -61,6 +61,9 @@ poll <question>
 remove <player>
   Remove `player` to spectator team.
 
+shuffle
+  Randomize teams.
+
 teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
@@ -181,7 +184,7 @@ g_allowVote <0|1|bitmask>
 
   =====================  =====================  =====================
   2 - Map Restart        4 - Next Map           8 - Map
-  16 - Gametype          32 - Kick
+  16 - Gametype          32 - Kick              64 - Shuffle
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
