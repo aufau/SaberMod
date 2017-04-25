@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 54
+COUNT 56
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -487,4 +487,22 @@ INDEX 53
    TEXT_LANGUAGE3 "Show Message of the Day"
    TEXT_LANGUAGE6 "Show Message of the Day"
    TEXT_LANGUAGE8 "Show Message of the Day"
+}
+INDEX 54
+{
+   REFERENCE SHUFFLE
+   TEXT_LANGUAGE1 "Shuffle"
+   TEXT_LANGUAGE2 "Shuffle"
+   TEXT_LANGUAGE3 "Shuffle"
+   TEXT_LANGUAGE6 "Shuffle"
+   TEXT_LANGUAGE8 "Shuffle"
+}
+INDEX 55
+{
+   REFERENCE SHUFFLE_DESC
+   TEXT_LANGUAGE1 "Randomize teams."
+   TEXT_LANGUAGE2 "Randomize teams."
+   TEXT_LANGUAGE3 "Randomize teams."
+   TEXT_LANGUAGE6 "Randomize teams."
+   TEXT_LANGUAGE8 "Randomize teams."
 }
