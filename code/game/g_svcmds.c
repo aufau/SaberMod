@@ -664,6 +664,81 @@ void	Svcmd_Tell_f( void )
 }
 
 /*
+===================
+Svcmd_Shuffle_f
+
+Shuffle teams at random
+===================
+*/
+static void	Svcmd_Shuffle_f( void )
+{
+	qboolean	change[MAX_CLIENTS] = { qfalse };
+	int			count[TEAM_NUM_TEAMS] = { 0 };
+	int			max;
+	int			i;
+
+	if ( !GT_Team( level.gametype ) ) {
+		return;
+	}
+
+	max = ( level.numNonSpectatorClients + 1 ) / 2;
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		gclient_t	*client = &level.clients[i];
+		team_t		team;
+
+		if ( client->pers.connected == CON_DISCONNECTED ) {
+			continue;
+		}
+		team = client->sess.sessionTeam;
+		if ( team != TEAM_RED && team != TEAM_BLUE ) {
+			continue;
+		}
+
+		team = ( rand() & 1 ) ? TEAM_RED : TEAM_BLUE;
+
+		if ( count[team] >= max ) {
+			team = otherTeam[team];
+		}
+
+		count[team]++;
+		change[i] = (qboolean)( client->sess.sessionTeam != team );
+
+		if ( change[i] ) {
+			client->sess.sessionTeam = team;
+			client->sess.teamLeader = qfalse;
+		}
+	}
+
+	CheckTeamLeader( TEAM_RED );
+	CheckTeamLeader( TEAM_BLUE );
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		gclient_t	*client = &level.clients[i];
+		team_t		team;
+
+		if ( client->pers.connected == CON_DISCONNECTED ) {
+			continue;
+		}
+		team = client->sess.sessionTeam;
+		if ( team != TEAM_RED && team != TEAM_BLUE ) {
+			continue;
+		}
+
+		if ( change[i] ) {
+			ClientUserinfoChanged( i );
+			if ( client->pers.connected == CON_CONNECTED ) {
+				ClientBegin( i, qfalse );
+			}
+		}
+	}
+
+	CalculateRanks();
+
+	trap_SendServerCommand( -1, "cp \"Shuffled teams.\"" );
+}
+
+/*
 =================
 ConsoleCommand
 
@@ -741,6 +816,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "mode") == 0) {
 		Svcmd_Mode_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "shuffle") == 0) {
+		Svcmd_Shuffle_f();
 		return qtrue;
 	}
 

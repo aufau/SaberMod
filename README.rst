@@ -153,6 +153,9 @@ mode <mode|default>
 remove <player> [time]
   Remove `player` to spectator team for at least `time` seconds.
 
+shuffle
+  Randomize teams.
+
 Game Cvars
 ..........
 
