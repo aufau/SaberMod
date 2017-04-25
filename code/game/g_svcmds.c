@@ -439,7 +439,7 @@ void	Svcmd_ForceTeam_f( void ) {
 	trap_Argv( 1, str, sizeof( str ) );
 	clientNum = G_ClientNumberFromString( str, &errorMsg );
 	if ( clientNum == -1 ) {
-		G_Printf( errorMsg );
+		trap_Print( errorMsg );
 		return;
 	}
 
@@ -505,7 +505,7 @@ void	Svcmd_Remove_f( void )
 	int			delay;
 
 	if ( trap_Argc() < 2 ) {
-		trap_Print( "Usage: remove <player> [seconds]\n" );
+		G_Printf( "Usage: remove <player> [seconds]\n" );
 		return;
 	}
 
@@ -513,7 +513,7 @@ void	Svcmd_Remove_f( void )
 
 	clientNum = G_ClientNumberFromString( str, &errorMsg );
 	if ( clientNum == -1 ) {
-		G_Printf( errorMsg );
+		trap_Print( errorMsg );
 		return;
 	}
 
@@ -564,7 +564,7 @@ void	Svcmd_Announce_f( void )
 	char	*str = ConcatArgs(1);
 
 	if ( !str[0] ) {
-		trap_Print( "Usage: announce <message|motd>\n" );
+		G_Printf( "Usage: announce <message|motd>\n" );
 		return;
 	}
 
@@ -646,14 +646,14 @@ void	Svcmd_Tell_f( void )
 	int			clientNum;
 
 	if ( trap_Argc() < 2 ) {
-		trap_Print( "Usage: tell <player> [message]\n" );
+		G_Printf( "Usage: tell <player> [message]\n" );
 		return;
 	}
 
 	trap_Argv( 1, str, sizeof( str ) );
 	clientNum = G_ClientNumberFromString( str, &errorMsg );
 	if ( clientNum == -1 ) {
-		G_Printf( errorMsg );
+		trap_Print( errorMsg );
 		return;
 	}
 
