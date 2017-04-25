@@ -1798,12 +1798,21 @@ void LogExit( const char *string ) {
 	}
 }
 
-void LogRoundExit( const char *string )
+static void LogRoundExit( team_t winner, const char *string )
 {
+	const char *param1;
+
 	level.intermissionQueued = level.time;
 	// update CS_SCORES1 and CS_SCORES2
 	CalculateRanks(); // calls CheckExitRules!
-	G_LogPrintf( LOG_GAME, "Round Exit: %s\n", string );
+
+	if ( winner == TEAM_SPECTATOR ) {
+		param1 = "DRAW";
+	} else {
+		param1 = BG_TeamName( winner, CASE_UPPER );
+	}
+
+	G_LogPrintf( LOG_GAME, "RoundExit: %s: %s\n", param1, string );
 }
 
 qboolean gDidDuelStuff = qfalse; //gets reset on game reinit
@@ -2263,7 +2272,7 @@ void CheckExitRules( void ) {
 					trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
 							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation ) );
 				}
-				LogRoundExit( "Timelimit hit." );
+				LogRoundExit( winner, "Timelimit hit." );
 			} else {
 				trap_SendServerCommand( -1, va( "print \"%s.\n\"",
 						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
@@ -2293,7 +2302,7 @@ void CheckExitRules( void ) {
 			} else {
 				G_QueueServerCommand( "print \"Team eliminated. %s.\n\"", explanation );
 			}
-			LogRoundExit( "Team eliminated." );
+			LogRoundExit( winner, "Team eliminated." );
 			return;
 		}
 	}
