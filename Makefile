@@ -103,10 +103,10 @@ ui/jk2mp/ingame_setup_original.menu strip/SABERMOD2_INGAME.sp		 \
 strip/SABERMOD2_MENUS.sp shaders/sabermod.shader_mv					 \
 shaders/sabermod.shader gfx/2d/crosshairj.tga gfx/menus/download.tga \
 gfx/menus/missing.tga gfx/menus/menu_buttonback_new.jpg				 \
-gfx/menus/menu_buttonback2_new.jpg
+gfx/menus/menu_buttonback2_new.jpg scripts/arenas.txt
 
 svs_zip		:= $(name)-$(VERSION).zip
-svs_assets	:= server.cfg reset.cfg modes/
+svs_assets	:= server.cfg reset.cfg modes/ scripts/
 svs_doc := README.rst LICENSE.txt CHANGELOG.rst cvar-calculator.html	\
 assets/SOURCE.txt
 
