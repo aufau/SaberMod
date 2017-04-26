@@ -471,6 +471,16 @@ CG_TransitionPlayerState
 ===============
 */
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
+	// respawning
+	if ( ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT] ) {
+		CG_Respawn( ps );
+	}
+
+	if ( cg.mapRestart ) {
+		CG_Respawn( ps );
+		cg.mapRestart = qfalse;
+	}
+
 	// check for changing follow mode
 	if ( ps->clientNum != ops->clientNum ) {
 		cg.thisFrameTeleport = qtrue;
@@ -481,16 +491,6 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 	// damage events (player is getting wounded)
 	if ( ps->damageEvent != ops->damageEvent && ps->damageCount ) {
 		CG_DamageFeedback( ps->damageYaw, ps->damagePitch, ps->damageCount );
-	}
-
-	// respawning
-	if ( ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT] ) {
-		CG_Respawn( ps );
-	}
-
-	if ( cg.mapRestart ) {
-		CG_Respawn( ps );
-		cg.mapRestart = qfalse;
 	}
 
 	if ( ps->pm_type != PM_INTERMISSION &&

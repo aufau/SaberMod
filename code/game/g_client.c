@@ -1886,8 +1886,10 @@ void ClientSpawn(gentity_t *ent) {
 	client->lastkilled_client = -1;
 
 	client->ps.eventSequence = eventSequence;
-	// increment the spawncount so the client will detect the respawn
-	client->pers.persistant[PERS_SPAWN_COUNT]++;
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
+		// increment the spawncount so the client will detect the respawn
+		client->pers.persistant[PERS_SPAWN_COUNT]++;
+	}
 	client->pers.persistant[PERS_TEAM] = client->sess.sessionTeam;
 
 	client->airOutTime = level.time + 12000;
