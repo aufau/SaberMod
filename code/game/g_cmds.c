@@ -2026,6 +2026,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Q_strncpyz( level.voteDisplayString, arg2, sizeof( level.voteDisplayString ) );
 		break;
 	case CV_MAP_RESTART:
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart 0" );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
+		break;
 	case CV_SHUFFLE:
 		// no argument votes
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s", arg1 );
