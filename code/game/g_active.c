@@ -1974,6 +1974,7 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
+				client->ps.persistant[PERS_SPAWN_COUNT] = client->pers.persistant[PERS_SPAWN_COUNT];
 			} else if ( client->sess.spectatorClient >= 0 ) {
 				StopFollowing(ent);
 			}
