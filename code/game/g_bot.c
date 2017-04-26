@@ -201,17 +201,6 @@ qboolean G_DoesArenaSupportGametype(arena_t arena, gametype_t gametype)
 		return qfalse;
 	}
 
-	switch (gametype) {
-	case GT_FFA:
-	case GT_TEAM:
-	case GT_TOURNAMENT:
-	case GT_REDROVER:
-	case GT_CLANARENA:
-		return qtrue;
-	default:
-		break;
-	}
-
 	type = Info_ValueForKey(g_arenaInfos[arena], "type");
 
 	typeBits = G_GetMapTypeBits(type);
