@@ -73,28 +73,28 @@ map				"duel_bay"
 bots			"Kyle Desann"
 longname		"Imperial Shuttle Bay"
 fraglimit		10
-type			"duel"
+type			"ffa duel"
 }
 {
 map				"duel_carbon"
 bots			"Kyle Desann"
 longname		"Carbon Chamber"
 fraglimit		10
-type			"duel"
+type			"ffa duel"
 }
 {
 map				"duel_jedi"
 bots			"Kyle Desann"
 longname		"Battleground Jedi 2.0"
 fraglimit		10
-type			"duel"
+type			"ffa duel"
 }
 {
 map				"duel_pit"
 bots			"Kyle Desann"
 longname		"Trial Pit"
 fraglimit		10
-type			"duel"
+type			"ffa duel"
 }
 {
 map				"ffa_raven"
