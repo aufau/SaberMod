@@ -2352,6 +2352,13 @@ void ClientDisconnect( int clientNum ) {
 	}
 
 	G_ClearClientLog(clientNum);
+
+	// disown entities blaming this client
+	for ( i = 0; i < level.num_entities; i++ ) {
+		if ( g_entities[i].inuse && g_entities[i].blameEntityNum == clientNum ) {
+			G_BlameForEntity( ENTITYNUM_NONE, &g_entities[i] );
+		}
+	}
 }
 
 
