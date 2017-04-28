@@ -585,6 +585,8 @@ mode <mode|default>
 static void	Svcmd_Mode_f( void )
 {
 	const char		*mode;
+	char			map[MAX_QPATH];
+	qboolean		setMap;
 	fileHandle_t	f;
 
 	if ( trap_Argc() < 2 ) {
@@ -605,15 +607,14 @@ static void	Svcmd_Mode_f( void )
 	}
 
 	mode = ConcatArgs(1);
+	setMap = qfalse;
 
 	if ( !Q_stricmp(mode, "default") ) {
-		char map[MAX_QPATH];
-
 		mode = g_modeDefault.string;
 		trap_Cvar_VariableStringBuffer( "g_modeDefaultMap", map, sizeof( map ) );
 
 		if ( strcmp( map, "" ) != 0 && strcmp( map, "0" ) != 0 && strcmp( map, "none" ) != 0 )
-			trap_Cvar_Set( "nextmap", va( "map %s", map ) );
+			setMap = qtrue;
 	}
 
 	if ( trap_FS_FOpenFile( va( "modes/%s.cfg", mode), &f, FS_READ) < 0 ) {
@@ -626,9 +627,12 @@ static void	Svcmd_Mode_f( void )
 	trap_SendServerCommand( -1, va("print \"Changing mode to %s.\n\"", mode) );
 	trap_Cvar_Set( "g_mode", mode );
 	trap_SendConsoleCommand( EXEC_APPEND, va("exec \"modes/%s\"\n", mode) );
-	// we don't realy know what gametype it's going to be and admin
-	// can set nextmap in mode config.
-	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
+
+	if ( setMap ) {
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map \"%s\"\n", map ) );
+	} else {
+		trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
+	}
 }
 
 /*
