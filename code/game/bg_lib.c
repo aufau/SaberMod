@@ -278,14 +278,16 @@ char *strchr( const char *string, int c ) {
 }
 
 char *strrchr( const char *s, int c ) {
-	const char	*sp = NULL;
-	const char	cc = c;
+	const char cc = c;
+	const char *sp = NULL;
 
-	do {
+	while (*s) {
 		if (*s == cc)
 			sp = s;
 		s++;
-	} while (*s);
+	}
+	if (cc == 0)
+		sp = s;
 
 	return (char *)sp;
 }
