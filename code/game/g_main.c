@@ -2073,10 +2073,16 @@ static team_t GetRoundWinner( const char **explanation )
 	}
 
 	if ( winner != TEAM_SPECTATOR ) {
-		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
-			" won the round (%d player%s remaining)", teamColorString[winner],
-			BG_TeamName( winner, CASE_NORMAL ), count[winner],
-			count[winner] > 1 ? "s" : "" );
+		if ( count[winner] == 1 ) {
+			Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+				" won the round (%d hp remaining)", teamColorString[winner],
+				BG_TeamName( winner, CASE_NORMAL ), health[winner] );
+		} else {
+			Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+				" won the round (%d player%s remaining)", teamColorString[winner],
+				BG_TeamName( winner, CASE_NORMAL ), count[winner],
+				count[winner] > 1 ? "s" : "" );
+		}
 		return winner;
 	}
 
