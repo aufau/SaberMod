@@ -671,68 +671,93 @@ void	Svcmd_Tell_f( void )
 ===================
 Svcmd_Shuffle_f
 
-Shuffle teams at random
+Shuffle teams. Simillar to a card shuffle (riffle). Randomly selected
+half of players from team RED go to team BLUE and vice-versa. This
+method guarantees that there is a noticeable team change, minimizes
+chance of getting previous teams in consecutive calls and balances
+team counts.
 ===================
 */
 static void	Svcmd_Shuffle_f( void )
 {
 	qboolean	change[MAX_CLIENTS] = { qfalse };
 	int			count[TEAM_NUM_TEAMS] = { 0 };
-	int			max;
+	team_t		first, second, team;
 	int			i;
 
 	if ( !GT_Team( level.gametype ) ) {
 		return;
 	}
 
-	max = ( level.numNonSpectatorClients + 1 ) / 2;
-
 	for ( i = 0; i < level.maxclients; i++ ) {
-		gclient_t	*client = &level.clients[i];
-		team_t		team;
-
-		if ( client->pers.connected == CON_DISCONNECTED ) {
-			continue;
+		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
+			count[level.clients[i].sess.sessionTeam]++;
 		}
-		team = client->sess.sessionTeam;
-		if ( team != TEAM_RED && team != TEAM_BLUE ) {
-			continue;
+	}
+
+	if ( count[TEAM_RED] > count[TEAM_BLUE] ) {
+		first = TEAM_RED;
+	} else if ( count[TEAM_RED] < count[TEAM_BLUE] ) {
+		first = TEAM_BLUE;
+	} else {
+		first = ( rand() & 1 ) ? TEAM_RED : TEAM_BLUE;
+	}
+
+	second = otherTeam[first];
+
+	team = first;
+	while ( 1 ) {
+		int		changed = 0;
+		int		left = count[team];
+		int		changeNum = count[team] / 2;
+
+		for ( i = 0; i < level.maxclients; i++ ) {
+			gclient_t	*client = &level.clients[i];
+
+			if ( changed >= changeNum ) {
+				break;
+			}
+
+			if ( client->pers.connected != CON_DISCONNECTED &&
+				client->sess.sessionTeam == team )
+			{
+				left--;
+
+				if ( change[i] ) {
+					continue;
+				}
+
+				if ( changed + left < changeNum ||
+					irand( 1, count[team] ) <= changeNum )
+				{
+					changed++;
+					change[i] = qtrue;
+					client->sess.sessionTeam = otherTeam[team];
+					client->sess.teamLeader = qfalse;
+				}
+			}
 		}
 
-		team = ( rand() & 1 ) ? TEAM_RED : TEAM_BLUE;
-
-		if ( count[team] >= max ) {
-			team = otherTeam[team];
+		if ( team == second ) {
+			break;
 		}
-
-		count[team]++;
-		change[i] = (qboolean)( client->sess.sessionTeam != team );
-
-		if ( change[i] ) {
-			client->sess.sessionTeam = team;
-			client->sess.teamLeader = qfalse;
-		}
+		team = second;
 	}
 
 	CheckTeamLeader( TEAM_RED );
 	CheckTeamLeader( TEAM_BLUE );
 
+	team = first;
 	for ( i = 0; i < level.maxclients; i++ ) {
 		gclient_t	*client = &level.clients[i];
-		team_t		team;
 
-		if ( client->pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-		team = client->sess.sessionTeam;
-		if ( team != TEAM_RED && team != TEAM_BLUE ) {
-			continue;
-		}
+		if ( client->pers.connected != CON_DISCONNECTED ) {
+			if ( change[i] ) {
+				ClientUserinfoChanged( i );
 
-		if ( change[i] ) {
-			ClientUserinfoChanged( i );
-			if ( client->pers.connected == CON_CONNECTED ) {
-				ClientBegin( i, qfalse );
+				if ( client->pers.connected == CON_CONNECTED ) {
+					ClientBegin( i, qfalse );
+				}
 			}
 		}
 	}
