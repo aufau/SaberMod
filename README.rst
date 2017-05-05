@@ -275,7 +275,6 @@ g_spawnItems <bitmask>
   ================  ================  ===============  ===============
 
 g_spawnWeapons <bitmask>
-
   Controls weapons given to players on spawn using the same bitmask
   as `g_weaponDisable`. The later cvar affects only weapons and ammo
   spawned on a map. Setting this cvar to 0 restores original behaviour
