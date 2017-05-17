@@ -963,6 +963,7 @@ void ClientCommand( int clientNum );
 //
 typedef struct ucmdStat_s {
 	int		serverTime;
+	int		thinkTime;
 } ucmdStat_t;
 
 #define CMD_MASK 1023

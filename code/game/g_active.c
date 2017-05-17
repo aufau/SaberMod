@@ -1882,6 +1882,7 @@ void ClientThink( int clientNum ) {
 
 	cmdIndex[clientNum]++;
 	cmdStats[clientNum][cmdIndex[clientNum] & CMD_MASK].serverTime = ent->client->pers.cmd.serverTime;
+	cmdStats[clientNum][cmdIndex[clientNum] & CMD_MASK].thinkTime = trap_Milliseconds();
 
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while
