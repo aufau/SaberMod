@@ -1864,6 +1864,9 @@ void G_CheckClientTimeouts ( gentity_t *ent )
 	}
 }
 
+ucmdStat_t	cmdStats[MAX_CLIENTS][1024];
+int			cmdIndex[MAX_CLIENTS];
+
 /*
 ==================
 ClientThink
@@ -1876,6 +1879,9 @@ void ClientThink( int clientNum ) {
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
+
+	cmdIndex[clientNum]++;
+	cmdStats[clientNum][cmdIndex[clientNum] & CMD_MASK].serverTime = ent->client->pers.cmd.serverTime;
 
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while

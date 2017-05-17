@@ -767,11 +767,14 @@ static void	Svcmd_Shuffle_f( void )
 	trap_SendServerCommand( -1, "cp \"Shuffled teams.\"" );
 }
 
+extern ucmdStat_t	cmdStats[MAX_CLIENTS][1024];
+extern int			cmdIndex[MAX_CLIENTS];
+
 static void Svcmd_Players_f( void ) {
 	int		i;
 
-	G_Printf( "num client      cgame    team name\n" );
-	G_Printf( "--- ----------- -------- ---- %s\n", Dashes( MAX_NAME_LEN ) );
+	G_Printf( "num client      cgame    fps  team name\n" );
+	G_Printf( "--- ----------- -------- ---- ---- %s\n", Dashes( MAX_NAME_LEN ) );
 
 	for ( i = 0; i < level.maxclients; i++ ) {
 		gclient_t	*client = &level.clients[i];
@@ -779,6 +782,9 @@ static void Svcmd_Players_f( void ) {
 		char		clientVersion[MAX_INFO_VALUE];
 		const char	*cgame;
 		const char	*value;
+		int			lastCmdTime;
+		int			fps = 0;
+		int			j;
 
 		if ( client->pers.connected == CON_DISCONNECTED ) {
 			continue;
@@ -800,10 +806,20 @@ static void Svcmd_Players_f( void ) {
 			Com_sprintf( clientVersion, sizeof( clientVersion ), "" );
 		}
 
-		G_Printf( "%3d %-11.11s %-8.8s %-4.4s %s\n",
+		lastCmdTime = cmdStats[i][cmdIndex[i] & CMD_MASK].serverTime;
+		for ( j = cmdIndex[i]; ((cmdIndex[i] - j + 1) & CMD_MASK) != 0; j-- ) {
+			ucmdStat_t *stat = &cmdStats[i][j & CMD_MASK];
+
+			if ( stat->serverTime + 1000 >= lastCmdTime ) {
+				fps++;
+			}
+		}
+
+		G_Printf( "%3d %-11.11s %-8.8s %4d %-4.4s %s\n",
 			i,
 			clientVersion,
 			cgame,
+			fps,
 			BG_TeamName( client->sess.sessionTeam, CASE_NORMAL ),
 			client->info.netname );
 	}

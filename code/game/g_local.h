@@ -961,6 +961,12 @@ void ClientCommand( int clientNum );
 //
 // g_active.c
 //
+typedef struct ucmdStat_s {
+	int		serverTime;
+} ucmdStat_t;
+
+#define CMD_MASK 1023
+
 void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
 void ClientThink_real		( gentity_t *ent );
