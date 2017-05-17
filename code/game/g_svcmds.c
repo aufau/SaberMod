@@ -767,6 +767,48 @@ static void	Svcmd_Shuffle_f( void )
 	trap_SendServerCommand( -1, "cp \"Shuffled teams.\"" );
 }
 
+static void Svcmd_Players_f( void ) {
+	int		i;
+
+	G_Printf( "num client      cgame    team name\n" );
+	G_Printf( "--- ----------- -------- ---- %s\n", Dashes( MAX_NAME_LEN ) );
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		gclient_t	*client = &level.clients[i];
+		char		userinfo[MAX_INFO_VALUE];
+		char		clientVersion[MAX_INFO_VALUE];
+		const char	*cgame;
+		const char	*value;
+
+		if ( client->pers.connected == CON_DISCONNECTED ) {
+			continue;
+		}
+
+		trap_GetUserinfo( i, userinfo, sizeof(userinfo) );
+
+		value = Info_ValueForKey(userinfo, GAMEVERSION);
+		if ( value[0] ) {
+			cgame = value;
+		} else {
+			cgame = "";
+		}
+
+		value = Info_ValueForKey(userinfo, "JK2MV");
+		if ( value[0] ) {
+			Com_sprintf( clientVersion, sizeof( clientVersion ), "JK2MV %s", value );
+		} else {
+			Com_sprintf( clientVersion, sizeof( clientVersion ), "" );
+		}
+
+		G_Printf( "%3d %-11.11s %-8.8s %-4.4s %s\n",
+			i,
+			clientVersion,
+			cgame,
+			BG_TeamName( client->sess.sessionTeam, CASE_NORMAL ),
+			client->info.netname );
+	}
+}
+
 /*
 =================
 ConsoleCommand
@@ -850,6 +892,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "shuffle") == 0) {
 		Svcmd_Shuffle_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "players") == 0) {
+		Svcmd_Players_f();
 		return qtrue;
 	}
 

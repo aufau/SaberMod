@@ -136,8 +136,8 @@ crosshair and press `+attack` button to start following him.
 Server-Side
 -----------
 
-Server Commands
-...............
+Console Commands
+................
 
 announce <message|motd>
   Print `message` or ingame message of the day on everyone's screen.
@@ -152,6 +152,9 @@ forceteam <player> <team>
 mode <mode|default>
   Change to `mode` or list all available modes when passed without
   arguments.
+
+players
+  Print various informations about players.
 
 remove <player> [time]
   Remove `player` to spectator team for at least `time` seconds.
