@@ -1,3 +1,23 @@
+2.0
+---
+
+* Unlagged Disruptor hit detection - lag compensation technique that
+  allows playing instagib comfortably even with very high ping.
+* New votes: Shuffle and Poll.
+* Voting: callvote cooldown, ability to change vote.
+* Callvote menu: Rules section, maps section: select from server maps
+  rather than your own; download icon next to maps you're missing.
+* 4 force kick effects to choose from: no effect, basejk, no damage,
+  league mod.
+* Crosshair: cg_crosshairColor, new "dot" crosshair (9).
+* Ingame "Message of the Day", can be seen from ingame about menu.
+* Fixed various issues with servers running for a few days or more.
+* "players" game console command prints basic information about
+  players and their fps and packets.
+* Set original (97) FOV limit for all players with dmflags 16.
+* Polished Clan Arena gametype and other previous features.
+* Bug fixes and performance improvements - notably faster map restart.
+
 1.0
 ---
 
