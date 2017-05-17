@@ -1,10 +1,10 @@
 ============
-SaberMod 1.0
+SaberMod 2.0
 ============
 
 This is a *Star Wars Jedi Knight II: Jedi Outcast* 1.04 mod targeting
 all competitive communities. It is developed by *SaberMod team* (see
-Authors_) and draws inspiration from all great id Tech 3 games and
+Authors_) and draws inspiration from all great id tech 3 games and
 mods, trying to improve on usability, stability and user experience
 with *no-gimmicks* approach. Main goal of the mod is to promote and
 improve competitive aspect of the game.
@@ -12,10 +12,10 @@ improve competitive aspect of the game.
 Source code is hosted on GitHub_ and based on `JK2 SDK GPL`_ - an
 updated JK2 1.04 SDK.
 
-Changes
-=======
+What's New
+==========
 
-This is just a list of changes that need explanation. Refer to
+This is just a list of new features that require explanation. Refer to
 CHANGELOG.rst and Git commit history for full log.
 
 Client-Side
@@ -334,12 +334,6 @@ server state. To achieve this it's best to use a "reset" config,
 executed at the start of each mode config. It should contain a default
 value for every possible cvar your modes are changing. Examine
 included modes and `reset.cfg` as an example.
-
-Other type of modes can change a specific rule instead of loading full
-game config. For example one could create "Kicks On" mode that changes
-g_kickMethod value to 1. In such scenario it's be best to also include
-a mode reverting to original state: "Kicks Off", or reset affected
-cvars in `reset.cfg`.
 
 Server can be configured to go back to a default mode after a period
 of inactivity. To do so last lines of the main server config should
