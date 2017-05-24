@@ -2637,14 +2637,6 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	ent->client->ps.forceHandExtendTime = level.time + 1000;
 }
 
-// Cmd_FixSkinBug_f: Debugging command to find out what's causing ellusive "skinbug"
-static void Cmd_FixSkinBug_f( gentity_t *ent )
-{
-	trap_SendServerCommand( -1, va("print \"Attempting to fix skin bug on player: %d s.number: %d s.eType: %d r.ownerNum: %d\n",
-			ent-g_entities, ent->s.number, ent->s.eType, ent->r.ownerNum ) );
-	ent->r.ownerNum = ENTITYNUM_NONE;
-}
-
 static void Cmd_TheDestroyer_f(gentity_t *ent)
 {
 	if (!ent->client->ps.saberHolstered || ent->client->ps.weapon != WP_SABER)
@@ -2946,7 +2938,6 @@ static const clientCommand_t commands[] = {
 	{ "levelshot", Cmd_LevelShot_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "thedestroyer", Cmd_TheDestroyer_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "addbot", Cmd_AddBot_f, 0 },
-	{ "fixskinbug", Cmd_FixSkinBug_f, CMD_NOINTERMISSION },
 #ifdef _DEBUG
 	{ "headexplodey", Cmd_HeadExplodey_f, CMD_CHEAT },
 	{ "g2animent", G_CreateExampleAnimEnt, CMD_CHEAT },
