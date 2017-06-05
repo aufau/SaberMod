@@ -427,6 +427,7 @@ void CG_ProcessSnapshots( void ) {
 	} else {
 		cg.frameInterpolation = 0;	// actually, it should never be used, because
 									// no entities should be marked as interpolating
+		cg.predictedTimeFrac = 0.0f;
 	}
 }
 
