@@ -2107,7 +2107,7 @@ int ScanForEnemies(bot_state_t *bs)
 				distcheck = 1;
 			}
 
-			if (distcheck < closest && ((InFieldOfVision(bs->viewangles, 90, a) && !BotMindTricked(bs->client, i)) || BotCanHear(bs, &g_entities[i], distcheck)) && OrgVisible(bs->eye, g_entities[i].client->ps.origin, -1))
+			if (distcheck < closest && ((InFieldOfVision(bs->viewangles, 90, a) && !BotMindTricked(bs->client, i)) || BotCanHear(bs, &g_entities[i], distcheck)) && OrgVisible(bs->eye, g_entities[i].client->ps.origin, ENTITYNUM_NONE))
 			{
 				if (BotMindTricked(bs->client, i))
 				{
@@ -2518,7 +2518,7 @@ int BotGetFlagBack(bot_state_t *bs)
 			VectorCopy(ent->s.origin, usethisvec);
 		}
 
-		tempInt = GetNearestVisibleWP(usethisvec, 0);
+		tempInt = GetNearestVisibleWP(usethisvec, ENTITYNUM_NONE);
 
 		if (tempInt != -1 && TotalTrailDistance(bs->wpCurrent->index, tempInt, bs) != -1)
 		{
@@ -2582,7 +2582,7 @@ int BotGuardFlagCarrier(bot_state_t *bs)
 			VectorCopy(ent->s.origin, usethisvec);
 		}
 
-		tempInt = GetNearestVisibleWP(usethisvec, 0);
+		tempInt = GetNearestVisibleWP(usethisvec, ENTITYNUM_NONE);
 
 		if (tempInt != -1 && TotalTrailDistance(bs->wpCurrent->index, tempInt, bs) != -1)
 		{
@@ -3080,7 +3080,7 @@ void Saga_DefendFromAttackers(bot_state_t *bs)
 		return;
 	}
 
-	wpClose = GetNearestVisibleWP(g_entities[bestindex].client->ps.origin, -1);
+	wpClose = GetNearestVisibleWP(g_entities[bestindex].client->ps.origin, ENTITYNUM_NONE);
 
 	if (wpClose != -1 && gWPArray[wpClose] && gWPArray[wpClose]->inuse)
 	{
@@ -3675,7 +3675,7 @@ void GetIdealDestination(bot_state_t *bs)
 				VectorCopy(bs->revengeEnemy->s.origin, usethisvec);
 			}
 
-			tempInt = GetNearestVisibleWP(usethisvec, 0);
+			tempInt = GetNearestVisibleWP(usethisvec, ENTITYNUM_NONE);
 
 			if (tempInt != -1 && TotalTrailDistance(bs->wpCurrent->index, tempInt, bs) != -1)
 			{
@@ -3698,7 +3698,7 @@ void GetIdealDestination(bot_state_t *bs)
 				VectorCopy(bs->squadLeader->s.origin, usethisvec);
 			}
 
-			tempInt = GetNearestVisibleWP(usethisvec, 0);
+			tempInt = GetNearestVisibleWP(usethisvec, ENTITYNUM_NONE);
 
 			if (tempInt != -1 && TotalTrailDistance(bs->wpCurrent->index, tempInt, bs) != -1)
 			{
@@ -3754,7 +3754,7 @@ void GetIdealDestination(bot_state_t *bs)
 		}
 		else if (bChicken != 2 && bs->wpDestSwitchTime < level.time)
 		{
-			tempInt = GetNearestVisibleWP(usethisvec, 0);
+			tempInt = GetNearestVisibleWP(usethisvec, ENTITYNUM_NONE);
 
 			if (tempInt != -1 && TotalTrailDistance(bs->wpCurrent->index, tempInt, bs) != -1)
 			{
@@ -4188,14 +4188,14 @@ void MeleeCombatHandling(bot_state_t *bs)
 	VectorCopy(usethisvec, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, usethisvec, mins, maxs, downvec, -1, MASK_SOLID);
+	trap_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	en_down = (int)tr.endpos[2];
 
 	VectorCopy(bs->origin, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, downvec, -1, MASK_SOLID);
+	trap_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	me_down = (int)tr.endpos[2];
 
@@ -4210,7 +4210,7 @@ void MeleeCombatHandling(bot_state_t *bs)
 	VectorCopy(midorg, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, midorg, mins, maxs, downvec, -1, MASK_SOLID);
+	trap_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	mid_down = (int)tr.endpos[2];
 
@@ -4272,7 +4272,7 @@ void SaberCombatHandling(bot_state_t *bs)
 	VectorCopy(usethisvec, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, usethisvec, mins, maxs, downvec, -1, MASK_SOLID);
+	trap_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	en_down = (int)tr.endpos[2];
 
@@ -4286,7 +4286,7 @@ void SaberCombatHandling(bot_state_t *bs)
 		VectorCopy(bs->origin, downvec);
 		downvec[2] -= 4096;
 
-		trap_Trace(&tr, bs->origin, mins, maxs, downvec, -1, MASK_SOLID);
+		trap_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 		me_down = (int)tr.endpos[2];
 
@@ -4308,7 +4308,7 @@ void SaberCombatHandling(bot_state_t *bs)
 	VectorCopy(midorg, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, midorg, mins, maxs, downvec, -1, MASK_SOLID);
+	trap_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	mid_down = (int)tr.endpos[2];
 
@@ -4895,7 +4895,7 @@ int BotFallbackNavigation(bot_state_t *bs)
 	trto[1] = bs->origin[1] + fwd[1]*16;
 	trto[2] = bs->origin[2] + fwd[2]*16;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, trto, -1, MASK_SOLID);
+	trap_Trace(&tr, bs->origin, mins, maxs, trto, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -6256,14 +6256,14 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 
 		if (bs->wpCurrent->flags & WPFLAG_WAITFORFUNC)
 		{
-			if (!CheckForFunc(bs->wpCurrent->origin, -1))
+			if (!CheckForFunc(bs->wpCurrent->origin, ENTITYNUM_NONE))
 			{
 				bs->beStill = level.time + 500; //no func brush under.. wait
 			}
 		}
 		if (bs->wpCurrent->flags & WPFLAG_NOMOVEFUNC)
 		{
-			if (CheckForFunc(bs->wpCurrent->origin, -1))
+			if (CheckForFunc(bs->wpCurrent->origin, ENTITYNUM_NONE))
 			{
 				bs->beStill = level.time + 500; //func brush under.. wait
 			}
@@ -6428,7 +6428,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		if (!bs->frame_Enemy_Vis)
 		{
 			//if (!bs->hitSpotted && VectorLength(a) > 256)
-			if (OrgVisible(bs->eye, bs->lastEnemySpotted, -1))
+			if (OrgVisible(bs->eye, bs->lastEnemySpotted, ENTITYNUM_NONE))
 			{
 				VectorCopy(bs->lastEnemySpotted, headlevel);
 				VectorSubtract(headlevel, bs->eye, a);

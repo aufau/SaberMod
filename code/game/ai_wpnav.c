@@ -735,7 +735,7 @@ int CanGetToVector(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 {
 	trace_t tr;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, -1, MASK_SOLID);
+	trap_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 	{
@@ -755,7 +755,7 @@ int CanGetToVectorTravel(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 	mins[2] = -13;
 	maxs[2] = 13;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, -1, MASK_SOLID);
+	trap_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction != 1 || tr.startsolid || tr.allsolid)
 	{
@@ -777,14 +777,14 @@ int CanGetToVectorTravel(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 	VectorCopy(org1, dmid);
 	dmid[2] -= 1024;
 
-	trap_Trace(&tr, midpos, NULL, NULL, dmid, -1, MASK_SOLID);
+	trap_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
 
 	startheight = org1[2] - tr.endpos[2];
 
 	VectorCopy(midpos, dmid);
 	dmid[2] -= 1024;
 
-	trap_Trace(&tr, midpos, NULL, NULL, dmid, -1, MASK_SOLID);
+	trap_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.startsolid || tr.allsolid)
 	{
@@ -860,7 +860,7 @@ int ConnectTrail(int startindex, int endindex)
 
 	starttrace[2] -= 4096;
 
-	trap_Trace(&tr, startplace, NULL, NULL, starttrace, -1, MASK_SOLID);
+	trap_Trace(&tr, startplace, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 	baseheight = startplace[2] - tr.endpos[2];
 
@@ -899,7 +899,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, -1, MASK_SOLID);
+				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -930,7 +930,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, -1, MASK_SOLID);
+				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -961,7 +961,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, -1, MASK_SOLID);
+				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -992,7 +992,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, -1, MASK_SOLID);
+				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -1105,7 +1105,7 @@ int DoorBlockingSection(int start, int end)
 		return 0;
 	}
 
-	trap_Trace(&tr, gWPArray[start]->origin, NULL, NULL, gWPArray[end]->origin, -1, MASK_SOLID);
+	trap_Trace(&tr, gWPArray[start]->origin, NULL, NULL, gWPArray[end]->origin, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1126,7 +1126,7 @@ int DoorBlockingSection(int start, int end)
 
 	start_trace_index = tr.entityNum;
 
-	trap_Trace(&tr, gWPArray[end]->origin, NULL, NULL, gWPArray[start]->origin, -1, MASK_SOLID);
+	trap_Trace(&tr, gWPArray[end]->origin, NULL, NULL, gWPArray[start]->origin, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1166,7 +1166,7 @@ int RepairPaths(void)
 			if (!(gWPArray[i+1]->flags & WPFLAG_NOVIS) &&
 				!(gWPArray[i+1]->flags & WPFLAG_JUMP) && //don't calculate on jump points because they might not always want to be visible (in cases of force jumping)
 				!OpposingEnds(i, i+1) &&
-				((VectorLength(a) > 400 && bot_wp_distconnect.value) || (!OrgVisible(gWPArray[i]->origin, gWPArray[i+1]->origin, -1) && bot_wp_visconnect.value) ) &&
+				((VectorLength(a) > 400 && bot_wp_distconnect.value) || (!OrgVisible(gWPArray[i]->origin, gWPArray[i+1]->origin, ENTITYNUM_NONE) && bot_wp_visconnect.value) ) &&
 				!DoorBlockingSection(i, i+1))
 			{
 				/*ctRet = */ConnectTrail(i, i+1);
@@ -1261,7 +1261,7 @@ int CanForceJumpTo(int baseindex, int testingindex, float distance)
 		return 0;
 	}
 
-	if (!OrgVisibleCurve(wpBase->origin, mins, maxs, wpTest->origin, -1))
+	if (!OrgVisibleCurve(wpBase->origin, mins, maxs, wpTest->origin, ENTITYNUM_NONE))
 	{
 		return 0;
 	}
@@ -1340,7 +1340,7 @@ void CalculatePaths(void)
 
 					if ((nLDist < MAX_NEIGHBOR_LINK_DISTANCE || forceJumpable) &&
 						((int)gWPArray[i]->origin[2] == (int)gWPArray[c]->origin[2] || forceJumpable) &&
-						(OrgVisibleBox(gWPArray[i]->origin, mins, maxs, gWPArray[c]->origin, -1) || forceJumpable))
+						(OrgVisibleBox(gWPArray[i]->origin, mins, maxs, gWPArray[c]->origin, ENTITYNUM_NONE) || forceJumpable))
 					{
 						gWPArray[i]->neighbors[gWPArray[i]->neighbornum].num = c;
 						if (forceJumpable && ((int)gWPArray[i]->origin[2] != (int)gWPArray[c]->origin[2] || nLDist < MAX_NEIGHBOR_LINK_DISTANCE))

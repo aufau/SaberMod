@@ -4220,7 +4220,7 @@ void SeekerDroneUpdate(gentity_t *self)
 		//org is now where the thing should be client-side because it uses the same time-based offset
 		if (self->client->ps.droneFireTime < level.time)
 		{
-			trap_Trace(&tr, org, NULL, NULL, en->client->ps.origin, -1, MASK_SOLID);
+			trap_Trace(&tr, org, NULL, NULL, en->client->ps.origin, ENTITYNUM_NONE, MASK_SOLID);
 
 			if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 			{
