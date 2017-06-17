@@ -1377,16 +1377,15 @@ static void CG_PlayBufferedSounds( void ) {
 
 void CG_UpdateSoundTrackers()
 {
-	int num;
-	centity_t *cent;
+	int		i;
 
-	for ( num = 0 ; num < ENTITYNUM_NONE ; num++ )
+	for ( i = 0; i < cg.snap->numEntities; i++ )
 	{
-		cent = &cg_entities[num];
+		centity_t *cent = &cg_entities[ cg.snap->entities[ i ].number ];
 
-		if (cent && cent->currentState.eFlags & EF_SOUNDTRACKER)
+		if (cent->currentState.eFlags & EF_SOUNDTRACKER)
 		{ //keep sound for this entity updated in accordance with its attached entity at all times
-			if (cg.snap && cent->currentState.trickedentindex == cg.snap->ps.clientNum)
+			if (cent->currentState.trickedentindex == cg.snap->ps.clientNum)
 			{ //this is actually the player, so center the sound origin right on top of us
 				VectorCopy(cg.refdef.vieworg, cent->lerpOrigin);
 				trap_S_UpdateEntityPosition( cent->currentState.number, cent->lerpOrigin );
