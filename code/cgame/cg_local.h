@@ -2008,7 +2008,7 @@ void		trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const v
 // Returns the projection of a polygon onto the solid brushes in the world
 int			trap_CM_MarkFragments( int numPoints, const vec3_t *points,
 			const vec3_t projection,
-			int maxPoints, vec3_t pointBuffer,
+			int maxPoints, vec3_t *pointBuffer,
 			int maxFragments, markFragment_t *fragmentBuffer );
 
 // normal sounds will have their volume dynamically changed as their entity
