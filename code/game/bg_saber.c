@@ -922,7 +922,12 @@ static void PM_SaberLocked( void )
 		return;
 	}
 
-	genemy = pm->bgClients[pm->ps->saberLockEnemy];
+	genemy = pm->bgClients[enemy];
+
+	if ( genemy == NULL )
+	{
+		return;
+	}
 
 	torsoAnim = ANIM(pm->ps->torsoAnim);
 	torsoAnimEnemy = ANIM(genemy->torsoAnim);
@@ -1100,7 +1105,7 @@ saberMoveName_t PM_SaberFlipOverAttackMove(trace_t *tr)
 {
 	vec3_t fwdAngles, jumpFwd;
 	float zDiff = 0;
-	playerState_t *psData;
+	const playerState_t *psData;
 
 	VectorCopy( pm->ps->viewangles, fwdAngles );
 	fwdAngles[PITCH] = fwdAngles[ROLL] = 0;

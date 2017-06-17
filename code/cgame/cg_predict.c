@@ -501,7 +501,7 @@ static void CG_TouchTriggerPrediction( void ) {
 	}
 }
 
-void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
+static void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 	int		i;
 
 	ps->clientNum = s->number;
@@ -539,28 +539,13 @@ void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 	ps->saberMove = s->saberMove;
 	ps->fd.forcePowersActive = s->forcePowersActive;
 
-	if (s->bolt1)
-	{
-		ps->duelInProgress = qtrue;
-	}
-	else
-	{
-		ps->duelInProgress = qfalse;
-	}
-
-	if (s->bolt2)
-	{
-		ps->dualBlade = qtrue;
-	}
-	else
-	{
-		ps->dualBlade = qfalse;
-	}
+	ps->duelInProgress = (qboolean)s->bolt1;
+	ps->dualBlade = (qboolean)s->bolt2;
 
 	ps->emplacedIndex = s->otherEntityNum2;
 
 	ps->saberHolstered = s->shouldtarget; //reuse bool in entitystate for players differently
-	ps->usingATST = (qboolean)!!s->teamowner;
+	ps->usingATST = (qboolean)s->teamowner;
 
 	/*
 	if (ps->genericEnemyIndex != -1)
@@ -616,8 +601,6 @@ void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 	ps->generic1 = s->generic1;
 }
 
-playerState_t cgSendPS[MAX_CLIENTS];
-
 /*
 =================
 CG_PredictPlayerState
@@ -645,11 +628,13 @@ to ease the jerk.
 =================
 */
 void CG_PredictPlayerState( void ) {
+	static playerState_t	cgSendPS[MAX_CLIENTS];
 	int			cmdNum, current, i;
 	playerState_t	oldPlayerState;
 	qboolean	moved;
 	usercmd_t	oldestCmd;
 	usercmd_t	latestCmd;
+
 
 	cg.hyperspace = qfalse;	// will be set if touching a trigger_teleport
 
@@ -674,6 +659,7 @@ void CG_PredictPlayerState( void ) {
 	}
 
 	// prepare for pmove
+	memset( &cg_pmove, 0, sizeof( cg_pmove ) );
 	cg_pmove.ps = &cg.predictedPlayerState;
 	cg_pmove.trace = CG_DuelTrace;
 	cg_pmove.pointcontents = CG_PointContents;
@@ -685,6 +671,20 @@ void CG_PredictPlayerState( void ) {
 	cg_pmove.noFootsteps = (qboolean)((cgs.dmflags & DF_NO_FOOTSTEPS) > 0);
 	cg_pmove.noKick = (qboolean)((cgs.dmflags & DF_NO_KICK) > 0);
 	cg_pmove.noYDFA = (qboolean)((cgs.dmflags & DF_NO_YDFA) > 0);
+
+	cg_pmove.animations = bgGlobalAnimations;
+	cg_pmove.gametype = cgs.gametype;
+
+	for ( i = 0 ; i < MAX_CLIENTS ; i++ )
+	{
+		if (cg_entities[i].currentValid) {
+			memset( &cgSendPS[i], 0, sizeof( cgSendPS[0] ) );
+			CG_EntityStateToPlayerState(&cg_entities[i].currentState, &cgSendPS[i]);
+			cg_pmove.bgClients[i] = &cgSendPS[i];
+		} else {
+			cg_pmove.bgClients[i] = NULL;
+		}
+	}
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;
@@ -808,16 +808,6 @@ void CG_PredictPlayerState( void ) {
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 		}
 
-		cg_pmove.animations = bgGlobalAnimations;
-
-		cg_pmove.gametype = cgs.gametype;
-
-		for ( i = 0 ; i < MAX_CLIENTS ; i++ )
-		{
-			memset(&cgSendPS[i], 0, sizeof(cgSendPS[i]));
-			CG_EntityStateToPlayerState(&cg_entities[i].currentState, &cgSendPS[i]);
-			cg_pmove.bgClients[i] = &cgSendPS[i];
-		}
 
 		if (cg.snap && cg.snap->ps.saberLockTime > cg.serverTime)
 		{
@@ -837,14 +827,6 @@ void CG_PredictPlayerState( void ) {
 
 		Pmove (&cg_pmove);
 
-		for ( i = 0 ; i < MAX_CLIENTS ; i++ )
-		{
-			cg_entities[i].currentState.torsoAnim = cgSendPS[i].torsoAnim;
-			cg_entities[i].currentState.legsAnim = cgSendPS[i].legsAnim;
-			cg_entities[i].currentState.forceFrame = cgSendPS[i].saberLockFrame;
-			cg_entities[i].currentState.saberMove = cgSendPS[i].saberMove;
-		}
-
 		moved = qtrue;
 
 		// add push trigger movement effects
@@ -863,6 +845,16 @@ void CG_PredictPlayerState( void ) {
 			CG_Printf( "not moved\n" );
 		}
 		return;
+	}
+
+	for ( i = 0 ; i < MAX_CLIENTS ; i++ )
+	{
+		if (cg_entities[i].currentValid) {
+			cg_entities[i].currentState.torsoAnim = cgSendPS[i].torsoAnim;
+			cg_entities[i].currentState.legsAnim = cgSendPS[i].legsAnim;
+			cg_entities[i].currentState.forceFrame = cgSendPS[i].saberLockFrame;
+			cg_entities[i].currentState.saberMove = cgSendPS[i].saberMove;
+		}
 	}
 
 	// adjust for the movement of the groundentity
