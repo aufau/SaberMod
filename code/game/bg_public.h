@@ -917,7 +917,7 @@ void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 void	BG_AdjustPositionForMover( const vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out );
 
-qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean	BG_PlayerTouchesItem( const playerState_t *ps, const entityState_t *item, int atTime );
 
 qboolean	BG_ParseAnimationFile(const char *filename);
 

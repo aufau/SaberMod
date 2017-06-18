@@ -1790,7 +1790,7 @@ void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_ManualEntityRender(centity_t *cent);
 void CG_Beam( centity_t *cent );
-void CG_AdjustPositionForMover( vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
+void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
 
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, const char *tagName );
@@ -1826,8 +1826,8 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire );
 void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean altFire, int charge);
 void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean altFire);
 
-void CG_AddViewWeapon (playerState_t *ps);
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson );
+void CG_AddViewWeapon (const playerState_t *ps);
+void CG_AddPlayerWeapon( refEntity_t *parent, const playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson );
 void CG_DrawWeaponSelect( void );
 void CG_DrawIconBackground(void);
 
@@ -1922,7 +1922,7 @@ void CG_UpdateConfigString( int num, qboolean init );
 //
 int CG_IsMindTricked(int trickIndex1, int trickIndex2, int trickIndex3, int trickIndex4, int client);
 void CG_Respawn( const playerState_t *ps );
-void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
+void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 
 
@@ -2265,7 +2265,7 @@ void CG_CreateBBRefEnts(entityState_t *s1, vec3_t origin );
 void CG_InitG2Weapons(void);
 void CG_ShutDownG2Weapons(void);
 void CG_CopyG2WeaponInstance(int weaponNum, void *toGhoul2);
-void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent);
+void CG_CheckPlayerG2Weapons(const playerState_t *ps, centity_t *cent);
 
 extern void *g2WeaponInstances[MAX_WEAPONS];
 /*

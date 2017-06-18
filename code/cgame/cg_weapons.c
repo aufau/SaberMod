@@ -416,7 +416,7 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson ) {
+void CG_AddPlayerWeapon( refEntity_t *parent, const playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson ) {
 	refEntity_t	gun;
 	refEntity_t	barrel;
 	vec3_t		angles;
@@ -756,7 +756,7 @@ CG_AddViewWeapon
 Add the weapon, and flash for the player's view
 ==============
 */
-void CG_AddViewWeapon( playerState_t *ps ) {
+void CG_AddViewWeapon( const playerState_t *ps ) {
 	refEntity_t	hand;
 	centity_t	*cent;
 	clientInfo_t	*ci;
@@ -2199,7 +2199,7 @@ void CG_CopyG2WeaponInstance(int weaponNum, void *toGhoul2)
 	}
 }
 
-void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent)
+void CG_CheckPlayerG2Weapons(const playerState_t *ps, centity_t *cent)
 {
 	// should we change the gun model on this player?
 	if (cent->currentState.saberInFlight)

@@ -1479,7 +1479,7 @@ Items can be picked up without actually touching their physical bounds to make
 grabbing them easier
 ============
 */
-qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime ) {
+qboolean	BG_PlayerTouchesItem( const playerState_t *ps, const entityState_t *item, int atTime ) {
 	vec3_t		origin;
 
 	BG_EvaluateTrajectory( &item->pos, atTime, origin );

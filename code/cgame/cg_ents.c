@@ -2233,7 +2233,7 @@ CG_AdjustPositionForMover
 Also called by client movement prediction code
 =========================
 */
-void CG_AdjustPositionForMover( vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
+void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
 	const centity_t	*cent;
 
 	if ( moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL ) {

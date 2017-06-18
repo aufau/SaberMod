@@ -209,7 +209,7 @@ void CG_Respawn( const playerState_t *ps ) {
 CG_CheckPlayerstateEvents
 ==============
 */
-void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops ) {
+static void CG_CheckPlayerstateEvents( const playerState_t *ps, const playerState_t *ops ) {
 	int			i;
 	int			event;
 	centity_t	*cent;
@@ -305,7 +305,7 @@ int cgAnnouncerTime = 0; //to prevent announce sounds from playing on top of eac
 CG_CheckLocalSounds
 ==================
 */
-void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
+static void CG_CheckLocalSounds( const playerState_t *ps, const playerState_t *ops ) {
 	int			highScore, reward;
 #ifdef JK2AWARDS
 	sfxHandle_t sfx;
@@ -470,7 +470,7 @@ CG_TransitionPlayerState
 
 ===============
 */
-void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
+void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops ) {
 	// respawning
 	if ( ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT] ) {
 		CG_Respawn( ps );

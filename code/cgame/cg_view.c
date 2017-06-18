@@ -1214,7 +1214,7 @@ Sets cg.refdef view values
 ===============
 */
 static int CG_CalcViewValues( void ) {
-	playerState_t	*ps;
+	const playerState_t	*ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
 
