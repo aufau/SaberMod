@@ -383,7 +383,7 @@ License
 LCC 4.1 is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser and
 David R. Hanson, and available under a non-copyleft license. You can
 find it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
-comes from ioquake3 and it has been slightly modified by it's
+comes from ioquake3 and it has been slightly modified by its
 developers.
 
 Some files in `assets` directory are modified assets from the
@@ -418,7 +418,7 @@ Thanks
 * Daggolin (boy) - Technical discussion, sharing patches and his JK2
   modding expertise.
 * Xycaleth - Creating League mod that was a great inspiration to
-  SaberMod and sharing it's source code.
+  SaberMod and sharing its source code.
 * ouned - Engine and modding expertise.
 * Developers of jk2mv, mvsdk, Jedi Academy, OpenJK, ioq3, jomme, JA++
   (japp), League Mod and other open source id tech 3 mods for various
