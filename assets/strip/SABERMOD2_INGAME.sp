@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 11
+COUNT 12
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -101,6 +101,15 @@ INDEX 10
    TEXT_LANGUAGE3 "DEAD"
    TEXT_LANGUAGE6 "DEAD"
    TEXT_LANGUAGE8 "DEAD"
+}
+INDEX 11
+{
+   REFERENCE CROSSHAIR_FOLLOW_HINT
+   TEXT_LANGUAGE1 "press fire to follow"
+   TEXT_LANGUAGE2 "press fire to follow"
+   TEXT_LANGUAGE3 "press fire to follow"
+   TEXT_LANGUAGE6 "press fire to follow"
+   TEXT_LANGUAGE8 "press fire to follow"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

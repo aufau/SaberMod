@@ -3447,6 +3447,12 @@ static void CG_DrawCrosshairNames( void ) {
 
 	UI_DrawProportionalString(320, 170, name, UI_CENTER, tcolor);
 
+	// draw "press fire to follow" target hint
+	if (cg_drawSpectatorHints.integer && cg.snap->ps.pm_type == PM_SPECTATOR) {
+		color[3] *= 0.4f;
+		UI_DrawScaledProportionalString(320, 195, CG_GetStripEdString("SABERINGAME", "CROSSHAIR_FOLLOW_HINT"), UI_CENTER, color, 0.6f);
+	}
+
 	trap_R_SetColor( NULL );
 }
 

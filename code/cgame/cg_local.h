@@ -1603,6 +1603,7 @@ extern	vmCvar_t		cg_camerafps;
 extern	vmCvar_t		cg_crosshairColor;
 extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
+extern	vmCvar_t		cg_drawSpectatorHints;
 extern	vmCvar_t		cg_duelGlow;
 extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;

@@ -115,6 +115,9 @@ cg_followKiller <0|1>
 cg_followPowerup <0|1>
   Automatically follow flag and powerup carriers.
 
+cg_drawSpectatorHints <0|1>
+  Draw extra hints on new spectator features.
+
 cg_privateDuel <0|1>
   Hide all other players and entities when duelling. Available only
   on server running JK2MV 1.2 or newer.
