@@ -1965,6 +1965,41 @@ static float CG_DrawTimer( float y ) {
 
 /*
 ==============
+CG_DrawCountdown
+==============
+*/
+static void CG_DrawCountdown( void )
+{
+	char		*s;
+	int			msec;
+
+	if (cgs.gametype != GT_CLANARENA) {
+		return;
+	}
+	if (!cgs.timelimit) {
+		return;
+	}
+	if (cg.warmup) {
+		return;
+	}
+
+	msec = cgs.timelimit * 60 * 1000;
+	msec -= cg.serverTime - cgs.levelStartTime;
+	msec += 1000;
+
+	if (msec < 0 || 16000 <= msec) {
+		return;
+	}
+
+	msec = MAX(0, msec);
+
+	s = va( "%d", msec / 1000, msec % 1000 );
+	UI_DrawProportionalString( 320, 125, s, UI_CENTER, colorRed );
+}
+
+
+/*
+==============
 CG_DrawClock
 ==============
 */
@@ -4603,6 +4638,7 @@ static void CG_Draw2D( void ) {
 	cg.scoreBoardShowing = CG_DrawScoreboard();
 	if ( !cg.scoreBoardShowing) {
 		CG_DrawCenterString();
+		CG_DrawCountdown();
 	}
 }
 
