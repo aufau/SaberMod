@@ -1255,7 +1255,7 @@ static qboolean ForcePower_Valid(forcePowers_t i)
 CG_DrawForceSelect
 ===================
 */
-void CG_DrawForceSelect( void )
+static void CG_DrawForceSelect( void )
 {
 	int		i;
 	int		count;
@@ -1407,7 +1407,7 @@ void CG_DrawForceSelect( void )
 CG_DrawInventorySelect
 ===================
 */
-void CG_DrawInvenSelect( void )
+static void CG_DrawInvenSelect( void )
 {
 	int				i;
 	int				sideMax,holdCount,iconCnt;
@@ -3769,6 +3769,43 @@ static qboolean CG_DrawFollow( void )
 
 	s = cgs.clientinfo[ cg.snap->ps.clientNum ].name;
 	CG_Text_Paint ( 320 - CG_Text_Width ( s, 2.0f, FONT_MEDIUM ) / 2, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
+
+	if ( !cg_drawSpectatorHints.integer ) {
+		return qtrue;
+	}
+
+	if ( !cg.showScores ) {
+		return qtrue;
+	}
+
+	// don't draw over item/force/weapon select bar
+	/*
+	if ( cg.iconHUDActive ) {
+		return qtrue;
+	}
+	*/
+
+	if ( cg.snap->ps.duelInProgress )
+	{
+		int		width;
+		float	scale;
+
+		s = va("%s" S_COLOR_WHITE " %s %s",
+			cgs.clientinfo[cg.snap->ps.clientNum].name,
+			CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"),
+			cgs.clientinfo[cg.snap->ps.duelIndex].name);
+		width = CG_Text_Width(s, 1.0f, FONT_MEDIUM);
+		// never overlap health and ammo frames
+		scale = 640 - 2 * 80 - 20;
+		scale /= width;
+		if ( scale > 1.0f ) {
+			scale = 1.0f;
+		}
+		UI_DrawScaledProportionalString(320, 410, s, UI_CENTER, colorWhite, scale);
+
+		s = CG_GetStripEdString("SABERINGAME", "DUEL_FOLLOW_HINT");
+		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+	}
 
 	return qtrue;
 }

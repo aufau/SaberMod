@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 12
+COUNT 13
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -110,6 +110,15 @@ INDEX 11
    TEXT_LANGUAGE3 "press fire to follow"
    TEXT_LANGUAGE6 "press fire to follow"
    TEXT_LANGUAGE8 "press fire to follow"
+}
+INDEX 12
+{
+   REFERENCE DUEL_FOLLOW_HINT
+   TEXT_LANGUAGE1 "Press 'Use' button to follow the other duelist"
+   TEXT_LANGUAGE2 "Press 'Use' button to follow the other duelist"
+   TEXT_LANGUAGE3 "Press 'Use' button to follow the other duelist"
+   TEXT_LANGUAGE6 "Press 'Use' button to follow the other duelist"
+   TEXT_LANGUAGE8 "Press 'Use' button to follow the other duelist"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.
