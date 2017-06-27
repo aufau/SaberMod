@@ -3469,7 +3469,7 @@ static void CG_DrawSpectator(void)
 		char text[1024];
 		int size = 64;
 
-		Com_sprintf(text, sizeof(text), "%s %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name);
+		Com_sprintf(text, sizeof(text), "%s" S_COLOR_WHITE " %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name);
 		UI_DrawProportionalString( 320, 420, text, UI_CENTER, colorWhite );
 
 		trap_R_SetColor( colorTable[CT_WHITE] );
