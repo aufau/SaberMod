@@ -767,9 +767,6 @@ static void	Svcmd_Shuffle_f( void )
 	trap_SendServerCommand( -1, "cp \"Shuffled teams.\"" );
 }
 
-extern ucmdStat_t	cmdStats[MAX_CLIENTS][1024];
-extern int			cmdIndex[MAX_CLIENTS];
-
 static void Svcmd_Players_f( void ) {
 	int		now = trap_Milliseconds();
 	int		i;
@@ -809,9 +806,9 @@ static void Svcmd_Players_f( void ) {
 			Com_sprintf( clientVersion, sizeof( clientVersion ), "" );
 		}
 
-		lastCmdTime = cmdStats[i][cmdIndex[i] & CMD_MASK].serverTime;
-		for ( j = cmdIndex[i]; ((cmdIndex[i] - j + 1) & CMD_MASK) != 0; j-- ) {
-			ucmdStat_t *stat = &cmdStats[i][j & CMD_MASK];
+		lastCmdTime = client->cmdStats[client->cmdIndex & CMD_MASK].serverTime;
+		for ( j = client->cmdIndex; ((client->cmdIndex - j + 1) & CMD_MASK) != 0; j-- ) {
+			ucmdStat_t *stat = &client->cmdStats[j & CMD_MASK];
 
 			if ( stat->serverTime + 1000 >= lastCmdTime ) {
 				fps++;

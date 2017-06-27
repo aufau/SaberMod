@@ -1864,9 +1864,6 @@ void G_CheckClientTimeouts ( gentity_t *ent )
 	}
 }
 
-ucmdStat_t	cmdStats[MAX_CLIENTS][1024];
-int			cmdIndex[MAX_CLIENTS];
-
 /*
 ==================
 ClientThink
@@ -1875,18 +1872,18 @@ A new command has arrived from the client
 ==================
 */
 void ClientThink( int clientNum ) {
-	gentity_t *ent;
+	gentity_t *ent = &g_entities[clientNum];
+	gclient_t *client = &level.clients[clientNum];
 
-	ent = g_entities + clientNum;
-	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
+	trap_GetUsercmd( clientNum, &client->pers.cmd );
 
-	cmdIndex[clientNum]++;
-	cmdStats[clientNum][cmdIndex[clientNum] & CMD_MASK].serverTime = ent->client->pers.cmd.serverTime;
-	cmdStats[clientNum][cmdIndex[clientNum] & CMD_MASK].thinkTime = trap_Milliseconds();
+	client->cmdIndex++;
+	client->cmdStats[client->cmdIndex & CMD_MASK].serverTime = client->pers.cmd.serverTime;
+	client->cmdStats[client->cmdIndex & CMD_MASK].thinkTime = trap_Milliseconds();
 
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while
-	ent->client->lastCmdTime = level.time;
+	client->lastCmdTime = level.time;
 
 	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
 		ClientThink_real( ent );

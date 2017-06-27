@@ -368,6 +368,13 @@ typedef union {
 	unsigned	ui;
 } qipv4_t;
 
+typedef struct ucmdStat_s {
+	int		serverTime;
+	int		thinkTime;
+} ucmdStat_t;
+
+#define CMD_MASK 1023
+
 typedef struct {
 	playerTeamStateState_t	state;
 
@@ -543,6 +550,9 @@ struct gclient_s {
 
 	qboolean	fjDidJump;
 	qboolean	duelStarted;
+
+	ucmdStat_t	cmdStats[CMD_MASK + 1];
+	int			cmdIndex;
 };
 
 
@@ -961,13 +971,6 @@ void ClientCommand( int clientNum );
 //
 // g_active.c
 //
-typedef struct ucmdStat_s {
-	int		serverTime;
-	int		thinkTime;
-} ucmdStat_t;
-
-#define CMD_MASK 1023
-
 void G_CheckClientTimeouts	( gentity_t *ent );
 void ClientThink			( int clientNum );
 void ClientThink_real		( gentity_t *ent );
