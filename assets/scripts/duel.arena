@@ -3,26 +3,26 @@
 	bots                    "Kyle Desann"
 	longname                "Bespin Air Vanes"
 	fraglimit               10
-	type                    "duel"
+	type                    "ffa duel"
 }
 {
 	map                     "duel_hangar"
 	bots                    "Kyle Desann"
 	longname                "Hangar Bay 72"
 	fraglimit               10
-	type                    "duel"
+	type                    "ffa duel"
 }
 {
 	map                     "duel_temple"
 	bots                    "Kyle Desann"
 	longname                "Ceremonial Hall"
 	fraglimit               10
-	type                    "duel"
+	type                    "ffa duel"
 }
 {
 	map                     "duel_training"
 	bots                    "Kyle Desann"
 	longname                "Lightsaber Training"
 	fraglimit               10
-	type                    "duel"
+	type                    "ffa duel"
 }
