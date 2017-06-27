@@ -1943,7 +1943,9 @@ static float CG_DrawTimer( float y ) {
 		if (!cg.warmup) {
 			msec -= cg.serverTime - cgs.levelStartTime;
 			// intermission or overtime
-			msec = msec > 0 ? msec + 1000 : - msec;
+			if (msec < 0) {
+				msec = -msec;
+			}
 		}
 	} else {
 		msec = MAX(0, cg.serverTime - cgs.levelStartTime);
@@ -1985,7 +1987,6 @@ static void CG_DrawCountdown( void )
 
 	msec = cgs.timelimit * 60 * 1000;
 	msec -= cg.serverTime - cgs.levelStartTime;
-	msec += 1000;
 
 	if (msec < 0 || 16000 <= msec) {
 		return;
