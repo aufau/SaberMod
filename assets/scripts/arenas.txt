@@ -1,105 +1,105 @@
 {
-map				"ffa_bespin"
-bots			"Lando"
-longname		"Bespin Streets"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_bespin"
+	bots                    "Lando"
+	longname                "Bespin Streets"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ffa_deathstar"
-bots			"Desann"
-longname		"Death Star"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_deathstar"
+	bots                    "Desann"
+	longname                "Death Star"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ffa_imperial"
-bots			"Reborn"
-longname		"Star Destroyer"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_imperial"
+	bots                    "Reborn"
+	longname                "Star Destroyer"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ffa_ns_hideout"
-bots			"Reelo"
-longname		"Garbage Facility"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_ns_hideout"
+	bots                    "Reelo"
+	longname                "Garbage Facility"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ffa_ns_streets"
-bots			"Krussk"
-longname		"Nar Shaddaa Streets"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_ns_streets"
+	bots                    "Krussk"
+	longname                "Nar Shaddaa Streets"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ffa_yavin"
-bots			"Luke"
-longname		"Massassi Temple"
-fraglimit		10
-type			"ffa holocron jedimaster team"
+	map                     "ffa_yavin"
+	bots                    "Luke"
+	longname                "Massassi Temple"
+	fraglimit               10
+	type                    "ffa holocron jedimaster team"
 }
 {
-map				"ctf_bespin"
-bots			"Kyle Lando Jan Desann Reborn Stormtrooper"
-longname		"Bespin Exhaust Shafts"
-fraglimit		10
-type			"ctf cty team ffa holocron jedimaster"
+	map                     "ctf_bespin"
+	bots                    "Kyle Lando Jan Desann Reborn Stormtrooper"
+	longname                "Bespin Exhaust Shafts"
+	fraglimit               10
+	type                    "ctf cty team ffa holocron jedimaster"
 }
 {
-map				"ctf_imperial"
-bots			"Kyle Jan Luke Desann Tavion Shadowtrooper"
-longname		"Garrison 27-D"
-fraglimit		10
-type			"ctf cty team ffa holocron jedimaster"
+	map                     "ctf_imperial"
+	bots                    "Kyle Jan Luke Desann Tavion Shadowtrooper"
+	longname                "Garrison 27-D"
+	fraglimit               10
+	type                    "ctf cty team ffa holocron jedimaster"
 }
 {
-map				"ctf_ns_streets"
-bots			"Kyle Jan Luke Lando Reelo Ree-Yees Krussk"
-longname		"Warring Factions"
-fraglimit		10
-type			"ctf cty team ffa holocron jedimaster"
+	map                     "ctf_ns_streets"
+	bots                    "Kyle Jan Luke Lando Reelo Ree-Yees Krussk"
+	longname                "Warring Factions"
+	fraglimit               10
+	type                    "ctf cty team ffa holocron jedimaster"
 }
 {
-map				"ctf_yavin"
-bots			"Kyle Luke Jan Desann Tavion Stormtrooper"
-longname		"Temple Tournament"
-fraglimit		10
-type			"ctf cty team ffa holocron jedimaster"
+	map                     "ctf_yavin"
+	bots                    "Kyle Luke Jan Desann Tavion Stormtrooper"
+	longname                "Temple Tournament"
+	fraglimit               10
+	type                    "ctf cty team ffa holocron jedimaster"
 }
 {
-map				"duel_bay"
-bots			"Kyle Desann"
-longname		"Imperial Shuttle Bay"
-fraglimit		10
-type			"ffa duel"
+	map                     "duel_bay"
+	bots                    "Kyle Desann"
+	longname                "Imperial Shuttle Bay"
+	fraglimit               10
+	type                    "ffa duel"
 }
 {
-map				"duel_carbon"
-bots			"Kyle Desann"
-longname		"Carbon Chamber"
-fraglimit		10
-type			"ffa duel"
+	map                     "duel_carbon"
+	bots                    "Kyle Desann"
+	longname                "Carbon Chamber"
+	fraglimit               10
+	type                    "ffa duel"
 }
 {
-map				"duel_jedi"
-bots			"Kyle Desann"
-longname		"Battleground Jedi 2.0"
-fraglimit		10
-type			"ffa duel"
+	map                     "duel_jedi"
+	bots                    "Kyle Desann"
+	longname                "Battleground Jedi 2.0"
+	fraglimit               10
+	type                    "ffa duel"
 }
 {
-map				"duel_pit"
-bots			"Kyle Desann"
-longname		"Trial Pit"
-fraglimit		10
-type			"ffa duel"
+	map                     "duel_pit"
+	bots                    "Kyle Desann"
+	longname                "Trial Pit"
+	fraglimit               10
+	type                    "ffa duel"
 }
 {
-map				"ffa_raven"
-bots			"Kyle"
-longname		"Imperial Labs: Raven"
-fraglimit		10
-type			"ffa holocron jedimaster duel team"
+	map                     "ffa_raven"
+	bots                    "Kyle"
+	longname                "Imperial Labs: Raven"
+	fraglimit               10
+	type                    "ffa holocron jedimaster duel team"
 }
