@@ -287,6 +287,38 @@ team_t BG_OtherTeam(team_t team)
 
 /*
 ================
+BG_TeamFromString
+================
+*/
+team_t BG_TeamFromString(const char *s)
+{
+	static const char * const teamName[TEAM_NUM_TEAMS] = {
+		"free",
+		"red",
+		"blue",
+		"spectator"
+	};
+
+	unsigned	i;
+	size_t		len = strlen(s);
+
+	if (len == 0) {
+		return TEAM_NUM_TEAMS;
+	}
+
+	for (i = 0; i < ARRAY_LEN(teamName); i++) {
+		if (!Q_stricmpn(s, teamName[i], len)) {
+			return (team_t) i;
+		}
+	}
+
+	Com_Printf( "Valid teams are: spectator free red blue\n" );
+
+	return TEAM_NUM_TEAMS;
+}
+
+/*
+================
 BG_LegalizedForcePowers
 
 The magical function to end all functions.

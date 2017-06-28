@@ -396,27 +396,6 @@ void	Svcmd_EntityList_f (void) {
 	}
 }
 
-static team_t G_TeamFromLetter( const char letter )
-{
-	switch (letter) {
-	case 's':
-	case 'S':
-		return TEAM_SPECTATOR;
-	case 'f':
-	case 'F':
-		return TEAM_FREE;
-	case 'r':
-	case 'R':
-		return TEAM_RED;
-	case 'b':
-	case 'B':
-		return TEAM_BLUE;
-	default:
-		G_Printf( "Valid teams are: spectator free red blue\n" );
-		return TEAM_NUM_TEAMS;
-	}
-}
-
 /*
 ===================
 Svcmd_ForceTeam_f
@@ -454,7 +433,7 @@ void	Svcmd_ForceTeam_f( void ) {
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
-	team = G_TeamFromLetter( str[0] );
+	team = BG_TeamFromString( str );
 	if ( team == TEAM_NUM_TEAMS ) {
 		return;
 	}
@@ -491,7 +470,7 @@ void	Svcmd_LockTeam_f( qboolean lock )
 	for (i = 1; i < argc; i++) {
 		trap_Argv( i, str, sizeof( str ) );
 
-		team = G_TeamFromLetter( str[0] );
+		team = BG_TeamFromString( str );
 		if ( team == TEAM_NUM_TEAMS ) {
 			return;
 		}

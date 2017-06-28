@@ -883,6 +883,7 @@ extern const saberMoveData_t	saberMoveData[LS_MOVE_MAX];
 const char	*BG_TeamName(team_t team, letterCase_t letterCase);
 const char	*BG_TeamColor(team_t team);
 team_t		BG_OtherTeam(team_t team);
+team_t		BG_TeamFromString(const char *s);
 
 qboolean BG_LegalizedForcePowers(char *powerOut, forceMastery_t maxRank, qboolean freeSaber, forceSide_t teamForce, gametype_t gametype, int fpDisabled);
 
