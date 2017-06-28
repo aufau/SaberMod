@@ -3806,6 +3806,17 @@ static qboolean CG_DrawFollow( void )
 		s = CG_GetStripEdString("SABERINGAME", "DUEL_FOLLOW_HINT");
 		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
 	}
+	else if ( GT_Team(cgs.gametype) )
+	{
+		s = va(CG_GetStripEdString("SABERINGAME", "TFFA_FOLLOW_HINT"),
+			BG_TeamName(cg.snap->ps.persistant[PERS_TEAM], CASE_LOWER));
+		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+	}
+	else if ( cgs.gametype != GT_TOURNAMENT )
+	{
+		s = CG_GetStripEdString("SABERINGAME", "FFA_FOLLOW_HINT");
+		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+	}
 
 	return qtrue;
 }

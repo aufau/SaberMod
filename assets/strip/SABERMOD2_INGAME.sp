@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 13
+COUNT 15
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -119,6 +119,24 @@ INDEX 12
    TEXT_LANGUAGE3 "Press 'Use' button to follow the other duelist"
    TEXT_LANGUAGE6 "Press 'Use' button to follow the other duelist"
    TEXT_LANGUAGE8 "Press 'Use' button to follow the other duelist"
+}
+INDEX 13
+{
+   REFERENCE FFA_FOLLOW_HINT
+   TEXT_LANGUAGE1 "Press 'Use' to follow next player on the scoreboard"
+   TEXT_LANGUAGE2 "Press 'Use' to follow next player on the scoreboard"
+   TEXT_LANGUAGE3 "Press 'Use' to follow next player on the scoreboard"
+   TEXT_LANGUAGE6 "Press 'Use' to follow next player on the scoreboard"
+   TEXT_LANGUAGE8 "Press 'Use' to follow next player on the scoreboard"
+}
+INDEX 14
+{
+   REFERENCE TFFA_FOLLOW_HINT
+   TEXT_LANGUAGE1 "Press 'Use' to follow next %s player on the scoreboard"
+   TEXT_LANGUAGE2 "Press 'Use' to follow next %s player on the scoreboard"
+   TEXT_LANGUAGE3 "Press 'Use' to follow next %s player on the scoreboard"
+   TEXT_LANGUAGE6 "Press 'Use' to follow next %s player on the scoreboard"
+   TEXT_LANGUAGE8 "Press 'Use' to follow next %s player on the scoreboard"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.
