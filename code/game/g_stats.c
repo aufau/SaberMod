@@ -260,14 +260,14 @@ void G_PrintStats(void) {
 
 		PrintStatsHeader(columns);
 
-		PrintStatsSeparator(columns, teamColorString[TEAM_RED]);
+		PrintStatsSeparator(columns, BG_TeamColor(TEAM_RED));
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_RED)
 				PrintClientStats(cl, columns, bestStats);
 		}
 
-		PrintStatsSeparator(columns, teamColorString[TEAM_BLUE]);
+		PrintStatsSeparator(columns, BG_TeamColor(TEAM_BLUE));
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			if (cl->sess.sessionTeam == TEAM_BLUE) {
@@ -285,7 +285,7 @@ void G_PrintStats(void) {
 
 		PrintStatsHeader(columns);
 
-		PrintStatsSeparator(columns, teamColorString[TEAM_FREE]);
+		PrintStatsSeparator(columns, BG_TeamColor(TEAM_FREE));
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
 			PrintClientStats(cl, columns, bestStats);

@@ -237,6 +237,30 @@ const char *BG_TeamName(team_t team, letterCase_t letterCase)
 	return teamName[letterCase][team];
 }
 
+/*
+================
+BG_TeamColor
+
+Safe function returning team color
+================
+*/
+const char *BG_TeamColor(team_t team)
+{
+	static const char * const teamColor[TEAM_NUM_TEAMS + 1] = {
+		S_COLOR_WHITE,		// FREE
+		S_COLOR_RED,		// RED
+		S_COLOR_BLUE,		// BLUE
+		S_COLOR_YELLOW,		// SPECTATOR
+		S_COLOR_MAGENTA,	// UNKNOWN
+	};
+
+	if ((unsigned)team > TEAM_NUM_TEAMS) {
+		assert(0);
+		team = TEAM_NUM_TEAMS;
+	}
+
+	return teamColor[team];
+}
 
 /*
 ================

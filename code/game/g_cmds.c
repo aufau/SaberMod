@@ -892,7 +892,7 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 
 	if ( level.teamLock[team] ) {
 		trap_SendServerCommand( clientNum, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
-				teamColorString[team], BG_TeamName(team, CASE_NORMAL)) );
+				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL)) );
 		return;
 	}
 
@@ -1062,7 +1062,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR && level.teamLock[TEAM_SPECTATOR] ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s%s" S_COLOR_WHITE " team is locked.\n\"",
-				teamColorString[TEAM_SPECTATOR], BG_TeamName(TEAM_SPECTATOR, CASE_NORMAL)) );
+				BG_TeamColor(TEAM_SPECTATOR), BG_TeamName(TEAM_SPECTATOR, CASE_NORMAL)) );
 		return;
 	}
 

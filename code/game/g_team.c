@@ -38,13 +38,6 @@ typedef struct teamgame_s {
 
 static teamgame_t teamgame;
 
-const char * const teamColorString[TEAM_NUM_TEAMS] = {
-	S_COLOR_WHITE,
-	S_COLOR_RED,
-	S_COLOR_BLUE,
-	S_COLOR_YELLOW
-};
-
 const team_t otherTeam[TEAM_NUM_TEAMS] = {
 	TEAM_FREE,
 	TEAM_BLUE,
