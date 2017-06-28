@@ -51,8 +51,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Prototypes
 
-extern const team_t otherTeam[TEAM_NUM_TEAMS];
-
 void AddTeamScore(vec3_t origin, team_t team, int score);
 
 void Team_DroppedFlagThink(gentity_t *ent);

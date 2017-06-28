@@ -38,13 +38,6 @@ typedef struct teamgame_s {
 
 static teamgame_t teamgame;
 
-const team_t otherTeam[TEAM_NUM_TEAMS] = {
-	TEAM_FREE,
-	TEAM_BLUE,
-	TEAM_RED,
-	TEAM_SPECTATOR
-};
-
 static void Team_SetFlagStatus( team_t team, flagStatus_t status );
 
 void Team_InitGame( void ) {
@@ -318,7 +311,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		return;
 
 	team = targ->client->sess.sessionTeam;
-	otherteam = otherTeam[team];
+	otherteam = BG_OtherTeam(team);
 	if (otherteam == team)
 		return; // whoever died isn't on a team
 
@@ -705,8 +698,8 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if ( ent->flags & FL_DROPPED_ITEM ) {
 		// hey, its not home.  return it by teleporting it back
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %i %s: %s returned the %s flag\n",
-			other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER), cl->info.netname,
-			BG_TeamName(otherTeam[team], CASE_LOWER));
+			other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER), cl->info.netname,
+			BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
 		PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_RETURNED_FLAG);
 
 		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
@@ -722,8 +715,8 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if (!cl->ps.powerups[enemy_flag])
 		return 0; // We don't have the flag
 	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag\n",
-		other->s.number, BG_TeamName(otherTeam[team], CASE_UPPER),
-		cl->info.netname, BG_TeamName(otherTeam[team], CASE_LOWER));
+		other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER),
+		cl->info.netname, BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
 
 	cl->ps.powerups[enemy_flag] = 0;
@@ -797,8 +790,8 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	//PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
 	//	other->client->info.netname, TeamName(team));
 	G_LogPrintf(LOG_FLAG, "FlagGrab: %i %s: %s got the %s flag\n", other->s.number,
-		BG_TeamName(otherTeam[team], CASE_UPPER), cl->info.netname,
-		BG_TeamName(otherTeam[team], CASE_LOWER));
+		BG_TeamName(BG_OtherTeam(team), CASE_UPPER), cl->info.netname,
+		BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_GOT_FLAG);
 
 	if (team == TEAM_RED)

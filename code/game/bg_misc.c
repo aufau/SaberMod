@@ -264,6 +264,29 @@ const char *BG_TeamColor(team_t team)
 
 /*
 ================
+BG_TeamColor
+
+Safe function returning other team
+================
+*/
+team_t BG_OtherTeam(team_t team)
+{
+	if (team == TEAM_RED) {
+		return TEAM_BLUE;
+	}
+	if (team == TEAM_BLUE) {
+		return TEAM_RED;
+	}
+	if ((unsigned)team >= TEAM_NUM_TEAMS) {
+		assert(0);
+		Com_Printf( S_COLOR_YELLOW "BG_OtherTeam: Invalid team!\n" );
+	}
+
+	return team;
+}
+
+/*
+================
 BG_LegalizedForcePowers
 
 The magical function to end all functions.

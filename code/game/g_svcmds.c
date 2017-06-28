@@ -703,7 +703,7 @@ static void	Svcmd_Shuffle_f( void )
 		first = ( rand() & 1 ) ? TEAM_RED : TEAM_BLUE;
 	}
 
-	second = otherTeam[first];
+	second = BG_OtherTeam( first );
 
 	team = first;
 	while ( 1 ) {
@@ -732,7 +732,7 @@ static void	Svcmd_Shuffle_f( void )
 				{
 					changed++;
 					change[i] = qtrue;
-					client->sess.sessionTeam = otherTeam[team];
+					client->sess.sessionTeam = BG_OtherTeam( team );
 					client->sess.teamLeader = qfalse;
 				}
 			}
