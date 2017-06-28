@@ -145,7 +145,7 @@ Console Commands
 announce <message|motd>
   Print `message` or ingame message of the day on everyone's screen.
 
-forceteam <player> <team>
+forceteam <player|all> <team>
   Little known original command allowing admin to move players between
   teams.
 
@@ -159,7 +159,7 @@ mode <mode|default>
 players
   Print various informations about players.
 
-remove <player> [time]
+remove <player|all> [time]
   Remove `player` to spectator team for at least `time` seconds.
 
 shuffle

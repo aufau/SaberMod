@@ -428,28 +428,43 @@ void	Svcmd_ForceTeam_f( void ) {
 	char		str[MAX_TOKEN_CHARS];
 	const char	*errorMsg;
 	int			clientNum;
+	int			lastClient;
 	gentity_t	*ent;
 	team_t		team;
 
 	if ( trap_Argc() < 3 ) {
-		G_Printf( "Usage: forceteam <player> <team>\n" );
+		G_Printf(
+			"Usage: forceteam <player> <team>\n"
+			"       forceteam all <team>\n" );
 		return;
 	}
 	// find the player
 	trap_Argv( 1, str, sizeof( str ) );
-	clientNum = G_ClientNumberFromString( str, &errorMsg );
-	if ( clientNum == -1 ) {
-		trap_Print( errorMsg );
-		return;
+	if ( !strcmp(str, "all") ) {
+		clientNum = 0;
+		lastClient = level.maxclients - 1;
+	} else {
+		clientNum = G_ClientNumberFromString( str, &errorMsg );
+		if ( clientNum == -1 ) {
+			trap_Print( errorMsg );
+			return;
+		}
+		lastClient = clientNum;
 	}
 
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
 	team = G_TeamFromLetter( str[0] );
-	if ( team != TEAM_NUM_TEAMS ) {
+	if ( team == TEAM_NUM_TEAMS ) {
+		return;
+	}
+
+	for ( ; clientNum <= lastClient; clientNum++ ) {
 		ent = g_entities + clientNum;
-		SetTeam( ent, team );
-		ent->client->prof.switchTeamTime = level.time + 5000;
+		if ( ent->inuse ) {
+			SetTeam( ent, team );
+			ent->client->prof.switchTeamTime = level.time + 5000;
+		}
 	}
 }
 
@@ -501,20 +516,33 @@ void	Svcmd_Remove_f( void )
 	gentity_t	*ent;
 	char		str[MAX_TOKEN_CHARS];
 	const char	*errorMsg;
+	const char	*cp;
 	int			clientNum;
 	int			delay;
+	int			lastClient;
+	qboolean	all;
 
 	if ( trap_Argc() < 2 ) {
-		G_Printf( "Usage: remove <player> [seconds]\n" );
+		G_Printf(
+			"Usage: remove <player> [seconds]\n"
+			"       remove all [seconds]\n" );
 		return;
 	}
 
 	trap_Argv( 1, str, sizeof( str ) );
 
-	clientNum = G_ClientNumberFromString( str, &errorMsg );
-	if ( clientNum == -1 ) {
-		trap_Print( errorMsg );
-		return;
+	if ( !strcmp( str, "all" ) ) {
+		all = qtrue;
+		clientNum = 0;
+		lastClient = level.maxclients - 1;
+	} else {
+		all = qfalse;
+		clientNum = G_ClientNumberFromString( str, &errorMsg );
+		if ( clientNum == -1 ) {
+			trap_Print( errorMsg );
+			return;
+		}
+		lastClient = clientNum;
 	}
 
 	trap_Argv( 2, str, sizeof( str ) );
@@ -523,15 +551,29 @@ void	Svcmd_Remove_f( void )
 		delay = 30 * 1000;
 	}
 
-	ent = g_entities + clientNum;
-	// make him dedicated spectator so he doesn't join the queue if inactive
-	if ( level.gametype == GT_TOURNAMENT )
-		SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, -1 );
-	else
-		SetTeam( ent, TEAM_SPECTATOR );
+	for ( ; clientNum <= lastClient; clientNum++ ) {
+		ent = g_entities + clientNum;
+
+		if ( ent->inuse ) {
+			// make him dedicated spectator so he doesn't join the queue if inactive
+			if ( level.gametype == GT_TOURNAMENT ) {
+				SetTeamSpec( ent, TEAM_SPECTATOR, SPECTATOR_FOLLOW, -1 );
+			} else {
+				SetTeam( ent, TEAM_SPECTATOR );
+			}
+			ent->client->prof.switchTeamTime = level.time + delay;
+		}
+	}
+
 	// overwrite "joined the spectators" message
-	trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"", ent->client->info.netname) );
-	ent->client->prof.switchTeamTime = level.time + delay;
+	if ( all ) {
+		cp = "cp \"Everyone was removed from battle\n\"";
+	} else {
+		cp = va("cp \"%s" S_COLOR_WHITE " was removed from battle\n\"",
+			level.clients[lastClient].info.netname);
+	}
+
+	trap_SendServerCommand( -1, cp );
 }
 
 static void G_CenterPrintPersistant( const char *str ) {
