@@ -169,16 +169,6 @@ static const char * const netnames[] = {
 
 const char *UI_GetStripEdString(const char *refSection, const char *refName);
 
-const char *UI_TeamName(int team)  {
-	if (team==TEAM_RED)
-		return "RED";
-	else if (team==TEAM_BLUE)
-		return "BLUE";
-	else if (team==TEAM_SPECTATOR)
-		return "SPECTATOR";
-	return "FREE";
-}
-
 // returns either string or NULL for OOR...
 //
 static const char *GetCRDelineatedString( const char *psStripFileRef, const char *psStripStringRef, int iIndex)
@@ -4675,7 +4665,7 @@ static void UI_RunMenuScript(const char **args)
 					int myTeam = (int)(trap_Cvar_VariableValue("ui_myteam"));
 					if ( myTeam != TEAM_SPECTATOR )
 					{
-						UI_UpdateClientForcePowers(UI_TeamName(myTeam));//will cause him to respawn, if it's been 5 seconds since last one
+						UI_UpdateClientForcePowers(BG_TeamName(myTeam, CASE_UPPER));//will cause him to respawn, if it's been 5 seconds since last one
 					}
 					else
 					{

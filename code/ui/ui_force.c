@@ -42,8 +42,6 @@ int uiMaxRank = MAX_FORCE_RANK;
 int	uiForceUsed = 0;
 int uiForceAvailable=0;
 
-extern const char *UI_TeamName(int team);
-
 qboolean gTouchedForce = qfalse;
 vmCvar_t	ui_freeSaber, ui_forcePowerDisable;
 void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow);
@@ -375,7 +373,7 @@ void UpdateForceUsed()
 				myTeam = (int)(trap_Cvar_VariableValue("ui_myteam"));
 				if ( myTeam != TEAM_SPECTATOR )
 				{
-					UI_UpdateClientForcePowers(UI_TeamName(myTeam));//will cause him to respawn, if it's been 5 seconds since last one
+					UI_UpdateClientForcePowers(BG_TeamName(myTeam, CASE_UPPER));//will cause him to respawn, if it's been 5 seconds since last one
 				}
 				else
 				{
@@ -938,7 +936,7 @@ qboolean UI_JediNonJedi_HandleKey(int flags, float *special, int key, int num, i
 			}
 			if ( myTeam != TEAM_SPECTATOR )
 			{
-				UI_UpdateClientForcePowers(UI_TeamName(myTeam));//will cause him to respawn, if it's been 5 seconds since last one
+				UI_UpdateClientForcePowers(BG_TeamName(myTeam, CASE_UPPER));//will cause him to respawn, if it's been 5 seconds since last one
 			}
 			else
 			{
