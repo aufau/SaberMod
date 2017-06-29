@@ -31,8 +31,9 @@ follow [first|second]
 motd
   Show server Message of the Day.
 
-players [?]
-  List players connected to server with some additional info.
+players [?|team]
+  List players connected to server with some additional
+  info. Optionally limit to members of `team`.
 
 ragequit
   Reserved for God, do not use.

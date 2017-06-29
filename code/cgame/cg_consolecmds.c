@@ -430,6 +430,7 @@ static void CG_Players_f( void ) {
 	int				len;
 	int				maxNameLen;
 	int				i;
+	int				teamMask = -1;
 
 	if (!Q_stricmp(CG_Argv(1), "?")) {
 		CG_Printf(
@@ -438,6 +439,20 @@ static void CG_Players_f( void ) {
 			S_COLOR_MAGENTA "  H" S_COLOR_WHITE " - player uses handicap\n"
 			);
 		return;
+	}
+
+	if (trap_Argc() > 1) {
+		teamMask = 0;
+	}
+
+	for (i = trap_Argc() - 1; i >= 1; i--) {
+		team_t team = BG_TeamFromString(CG_Argv(i));
+
+		if (team == TEAM_NUM_TEAMS) {
+			return;
+		}
+
+		teamMask |= (1 << team);
 	}
 
 	maxNameLen = STRLEN("Name");
@@ -457,7 +472,9 @@ static void CG_Players_f( void ) {
 	CG_Printf("--- --- ---- %s\n", Dashes(maxNameLen));
 
 	for (i = 0 ; i < cgs.maxclients ; i++) {
-		if (cgs.clientinfo[i].infoValid) {
+		if (cgs.clientinfo[i].infoValid &&
+			((1 << cgs.clientinfo[i].team) & teamMask))
+		{
 			char		name[MAX_NETNAME];
 			const char	*flagColor[3] = { S_COLOR_WHITE, S_COLOR_WHITE, S_COLOR_WHITE };
 			int			flag[3] = { ' ', ' ', ' '};
