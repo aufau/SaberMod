@@ -790,7 +790,26 @@ static void	Svcmd_Shuffle_f( void )
 
 static void Svcmd_Players_f( void ) {
 	int		now = trap_Milliseconds();
+	int		teamMask = -1;
 	int		i;
+
+	if (trap_Argc() > 1) {
+		teamMask = 0;
+	}
+
+	for (i = trap_Argc() - 1; i >= 1; i--) {
+		char	str[MAX_TOKEN_CHARS];
+		team_t team;
+
+		trap_Argv(i, str, sizeof(str));
+		team = BG_TeamFromString(str);
+
+		if (team == TEAM_NUM_TEAMS) {
+			return;
+		}
+
+		teamMask |= (1 << team);
+	}
 
 	G_Printf( "num client      cgame    fps  packets team name\n" );
 	G_Printf( "--- ----------- -------- ---- ------- ---- %s\n", Dashes( MAX_NAME_LEN ) );
@@ -808,6 +827,9 @@ static void Svcmd_Players_f( void ) {
 		int			j;
 
 		if ( client->pers.connected == CON_DISCONNECTED ) {
+			continue;
+		}
+		if ( ((1 << client->sess.sessionTeam) & teamMask) == 0 ) {
 			continue;
 		}
 

@@ -157,8 +157,8 @@ mode <mode|default>
   Change to `mode` or list all available modes when passed without
   arguments.
 
-players
-  Print various informations about players.
+players [team]
+  Print various informations about players. Optionally filter by team.
 
 remove <player|all> [time]
   Remove `player` to spectator team for at least `time` seconds.
