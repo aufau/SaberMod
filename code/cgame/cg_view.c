@@ -1583,6 +1583,15 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
 
+	if (cg.seekTime) {
+		if (cg.seekTime > serverTime) {
+			trap_Cvar_Set( "fixedtime", va( "%d", cg.seekTime - serverTime ) );
+		} else {
+			trap_Cvar_Set( "fixedtime", "0" );
+			cg.seekTime = 0;
+		}
+	}
+
 	if (cg.snap && ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
 	{
 		trap_Cvar_Set ( "ui_myteam", va("%i", cg.snap->ps.persistant[PERS_TEAM]) );

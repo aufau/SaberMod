@@ -501,6 +501,52 @@ static void CG_Players_f( void ) {
 	}
 }
 
+/*
+==================
+CG_Seek_f
+==================
+*/
+static void CG_Seek_f( void ) {
+	enum { SEEK_FORWARD, SEEK_TIME } type;
+
+	const char	*arg;
+	int			msec;
+
+	if (!cg.demoPlayback) {
+		CG_Printf( "You can seek only during demo playback.\n" );
+		return;
+	}
+
+	arg = CG_Argv(1);
+
+	if (arg[0] == '+') {
+		type = SEEK_FORWARD;
+		arg++;
+	} else if (isdigit(arg[0])) {
+		type = SEEK_TIME;
+	} else {
+		CG_Printf("usage: seek [+][minutes:]seconds\n");
+		return;
+	}
+
+	// not validating
+	msec = 1000 * atoi(arg);
+	arg = strchr(arg, ':' );
+	if (arg) {
+		msec *= 60;
+		msec += 1000 * atoi(++arg);
+	}
+
+	switch (type) {
+	case SEEK_FORWARD:
+		cg.seekTime = cg.serverTime + msec;
+		break;
+	case SEEK_TIME:
+		cg.seekTime = cgs.levelStartTime + msec;
+		break;
+	}
+}
+
 typedef struct {
 	const char	*cmd;
 	void		(*function)(void);
@@ -560,6 +606,7 @@ static const consoleCommand_t	commands[] = {
 	{ "forceprev", CG_PrevForcePower_f },
 	{ "players", CG_Players_f },
 	{ "motd", CG_PrintMotd_f },
+	{ "seek", CG_Seek_f },
 };
 
 
@@ -666,4 +713,5 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
 
 	trap_AddCommand ("ragequit");
+	trap_AddCommand ("seek");
 }

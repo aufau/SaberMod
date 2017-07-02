@@ -708,6 +708,8 @@ typedef struct {
 
 	qboolean	renderingThirdPerson;		// during deaths, chasecams, etc
 
+	int			seekTime;			// seek to given serverTime
+
 	// prediction state
 	qboolean	hyperspace;				// true if prediction has hit a trigger_teleport
 	playerState_t	predictedPlayerState;
