@@ -38,9 +38,9 @@ players [?|team]
 ragequit
   Reserved for God, do not use.
 
-seek [+][mm:]ss
-  During demo playback seeks to `mm:ss` server time. With `+` prefix
-  seeks `mm` minutes and `ss` seconds forwards instead.
+seek [+|-][mm:]ss
+  During demo playback seeks to `mm:ss` server time. With `+` or `-`
+  prefix seeks `mm` minutes and `ss` seconds forwards or backwards.
 
 Callvote
 ........

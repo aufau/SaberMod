@@ -507,7 +507,7 @@ CG_Seek_f
 ==================
 */
 static void CG_Seek_f( void ) {
-	enum { SEEK_FORWARD, SEEK_TIME } type;
+	enum { SEEK_FORWARD, SEEK_BACKWARD, SEEK_TIME } type;
 
 	const char	*arg;
 	int			msec;
@@ -522,10 +522,13 @@ static void CG_Seek_f( void ) {
 	if (arg[0] == '+') {
 		type = SEEK_FORWARD;
 		arg++;
+	} else if (arg[0] == '-') {
+		type = SEEK_BACKWARD;
+		arg++;
 	} else if (isdigit(arg[0])) {
 		type = SEEK_TIME;
 	} else {
-		CG_Printf("usage: seek [+][minutes:]seconds\n");
+		CG_Printf("usage: seek [+|-][minutes:]seconds\n");
 		return;
 	}
 
@@ -541,8 +544,22 @@ static void CG_Seek_f( void ) {
 	case SEEK_FORWARD:
 		cg.seekTime = cg.serverTime + msec;
 		break;
+	case SEEK_BACKWARD:
+		msec = cg.serverTime - msec - cgs.levelStartTime;
+		if (msec < 0) {
+			msec = 0;	// prevent looping infinitely
+		}
+		trap_SendConsoleCommand(va("ui_seek %d\n", msec / 1000));
+		break;
 	case SEEK_TIME:
-		cg.seekTime = cgs.levelStartTime + msec;
+		if (cgs.levelStartTime + msec >= cg.serverTime) {
+			cg.seekTime = cgs.levelStartTime + msec;
+		} else {
+			if (msec < 0) {
+				msec = 0;	// prevent looping infinitely
+			}
+			trap_SendConsoleCommand(va("ui_seek %d\n", msec / 1000));
+		}
 		break;
 	}
 }

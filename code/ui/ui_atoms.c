@@ -283,6 +283,21 @@ static void UI_CalcPostGameStats() {
 
 }
 
+/*
+=================
+UI_Seek_f
+
+Workaround allowing CGame to seek backwards by restarting current demo
+=================
+*/
+static void UI_Seek_f() {
+	uiClientState_t cs;
+
+	trap_GetClientState(&cs);
+	// cs.servername holds current demo name
+	trap_Cmd_ExecuteText(EXEC_APPEND, va("demo \"%s\"\n", cs.servername));
+	trap_Cmd_ExecuteText(EXEC_APPEND, va("seek \"%s\"\n", UI_Argv(1)));
+}
 
 /*
 =================
@@ -352,6 +367,11 @@ qboolean UI_ConsoleCommand( int realTime ) {
 
 	if ( Q_stricmp (cmd, "ui_cdkey") == 0 ) {
 		//UI_CDKeyMenu_f();
+		return qtrue;
+	}
+
+	if ( Q_stricmp(cmd, "ui_seek") == 0 ) {
+		UI_Seek_f();
 		return qtrue;
 	}
 
