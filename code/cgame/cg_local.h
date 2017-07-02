@@ -709,6 +709,7 @@ typedef struct {
 	qboolean	renderingThirdPerson;		// during deaths, chasecams, etc
 
 	int			seekTime;			// seek to given serverTime
+	char		savedmaxfps[16];	// save com_maxfps value
 
 	// prediction state
 	qboolean	hyperspace;				// true if prediction has hit a trigger_teleport
@@ -1607,6 +1608,7 @@ extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
 extern	vmCvar_t		cg_drawSpectatorHints;
 extern	vmCvar_t		cg_duelGlow;
+extern	vmCvar_t		cg_fastSeek;
 extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;
 extern	vmCvar_t		cg_privateDuel;

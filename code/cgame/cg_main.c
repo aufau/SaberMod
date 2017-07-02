@@ -566,6 +566,7 @@ vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_drawClock;
 vmCvar_t	cg_drawSpectatorHints;
 vmCvar_t	cg_duelGlow;
+vmCvar_t	cg_fastSeek;
 vmCvar_t	cg_followKiller;
 vmCvar_t	cg_followPowerup;
 vmCvar_t	cg_privateDuel;
@@ -728,6 +729,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
 	{ &cg_drawSpectatorHints, "cg_drawSpectatorHints", "1", CVAR_ARCHIVE },
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
+	{ &cg_fastSeek, "cg_fastSeek", "0", CVAR_ARCHIVE},
 	{ &cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE},
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
@@ -2643,6 +2645,9 @@ void CG_Shutdown( void )
 
 	if ( cg.seekTime ) {
 		trap_Cvar_Set( "fixedtime", "0" );
+		if ( cg.savedmaxfps[0] ) {
+			trap_Cvar_Set( "com_maxfps", cg.savedmaxfps );
+		}
 		cg.seekTime = 0;
 	}
 }

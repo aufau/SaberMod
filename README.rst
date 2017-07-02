@@ -114,6 +114,9 @@ cg_drawTimer <0|1|2>
 cg_duelGlow <0|1>
   Turn on/off duel glow.
 
+cg_fastSeek <0|1>
+  Use experimental fast seeking method (see `seek` console command).
+
 cg_followKiller <0|1>
   When player you are following dies, switch to his killer.
 

@@ -1544,6 +1544,36 @@ Screen Effect stuff ends here
 
 /*
 =================
+CG_SeekFrame
+=================
+*/
+static qboolean CG_SeekFrame( void ) {
+	if (!cg.seekTime) {
+		return qfalse;
+	}
+
+	if (cg.seekTime > cg.serverTime) {
+		trap_Cvar_Set( "fixedtime", va( "%d", cg.seekTime - cg.serverTime ) );
+		if (cg_fastSeek.integer) {
+			if ( cg.savedmaxfps[0] == '\0' ) {
+				trap_Cvar_VariableStringBuffer( "com_maxfps", cg.savedmaxfps, sizeof( cg.savedmaxfps ) );
+				trap_Cvar_Set( "com_maxfps", "0" );
+			}
+			return qtrue;
+		}
+	} else {
+		trap_Cvar_Set( "fixedtime", "0" );
+		if ( cg.savedmaxfps[0] ) {
+			trap_Cvar_Set( "com_maxfps", cg.savedmaxfps );
+		}
+		cg.seekTime = 0;
+	}
+
+	return qfalse;
+}
+
+/*
+=================
 CG_TimeBias
 
 Bias serverTime so that its value is low enough to fit into a single
@@ -1583,13 +1613,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	if (cg.seekTime) {
-		if (cg.seekTime > serverTime) {
-			trap_Cvar_Set( "fixedtime", va( "%d", cg.seekTime - serverTime ) );
-		} else {
-			trap_Cvar_Set( "fixedtime", "0" );
-			cg.seekTime = 0;
-		}
+	if (CG_SeekFrame()) {
+		return;
 	}
 
 	if (cg.snap && ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
