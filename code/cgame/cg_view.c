@@ -1583,7 +1583,7 @@ precision float (at least for 4h39m after CGame initialization).
 static int CG_TimeBias( int serverTime ) {
 	static int	bias = 0;
 
-	if (cg.time == 0) {
+	if (cg.time == 0 && serverTime != 0) {
 		char buf[2];
 
 		trap_Cvar_VariableStringBuffer( "cg_fixServerTime", buf, sizeof(buf) );
