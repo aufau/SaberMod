@@ -2461,6 +2461,7 @@ Ghoul2 Insert End
 		break;
 	case ET_GRAPPLE: //An entity that wants to be able to use ghoul2 humanoid anims. Like a player, but not.
 		CG_G2Animated( cent );
+		break;
 	case ET_TEAM:
 		CG_TeamBase( cent );
 		break;

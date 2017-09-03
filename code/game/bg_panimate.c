@@ -345,6 +345,7 @@ qboolean BG_InRoll( const playerState_t *ps, animNumber_t anim )
 		{
 			return qtrue;
 		}
+		return qfalse;
 	default:
 		return qfalse;
 	}
@@ -503,6 +504,7 @@ qboolean PM_InKnockDown( playerState_t *ps )
 		{
 			return qtrue;
 		}
+		return qfalse;
 	default:
 		return qfalse;
 	}
@@ -654,6 +656,7 @@ qboolean PM_InRollComplete( playerState_t *ps, animNumber_t anim )
 		{
 			return qtrue;
 		}
+		return qfalse;
 	default:
 		return qfalse;
 	}
