@@ -28,8 +28,11 @@ tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
 CFLAGS		= -ggdb3 -fvisibility=hidden -pipe
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
-DEFS		= -DGIT_VERSION=\"$(VERSION)\" -DJK2AWARDS
-VERSION		= $(shell git describe --always --tags --dirty)
+DEFS		= -DJK2AWARDS
+VERSION		:= $(shell git describe --always --tags --dirty)
+ifeq ($(.SHELLSTATUS), 0)
+	DEFS += -DGIT_VERSION=\"$(VERSION)\"
+endif
 
 ALL_CFLAGS := $(CFLAGS) $(INCLUDES) $(DEFS)
 ALL_CFLAGS += -fPIC
@@ -171,15 +174,27 @@ FORCE	:
 
 run_as = $(AS) $(ASFLAGS) -vq3 -m -o $@
 
-base/vm/jk2mpgame.qvm : $(asm_game) $(AS) | base/vm/
+base/vm/jk2mpgame.qvm : $(asm_game) $(AS) code/game/game.q3asm | base/vm/
 	$(echo_cmd) "Q3ASM $@"
 	$(Q)$(run_as) $(asm_game)
-base/vm/cgame.qvm : $(asm_cgame) $(AS) | base/vm/
+base/vm/cgame.qvm : $(asm_cgame) $(AS) code/cgame/cgame.q3asm | base/vm/
 	$(echo_cmd) "Q3ASM $@"
 	$(Q)$(run_as) $(asm_cgame)
-base/vm/ui.qvm : $(asm_ui) $(AS) | base/vm/
+base/vm/ui.qvm : $(asm_ui) $(AS) code/ui/ui.q3asm | base/vm/
 	$(echo_cmd) "Q3ASM $@"
 	$(Q)$(run_as) $(asm_ui)
+
+# BAT Script Helpers
+
+code/game/game.q3asm : Makefile
+	$(echo_cmd) "CREATE $@"
+	$(file > $@,-o "jk2mpgame.qvm" $(srcs_game))
+code/cgame/cgame.q3asm : Makefile
+	$(echo_cmd) "CREATE $@"
+	$(file > $@,-o "cgame.qvm" $(srcs_cgame))
+code/ui/ui.q3asm : Makefile
+	$(echo_cmd) "CREATE $@"
+	$(file > $@,-o "ui.qvm" $(srcs_ui))
 
 # Shared Object Targets
 

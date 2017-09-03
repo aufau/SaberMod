@@ -1,8 +1,14 @@
-del /q vm
-mkdir vm
-cd vm
-set cc=lcc -DQ3_VM -DCGAME -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
+@set include=
+@set savedpath=%path%
+@set path=%path%;..\..\..\bin
 
+del /q vm
+if not exist vm\ mkdir vm
+cd vm
+set cc=..\..\..\bin\lcc -DQ3_VM -DNDEBUG -DJK2AWARDS -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
+
+copy ..\cg_syscalls.asm .
+@if errorlevel 1 goto quit
 %cc% ../../game/bg_misc.c
 @if errorlevel 1 goto quit
 %cc% ../../game/bg_weapons.c
@@ -81,22 +87,12 @@ set cc=lcc -DQ3_VM -DCGAME -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\ga
 @if errorlevel 1 goto quit
 %cc% ../fx_rocketlauncher.c
 @if errorlevel 1 goto quit
-%cc% ../fx_force.c
-@if errorlevel 1 goto quit
-%cc% ../../ui/ui_shared.c
-@if errorlevel 1 goto quit
-%cc% ../cg_newDraw.c
-@if errorlevel 1 goto quit
 
-sysmaker ../cg_public.h ../cg_syscalls.c ../cg_syscalls.asm
+..\..\..\bin\q3asm -f ../cgame
 @if errorlevel 1 goto quit
-
-q3asm -f ../cgame
-@if errorlevel 1 goto quit
-
-mkdir "..\..\base\vm"
-copy *.map "..\..\base\vm"
-copy *.qvm "..\..\base\vm"
 
 :quit
+@set path=%savedpath%
+@set savedpath=
+
 cd ..

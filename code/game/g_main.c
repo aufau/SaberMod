@@ -2866,7 +2866,7 @@ int g_TimeSinceLastFrame = 0;
 qboolean gDoSlowMoDuel = qfalse;
 int gSlowMoDuelTime = 0;
 
-void SlowMoDuelTimescale() {
+void SlowMoDuelTimescale(void) {
 	if (level.restarted)
 	{
 		char buf[128];

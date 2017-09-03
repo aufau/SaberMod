@@ -1,12 +1,16 @@
-del /q vm
-mkdir vm
-cd vm
-set cc=lcc -A -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
+@set include=
+@set savedpath=%path%
+@set path=%path%;..\..\..\bin
 
-%cc%  ../g_main.c
+del /q vm
+if not exist vm\ mkdir vm
+cd vm
+set cc=..\..\..\bin\lcc -A -DQ3_VM -DNDEBUG -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\ui %1
+
+copy ..\g_syscalls.asm .
 @if errorlevel 1 goto quit
 
-%cc%  ../g_syscalls.c
+%cc%  ../g_main.c
 @if errorlevel 1 goto quit
 
 %cc%  ../bg_misc.c
@@ -38,8 +42,6 @@ set cc=lcc -A -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I
 %cc%  ../g_active.c
 @if errorlevel 1 goto quit
 
-%cc%  ../g_arenas.c
-@if errorlevel 1 goto quit
 %cc%  ../g_bot.c
 @if errorlevel 1 goto quit
 %cc%  ../g_client.c
@@ -84,16 +86,18 @@ set cc=lcc -A -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I
 @if errorlevel 1 goto quit
 %cc%  ../w_saber.c
 @if errorlevel 1 goto quit
-
-sysmaker ../g_public.h ../g_syscalls.c ../g_syscalls.asm
+%cc%  ../g_stats.c
+@if errorlevel 1 goto quit
+%cc%  ../g_dimensions.c
+@if errorlevel 1 goto quit
+%cc%  ../g_unlagged.c
 @if errorlevel 1 goto quit
 
-q3asm -f ../game
+..\..\..\bin\q3asm -f ../game
 @if errorlevel 1 goto quit
-
-mkdir "..\..\base\vm"
-copy *.map "..\..\base\vm"
-copy *.qvm "..\..\base\vm"
 
 :quit
+@set path=%savedpath%
+@set savedpath=
+
 cd ..

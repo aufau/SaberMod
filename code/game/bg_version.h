@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __BG_VERSION_H__
 #define __BG_VERSION_H__
 
+#ifndef GIT_VERSION
+#define GIT_VERSION "2.0-dev"
+#endif
+
 #define	GAME_VERSION		GAMEVERSION "-" GIT_VERSION
 
 #endif //__BG_VERSION_H__
