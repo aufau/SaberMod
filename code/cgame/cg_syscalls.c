@@ -807,3 +807,15 @@ Ghoul2 Insert End
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }
+
+void trap_MVAPI_R_DrawTransformPic(
+	float x, float y,
+	float (*m)[2][2],
+	float s1, float t1,
+	float s2, float t2,
+	qhandle_t hShader)
+{
+	syscall(MVAPI_R_DRAWTRANSFORMPIC,
+		PASSFLOAT(x), PASSFLOAT(y), m, PASSFLOAT(s1),
+		PASSFLOAT(t1), PASSFLOAT(s2), PASSFLOAT(t2), hShader);
+}

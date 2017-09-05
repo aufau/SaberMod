@@ -1944,6 +1944,12 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 // MVAPI
 
 qboolean	trap_MVAPI_ControlFixes(int fixes);
+void		trap_MVAPI_R_DrawTransformPic(
+	float x, float y,
+	float (*m)[2][2],
+	float s1, float t1,
+	float s2, float t2,
+	qhandle_t hShader);
 
 //
 // system traps
