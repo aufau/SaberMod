@@ -2208,6 +2208,7 @@ static void CG_DrawPowerupIcons(int y)
 {
 	int j;
 	int ico_size = 64;
+	float xAlign = cgs.screenWidth - ico_size * 1.1f;
 	//int y = ico_size/2;
 	gitem_t	*item;
 
@@ -2245,13 +2246,13 @@ static void CG_DrawPowerupIcons(int y)
 					icoShader = cg_items[ ITEM_INDEX(item) ].icon;
 				}
 
-				CG_DrawPic( (640-(ico_size*1.1)), y, ico_size, ico_size, icoShader );
+				CG_DrawPic( xAlign, y, ico_size, ico_size, icoShader );
 
 				y += ico_size;
 
 				if (j != PW_REDFLAG && j != PW_BLUEFLAG && secondsleft < 999)
 				{
-					UI_DrawProportionalString((640-(ico_size*1.1))+(ico_size/2), y-8, va("%i", secondsleft), UI_CENTER | UI_BIGFONT | UI_DROPSHADOW, colorTable[CT_WHITE]);
+					UI_DrawProportionalString(xAlign + (ico_size/2), y-8, va("%i", secondsleft), UI_CENTER | UI_BIGFONT | UI_DROPSHADOW, colorTable[CT_WHITE]);
 				}
 
 				y += (ico_size/3);
