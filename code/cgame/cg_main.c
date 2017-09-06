@@ -148,7 +148,7 @@ static int widescreenModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
-void CG_MVAPI_AfterInit( void );
+void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
 
 void CG_CalcEntityLerpPositions( centity_t *cent );
@@ -171,13 +171,22 @@ This must be the very first function compiled into the .q3vm file
 ================
 */
 Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11  ) {
+	static int	initArgs[3];
+	int			requestedMVAPI;
 
 	switch ( command ) {
 	case CG_INIT:
-		CG_Init( arg0, arg1, arg2 );
-		return CG_MVAPI_Init(arg11);
+		requestedMVAPI = CG_MVAPI_Init(arg11);
+		if (requestedMVAPI) {
+			initArgs[0] = arg0;
+			initArgs[1] = arg1;
+			initArgs[2] = arg2;
+		} else {
+			CG_Init( arg0, arg1, arg2 );
+		}
+		return requestedMVAPI;
 	case MVAPI_AFTER_INIT:
-		CG_MVAPI_AfterInit();
+		CG_MVAPI_AfterInit( initArgs[0], initArgs[1], initArgs[2] );
 		return 0;
 	case CG_SHUTDOWN:
 		CG_Shutdown();
@@ -297,16 +306,18 @@ int CG_MVAPI_Init( int apilevel )
 		return 0;
 	}
 
-	cgs.mvapi = apilevel;
+	cg_mvapi = apilevel;
 	CG_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
 	return MV_APILEVEL;
 
 }
 
-void CG_MVAPI_AfterInit( void )
+void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	// disable jk2mv fixes
 	trap_MVAPI_ControlFixes( MVFIX_WPGLOWING );
+
+	CG_Init( serverMessageNum, serverCommandSequence, clientNum );
 }
 
 static int C_PointContents(void)
@@ -415,7 +426,7 @@ cgs_t				cgs;
 centity_t			cg_entities[MAX_GENTITIES];
 weaponInfo_t		cg_weapons[MAX_WEAPONS];
 itemInfo_t			cg_items[MAX_ITEMS];
-
+int					cg_mvapi;
 
 vmCvar_t	cg_centertime;
 vmCvar_t	cg_runpitch;
@@ -870,7 +881,7 @@ CG_UpdateWidescreen
 */
 static void CG_UpdateWidescreen( void ) {
 	if ( cg_widescreen.integer ) {
-		if ( cgs.mvapi ) {
+		if ( cg_mvapi ) {
 			cgs.screenWidth = 480.0f * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
 		} else {
 			CG_Printf( "Widescreen fix is supported only on JK2MV 1.4 or newer\n" );

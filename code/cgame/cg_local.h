@@ -1357,7 +1357,6 @@ typedef struct {
 	int				processedSnapshotNum;// the number of snapshots cgame has requested
 
 	qboolean		localServer;		// detected on startup by checking sv_running
-	int				mvapi;				// MVAPI level
 
 	// parsed from serverinfo
 	gametype_t		gametype;
@@ -1467,6 +1466,7 @@ extern	centity_t		cg_entities[MAX_GENTITIES];
 extern	weaponInfo_t	cg_weapons[MAX_WEAPONS];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
+extern	int				cg_mvapi;
 
 extern	vmCvar_t		cg_centertime;
 extern	vmCvar_t		cg_runpitch;
