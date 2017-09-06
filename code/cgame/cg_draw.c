@@ -1256,8 +1256,8 @@ static void CG_DrawForceSelect( void )
 {
 	int		i;
 	int		count;
-	int		smallIconSize,bigIconSize;
-	int		holdX,x,y,pad;
+	float	smallIconSize,bigIconSize;
+	float	holdX,x,y,pad;
 	int		sideLeftIconCnt,sideRightIconCnt;
 	int		sideMax,holdCount,iconCnt;
 
@@ -1318,7 +1318,7 @@ static void CG_DrawForceSelect( void )
 	bigIconSize = 60;
 	pad = 12;
 
-	x = 320;
+	x = 0.5f * cgs.screenWidth;
 	y = 425;
 
 	// Background
@@ -1395,7 +1395,7 @@ static void CG_DrawForceSelect( void )
 
 	if ( showPowersName[cg.forceSelect] )
 	{
-		UI_DrawProportionalString(320, y + 30, CG_GetStripEdString("INGAME", showPowersName[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+		UI_DrawProportionalString(0.5f * cgs.screenWidth, y + 30, CG_GetStripEdString("INGAME", showPowersName[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
 }
 
@@ -1408,10 +1408,10 @@ static void CG_DrawInvenSelect( void )
 {
 	int				i;
 	int				sideMax,holdCount,iconCnt;
-	int				smallIconSize,bigIconSize;
+	float			smallIconSize,bigIconSize;
 	int				sideLeftIconCnt,sideRightIconCnt;
 	int				count;
-	int				holdX,x,y,y2,pad;
+	float			holdX,x,y,y2,pad;
 //	int				height;
 //	float			addX;
 
@@ -1452,7 +1452,7 @@ static void CG_DrawInvenSelect( void )
 	if (!count)
 	{
 		y2 = 0; //err?
-		UI_DrawProportionalString(320, y2 + 22, "EMPTY INVENTORY", UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+		UI_DrawProportionalString(0.5f * cgs.screenWidth, y2 + 22, "EMPTY INVENTORY", UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 		return;
 	}
 
@@ -1486,7 +1486,7 @@ static void CG_DrawInvenSelect( void )
 	bigIconSize = 80;
 	pad = 16;
 
-	x = 320;
+	x = 0.5f * cgs.screenWidth;
 	y = 410;
 
 	// Left side ICONS
@@ -1543,11 +1543,11 @@ static void CG_DrawInvenSelect( void )
 
 			if ( trap_SP_GetStringTextString( va("INGAME_%s",bg_itemlist[itemNdex].classname), text, sizeof( text )))
 			{
-				UI_DrawProportionalString(320, y+45, text, UI_CENTER | UI_SMALLFONT, textColor);
+				UI_DrawProportionalString(0.5f * cgs.screenWidth, y+45, text, UI_CENTER | UI_SMALLFONT, textColor);
 			}
 			else
 			{
-				UI_DrawProportionalString(320, y+45, bg_itemlist[itemNdex].classname, UI_CENTER | UI_SMALLFONT, textColor);
+				UI_DrawProportionalString(0.5f * cgs.screenWidth, y+45, bg_itemlist[itemNdex].classname, UI_CENTER | UI_SMALLFONT, textColor);
 			}
 		}
 	}

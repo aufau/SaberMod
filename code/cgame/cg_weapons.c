@@ -873,7 +873,8 @@ WEAPON SELECTION
 void CG_DrawIconBackground(void)
 {
 	int				height,xAdd,x2,y2,t;
-	int				prongLeftX,prongRightX;
+	float			prongLeftX,prongRightX;
+	float			prongWidth;
 	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
 	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
 	int				fpTime = cg.forceSelectTime+WEAPON_SELECT_TIME;
@@ -895,8 +896,9 @@ void CG_DrawIconBackground(void)
 	x2 = 30;
 	y2 = SCREEN_HEIGHT-70;
 
-	prongLeftX =x2+37;
-	prongRightX =x2+544;
+	prongLeftX = x2 + 37;
+	prongRightX = cgs.screenWidth - x2 - 37 + 1;
+	prongWidth = cgs.screenWidth - 2 * (x2 + 60);
 
 	if (inTime > wpTime)
 	{
@@ -935,8 +937,8 @@ void CG_DrawIconBackground(void)
 			xAdd = (int) 8*cg.iconHUDPercent;
 
 			height = (int) (60.0f*cg.iconHUDPercent);
-			CG_DrawPic( x2+60, y2+30, 460, -height, drawType);	// Top half
-			CG_DrawPic( x2+60, y2+30-2,460, height, drawType);	// Bottom half
+			CG_DrawPic( x2+60, y2+30, prongWidth, -height, drawType);	// Top half
+			CG_DrawPic( x2+60, y2+30-2, prongWidth, height, drawType);	// Bottom half
 
 		}
 		else
@@ -950,8 +952,6 @@ void CG_DrawIconBackground(void)
 
 		return;
 	}
-	prongLeftX =x2+37;
-	prongRightX =x2+544;
 
 	if (!cg.iconHUDActive)
 	{
@@ -976,8 +976,8 @@ void CG_DrawIconBackground(void)
 
 	trap_R_SetColor( colorTable[CT_WHITE] );
 	height = (int) (60.0f*cg.iconHUDPercent);
-	CG_DrawPic( x2+60, y2+30, 460, -height, drawType);	// Top half
-	CG_DrawPic( x2+60, y2+30-2,460, height, drawType);	// Bottom half
+	CG_DrawPic( x2+60, y2+30, prongWidth, -height, drawType);	// Top half
+	CG_DrawPic( x2+60, y2+30-2, prongWidth, height, drawType);	// Bottom half
 
 	// And now for the prongs
 /*	if ((cg.inventorySelectTime+WEAPON_SELECT_TIME)>cg.time)
@@ -1057,8 +1057,8 @@ void CG_DrawWeaponSelect( void ) {
 	int				i;
 	int				bits;
 	int				count;
-	int				smallIconSize,bigIconSize;
-	int				holdX,x,y,pad;
+	float			smallIconSize,bigIconSize;
+	float			holdX,x,y,pad;
 	int				sideLeftIconCnt,sideRightIconCnt;
 	int				sideMax,holdCount,iconCnt;
 
@@ -1140,7 +1140,7 @@ void CG_DrawWeaponSelect( void ) {
 	bigIconSize = 80;
 	pad = 12;
 
-	x = 320;
+	x = 0.5f * cgs.screenWidth;
 	y = 410;
 
 	// Background
@@ -1264,11 +1264,11 @@ void CG_DrawWeaponSelect( void ) {
 
 		if ( trap_SP_GetStringTextString( va("INGAME_%s",cg_weapons[ cg.weaponSelect ].item->classname), text, sizeof( text )))
 		{
-			UI_DrawProportionalString(320, y+45, text, UI_CENTER|UI_SMALLFONT, textColor);
+			UI_DrawProportionalString(0.5f * cgs.screenWidth, y+45, text, UI_CENTER|UI_SMALLFONT, textColor);
 		}
 		else
 		{
-			UI_DrawProportionalString(320, y+45, cg_weapons[ cg.weaponSelect ].item->classname, UI_CENTER|UI_SMALLFONT, textColor);
+			UI_DrawProportionalString(0.5f * cgs.screenWidth, y+45, cg_weapons[ cg.weaponSelect ].item->classname, UI_CENTER|UI_SMALLFONT, textColor);
 		}
 	}
 
