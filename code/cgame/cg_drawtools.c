@@ -126,6 +126,8 @@ Coordinates are 640*480 virtual values
 void CG_FillRect( float x, float y, float width, float height, const float *color ) {
 	trap_R_SetColor( color );
 
+	x *= cgs.screenXFactor;
+	width *= cgs.screenXFactor;
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 
 	trap_R_SetColor( NULL );
@@ -144,6 +146,12 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 	x *= cgs.screenXFactor;
 	width *= cgs.screenXFactor;
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
+}
+
+void CG_DrawPicExt( float x, float y, float width, float height, float s1, float t1, float s2, float t2, qhandle_t hShader ) {
+	x *= cgs.screenXFactor;
+	width *= cgs.screenXFactor;
+	trap_R_DrawStretchPic( x, y, width, height, s1, t1, s2, t2, hShader );
 }
 
 /*

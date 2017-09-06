@@ -310,6 +310,8 @@ static void CG_DrawZoomMask( void )
 	}
 	else if ( cg.predictedPlayerState.zoomMode == ZOOM_DISRUPTOR )
 	{
+		float xOffset = 0.5f * (cgs.screenWidth - 640);
+
 		// disruptor zoom mode
 		level = (float)(50.0f - zoomFov) / 50.0f;//(float)(80.0f - zoomFov) / 80.0f;
 
@@ -327,8 +329,11 @@ static void CG_DrawZoomMask( void )
 		level *= 103.0f;
 
 		// Draw target mask
+		CG_FillRect( 0, 0, xOffset, 480, colorTable[CT_BLACK] );
+		CG_FillRect( xOffset + 640, 0, xOffset, 480, colorTable[CT_BLACK] );
 		trap_R_SetColor( colorTable[CT_WHITE] );
-		CG_DrawPic( 0, 0, 640, 480, cgs.media.disruptorMask );
+		CG_DrawPic( xOffset, 0, 640, 480, cgs.media.disruptorMask );
+
 
 		// apparently 99.0f is the full zoom level
 		if ( level >= 99 )
@@ -343,7 +348,7 @@ static void CG_DrawZoomMask( void )
 		}
 
 		// Draw rotating insert
-		CG_DrawRotatePic2( 320, 240, 640, 480, -level, cgs.media.disruptorInsert );
+		CG_DrawRotatePic2( 0.5f * cgs.screenWidth, 240, 640, 480, -level, cgs.media.disruptorInsert );
 
 		// Increase the light levels under the center of the target
 //		CG_DrawPic( 198, 118, 246, 246, cgs.media.disruptorLight );
@@ -407,7 +412,7 @@ static void CG_DrawZoomMask( void )
 			cx = 320 + sinf( (fi+90.0f) * (1.0f / 57.296f) ) * 190;
 			cy = 240 + cosf( (fi+90.0f) * (1.0f / 57.296f) ) * 190;
 
-			CG_DrawRotatePic2( cx, cy, 12, 24, 90 - fi, cgs.media.disruptorInsertTick );
+			CG_DrawRotatePic2( xOffset + cx, cy, 12, 24, 90 - fi, cgs.media.disruptorInsertTick );
 		}
 
 		if ( cg.predictedPlayerState.weaponstate == WEAPON_CHARGING_ALT )
@@ -422,7 +427,7 @@ static void CG_DrawZoomMask( void )
 				max = 1.0f;
 			}
 
-			trap_R_DrawStretchPic(257, 435, 134*max, 34, 0, 0, max, 1, cgs.media.disruptorChargeShader);
+			CG_DrawPicExt(xOffset + 257, 435, 134 * max, 34, 0, 0, max, 1, cgs.media.disruptorChargeShader);
 		}
 //		trap_R_SetColor( colorTable[CT_WHITE] );
 //		CG_DrawPic( 0, 0, 640, 480, cgs.media.disruptorMask );
