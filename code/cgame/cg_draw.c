@@ -871,7 +871,7 @@ void CG_DrawArmor(int x,int y)
 CG_DrawHUDRightFrame1
 ================
 */
-void CG_DrawHUDRightFrame1(int x,int y)
+void CG_DrawHUDRightFrame1(float x, float y)
 {
 	trap_R_SetColor( hudTintColor );
 	// Inner gray wire frame
@@ -883,7 +883,7 @@ void CG_DrawHUDRightFrame1(int x,int y)
 CG_DrawHUDRightFrame2
 ================
 */
-void CG_DrawHUDRightFrame2(int x,int y)
+void CG_DrawHUDRightFrame2(float x, float y)
 {
 	trap_R_SetColor( hudTintColor );
 	CG_DrawPic(   x, y, 80, 80, cgs.media.HUDRightFrame );		// Metal frame
@@ -894,7 +894,7 @@ void CG_DrawHUDRightFrame2(int x,int y)
 CG_DrawAmmo
 ================
 */
-static void CG_DrawAmmo(centity_t	*cent,int x,int y)
+static void CG_DrawAmmo(centity_t *cent, float x, float y)
 {
 	playerState_t	*ps;
 	int			numColor_i;
@@ -1031,7 +1031,7 @@ static void CG_DrawAmmo(centity_t	*cent,int x,int y)
 CG_DrawForcePower
 ================
 */
-void CG_DrawForcePower(int x,int y)
+void CG_DrawForcePower(float x,float y)
 {
 	int			i;
 	vec4_t		calcColor;
@@ -1121,10 +1121,10 @@ void CG_DrawHUD(centity_t	*cent)
 				Com_sprintf(ammoString, sizeof(ammoString), "INF");
 		}
 
-		UI_DrawProportionalString( SCREEN_WIDTH-(weapX+16+32), y+40, va( "%s", ammoString ),
+		UI_DrawProportionalString( cgs.screenWidth-(weapX+16+32), y+40, va( "%s", ammoString ),
 			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_HUD_ORANGE] );
 
-		UI_DrawProportionalString( SCREEN_WIDTH-(x+18+14+32), y+40+14, va( "%i", cg.snap->ps.fd.forcePower),
+		UI_DrawProportionalString( cgs.screenWidth-(x+18+14+32), y+40+14, va( "%i", cg.snap->ps.fd.forcePower),
 			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_ICON_BLUE] );
 
 		return;
@@ -1204,7 +1204,7 @@ void CG_DrawHUD(centity_t	*cent)
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
 	}
-	UI_DrawScaledProportionalString(SCREEN_WIDTH-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
+	UI_DrawScaledProportionalString(cgs.screenWidth-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.gametype == GT_REDROVER) {
@@ -1227,10 +1227,10 @@ void CG_DrawHUD(centity_t	*cent)
 	else
 #endif
 	{ //Apparently we failed to get proper coordinates from the menu, so resort to manually inputting them.
-		CG_DrawHUDRightFrame1(SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
-		CG_DrawForcePower(SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
-		CG_DrawAmmo(cent,SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
-		CG_DrawHUDRightFrame2(SCREEN_WIDTH-80,SCREEN_HEIGHT-80);
+		CG_DrawHUDRightFrame1(cgs.screenWidth-80,SCREEN_HEIGHT-80);
+		CG_DrawForcePower(cgs.screenWidth-80,SCREEN_HEIGHT-80);
+		CG_DrawAmmo(cent,cgs.screenWidth-80,SCREEN_HEIGHT-80);
+		CG_DrawHUDRightFrame2(cgs.screenWidth-80,SCREEN_HEIGHT-80);
 	}
 }
 
