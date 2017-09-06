@@ -813,6 +813,7 @@ static void CG_ForceModelChange( void ) {
 		CG_UpdateConfigString( CS_PLAYERS + i, qfalse );
 	}
 }
+
 /*
 ===================
 CG_UpdateCrosshairColor
@@ -910,6 +911,7 @@ void CG_UpdateCvars( void ) {
 	}
 
 	if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
+		crosshairColorModificationCount = cg_crosshairColor.modificationCount;
 		CG_UpdateCrosshairColor();
 	}
 
