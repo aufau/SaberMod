@@ -804,6 +804,29 @@ void trap_CG_RegisterSharedMemory(char *memory)
 Ghoul2 Insert End
 */
 
+void trap_MVAPI_R_Font_DrawString(
+	int ox, int oy,
+	const char *text,
+	const float *rgba,
+	int setIndex,
+	int iCharLimit,
+	float hScale, float vScale)
+{
+	syscall( MVAPI_R_FONT_DRAWSTRING,
+		ox, oy, text, rgba, setIndex, iCharLimit,
+		PASSFLOAT(hScale), PASSFLOAT(vScale));
+}
+
+int	trap_MVAPI_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale)
+{
+	return syscall( MVAPI_R_FONT_STRLENPIXELS, text, iFontIndex, PASSFLOAT(hScale), PASSFLOAT(vScale));
+}
+
+int trap_MVAPI_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale)
+{
+	return syscall( MVAPI_R_FONT_STRHEIGHTPIXELS, iFontIndex, PASSFLOAT(hScale), PASSFLOAT(vScale));
+}
+
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }

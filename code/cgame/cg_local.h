@@ -1351,6 +1351,7 @@ typedef struct {
 	float			screenYScale;
 	float			screenWidth;		// virtual screen width (originally 640)
 	float			screenXFactor;		// 640 / screenWidth (for calculations)
+	float			screenXFactorInv;	// screenWidth / 640
 
 	int				serverCommandSequence;	// reliable command stream counter
 	int				processedSnapshotNum;// the number of snapshots cgame has requested
@@ -1946,6 +1947,15 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 
 // MVAPI
 
+void		trap_MVAPI_R_Font_DrawString(
+	int ox, int oy,
+	const char *text,
+	const float *rgba,
+	int setIndex,
+	int iCharLimit,
+	float hScale, float vScale);
+int			trap_MVAPI_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale);
+int			trap_MVAPI_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale);
 qboolean	trap_MVAPI_ControlFixes(int fixes);
 void		trap_MVAPI_R_DrawTransformPic(
 	float x, float y,

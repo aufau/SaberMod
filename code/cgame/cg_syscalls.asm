@@ -175,7 +175,11 @@ equ trap_G2API_SetRootSurface				-300	; CG_G2_SETROOTSURFACE
 equ trap_G2API_SetSurfaceOnOff				-301	; CG_G2_SETSURFACEONOFF
 equ trap_G2API_SetNewOrigin					-302	; CG_G2_SETNEWORIGIN
 equ trap_CG_RegisterSharedMemory			-303	; CG_SET_SHARED_BUFFER
+equ trap_MVAPI_R_Font_DrawString			-701	; MVAPI_R_FONT_DRAWSTRING
+equ trap_MVAPI_R_Font_StrLenPixels			-702	; MVAPI_R_FONT_STRLENPIXELS
+equ trap_MVAPI_R_Font_HeightPixels			-703	; MVAPI_R_FONT_STRHEIGHTPIXELS
 equ trap_MVAPI_ControlFixes					-704	; MVAPI_CONTROL_FIXES
+equ trap_MVAPI_R_DrawTransformPic			-706	; MVAPI_R_DRAWTRANSFORMPIC
 
 
 ; hardcoded functions

@@ -97,41 +97,49 @@ int CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
-	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	if (cgs.mvapi >= 3) {
+		// this is needed because engine may use different font at different scale
+		return trap_MVAPI_R_Font_StrLenPixels(text, iFontIndex, scale * cgs.screenXFactor, scale) * cgs.screenXFactorInv;
+	} else {
+		return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	}
 }
 
 int CG_Text_Height(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
-	return trap_R_Font_HeightPixels(iFontIndex, scale);
+	if (cgs.mvapi >= 3) {
+		return trap_MVAPI_R_Font_HeightPixels(iFontIndex, scale * cgs.screenXFactor, scale);
+	} else {
+		return trap_R_Font_HeightPixels(iFontIndex, scale);
+	}
 }
 
 #include "../qcommon/qfiles.h"	// for STYLE_BLINK etc
 void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont)
 {
-	int iStyleOR = 0;
-	int iFontIndex = (int)MenuFontToHandle(iMenuFont);
+	int iStyle = (int)MenuFontToHandle(iMenuFont);
 
 	switch (style)
 	{
-	case  ITEM_TEXTSTYLE_NORMAL:			iStyleOR = 0;break;					// JK2 normal text
-	case  ITEM_TEXTSTYLE_BLINK:				iStyleOR = STYLE_BLINK;break;		// JK2 fast blinking
-	case  ITEM_TEXTSTYLE_PULSE:				iStyleOR = STYLE_BLINK;break;		// JK2 slow pulsing
-	case  ITEM_TEXTSTYLE_SHADOWED:			iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow ( need a color for this )
-	case  ITEM_TEXTSTYLE_OUTLINED:			iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow ( need a color for this )
-	case  ITEM_TEXTSTYLE_OUTLINESHADOWED:	iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow ( need a color for this )
-	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow ( need a color for this )
+	case  ITEM_TEXTSTYLE_NORMAL:										break;	// JK2 normal text
+	case  ITEM_TEXTSTYLE_BLINK:				iStyle |= STYLE_BLINK;		break;	// JK2 fast blinking
+	case  ITEM_TEXTSTYLE_PULSE:				iStyle |= STYLE_BLINK;		break;	// JK2 slow pulsing
+	case  ITEM_TEXTSTYLE_SHADOWED:			iStyle |= STYLE_DROPSHADOW;	break;	// JK2 drop shadow ( need a color for this )
+	case  ITEM_TEXTSTYLE_OUTLINED:			iStyle |= STYLE_DROPSHADOW;	break;	// JK2 drop shadow ( need a color for this )
+	case  ITEM_TEXTSTYLE_OUTLINESHADOWED:	iStyle |= STYLE_DROPSHADOW;	break;	// JK2 drop shadow ( need a color for this )
+	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyle |= STYLE_DROPSHADOW;	break;	// JK2 drop shadow ( need a color for this )
 	}
 
-	trap_R_Font_DrawString(	x,		// int ox
-							y,		// int oy
-							text,	// const char *text
-							color,	// paletteRGBA_c c
-							iStyleOR | iFontIndex,	// const int iFontHandle
-							!limit?-1:limit,		// iCharLimit (-1 = none)
-							scale	// const float scale = 1.0f
-							);
+	if (cgs.mvapi >= 3) {
+		float hScale = scale * cgs.screenXFactor;
+
+		x *= cgs.screenXFactor;
+		trap_MVAPI_R_Font_DrawString(x, y, text, color, iStyle, limit, hScale, scale);
+	} else {
+		trap_R_Font_DrawString(x, y, text, color, iStyle, limit, scale);
+	}
 }
 
 /*

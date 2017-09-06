@@ -880,6 +880,7 @@ static void CG_UpdateWidescreen( void ) {
 		cgs.screenWidth = 640.0f;
 	}
 	cgs.screenXFactor = 640.0f / cgs.screenWidth;
+	cgs.screenXFactorInv = cgs.screenWidth / 640.0f;
 }
 
 /*
