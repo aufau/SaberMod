@@ -242,9 +242,9 @@ void CG_DrawChar( int x, int y, int width, int height, int ch ) {
 		return;
 	}
 
-	ax = x;
+	ax = x * cgs.screenXFactor;
 	ay = y;
-	aw = width;
+	aw = width * cgs.screenXFactor;
 	ah = height;
 
 	row = ch>>4;
