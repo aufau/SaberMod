@@ -1762,7 +1762,7 @@ static float CG_DrawEnemyInfo ( float y )
 			size = ICON_SIZE * 1.25;
 			y += 5;
 
-			CG_DrawPic( 640 - size - 12, y, size, size, cgs.media.weaponIcons[WP_SABER] );
+			CG_DrawPic( cgs.screenWidth - size - 12, y, size, size, cgs.media.weaponIcons[WP_SABER] );
 
 			y += size;
 
@@ -1771,7 +1771,7 @@ static float CG_DrawEnemyInfo ( float y )
 			y += 15;
 			*/
 
-			CG_Text_Paint( 630 - CG_Text_Width ( title, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, title, 0, 0, 0, FONT_MEDIUM );
+			CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( title, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, title, 0, 0, 0, FONT_MEDIUM );
 
 			return y + BIGCHAR_HEIGHT + 2;
 		}
@@ -1850,22 +1850,22 @@ static float CG_DrawEnemyInfo ( float y )
 
 	if ( ci->modelIcon )
 	{
-		CG_DrawPic( 640 - size - 5, y, size, size, ci->modelIcon );
+		CG_DrawPic( cgs.screenWidth - size - 5, y, size, size, ci->modelIcon );
 	}
 
 	y += size;
 
-	CG_Text_Paint( 630 - CG_Text_Width ( ci->name, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, ci->name, 0, 0, 0, FONT_MEDIUM );
+	CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( ci->name, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, ci->name, 0, 0, 0, FONT_MEDIUM );
 
 	y += 15;
-	CG_Text_Paint( 630 - CG_Text_Width ( title, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, title, 0, 0, 0, FONT_MEDIUM );
+	CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( title, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, title, 0, 0, 0, FONT_MEDIUM );
 
 	if ( cgs.gametype == GT_TOURNAMENT && cg.snap->ps.pm_type != PM_SPECTATOR)
 	{//also print their score
 		char text[1024];
 		y += 15;
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[clientNum].score, cgs.fraglimit );
-		CG_Text_Paint( 630 - CG_Text_Width ( text, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, text, 0, 0, 0, FONT_MEDIUM );
+		CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( text, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, text, 0, 0, 0, FONT_MEDIUM );
 	}
 
 	return y + BIGCHAR_HEIGHT + 2;
