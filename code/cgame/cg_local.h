@@ -1349,12 +1349,14 @@ typedef struct {
 	glconfig_t		glconfig;			// rendering configuration
 	float			screenXScale;		// derived from glconfig
 	float			screenYScale;
-	float			screenXBias;
+	float			screenWidth;		// virtual screen width (originally 640)
+	float			screenXFactor;		// 640 / screenWidth (for calculations)
 
 	int				serverCommandSequence;	// reliable command stream counter
 	int				processedSnapshotNum;// the number of snapshots cgame has requested
 
 	qboolean		localServer;		// detected on startup by checking sv_running
+	int				mvapi;				// MVAPI level
 
 	// parsed from serverinfo
 	gametype_t		gametype;
@@ -1611,6 +1613,7 @@ extern	vmCvar_t		cg_fastSeek;
 extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;
 extern	vmCvar_t		cg_privateDuel;
+extern	vmCvar_t		cg_widescreen;
 
 extern	vmCvar_t		ui_myteam;
 /*

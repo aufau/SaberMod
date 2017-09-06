@@ -144,6 +144,7 @@ static const char * const HolocronIcons[] = {
 static int forceModelModificationCount = -1;
 static int drawTeamOverlayModificationCount = -1;
 static int crosshairColorModificationCount = -1;
+static int widescreenModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
@@ -296,6 +297,7 @@ int CG_MVAPI_Init( int apilevel )
 		return 0;
 	}
 
+	cgs.mvapi = apilevel;
 	CG_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
 	return MV_APILEVEL;
 
@@ -569,6 +571,7 @@ vmCvar_t	cg_fastSeek;
 vmCvar_t	cg_followKiller;
 vmCvar_t	cg_followPowerup;
 vmCvar_t	cg_privateDuel;
+vmCvar_t	cg_widescreen;
 
 vmCvar_t	ui_myteam;
 
@@ -732,6 +735,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE},
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
+	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 
@@ -768,6 +772,7 @@ void CG_RegisterCvars( void ) {
 	cgs.localServer = (qboolean)!!atoi( var );
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
+	widescreenModificationCount = cg_widescreen.modificationCount;
 
 	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
 	trap_Cvar_Set( GAMEVERSION, GIT_VERSION );
@@ -858,6 +863,20 @@ static void CG_UpdateCrosshairColor( void ) {
 }
 
 /*
+===================
+CG_UpdateWidescreen
+===================
+*/
+static void CG_UpdateWidescreen( void ) {
+	if ( cg_widescreen.integer ) {
+		cgs.screenWidth = 480.0f * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
+	} else {
+		cgs.screenWidth = 640.0f;
+	}
+	cgs.screenXFactor = 640.0f / cgs.screenWidth;
+}
+
+/*
 =================
 CG_UpdateCvars
 =================
@@ -892,6 +911,11 @@ void CG_UpdateCvars( void ) {
 
 	if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
 		CG_UpdateCrosshairColor();
+	}
+
+	if ( widescreenModificationCount != cg_widescreen.modificationCount ) {
+		widescreenModificationCount = cg_widescreen.modificationCount;
+		CG_UpdateWidescreen();
 	}
 }
 
@@ -2563,6 +2587,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_RegisterCvars();
 	CG_InitConsoleCommands();
 	CG_PreloadMedia();
+	CG_UpdateWidescreen();
 
 	cg.loadLCARSStage = 0;
 	CG_LoadingString( "server info" );
