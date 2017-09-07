@@ -2011,7 +2011,7 @@ static void CG_DrawCountdown( void )
 	msec = MAX(0, msec);
 
 	s = va( "%d", msec / 1000, msec % 1000 );
-	UI_DrawProportionalString( 320, 125, s, UI_CENTER, colorRed );
+	UI_DrawProportionalString( 0.5f * cgs.screenWidth, 125, s, UI_CENTER, colorRed );
 }
 
 
