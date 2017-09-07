@@ -872,7 +872,7 @@ WEAPON SELECTION
 
 void CG_DrawIconBackground(void)
 {
-	int				height,xAdd,x2,y2,t;
+	float			height,xAdd,x2,y2,t;
 	float			prongLeftX,prongRightX;
 	float			prongWidth;
 	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
@@ -934,9 +934,9 @@ void CG_DrawIconBackground(void)
 				cg.iconHUDPercent=0;
 			}
 
-			xAdd = (int) 8*cg.iconHUDPercent;
+			xAdd = 8 * cg.iconHUDPercent;
 
-			height = (int) (60.0f*cg.iconHUDPercent);
+			height = 60 * cg.iconHUDPercent;
 			CG_DrawPic( x2+60, y2+30, prongWidth, -height, drawType);	// Top half
 			CG_DrawPic( x2+60, y2+30-2, prongWidth, height, drawType);	// Bottom half
 
@@ -975,7 +975,7 @@ void CG_DrawIconBackground(void)
 	}
 
 	trap_R_SetColor( colorTable[CT_WHITE] );
-	height = (int) (60.0f*cg.iconHUDPercent);
+	height = 60 * cg.iconHUDPercent;
 	CG_DrawPic( x2+60, y2+30, prongWidth, -height, drawType);	// Top half
 	CG_DrawPic( x2+60, y2+30-2, prongWidth, height, drawType);	// Bottom half
 
@@ -998,7 +998,7 @@ void CG_DrawIconBackground(void)
 */
 	// Side Prongs
 	trap_R_SetColor( colorTable[CT_WHITE]);
-	xAdd = (int) 8*cg.iconHUDPercent;
+	xAdd = 8 * cg.iconHUDPercent;
 	CG_DrawPic( prongLeftX+xAdd, y2-10, 40, 80, background);
 	CG_DrawPic( prongRightX-xAdd, y2-10, -40, 80, background);
 
