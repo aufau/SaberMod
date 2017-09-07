@@ -4112,50 +4112,34 @@ void CG_DrawFlagStatus()
 	}
 }
 
-int cgRageTime = 0;
-int cgRageFadeTime = 0;
-float cgRageFadeVal = 0;
-
-int cgRageRecTime = 0;
-int cgRageRecFadeTime = 0;
-float cgRageRecFadeVal = 0;
-
-int cgAbsorbTime = 0;
-int cgAbsorbFadeTime = 0;
-float cgAbsorbFadeVal = 0;
-
-int cgProtectTime = 0;
-int cgProtectFadeTime = 0;
-float cgProtectFadeVal = 0;
-
-int cgYsalTime = 0;
-int cgYsalFadeTime = 0;
-float cgYsalFadeVal = 0;
-
-qboolean gCGHasFallVector = qfalse;
-vec3_t gCGFallVector;
-
 /*
 =================
-CG_Draw2D
+CG_DrawForceEffects
 =================
 */
-static void CG_Draw2D( void ) {
-	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
-	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
-	int				bestTime;
-	int				drawSelect = 0;
-	float			fallTime, rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
-	vec4_t			hcolor;
-#ifdef MISSIONPACK
-	if (cgs.orderPending && cg.serverTime > cgs.orderTime) {
-		CG_CheckOrderPending();
-	}
-#endif
-	// if we are taking a levelshot for the menu, don't draw anything
-	if ( cg.levelShot ) {
-		return;
-	}
+static void CG_DrawForceEffects( void ) {
+	static int cgRageTime = 0;
+	static int cgRageFadeTime = 0;
+	static float cgRageFadeVal = 0;
+
+	static int cgRageRecTime = 0;
+	static int cgRageRecFadeTime = 0;
+	static float cgRageRecFadeVal = 0;
+
+	static int cgAbsorbTime = 0;
+	static int cgAbsorbFadeTime = 0;
+	static float cgAbsorbFadeVal = 0;
+
+	static int cgProtectTime = 0;
+	static int cgProtectFadeTime = 0;
+	static float cgProtectFadeVal = 0;
+
+	static int cgYsalTime = 0;
+	static int cgYsalFadeTime = 0;
+	static float cgYsalFadeVal = 0;
+
+	vec4_t	hcolor;
+	float	rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
 
 	if (cg.snap->ps.pm_type == PM_SPECTATOR)
 	{
@@ -4178,6 +4162,438 @@ static void CG_Draw2D( void ) {
 		cgYsalTime = 0;
 		cgYsalFadeTime = 0;
 		cgYsalFadeVal = 0;
+
+		return;
+	}
+
+	if (cg.snap->ps.fd.forcePowersActive & (1 << FP_RAGE))
+	{
+		if (!cgRageTime)
+		{
+			cgRageTime = cg.time;
+		}
+
+		rageTime = (float)(cg.time - cgRageTime);
+
+		rageTime /= 9000.0f;
+
+		if (rageTime < 0)
+		{
+			rageTime = 0;
+		}
+		if (rageTime > 0.15f)
+		{
+			rageTime = 0.15f;
+		}
+
+		hcolor[3] = rageTime;
+		hcolor[0] = 0.7f;
+		hcolor[1] = 0;
+		hcolor[2] = 0;
+
+		if (!cg.renderingThirdPerson)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+
+		cgRageFadeTime = 0;
+		cgRageFadeVal = 0;
+	}
+	else if (cgRageTime)
+	{
+		if (!cgRageFadeTime)
+		{
+			cgRageFadeTime = cg.time;
+			cgRageFadeVal = 0.15f;
+		}
+
+		rageTime = cgRageFadeVal;
+
+		cgRageFadeVal -= (cg.time - cgRageFadeTime)*0.000005f;
+
+		if (rageTime < 0)
+		{
+			rageTime = 0;
+		}
+		if (rageTime > 0.15f)
+		{
+			rageTime = 0.15f;
+		}
+
+		if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+		{
+			float checkRageRecTime = rageTime;
+
+			if (checkRageRecTime < 0.15f)
+			{
+				checkRageRecTime = 0.15f;
+			}
+
+			hcolor[3] = checkRageRecTime;
+			hcolor[0] = rageTime*4;
+			if (hcolor[0] < 0.2f)
+			{
+				hcolor[0] = 0.2f;
+			}
+			hcolor[1] = 0.2f;
+			hcolor[2] = 0.2f;
+		}
+		else
+		{
+			hcolor[3] = rageTime;
+			hcolor[0] = 0.7f;
+			hcolor[1] = 0;
+			hcolor[2] = 0;
+		}
+
+		if (!cg.renderingThirdPerson && rageTime)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+		else
+		{
+			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+			{
+				hcolor[3] = 0.15f;
+				hcolor[0] = 0.2f;
+				hcolor[1] = 0.2f;
+				hcolor[2] = 0.2f;
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+			}
+			cgRageTime = 0;
+		}
+	}
+	else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+	{
+		if (!cgRageRecTime)
+		{
+			cgRageRecTime = cg.time;
+		}
+
+		rageRecTime = (float)(cg.time - cgRageRecTime);
+
+		rageRecTime /= 9000;
+
+		if (rageRecTime < 0.15f)//0)
+		{
+			rageRecTime = 0.15f;//0;
+		}
+		if (rageRecTime > 0.15f)
+		{
+			rageRecTime = 0.15f;
+		}
+
+		hcolor[3] = rageRecTime;
+		hcolor[0] = 0.2f;
+		hcolor[1] = 0.2f;
+		hcolor[2] = 0.2f;
+
+		if (!cg.renderingThirdPerson)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+
+		cgRageRecFadeTime = 0;
+		cgRageRecFadeVal = 0;
+	}
+	else if (cgRageRecTime)
+	{
+		if (!cgRageRecFadeTime)
+		{
+			cgRageRecFadeTime = cg.time;
+			cgRageRecFadeVal = 0.15f;
+		}
+
+		rageRecTime = cgRageRecFadeVal;
+
+		cgRageRecFadeVal -= (cg.time - cgRageRecFadeTime)*0.000005f;
+
+		if (rageRecTime < 0)
+		{
+			rageRecTime = 0;
+		}
+		if (rageRecTime > 0.15f)
+		{
+			rageRecTime = 0.15f;
+		}
+
+		hcolor[3] = rageRecTime;
+		hcolor[0] = 0.2f;
+		hcolor[1] = 0.2f;
+		hcolor[2] = 0.2f;
+
+		if (!cg.renderingThirdPerson && rageRecTime)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+		else
+		{
+			cgRageRecTime = 0;
+		}
+	}
+
+	if (cg.snap->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+	{
+		if (!cgAbsorbTime)
+		{
+			cgAbsorbTime = cg.time;
+		}
+
+		absorbTime = (float)(cg.time - cgAbsorbTime);
+
+		absorbTime /= 9000;
+
+		if (absorbTime < 0)
+		{
+			absorbTime = 0;
+		}
+		if (absorbTime > 0.15f)
+		{
+			absorbTime = 0.15f;
+		}
+
+		hcolor[3] = absorbTime * 0.5f;
+		hcolor[0] = 0;
+		hcolor[1] = 0;
+		hcolor[2] = 0.7f;
+
+		if (!cg.renderingThirdPerson)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+
+		cgAbsorbFadeTime = 0;
+		cgAbsorbFadeVal = 0;
+	}
+	else if (cgAbsorbTime)
+	{
+		if (!cgAbsorbFadeTime)
+		{
+			cgAbsorbFadeTime = cg.time;
+			cgAbsorbFadeVal = 0.15f;
+		}
+
+		absorbTime = cgAbsorbFadeVal;
+
+		cgAbsorbFadeVal -= (cg.time - cgAbsorbFadeTime)*0.000005f;
+
+		if (absorbTime < 0)
+		{
+			absorbTime = 0;
+		}
+		if (absorbTime > 0.15f)
+		{
+			absorbTime = 0.15f;
+		}
+
+		hcolor[3] = absorbTime * 0.5f;
+		hcolor[0] = 0;
+		hcolor[1] = 0;
+		hcolor[2] = 0.7f;
+
+		if (!cg.renderingThirdPerson && absorbTime)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+		else
+		{
+			cgAbsorbTime = 0;
+		}
+	}
+
+	if (cg.snap->ps.fd.forcePowersActive & (1 << FP_PROTECT))
+	{
+		if (!cgProtectTime)
+		{
+			cgProtectTime = cg.time;
+		}
+
+		protectTime = (float)(cg.time - cgProtectTime);
+
+		protectTime /= 9000.0f;
+
+		if (protectTime < 0)
+		{
+			protectTime = 0;
+		}
+		if (protectTime > 0.15f)
+		{
+			protectTime = 0.15f;
+		}
+
+		hcolor[3] = protectTime * 0.5f;
+		hcolor[0] = 0;
+		hcolor[1] = 0.7f;
+		hcolor[2] = 0;
+
+		if (!cg.renderingThirdPerson)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+
+		cgProtectFadeTime = 0;
+		cgProtectFadeVal = 0;
+	}
+	else if (cgProtectTime)
+	{
+		if (!cgProtectFadeTime)
+		{
+			cgProtectFadeTime = cg.time;
+			cgProtectFadeVal = 0.15f;
+		}
+
+		protectTime = cgProtectFadeVal;
+
+		cgProtectFadeVal -= (cg.time - cgProtectFadeTime)*0.000005f;
+
+		if (protectTime < 0)
+		{
+			protectTime = 0;
+		}
+		if (protectTime > 0.15f)
+		{
+			protectTime = 0.15f;
+		}
+
+		hcolor[3] = protectTime * 0.5f;
+		hcolor[0] = 0;
+		hcolor[1] = 0.7f;
+		hcolor[2] = 0;
+
+		if (!cg.renderingThirdPerson && protectTime)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+		else
+		{
+			cgProtectTime = 0;
+		}
+	}
+
+	if (BG_HasYsalamiri(cgs.gametype, &cg.snap->ps))
+	{
+		if (!cgYsalTime)
+		{
+			cgYsalTime = cg.time;
+		}
+
+		ysalTime = (float)(cg.time - cgYsalTime);
+
+		ysalTime /= 9000.0f;
+
+		if (ysalTime < 0)
+		{
+			ysalTime = 0;
+		}
+		if (ysalTime > 0.15f)
+		{
+			ysalTime = 0.15f;
+		}
+
+		hcolor[3] = ysalTime * 0.5f;
+		hcolor[0] = 0.7f;
+		hcolor[1] = 0.7f;
+		hcolor[2] = 0;
+
+		if (!cg.renderingThirdPerson)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+
+		cgYsalFadeTime = 0;
+		cgYsalFadeVal = 0;
+	}
+	else if (cgYsalTime)
+	{
+		if (!cgYsalFadeTime)
+		{
+			cgYsalFadeTime = cg.time;
+			cgYsalFadeVal = 0.15f;
+		}
+
+		ysalTime = cgYsalFadeVal;
+
+		cgYsalFadeVal -= (cg.time - cgYsalFadeTime)*0.000005f;
+
+		if (ysalTime < 0)
+		{
+			ysalTime = 0;
+		}
+		if (ysalTime > 0.15f)
+		{
+			ysalTime = 0.15f;
+		}
+
+		hcolor[3] = ysalTime * 0.5f;
+		hcolor[0] = 0.7f;
+		hcolor[1] = 0.7f;
+		hcolor[2] = 0;
+
+		if (!cg.renderingThirdPerson && ysalTime)
+		{
+			CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+		}
+		else
+		{
+			cgYsalTime = 0;
+		}
+	}
+}
+
+/*
+=================
+CG_DrawFallingToDeath
+=================
+*/
+static void CG_DrawFallingToDeath( void ) {
+	if (cg.snap->ps.fallingToDeath)
+	{
+		vec4_t	hcolor;
+		float	fallTime;
+
+		fallTime = (float)(cg.serverTime - cg.snap->ps.fallingToDeath);
+
+		fallTime /= (FALL_FADE_TIME/2);
+
+		if (fallTime < 0)
+		{
+			fallTime = 0;
+		}
+		if (fallTime > 1)
+		{
+			fallTime = 1;
+		}
+
+		hcolor[3] = fallTime;
+		hcolor[0] = 0;
+		hcolor[1] = 0;
+		hcolor[2] = 0;
+
+		CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
+	}
+}
+
+qboolean gCGHasFallVector = qfalse;
+vec3_t gCGFallVector;
+
+/*
+=================
+CG_Draw2D
+=================
+*/
+static void CG_Draw2D( void ) {
+	int				inTime = cg.invenSelectTime+WEAPON_SELECT_TIME;
+	int				wpTime = cg.weaponSelectTime+WEAPON_SELECT_TIME;
+	int				bestTime;
+	int				drawSelect = 0;
+#ifdef MISSIONPACK
+	if (cgs.orderPending && cg.serverTime > cgs.orderTime) {
+		CG_CheckOrderPending();
+	}
+#endif
+	// if we are taking a levelshot for the menu, don't draw anything
+	if ( cg.levelShot ) {
+		return;
 	}
 
 	if ( cg_draw2D.integer == 0 ) {
@@ -4189,386 +4605,7 @@ static void CG_Draw2D( void ) {
 		return;
 	}
 
-	if (cg.snap->ps.pm_type != PM_SPECTATOR)
-	{
-		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_RAGE))
-		{
-			if (!cgRageTime)
-			{
-				cgRageTime = cg.time;
-			}
-
-			rageTime = (float)(cg.time - cgRageTime);
-
-			rageTime /= 9000.0f;
-
-			if (rageTime < 0)
-			{
-				rageTime = 0;
-			}
-			if (rageTime > 0.15f)
-			{
-				rageTime = 0.15f;
-			}
-
-			hcolor[3] = rageTime;
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0;
-			hcolor[2] = 0;
-
-			if (!cg.renderingThirdPerson)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-
-			cgRageFadeTime = 0;
-			cgRageFadeVal = 0;
-		}
-		else if (cgRageTime)
-		{
-			if (!cgRageFadeTime)
-			{
-				cgRageFadeTime = cg.time;
-				cgRageFadeVal = 0.15f;
-			}
-
-			rageTime = cgRageFadeVal;
-
-			cgRageFadeVal -= (cg.time - cgRageFadeTime)*0.000005f;
-
-			if (rageTime < 0)
-			{
-				rageTime = 0;
-			}
-			if (rageTime > 0.15f)
-			{
-				rageTime = 0.15f;
-			}
-
-			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
-			{
-				float checkRageRecTime = rageTime;
-
-				if (checkRageRecTime < 0.15f)
-				{
-					checkRageRecTime = 0.15f;
-				}
-
-				hcolor[3] = checkRageRecTime;
-				hcolor[0] = rageTime*4;
-				if (hcolor[0] < 0.2f)
-				{
-					hcolor[0] = 0.2f;
-				}
-				hcolor[1] = 0.2f;
-				hcolor[2] = 0.2f;
-			}
-			else
-			{
-				hcolor[3] = rageTime;
-				hcolor[0] = 0.7f;
-				hcolor[1] = 0;
-				hcolor[2] = 0;
-			}
-
-			if (!cg.renderingThirdPerson && rageTime)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-			else
-			{
-				if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
-				{
-					hcolor[3] = 0.15f;
-					hcolor[0] = 0.2f;
-					hcolor[1] = 0.2f;
-					hcolor[2] = 0.2f;
-					CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-				}
-				cgRageTime = 0;
-			}
-		}
-		else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
-		{
-			if (!cgRageRecTime)
-			{
-				cgRageRecTime = cg.time;
-			}
-
-			rageRecTime = (float)(cg.time - cgRageRecTime);
-
-			rageRecTime /= 9000;
-
-			if (rageRecTime < 0.15f)//0)
-			{
-				rageRecTime = 0.15f;//0;
-			}
-			if (rageRecTime > 0.15f)
-			{
-				rageRecTime = 0.15f;
-			}
-
-			hcolor[3] = rageRecTime;
-			hcolor[0] = 0.2f;
-			hcolor[1] = 0.2f;
-			hcolor[2] = 0.2f;
-
-			if (!cg.renderingThirdPerson)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-
-			cgRageRecFadeTime = 0;
-			cgRageRecFadeVal = 0;
-		}
-		else if (cgRageRecTime)
-		{
-			if (!cgRageRecFadeTime)
-			{
-				cgRageRecFadeTime = cg.time;
-				cgRageRecFadeVal = 0.15f;
-			}
-
-			rageRecTime = cgRageRecFadeVal;
-
-			cgRageRecFadeVal -= (cg.time - cgRageRecFadeTime)*0.000005f;
-
-			if (rageRecTime < 0)
-			{
-				rageRecTime = 0;
-			}
-			if (rageRecTime > 0.15f)
-			{
-				rageRecTime = 0.15f;
-			}
-
-			hcolor[3] = rageRecTime;
-			hcolor[0] = 0.2f;
-			hcolor[1] = 0.2f;
-			hcolor[2] = 0.2f;
-
-			if (!cg.renderingThirdPerson && rageRecTime)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-			else
-			{
-				cgRageRecTime = 0;
-			}
-		}
-
-		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_ABSORB))
-		{
-			if (!cgAbsorbTime)
-			{
-				cgAbsorbTime = cg.time;
-			}
-
-			absorbTime = (float)(cg.time - cgAbsorbTime);
-
-			absorbTime /= 9000;
-
-			if (absorbTime < 0)
-			{
-				absorbTime = 0;
-			}
-			if (absorbTime > 0.15f)
-			{
-				absorbTime = 0.15f;
-			}
-
-			hcolor[3] = absorbTime * 0.5f;
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 0.7f;
-
-			if (!cg.renderingThirdPerson)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-
-			cgAbsorbFadeTime = 0;
-			cgAbsorbFadeVal = 0;
-		}
-		else if (cgAbsorbTime)
-		{
-			if (!cgAbsorbFadeTime)
-			{
-				cgAbsorbFadeTime = cg.time;
-				cgAbsorbFadeVal = 0.15f;
-			}
-
-			absorbTime = cgAbsorbFadeVal;
-
-			cgAbsorbFadeVal -= (cg.time - cgAbsorbFadeTime)*0.000005f;
-
-			if (absorbTime < 0)
-			{
-				absorbTime = 0;
-			}
-			if (absorbTime > 0.15f)
-			{
-				absorbTime = 0.15f;
-			}
-
-			hcolor[3] = absorbTime * 0.5f;
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 0.7f;
-
-			if (!cg.renderingThirdPerson && absorbTime)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-			else
-			{
-				cgAbsorbTime = 0;
-			}
-		}
-
-		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_PROTECT))
-		{
-			if (!cgProtectTime)
-			{
-				cgProtectTime = cg.time;
-			}
-
-			protectTime = (float)(cg.time - cgProtectTime);
-
-			protectTime /= 9000.0f;
-
-			if (protectTime < 0)
-			{
-				protectTime = 0;
-			}
-			if (protectTime > 0.15f)
-			{
-				protectTime = 0.15f;
-			}
-
-			hcolor[3] = protectTime * 0.5f;
-			hcolor[0] = 0;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0;
-
-			if (!cg.renderingThirdPerson)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-
-			cgProtectFadeTime = 0;
-			cgProtectFadeVal = 0;
-		}
-		else if (cgProtectTime)
-		{
-			if (!cgProtectFadeTime)
-			{
-				cgProtectFadeTime = cg.time;
-				cgProtectFadeVal = 0.15f;
-			}
-
-			protectTime = cgProtectFadeVal;
-
-			cgProtectFadeVal -= (cg.time - cgProtectFadeTime)*0.000005f;
-
-			if (protectTime < 0)
-			{
-				protectTime = 0;
-			}
-			if (protectTime > 0.15f)
-			{
-				protectTime = 0.15f;
-			}
-
-			hcolor[3] = protectTime * 0.5f;
-			hcolor[0] = 0;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0;
-
-			if (!cg.renderingThirdPerson && protectTime)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-			else
-			{
-				cgProtectTime = 0;
-			}
-		}
-
-		if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.serverTime - cg.snap->ps.rocketLockTime) > 0)
-		{
-			CG_DrawRocketLocking( cg.snap->ps.rocketLockIndex, cg.snap->ps.rocketLockTime );
-		}
-
-		if (BG_HasYsalamiri(cgs.gametype, &cg.snap->ps))
-		{
-			if (!cgYsalTime)
-			{
-				cgYsalTime = cg.time;
-			}
-
-			ysalTime = (float)(cg.time - cgYsalTime);
-
-			ysalTime /= 9000.0f;
-
-			if (ysalTime < 0)
-			{
-				ysalTime = 0;
-			}
-			if (ysalTime > 0.15f)
-			{
-				ysalTime = 0.15f;
-			}
-
-			hcolor[3] = ysalTime * 0.5f;
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0;
-
-			if (!cg.renderingThirdPerson)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-
-			cgYsalFadeTime = 0;
-			cgYsalFadeVal = 0;
-		}
-		else if (cgYsalTime)
-		{
-			if (!cgYsalFadeTime)
-			{
-				cgYsalFadeTime = cg.time;
-				cgYsalFadeVal = 0.15f;
-			}
-
-			ysalTime = cgYsalFadeVal;
-
-			cgYsalFadeVal -= (cg.time - cgYsalFadeTime)*0.000005f;
-
-			if (ysalTime < 0)
-			{
-				ysalTime = 0;
-			}
-			if (ysalTime > 0.15f)
-			{
-				ysalTime = 0.15f;
-			}
-
-			hcolor[3] = ysalTime * 0.5f;
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0;
-
-			if (!cg.renderingThirdPerson && ysalTime)
-			{
-				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-			}
-			else
-			{
-				cgYsalTime = 0;
-			}
-		}
-	}
+	CG_DrawForceEffects();
 
 	if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.serverTime - cg.snap->ps.rocketLockTime) > 0)
 	{
@@ -4670,29 +4707,7 @@ static void CG_Draw2D( void ) {
 
 	}
 
-	if (cg.snap->ps.fallingToDeath)
-	{
-		fallTime = (float)(cg.serverTime - cg.snap->ps.fallingToDeath);
-
-		fallTime /= (FALL_FADE_TIME/2);
-
-		if (fallTime < 0)
-		{
-			fallTime = 0;
-		}
-		if (fallTime > 1)
-		{
-			fallTime = 1;
-		}
-
-		hcolor[3] = fallTime;
-		hcolor[0] = 0;
-		hcolor[1] = 0;
-		hcolor[2] = 0;
-
-		CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
-	}
-
+	CG_DrawFallingToDeath();
 	CG_DrawVote();
 	CG_DrawTeamVote();
 
