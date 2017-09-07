@@ -2899,25 +2899,21 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		{//off screen, don't draw it
 			return;
 		}
-		x -= 320;
-		y -= 240;
 	}
 	else
 	{
-		x = cg_crosshairX.integer;
-		y = cg_crosshairY.integer;
+		x = 0.5f * (cgs.screenWidth - w) + cg_crosshairX.value;
+		y = 0.5f * (SCREEN_HEIGHT - h) + cg_crosshairY.value;
 	}
 
 	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
 
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5f * (640 - w),
-		y + cg.refdef.y + 0.5f * (480 - h),
-		w, h, 0, 0, 1, 1, hShader );
+	CG_DrawPic( x + cg.refdef.x - 0.5f * w, y + cg.refdef.y - 0.5f * w, w, h, hShader );
 }
 
 qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y)
 {
-	int	xcenter, ycenter;
+	float	xcenter, ycenter;
 	vec3_t	local, transformed;
 	vec3_t	vfwd;
 	vec3_t	vright;
@@ -2930,8 +2926,8 @@ qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, floa
 
 	//NOTE: did it this way because most draw functions expect virtual 640x480 coords
 	//	and adjust them for current resolution
-	xcenter = 640 / 2;//gives screen coords in virtual 640x480, to be adjusted when drawn
-	ycenter = 480 / 2;//gives screen coords in virtual 640x480, to be adjusted when drawn
+	xcenter = 0.5f * cgs.screenWidth;
+	ycenter = 0.5f * SCREEN_HEIGHT;
 
 	AngleVectors (cg.refdefViewAngles, vfwd, vright, vup);
 
@@ -3464,12 +3460,12 @@ static void CG_DrawCrosshairNames( void ) {
 	tcolor[2] = colorTable[baseColor][2];
 	tcolor[3] = color[3]*0.5f;
 
-	UI_DrawProportionalString(320, 170, name, UI_CENTER, tcolor);
+	UI_DrawProportionalString(0.5f * cgs.screenWidth, 170, name, UI_CENTER, tcolor);
 
 	// draw "press fire to follow" target hint
 	if (cg_drawSpectatorHints.integer && cg.snap->ps.pm_type == PM_SPECTATOR) {
 		color[3] *= 0.4f;
-		UI_DrawScaledProportionalString(320, 195, CG_GetStripEdString("SABERINGAME", "CROSSHAIR_FOLLOW_HINT"), UI_CENTER, color, 0.6f);
+		UI_DrawScaledProportionalString(0.5f * cgs.screenWidth, 195, CG_GetStripEdString("SABERINGAME", "CROSSHAIR_FOLLOW_HINT"), UI_CENTER, color, 0.6f);
 	}
 
 	trap_R_SetColor( NULL );
