@@ -212,9 +212,6 @@ static void CG_DrawZoomMask( void )
 	// Check for Binocular specific zooming since we'll want to render different bits in each case
 	if ( cg.predictedPlayerState.zoomMode == ZOOM_BINOCULARS )
 	{
-		int val, i;
-		float off;
-
 		// zoom level
 		level = (float)(80.0f - zoomFov) / 80.0f;
 
@@ -233,11 +230,11 @@ static void CG_DrawZoomMask( void )
 
 		// draw blue tinted distortion mask, trying to make it as small as is necessary to fill in the viewable area
 		trap_R_SetColor( colorTable[CT_WHITE] );
-		CG_DrawPic( 34, 48, 570, 362, cgs.media.binocularStatic );
+		trap_R_DrawStretchPic( 34, 48, 570, 362, 0, 0, 1, 1, cgs.media.binocularStatic );
 
 		// Black out the area behind the numbers
 		trap_R_SetColor( colorTable[CT_BLACK]);
-		CG_DrawPic( 212, 367, 200, 40, cgs.media.whiteShader );
+		trap_R_DrawStretchPic( 212, 367, 200, 40, 0, 0, 1, 1, cgs.media.whiteShader );
 
 		// Numbers should be kind of greenish
 		color1[0] = 0.2f;
@@ -248,29 +245,38 @@ static void CG_DrawZoomMask( void )
 
 		// Draw scrolling numbers, use intervals 10 units apart--sorry, this section of code is just kind of hacked
 		//	up with a bunch of magic numbers.....
-		val = ((int)((cg.refdefViewAngles[YAW] + 180) / 10)) * 10;
-		off = (cg.refdefViewAngles[YAW] + 180) - val;
-
-		for ( i = -10; i < 30; i += 10 )
 		{
-			val -= 10;
+			// shift to match angles in original cgame
+			const float	angle = AngleSubtract(cg.refdefViewAngles[YAW], -23.5f);
+			int			val = (int)((angle + 180) / 10) * 10;
+			const float	off = (angle + 180) - val;
+			const float	segmentW = 100; // 10 * max off
+			const float middle = cgs.screenWidth * 0.5f;
+			float		x;
+			int			i;
 
-			if ( val < 0 )
+			// make sure we don't loop forever in case of nan/inf off value
+			for ( i = -5; i <= 5; i++ )
 			{
-				val += 360;
-			}
+				val -= 10;
+				if ( val < 0 ) {
+					val += 360;
+				}
 
-			// we only want to draw the very far left one some of the time, if it's too far to the left it will
-			//	poke outside the mask.
-			if (( off > 3.0f && i == -10 ) || i > -10 )
-			{
-				// draw the value, but add 200 just to bump the range up...arbitrary, so change it if you like
-				CG_DrawNumField( 155 + i * 10 + off * 10, 374, 3, val + 200, 24, 14, NUM_FONT_CHUNKY, qtrue );
-				CG_DrawPic( 245 + (i-1) * 10 + off * 10, 376, 6, 6, cgs.media.whiteShader );
+				x = middle + i * segmentW + off * 10;
+				if ( x + segmentW < cgs.screenWidth * 0.3f ) {
+					continue;
+				}
+				if ( x > cgs.screenWidth * 0.7f ) {
+					break;
+				}
+
+				CG_DrawNumField( x, 374, 3, val + 200, 24, 14, NUM_FONT_CHUNKY, qtrue );
+				CG_DrawPic( x + 80, 376, 6, 6, cgs.media.whiteShader );
 			}
 		}
 
-		CG_DrawPic( 212, 367, 200, 28, cgs.media.binocularOverlay );
+		trap_R_DrawStretchPic( 212, 367, 200, 28, 0, 0, 1, 1, cgs.media.binocularOverlay );
 
 		color1[0] = sinf( cg.time * 0.01f ) * 0.5f + 0.5f;
 		color1[0] = color1[0] * color1[0];
@@ -280,7 +286,7 @@ static void CG_DrawZoomMask( void )
 
 		trap_R_SetColor( color1 );
 
-		CG_DrawPic( 82, 94, 16, 16, cgs.media.binocularCircle );
+		CG_DrawPic( 82 * cgs.screenXFactorInv, 94, 16, 16, cgs.media.binocularCircle );
 
 		// Flickery color
 		color1[0] = 0.7f + crandom() * 0.1f;
@@ -289,18 +295,18 @@ static void CG_DrawZoomMask( void )
 		color1[3] = 1.0f;
 		trap_R_SetColor( color1 );
 
-		CG_DrawPic( 0, 0, 640, 480, cgs.media.binocularMask );
+		trap_R_DrawStretchPic( 0, 0, 640, 480, 0, 0, 1, 1, cgs.media.binocularMask );
 
-		CG_DrawPic( 4, 282 - level, 16, 16, cgs.media.binocularArrow );
+		trap_R_DrawStretchPic( 4, 282 - level, 16, 16, 0, 0, 1, 1, cgs.media.binocularArrow );
 
 		// The top triangle bit randomly flips
 		if ( flip )
 		{
-			CG_DrawPic( 330, 60, -26, -30, cgs.media.binocularTri );
+			trap_R_DrawStretchPic( 330, 60, -26, -30, 0, 0, 1, 1, cgs.media.binocularTri );
 		}
 		else
 		{
-			CG_DrawPic( 307, 40, 26, 30, cgs.media.binocularTri );
+			trap_R_DrawStretchPic( 307, 40, 26, 30, 0, 0, 1, 1, cgs.media.binocularTri );
 		}
 
 		if ( random() > 0.98f && ( cg.time & 1024 ))
