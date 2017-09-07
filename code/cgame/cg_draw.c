@@ -2703,7 +2703,8 @@ CG_DrawCenterString
 */
 static void CG_DrawCenterString( void ) {
 	char	*start;
-	int		x, y, h, i;
+	float	x;
+	int		y, h, i;
 	float	*color;
 	const float scale = 1.0; //0.5
 
@@ -2727,7 +2728,7 @@ static void CG_DrawCenterString( void ) {
 	start = cg.centerPrint;
 
 	for (i = cg.centerPrintLines; i > 0; i--) {
-		x = 320 - CG_Text_Width(start, scale, FONT_MEDIUM) / 2;
+		x = 0.5f * (cgs.screenWidth - CG_Text_Width(start, scale, FONT_MEDIUM));
 		CG_Text_Paint(x, y, scale, color, start, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 		y += h;
 		start += strlen(start) + 1;
