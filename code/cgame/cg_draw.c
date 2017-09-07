@@ -4218,7 +4218,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 
 			cgRageFadeTime = 0;
@@ -4273,7 +4273,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson && rageTime)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 			else
 			{
@@ -4283,7 +4283,7 @@ static void CG_Draw2D( void ) {
 					hcolor[0] = 0.2f;
 					hcolor[1] = 0.2f;
 					hcolor[2] = 0.2f;
-					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+					CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;
 			}
@@ -4315,7 +4315,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 
 			cgRageRecFadeTime = 0;
@@ -4349,7 +4349,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson && rageRecTime)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 			else
 			{
@@ -4384,7 +4384,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 
 			cgAbsorbFadeTime = 0;
@@ -4418,7 +4418,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson && absorbTime)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 			else
 			{
@@ -4453,7 +4453,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 
 			cgProtectFadeTime = 0;
@@ -4487,7 +4487,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson && protectTime)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 			else
 			{
@@ -4527,7 +4527,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 
 			cgYsalFadeTime = 0;
@@ -4561,7 +4561,7 @@ static void CG_Draw2D( void ) {
 
 			if (!cg.renderingThirdPerson && ysalTime)
 			{
-				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 			}
 			else
 			{
@@ -4690,7 +4690,7 @@ static void CG_Draw2D( void ) {
 		hcolor[1] = 0;
 		hcolor[2] = 0;
 
-		CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+		CG_FillRect(0, 0, cgs.screenWidth, SCREEN_HEIGHT, hcolor);
 	}
 
 	CG_DrawVote();
