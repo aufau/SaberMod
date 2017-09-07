@@ -1720,7 +1720,7 @@ static float CG_DrawMiniScoreboard ( float y )
 		Q_strcat ( temp, MAX_QPATH, " 2nd: " );
 		Q_strcat ( temp, MAX_QPATH, cgs.scores2==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores2)) );
 
-		CG_Text_Paint( 630 - CG_Text_Width ( temp, 0.7f, FONT_SMALL ), y, 0.7f, colorWhite, temp, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM );
+		CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( temp, 0.7f, FONT_SMALL ), y, 0.7f, colorWhite, temp, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM );
 		y += 15;
 		*/
 		//rww - no longer doing this. Since the attacker now shows who is first, we print the score there.
@@ -1773,7 +1773,7 @@ static float CG_DrawEnemyInfo ( float y )
 			y += size;
 
 			/*
-			CG_Text_Paint( 630 - CG_Text_Width ( ci->name, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, ci->name, 0, 0, 0, FONT_MEDIUM );
+			CG_Text_Paint( cgs.screenWidth - 10 - CG_Text_Width ( ci->name, 0.7f, FONT_MEDIUM ), y, 0.7f, colorWhite, ci->name, 0, 0, 0, FONT_MEDIUM );
 			y += 15;
 			*/
 
@@ -3491,7 +3491,7 @@ static void CG_DrawSpectator(void)
 		int size = 64;
 
 		Com_sprintf(text, sizeof(text), "%s" S_COLOR_WHITE " %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name);
-		UI_DrawProportionalString( 320, 420, text, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 0.5f * cgs.screenWidth, 420, text, UI_CENTER, colorWhite );
 
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		if ( cgs.clientinfo[cgs.duelist1].modelIcon )
@@ -3500,30 +3500,30 @@ static void CG_DrawSpectator(void)
 		}
 		if ( cgs.clientinfo[cgs.duelist2].modelIcon )
 		{
-			CG_DrawPic( SCREEN_WIDTH-size-10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
+			CG_DrawPic( cgs.screenWidth-size-10, SCREEN_HEIGHT-(size*1.5f), size, size, cgs.clientinfo[cgs.duelist2].modelIcon );
 		}
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist1].score, cgs.fraglimit );
 		UI_DrawProportionalString( 42, SCREEN_HEIGHT - (size * 1.5f) + 64, text, UI_CENTER, colorWhite );
 
 		Com_sprintf(text, sizeof(text), "%i/%i", cgs.clientinfo[cgs.duelist2].score, cgs.fraglimit );
-		UI_DrawProportionalString( SCREEN_WIDTH - size + 22, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( cgs.screenWidth - size + 22, SCREEN_HEIGHT - (size * 1.5) + 64, text, UI_CENTER, colorWhite );
 	}
 	else
 	{
 		s = CG_GetStripEdString("INGAMETEXT", "SPECTATOR");			// "SPECTATOR"
-		UI_DrawProportionalString( 320, 420, s, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 0.5f * cgs.screenWidth, 420, s, UI_CENTER, colorWhite );
 	}
 
 	if ( cgs.gametype == GT_TOURNAMENT )
 	{
 		s = CG_GetStripEdString("INGAMETEXT", "WAITING_TO_PLAY");	// "waiting to play";
-		UI_DrawProportionalString( 320, 440, s, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 0.5f * cgs.screenWidth, 440, s, UI_CENTER, colorWhite );
 	}
 	else //if ( GT_Team(cgs.gametype) )
 	{
 		//s = "press ESC and use the JOIN menu to play";
 		s = CG_GetStripEdString("INGAMETEXT", "SPEC_CHOOSEJOIN");
-		UI_DrawProportionalString( 320, 440, s, UI_CENTER, colorWhite );
+		UI_DrawProportionalString( 0.5f * cgs.screenWidth, 440, s, UI_CENTER, colorWhite );
 	}
 }
 
@@ -3772,6 +3772,7 @@ CG_DrawFollow
 static qboolean CG_DrawFollow( void )
 {
 	const char	*s;
+	float		x;
 
 	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) )
 	{
@@ -3780,10 +3781,12 @@ static qboolean CG_DrawFollow( void )
 
 //	s = "following";
 	s = CG_GetStripEdString("INGAMETEXT", "FOLLOWING");
-	CG_Text_Paint ( 320 - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, 60, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
+	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 1.0f, FONT_MEDIUM));
+	CG_Text_Paint(x , 60, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
 	s = cgs.clientinfo[ cg.snap->ps.clientNum ].name;
-	CG_Text_Paint ( 320 - CG_Text_Width ( s, 2.0f, FONT_MEDIUM ) / 2, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM );
+	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 1.0f, FONT_MEDIUM));
+	CG_Text_Paint (x, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
 	if ( !cg_drawSpectatorHints.integer ) {
 		return qtrue;
@@ -3800,9 +3803,11 @@ static qboolean CG_DrawFollow( void )
 	}
 	*/
 
+	x = 0.5f * cgs.screenWidth;
+
 	if ( cg.snap->ps.duelInProgress )
 	{
-		int		width;
+		float	width;
 		float	scale;
 
 		s = va("%s" S_COLOR_WHITE " %s %s",
@@ -3811,26 +3816,26 @@ static qboolean CG_DrawFollow( void )
 			cgs.clientinfo[cg.snap->ps.duelIndex].name);
 		width = CG_Text_Width(s, 1.0f, FONT_MEDIUM);
 		// never overlap health and ammo frames
-		scale = 640 - 2 * 80 - 20;
+		scale = cgs.screenWidth - 2 * 80 - 20;
 		scale /= width;
 		if ( scale > 1.0f ) {
 			scale = 1.0f;
 		}
-		UI_DrawScaledProportionalString(320, 410, s, UI_CENTER, colorWhite, scale);
+		UI_DrawScaledProportionalString(x, 410, s, UI_CENTER, colorWhite, scale);
 
 		s = CG_GetStripEdString("SABERINGAME", "DUEL_FOLLOW_HINT");
-		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+		UI_DrawProportionalString(x, 440, s, UI_CENTER, colorWhite);
 	}
 	else if ( GT_Team(cgs.gametype) )
 	{
 		s = va(CG_GetStripEdString("SABERINGAME", "TFFA_FOLLOW_HINT"),
 			BG_TeamName(cg.snap->ps.persistant[PERS_TEAM], CASE_LOWER));
-		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+		UI_DrawProportionalString(x, 440, s, UI_CENTER, colorWhite);
 	}
 	else if ( cgs.gametype != GT_TOURNAMENT )
 	{
 		s = CG_GetStripEdString("SABERINGAME", "FFA_FOLLOW_HINT");
-		UI_DrawProportionalString(320, 440, s, UI_CENTER, colorWhite);
+		UI_DrawProportionalString(x, 440, s, UI_CENTER, colorWhite);
 	}
 
 	return qtrue;
@@ -3848,11 +3853,11 @@ static void CG_DrawTemporaryStats()
 
 	sprintf(s, "Force: %i", cg.snap->ps.fd.forcePower);
 
-	CG_DrawBigString(SCREEN_WIDTH-164, SCREEN_HEIGHT-128, s, 1.0f);
+	CG_DrawBigString(cgs.screenWidth-164, SCREEN_HEIGHT-128, s, 1.0f);
 
 	sprintf(s, "Ammo: %i", cg.snap->ps.ammo[weaponData[cg.snap->ps.weapon].ammoIndex]);
 
-	CG_DrawBigString(SCREEN_WIDTH-164, SCREEN_HEIGHT-112, s, 1.0f);
+	CG_DrawBigString(cgs.screenWidth-164, SCREEN_HEIGHT-112, s, 1.0f);
 
 	sprintf(s, "Health: %i", cg.snap->ps.stats[STAT_HEALTH]);
 
@@ -3893,7 +3898,7 @@ static void CG_DrawAmmoWarning( void ) {
 		s = "LOW AMMO WARNING";
 	}
 	w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-	CG_DrawBigString(320 - w / 2, 64, s, 1.0F);
+	CG_DrawBigString(0.5f * (cgs.screenWidth - w), 64, s, 1.0F);
 #endif
 }
 
@@ -3905,7 +3910,7 @@ CG_DrawWarmup
 =================
 */
 static void CG_DrawWarmup( void ) {
-	int			w;
+	float		w;
 	int			sec;
 	int			i;
 	float scale;
@@ -3921,7 +3926,7 @@ static void CG_DrawWarmup( void ) {
 //		s = "Waiting for players";
 		s = CG_GetStripEdString("INGAMETEXT", "WAITING_FOR_PLAYERS");
 		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
+		CG_DrawBigString(0.5f * (cgs.screenWidth - w), 24, s, 1.0F);
 		cg.warmupCount = 0;
 		return;
 	}
@@ -3943,7 +3948,7 @@ static void CG_DrawWarmup( void ) {
 		if ( ci1 && ci2 ) {
 			s = va( "%s" S_COLOR_WHITE " vs %s", ci1->name, ci2->name );
 			w = CG_Text_Width(s, 0.6f, FONT_MEDIUM);
-			CG_Text_Paint(320 - w / 2, 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
+			CG_Text_Paint(0.5f * (cgs.screenWidth - w), 60, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 		}
 	} else {
 		if ( GT_Round(cgs.gametype) && cgs.round > 0 ) {
@@ -3953,7 +3958,7 @@ static void CG_DrawWarmup( void ) {
 		}
 
 		w = CG_Text_Width(s, 1.5f, FONT_MEDIUM);
-		CG_Text_Paint(320 - w / 2, 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
+		CG_Text_Paint(0.5f * (cgs.screenWidth - w), 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}
 
 	sec = ( sec - cg.serverTime );
@@ -3998,7 +4003,7 @@ static void CG_DrawWarmup( void ) {
 	}
 
 	w = CG_Text_Width(s, scale, FONT_MEDIUM);
-	CG_Text_Paint(320 - w / 2, 125, scale, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
+	CG_Text_Paint(0.5f * (cgs.screenWidth - w), 125, scale, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 }
 
 //==================================================================================
