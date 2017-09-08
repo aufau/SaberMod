@@ -1110,7 +1110,12 @@ void CG_DrawWeaponSelect( void ) {
 		return;
 	}
 
-	sideMax = 3;	// Max number of icons on the side
+	smallIconSize = 40;
+	bigIconSize = 80;
+	pad = 12;
+
+	// Max number of icons on the side
+	sideMax = (cgs.screenWidth - 240 - bigIconSize) / (smallIconSize + pad) / 2;
 
 	// Calculate how many icons will appear to either side of the center one
 	holdCount = count - 1;	// -1 for the center icon
@@ -1135,10 +1140,6 @@ void CG_DrawWeaponSelect( void ) {
 	{
 		i = WP_MAX_NORMAL;
 	}
-
-	smallIconSize = 40;
-	bigIconSize = 80;
-	pad = 12;
 
 	x = 0.5f * cgs.screenWidth;
 	y = 410;
