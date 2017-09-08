@@ -3091,7 +3091,7 @@ static void CG_DrawActivePowers(void)
 		{
 			CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons[forcePowerSorted[i]]);
 			startx += (icon_size+2); //+2 for spacing
-			if ((startx+icon_size) >= SCREEN_WIDTH-80)
+			if ((startx+icon_size) >= cgs.screenWidth-80)
 			{
 				startx = icon_size*2+16;
 				starty += (icon_size+2);
