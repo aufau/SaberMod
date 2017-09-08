@@ -124,7 +124,7 @@ static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const c
 }
 
 // also initializes columnData for CG_DrawScoreboardField
-static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
+static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 {
 	const char	*label = NULL;
 
@@ -182,7 +182,7 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, int x, int y)
 	CG_Text_Paint ( x, y, 1.0f, colorWhite, label, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 }
 
-static void CG_DrawScoreboardField(sbColumn_t field, int x, int y, float scale, score_t *score)
+static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float scale, score_t *score)
 {
 	clientInfo_t	*ci = &cgs.clientinfo[score->client];
 	float			s = scale * columnData[field].scale;

@@ -574,7 +574,7 @@ void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean
 CG_DrawHUDLeftFrame1
 ================
 */
-void CG_DrawHUDLeftFrame1(int x,int y)
+static void CG_DrawHUDLeftFrame1(float x, float y)
 {
 	// Inner gray wire frame
 	trap_R_SetColor( hudTintColor );
@@ -586,7 +586,7 @@ void CG_DrawHUDLeftFrame1(int x,int y)
 CG_DrawHUDLeftFrame2
 ================
 */
-void CG_DrawHUDLeftFrame2(int x,int y)
+static void CG_DrawHUDLeftFrame2(float x, float y)
 {
 	// Inner gray wire frame
 	trap_R_SetColor( hudTintColor );
@@ -599,7 +599,7 @@ void CG_DrawHUDLeftFrame2(int x,int y)
 DrawHealthArmor
 ================
 */
-void DrawHealthArmor(int x,int y)
+static void DrawHealthArmor(float x, float y)
 {
 	vec4_t calcColor;
 	float	armorPercent,hold,healthPercent;
@@ -756,7 +756,7 @@ void DrawHealthArmor(int x,int y)
 CG_DrawHealth
 ================
 */
-void CG_DrawHealth(int x,int y)
+static void CG_DrawHealth(float x, float y)
 {
 	vec4_t calcColor;
 	float	healthPercent;
@@ -798,7 +798,7 @@ void CG_DrawHealth(int x,int y)
 CG_DrawArmor
 ================
 */
-void CG_DrawArmor(int x,int y)
+static void CG_DrawArmor(float x, float y)
 {
 	vec4_t			calcColor;
 	float			armorPercent,hold;
@@ -1104,10 +1104,10 @@ void CG_DrawHUD(centity_t	*cent)
 
 	if (cg_hudFiles.integer)
 	{
-		int x = 0;
-		int y = SCREEN_HEIGHT-80;
+		float x = 0;
+		float y = SCREEN_HEIGHT-80;
 		char ammoString[64];
-		int weapX = x;
+		float weapX = x;
 
 		UI_DrawProportionalString( x+16, y+40, va( "%i", cg.snap->ps.stats[STAT_HEALTH] ),
 			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_HUD_RED] );
@@ -1655,7 +1655,7 @@ CG_DrawTeamBackground
 
 ================
 */
-void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, team_t team )
+void CG_DrawTeamBackground( float x, float y, float w, float h, float alpha, team_t team )
 {
 	vec4_t		hcolor;
 
@@ -3068,8 +3068,8 @@ static void CG_DrawActivePowers(void)
 {
 	int icon_size = 40;
 	int i = 0;
-	int startx = icon_size*2+16;
-	int starty = SCREEN_HEIGHT - icon_size*2;
+	float startx = icon_size*2+16;
+	float starty = SCREEN_HEIGHT - icon_size*2;
 
 	int endx = icon_size;
 	int endy = icon_size;
@@ -3552,7 +3552,7 @@ CG_DrawVote
 static void CG_DrawVote(void) {
 	const char	*s;
 	int		sec;
-	int		offset;
+	float	offset;
 	char sYes[20];
 	char sNo[20];
 
@@ -4044,8 +4044,8 @@ void CG_DrawFlagStatus()
 	int myFlagTakenShader = 0;
 	int theirFlagShader = 0;
 	team_t team;
-	int startDrawPos = 2;
-	int ico_size = 32;
+	float startDrawPos = 2;
+	float ico_size = 32;
 
 	if (!cg.snap)
 	{
