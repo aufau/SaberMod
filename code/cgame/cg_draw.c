@@ -93,7 +93,7 @@ qhandle_t MenuFontToHandle(font_t iMenuFont)
 #endif
 }
 
-int CG_Text_Width(const char *text, float scale, font_t iMenuFont)
+float CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
@@ -105,7 +105,7 @@ int CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 	}
 }
 
-int CG_Text_Height(const char *text, float scale, font_t iMenuFont)
+float CG_Text_Height(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
@@ -2055,7 +2055,8 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 	char st[16];
 	clientInfo_t *ci;
 	gitem_t	*item;
-	int ret_y, count;
+	float ret_y;
+	int count;
 
 	if ( !cg_drawTeamOverlay.integer ) {
 		return y;
@@ -2501,7 +2502,8 @@ CG_DrawLagometer
 ==============
 */
 static void CG_DrawLagometer( void ) {
-	int		a, x, y, i;
+	int		a, i;
+	float	x, y;
 	float	v;
 	float	ax, ay, aw, ah, mid, range;
 	int		color;
@@ -2706,8 +2708,8 @@ CG_DrawCenterString
 */
 static void CG_DrawCenterString( void ) {
 	char	*start;
-	float	x;
-	int		y, h, i;
+	float	x, y, h;
+	int		i;
 	float	*color;
 	const float scale = 1.0; //0.5
 

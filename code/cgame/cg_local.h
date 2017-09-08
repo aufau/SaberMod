@@ -1733,8 +1733,8 @@ void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean
 void CG_DrawTeamBackground( float x, float y, float w, float h, float alpha, team_t team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font);
 void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont);
-int CG_Text_Width(const char *text, float scale, font_t iMenuFont);
-int CG_Text_Height(const char *text, float scale, font_t iMenuFont);
+float CG_Text_Width(const char *text, float scale, font_t iMenuFont);
+float CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
 

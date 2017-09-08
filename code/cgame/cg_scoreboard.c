@@ -92,8 +92,8 @@ typedef enum {
 
 typedef struct {
 	float		scale;
-	int			drop;
-	int			width[2];
+	float		drop;
+	float		width[2];
 } sbColumnData_t;
 
 static sbColumnData_t columnData[SBC_MAX];
@@ -109,7 +109,7 @@ static const sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, 
 static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const char *maxValue, float scale)
 {
 	sbColumnData_t	*column = columnData + field;
-	int				labelW, fieldW;
+	float			labelW, fieldW;
 
 	column->scale = scale;
 	column->drop = CG_Text_Height(maxValue, 1.0f, FONT_SMALL)
@@ -458,8 +458,8 @@ Draw the normal in-game scoreboard
 qboolean CG_DrawOldScoreboard( void ) {
 	const sbColumn_t	*columns;
 	qboolean			largeFormat;
-	float	x;
-	int		y, i, n1, n2;
+	float	x, y;
+	int		i, n1, n2;
 	float	fade;
 	const float	*fadeColor;
 	char	*s;
