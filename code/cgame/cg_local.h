@@ -1949,14 +1949,14 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 // MVAPI
 
 void		trap_MVAPI_R_Font_DrawString(
-	int ox, int oy,
+	float fox, float foy,
 	const char *text,
 	const float *rgba,
 	int setIndex,
 	int iCharLimit,
 	float hScale, float vScale);
-int			trap_MVAPI_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale);
-int			trap_MVAPI_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale);
+float		trap_MVAPI_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale);
+float		trap_MVAPI_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale);
 qboolean	trap_MVAPI_ControlFixes(int fixes);
 void		trap_MVAPI_R_DrawTransformPic(
 	float x, float y,
