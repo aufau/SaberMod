@@ -34,7 +34,7 @@ extern displayContextDef_t cgDC;
 menuDef_t *menuScoreboard = NULL;
 #endif
 
-qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y);
+qboolean CG_WorldCoordToScreenCoord(const vec3_t worldCoord, float *x, float *y);
 qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle );
 
 static const vec4_t	bluehudtint = {0.5, 0.5, 1.0, 1.0};
@@ -2895,7 +2895,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 	if ( worldPoint && VectorLength( worldPoint ) )
 	{
-		if ( !CG_WorldCoordToScreenCoordFloat( worldPoint, &x, &y ) )
+		if ( !CG_WorldCoordToScreenCoord( worldPoint, &x, &y ) )
 		{//off screen, don't draw it
 			return;
 		}
@@ -2911,7 +2911,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 	CG_DrawPic( x + cg.refdef.x - 0.5f * w, y + cg.refdef.y - 0.5f * w, w, h, hShader );
 }
 
-qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y)
+qboolean CG_WorldCoordToScreenCoord(const vec3_t worldCoord, float *x, float *y)
 {
 	float	xcenter, ycenter;
 	vec3_t	local, transformed;
@@ -2952,20 +2952,6 @@ qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, floa
 	return qtrue;
 }
 
-qboolean CG_WorldCoordToScreenCoord( vec3_t worldCoord, int *x, int *y )
-{
-	float	xF, yF;
-
-	if (CG_WorldCoordToScreenCoordFloat( worldCoord, &xF, &yF )) {
-		*x = (int)xF;
-		*y = (int)yF;
-
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
 /*
 ====================
 CG_SaberClashFlare
@@ -2975,7 +2961,7 @@ void CG_SaberClashFlare( void )
 {
 	int				t, maxTime = 150;
 	vec3_t dif;
-	int x,y;
+	float x,y;
 	float v, len;
 	trace_t tr;
 
@@ -3126,7 +3112,7 @@ static void CG_DrawActivePowers(void)
 static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 //--------------------------------------------------------------
 {
-	int		cx, cy;
+	float	cx, cy;
 	vec3_t	org;
 	static	int lastvalidlockdif = 0;
 	static	int oldDif = 0;
