@@ -451,6 +451,7 @@ CG_Draw3DModel
 void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
+	float			xScale, yScale;
 
 	if ( !cg_draw3dIcons.integer || !cg_drawIcons.integer ) {
 		return;
@@ -472,10 +473,12 @@ void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandl
 	refdef.fov_x = 30;
 	refdef.fov_y = 30;
 
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
+	xScale = (float) cgs.glconfig.vidWidth / cgs.screenWidth;
+	yScale = (float) cgs.glconfig.vidHeight / SCREEN_HEIGHT;
+	refdef.x = x * xScale;
+	refdef.y = y * yScale;
+	refdef.width = w * xScale;
+	refdef.height = h * yScale;
 
 	refdef.time = cg.time;
 
