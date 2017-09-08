@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "cg_local.h"
 #include "../ui/ui_shared.h"
 
-#define	SCOREBOARD_X		(0)
+#define	SCOREBOARD_X		(0.5f * cgs.screenWidth - 320.0f)
 
 #define SB_HEADER			86
 #define SB_TOP				(SB_HEADER+32)
@@ -52,8 +52,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SB_BOTICON_X		(SCOREBOARD_X+32)
 #define SB_HEAD_X			(SCOREBOARD_X+64)
 
-#define SB_SCORELINE_X		100
-#define SB_SCORELINE_WIDTH	(640 - SB_SCORELINE_X * 2)
+#define SB_SCORELINE_X		(SCOREBOARD_X+100)
+#define SB_SCORELINE_WIDTH	(cgs.screenWidth - SB_SCORELINE_X * 2)
 
 #define SB_RATING_WIDTH	    0 // (6 * BIGCHAR_WIDTH)
 
@@ -252,10 +252,10 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 {
 	//vec3_t	headAngles;
 	clientInfo_t	*ci;
-	int				iconx;
-	int				x;
+	float			iconx;
+	float			x;
 	int				i;
-	int				padding, columnsWidth;
+	float			padding, columnsWidth;
 	float			scale;
 
 	if ( largeFormat )
@@ -286,17 +286,17 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 		}
 	} else if ( ci->powerups & ( 1 << PW_REDFLAG ) ) {
 		if( largeFormat ) {
-			CG_DrawFlagModel( iconx*cgs.screenXScale, y*cgs.screenYScale, 32*cgs.screenXScale, 32*cgs.screenYScale, TEAM_RED, qfalse );
+			CG_DrawFlagModel( iconx, y, 32, 32, TEAM_RED, qfalse );
 		}
 		else {
-			CG_DrawFlagModel( iconx*cgs.screenXScale, y*cgs.screenYScale, 32*cgs.screenXScale, 32*cgs.screenYScale, TEAM_RED, qfalse );
+			CG_DrawFlagModel( iconx, y, 32, 32, TEAM_RED, qfalse );
 		}
 	} else if ( ci->powerups & ( 1 << PW_BLUEFLAG ) ) {
 		if( largeFormat ) {
-			CG_DrawFlagModel( iconx*cgs.screenXScale, y*cgs.screenYScale, 32*cgs.screenXScale, 32*cgs.screenYScale, TEAM_BLUE, qfalse );
+			CG_DrawFlagModel( iconx, y, 32, 32, TEAM_BLUE, qfalse );
 		}
 		else {
-			CG_DrawFlagModel( iconx*cgs.screenXScale, y*cgs.screenYScale, 32*cgs.screenXScale, 32*cgs.screenYScale, TEAM_BLUE, qfalse );
+			CG_DrawFlagModel( iconx, y, 32, 32, TEAM_BLUE, qfalse );
 		}
 	} else {
 		// draw the wins / losses
@@ -342,7 +342,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 		}
 
 		hcolor[3] = fade * 0.7f;
-		CG_FillRect( SB_SCORELINE_X - 5, y + 2, 640 - SB_SCORELINE_X * 2 + 10, largeFormat?SB_NORMAL_HEIGHT:SB_INTER_HEIGHT, hcolor );
+		CG_FillRect( SB_SCORELINE_X - 5, y + 2, SB_SCORELINE_WIDTH + 10, largeFormat?SB_NORMAL_HEIGHT:SB_INTER_HEIGHT, hcolor );
 	}
 
 	// columns
@@ -350,7 +350,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	x = SB_SCORELINE_X;
 	CG_Text_Paint (x, y, 0.9f * scale, colorWhite, ci->name,0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 
-	x = 640 - SB_SCORELINE_X;
+	x = cgs.screenWidth - SB_SCORELINE_X;
 
 	columnsWidth = 0;
 	for (i = 0; columns[i] != SBC_MAX; i++) {
@@ -458,7 +458,8 @@ Draw the normal in-game scoreboard
 qboolean CG_DrawOldScoreboard( void ) {
 	const sbColumn_t	*columns;
 	qboolean			largeFormat;
-	int		x, y, i, n1, n2;
+	float	x;
+	int		y, i, n1, n2;
 	float	fade;
 	const float	*fadeColor;
 	char	*s;
@@ -501,37 +502,37 @@ qboolean CG_DrawOldScoreboard( void ) {
 	{
 		s = va("%s" S_COLOR_WHITE " %s", cgs.clientinfo[cgs.duelWinner].name, CG_GetStripEdString("INGAMETEXT", "DUEL_WINS") );
 		/*w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		x = ( SCREEN_WIDTH - w ) / 2;
+		x = 0.5f * ( cgs.screenWidth - w );
 		y = 40;
 		CG_DrawBigString( x, y, s, fade );
 		*/
-		x = ( SCREEN_WIDTH ) / 2;
+		x = 0.5f * ( cgs.screenWidth - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) );
 		y = 40;
-		CG_Text_Paint ( x - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 	else if (cgs.gametype == GT_TOURNAMENT && cgs.duelist1 != -1 && cgs.duelist2 != -1 &&
 		cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 	{
 		s = va("%s" S_COLOR_WHITE " %s %s", cgs.clientinfo[cgs.duelist1].name, CG_GetStripEdString("INGAMETEXT", "SPECHUD_VERSUS"), cgs.clientinfo[cgs.duelist2].name );
 		/*w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		x = ( SCREEN_WIDTH - w ) / 2;
+		x = 0.5f * ( cgs.screenWidth - w );
 		y = 40;
 		CG_DrawBigString( x, y, s, fade );
 		*/
-		x = ( SCREEN_WIDTH ) / 2;
+		x = 0.5f * ( cgs.screenWidth - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) );
 		y = 40;
-		CG_Text_Paint ( x - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 	else if ( cg.killerName[0] ) {
 		s = va("%s %s", CG_GetStripEdString("INGAMETEXT", "KILLEDBY"), cg.killerName );
 		/*w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		x = ( SCREEN_WIDTH - w ) / 2;
+		x = 0.5f * ( cgs.screenWidth - w );
 		y = 40;
 		CG_DrawBigString( x, y, s, fade );
 		*/
-		x = ( SCREEN_WIDTH ) / 2;
+		x = 0.5f * ( cgs.screenWidth - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) );
 		y = 40;
-		CG_Text_Paint ( x - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 
 	// current rank
@@ -554,7 +555,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 				sWith,
 				cg.snap->ps.persistant[PERS_SCORE] );
 			//w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-			x = ( SCREEN_WIDTH ) / 2;
+			x = 0.5f * cgs.screenWidth;
 			y = 60;
 			//CG_DrawBigString( x, y, s, fade );
 			UI_DrawProportionalString(x, y, s, UI_CENTER|UI_DROPSHADOW, colorTable[CT_WHITE]);
@@ -568,10 +569,10 @@ qboolean CG_DrawOldScoreboard( void ) {
 			s = va("Blue leads %i to %i",cg.teamScores[1], cg.teamScores[0] );
 		}
 
-		x = ( SCREEN_WIDTH ) / 2;
+		x = 0.5f * ( cgs.screenWidth - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) );
 		y = 60;
 
-		CG_Text_Paint ( x - CG_Text_Width ( s, 1.0f, FONT_MEDIUM ) / 2, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( x, y, 1.0f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 
 	// scoreboard
@@ -627,7 +628,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	CG_Text_Paint ( x, y, 1.0f, colorWhite, CG_GetStripEdString("SABERINGAME", "NAME"),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 
-	x = 640 - SB_SCORELINE_X;
+	x = cgs.screenWidth - SB_SCORELINE_X;
 
 	columnsWidth = 0;
 	for (i = 0; columns[i] != SBC_MAX; i++) {
@@ -689,12 +690,12 @@ qboolean CG_DrawOldScoreboard( void ) {
 			team2MaxCl = (maxClients-team1MaxCl); //team2 can display however many is left over after team1's display
 
 			n1 = CG_TeamScoreboard( y, columns, TEAM_RED, fade, team1MaxCl, lineHeight, qtrue );
-			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
+			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, SB_SCORELINE_WIDTH + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
 			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 			n2 = CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qtrue );
-			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
+			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, SB_SCORELINE_WIDTH + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
 			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 
@@ -718,12 +719,12 @@ qboolean CG_DrawOldScoreboard( void ) {
 			team2MaxCl = (maxClients-team1MaxCl); //team2 can display however many is left over after team1's display
 
 			n1 = CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team1MaxCl, lineHeight, qtrue );
-			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
+			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, SB_SCORELINE_WIDTH + 10, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
 			CG_TeamScoreboard( y, columns, TEAM_BLUE, fade, team1MaxCl, lineHeight, qfalse );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 			n2 = CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qtrue );
-			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, 640 - SB_SCORELINE_X * 2 + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
+			CG_DrawTeamBackground( SB_SCORELINE_X - 5, y - topBorderSize, SB_SCORELINE_WIDTH + 10, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
 			CG_TeamScoreboard( y, columns, TEAM_RED, fade, team2MaxCl, lineHeight, qfalse );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 

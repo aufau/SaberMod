@@ -472,10 +472,10 @@ void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandl
 	refdef.fov_x = 30;
 	refdef.fov_y = 30;
 
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
+	refdef.x = x * cgs.screenXScale * cgs.screenXFactor;
+	refdef.y = y * cgs.screenYScale;
+	refdef.width = w * cgs.screenXScale;
+	refdef.height = h * cgs.screenYScale;
 
 	refdef.time = cg.time;
 
