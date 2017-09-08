@@ -155,7 +155,7 @@ void CG_DrawInformation( void ) {
 	const char	*info;
 	const char	*sysInfo;
 	const float	x = 0.5f * cgs.screenWidth;
-	int			y;
+	float		y;
 	int			value, valueNOFP;
 	qhandle_t	levelshot;
 	char		buf[1024];

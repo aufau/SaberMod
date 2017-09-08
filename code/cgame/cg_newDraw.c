@@ -364,7 +364,7 @@ static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
 	//float fMax = *maxX;
-	int iPixelLen = CG_Text_Width(text, scale, iFontIndex);
+	float iPixelLen = CG_Text_Width(text, scale, iFontIndex);
 	if (x + iPixelLen > *maxX)
 	{
 		// whole text won't fit, so we need to print just the amount that does...
@@ -417,7 +417,8 @@ static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4
 void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale, vec4_t color, qhandle_t shader) {
 	int xx;
 	float y;
-	int i, j, len, count;
+	float len;
+	int i, j, count;
 	const char *p;
 	vec4_t		hcolor;
 	float pwidth, lwidth, maxx, leftOver;
