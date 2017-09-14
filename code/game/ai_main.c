@@ -2290,44 +2290,73 @@ jmPass:
 
 gentity_t *GetNearestBadThing(bot_state_t *bs)
 {
-	int i = 0;
+	int i;
 	float glen;
 	vec3_t hold;
-	int bestindex = 0;
-	float bestdist = 800; //if not within a radius of 800, it's no threat anyway
-	int foundindex = 0;
+	int bestindex = ENTITYNUM_NONE;
+	float bestdist = 800 * 800; //if not within a radius of 800, it's no threat anyway
 	float factor = 0;
 	gentity_t *ent;
 	trace_t tr;
+	int type;
+	int touch[MAX_GENTITIES];
+	int num;
+	vec3_t mins, maxs;
+	static const vec3_t box = { 800, 800, 800 };
 
-	while (i < MAX_GENTITIES)
+	VectorCopy(bs->origin, mins);
+	VectorSubtract(mins, box, mins);
+	VectorCopy(bs->origin, maxs);
+	VectorAdd(maxs, box, maxs);
+
+	num = trap_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES );
+
+	for (i = 0; i < num; i++)
 	{
-		ent = &g_entities[i];
+		ent = &g_entities[touch[i]];
 
-		if ( (ent &&
-			!ent->client &&
-			ent->inuse &&
-			ent->damage &&
-			/*(ent->s.weapon == WP_THERMAL || ent->s.weapon == WP_FLECHETTE)*/
-			ent->s.weapon &&
-			ent->splashDamage) ||
-			(ent &&
-			ent->bolt_Head == 1000 &&
-			ent->inuse &&
+		if ( !ent->inuse || ent->client )
+		{
+			continue;
+		}
+
+		if (ent->damage && ent->s.weapon)
+		{
+			type = 1;	// projectile
+
+			if (ent->s.weapon == WP_ROCKET_LAUNCHER &&
+				(ent->r.ownerNum == bs->client ||
+				(ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS &&
+				g_entities[ent->r.ownerNum].client && OnSameTeam(&g_entities[bs->client], &g_entities[ent->r.ownerNum]))) )
+			{ //don't be afraid of your own rockets or your teammates' rockets
+				continue;
+			}
+		}
+		else if (ent->bolt_Head == 1000 &&
 			ent->health > 0 &&
 			ent->boltpoint3 != bs->client &&
-			g_entities[ent->boltpoint3].client && !OnSameTeam(&g_entities[bs->client], &g_entities[ent->boltpoint3])) )
+			g_entities[ent->boltpoint3].client &&
+			!OnSameTeam(&g_entities[bs->client], &g_entities[ent->boltpoint3]))
+		{
+			type = 2;	// sentry
+		}
+		else
+		{
+			continue;
+		}
+
+		if ((type == 1 && ent->splashDamage) || type == 2)
 		{ //try to escape from anything with a non-0 s.weapon and non-0 damage. This hopefully only means dangerous projectiles.
 		  //Or a sentry gun if bolt_Head == 1000. This is a terrible hack, yes.
 			VectorSubtract(bs->origin, ent->r.currentOrigin, hold);
-			glen = VectorLength(hold);
+			glen = VectorLengthSquared(hold);
 
 			if (ent->s.weapon != WP_THERMAL && ent->s.weapon != WP_FLECHETTE &&
 				ent->s.weapon != WP_DET_PACK && ent->s.weapon != WP_TRIP_MINE)
 			{
-				factor = 0.5;
+				factor = 0.5f;
 
-				if (ent->s.weapon && glen <= 256 && bs->settings.skill > 2)
+				if (ent->s.weapon && glen <= 256 * 256 && bs->settings.skill > 2)
 				{ //it's a projectile so push it away
 					bs->doForcePush = level.time + 700;
 					//G_Printf("PUSH PROJECTILE\n");
@@ -2338,43 +2367,36 @@ gentity_t *GetNearestBadThing(bot_state_t *bs)
 				factor = 1;
 			}
 
-			if (ent->s.weapon == WP_ROCKET_LAUNCHER &&
-				(ent->r.ownerNum == bs->client ||
-				(ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS &&
-				g_entities[ent->r.ownerNum].client && OnSameTeam(&g_entities[bs->client], &g_entities[ent->r.ownerNum]))) )
-			{ //don't be afraid of your own rockets or your teammates' rockets
-				factor = 0;
-			}
-
-			if (glen < bestdist*factor && trap_InPVS(bs->origin, ent->s.pos.trBase))
+			if (glen < bestdist * factor * factor && trap_InPVS(bs->origin, ent->s.pos.trBase))
 			{
 				trap_Trace(&tr, bs->origin, NULL, NULL, ent->s.pos.trBase, bs->client, MASK_SOLID);
 
 				if (tr.fraction == 1 || tr.entityNum == ent->s.number)
 				{
-					bestindex = i;
+					bestindex = touch[i];
 					bestdist = glen;
-					foundindex = 1;
 				}
 			}
 		}
 
-		if (ent && !ent->client && ent->inuse && ent->damage && ent->s.weapon && ent->r.ownerNum < MAX_CLIENTS && ent->r.ownerNum >= 0)
-		{ //if we're in danger of a projectile belonging to someone and don't have an enemy, set the enemy to them
-			gentity_t *projOwner = &g_entities[ent->r.ownerNum];
-
-			if (projOwner && projOwner->inuse && projOwner->client)
+		//if we're in danger of a projectile belonging to someone and
+		//don't have an enemy, set the enemy to them
+		if (!bs->currentEnemy)
+		{
+			if (type == 1 && ent->r.ownerNum < MAX_CLIENTS && ent->r.ownerNum >= 0)
 			{
-				if (!bs->currentEnemy)
+				gentity_t *projOwner = &g_entities[ent->r.ownerNum];
+
+				if (projOwner->inuse && projOwner->client)
 				{
 					if (PassStandardEnemyChecks(bs, projOwner))
 					{
 						if (PassLovedOneCheck(bs, projOwner))
 						{
 							VectorSubtract(bs->origin, ent->r.currentOrigin, hold);
-							glen = VectorLength(hold);
+							glen = VectorLengthSquared(hold);
 
-							if (glen < 512)
+							if (glen < 512 * 512)
 							{
 								bs->currentEnemy = projOwner;
 								bs->enemySeenTime = level.time + ENEMY_FORGET_MS;
@@ -2384,11 +2406,9 @@ gentity_t *GetNearestBadThing(bot_state_t *bs)
 				}
 			}
 		}
-
-		i++;
 	}
 
-	if (foundindex)
+	if (bestindex != ENTITYNUM_NONE)
 	{
 		bs->dontGoBack = level.time + 1500;
 		return &g_entities[bestindex];
