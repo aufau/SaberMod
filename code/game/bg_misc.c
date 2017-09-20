@@ -1601,16 +1601,14 @@ void BG_CycleForce(playerState_t *ps, int direction)
 
 	assert(direction == 1 || direction == -1);
 
-	if (!FP_Selectable(selected) ||
-		!(ps->fd.forcePowersKnown & (1 << selected)))
-	{ //apparently we have no valid force powers
-		return;
+	// Don't go into endless loop
+	if (!FP_Selectable(selected)) {
+		Com_Error( ERR_DROP, "BG_CycleForce: force not selectable" );
 	}
 
 	x = BG_ProperForceIndex(selected);
-	if (x < 0)
-	{
-		return;
+	if (x < 0) {
+		x = 0;
 	}
 
 	presel = x;
@@ -1630,14 +1628,10 @@ void BG_CycleForce(playerState_t *ps, int direction)
 
 		selected = forcePowerSorted[x]; //the "sorted" value of this power
 
-		if (ps->fd.forcePowersKnown & (1 << selected) &&
-			ps->fd.forcePowerSelected != selected)
-		{ //we have the force power
-			if (FP_Selectable(selected))
-			{ //it's selectable
-				foundnext = selected;
-				break;
-			}
+		if (ps->fd.forcePowersKnown & (1 << selected) && FP_Selectable(selected))
+		{
+			foundnext = selected;
+			break;
 		}
 
 	} while (x != presel);
