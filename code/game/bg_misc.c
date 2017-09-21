@@ -2473,63 +2473,56 @@ PLAYER ANGLES
 #define MAX_POOL_SIZE	2048000 //1024000
 
 static char		bg_pool[MAX_POOL_SIZE];
-static size_t	bg_poolSize = 0;
-static size_t	bg_poolTail = MAX_POOL_SIZE;
+static char		*bg_poolTail = bg_pool;
 
 void *BG_Alloc ( size_t size )
 {
-	// for 64bit pointers
-	bg_poolSize = PAD(bg_poolSize, sizeof(void *));
+	char	*p = (char *)PADP(bg_poolTail, sizeof(void *));
 
-	if (bg_poolSize + size > bg_poolTail)
-	{
-		Com_Error( ERR_DROP, "BG_Alloc: buffer exceeded tail (%d > %d)", bg_poolSize + size, bg_poolTail);
-		return 0;
+	bg_poolTail = p + size;
+
+	if (bg_poolTail > bg_pool + MAX_POOL_SIZE) {
+		Com_Error(ERR_DROP, "BG_Alloc: out of memory");
 	}
 
-	bg_poolSize += size;
-
-	return &bg_pool[bg_poolSize-size];
+	return p;
 }
 
 void *BG_AllocUnaligned ( size_t size )
 {
-	if (bg_poolSize + size > bg_poolTail)
+	char	*p = bg_poolTail;
+
+	bg_poolTail = p + size;
+
+	if (bg_poolTail > bg_pool + MAX_POOL_SIZE)
 	{
-		Com_Error( ERR_DROP, "BG_AllocUnaligned: buffer exceeded tail (%d > %d)", bg_poolSize + size, bg_poolTail);
+		Com_Error(ERR_DROP, "BG_AllocUnaligned: out of memory");
 		return 0;
 	}
 
-	bg_poolSize += size;
-
-	return &bg_pool[bg_poolSize-size];
+	return p;
 }
 
 void *BG_TempAlloc( size_t size )
 {
-	size = PAD(size, sizeof(void *));
+	char	*p = (char *)PADP(bg_poolTail, sizeof(void *));
 
-	if (bg_poolTail - size < bg_poolSize)
-	{
-		Com_Error( ERR_DROP, "BG_TempAlloc: buffer exceeded head (%d > %d)", bg_poolTail - size, bg_poolSize);
-		return 0;
+	bg_poolTail = p + size;
+
+	if (bg_poolTail > bg_pool + MAX_POOL_SIZE) {
+		Com_Error(ERR_DROP, "BG_TempAlloc: out of memory");
 	}
 
-	bg_poolTail -= size;
-
-	return &bg_pool[bg_poolTail];
+	return p;
 }
 
 void BG_TempFree( size_t size )
 {
-	size = PAD(size, sizeof(void *));
+	bg_poolTail -= size;
 
-	if (bg_poolTail+size > MAX_POOL_SIZE)
-	{
-		Com_Error( ERR_DROP, "BG_TempFree: tail greater than size (%d > %d)", bg_poolTail+size, MAX_POOL_SIZE );
+	if (bg_poolTail < bg_pool) {
+		Com_Error(ERR_DROP, "BG_TempFree: freed unallocated memory");
 	}
-
-	bg_poolTail += size;
 }
 
 char *BG_StringAlloc ( const char *source )
@@ -2544,5 +2537,5 @@ char *BG_StringAlloc ( const char *source )
 
 qboolean BG_OutOfMemory ( void )
 {
-	return (qboolean)(bg_poolSize >= MAX_POOL_SIZE);
+	return (qboolean)(bg_poolTail > bg_pool + MAX_POOL_SIZE);
 }
