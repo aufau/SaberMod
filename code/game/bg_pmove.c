@@ -2613,7 +2613,6 @@ static void PM_Footsteps( void ) {
 		return;
 	}
 
-
 	footstep = qfalse;
 
 	if ( pm->ps->pm_flags & PMF_DUCKED )
@@ -4442,6 +4441,12 @@ void PmoveSingle (pmove_t *pmove) {
 	// proxy no-footsteps cheats
 	if ( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 ) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
+	}
+
+	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
+		pm->ps->pm_flags |= PMF_STILL;
+	} else {
+		pm->ps->pm_flags &= ~PMF_STILL;
 	}
 
 	// set the talk balloon flag

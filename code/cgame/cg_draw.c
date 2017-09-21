@@ -2755,24 +2755,28 @@ static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
 			{ 0, 1, 1, 0 }
 		};
 
-		int dir;
-		int i;
+		if (!(cg.snap->ps.pm_flags & PMF_STILL))
+		{
+			int dir;
+			int i;
 
-		w *= 0.5f * M_SQRT2;
-		h *= 0.5f * M_SQRT2;
+			w *= 0.5f * M_SQRT2;
+			h *= 0.5f * M_SQRT2;
 
-		x -= w;
 
-		dir = cg.snap->ps.movementDir;
+			x -= w;
 
-		if (dir < 0 || 8 <= dir) {
-			assert(0);
-			return;
-		}
+			dir = cg.snap->ps.movementDir;
 
-		for (i = 0; i < 4; i++) {
-			if (arrow[cg.snap->ps.movementDir][i]) {
-				CG_DrawRotatePic(x, y, w, h, 45 + 90 * i, cgs.media.crosshairArrow);
+			if (dir < 0 || 8 <= dir) {
+				assert(0);
+				return;
+			}
+
+			for (i = 0; i < 4; i++) {
+				if (arrow[cg.snap->ps.movementDir][i]) {
+					CG_DrawRotatePic(x, y, w, h, 45 + 90 * i, cgs.media.crosshairArrow);
+				}
 			}
 		}
 	}
