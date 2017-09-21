@@ -968,10 +968,13 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 			if ( !match->infoValid || match->deferred ) {
 				continue;
 			}
-			if ( Q_stricmp( ci->skinName, match->skinName ) ||
-				(GT_Team(cgs.gametype) && ci->team != match->team) ) {
+			if ( ci->team == TEAM_RED && match->team == TEAM_BLUE ) {
 				continue;
 			}
+			if ( ci->team == TEAM_BLUE && match->team == TEAM_RED ) {
+				continue;
+			}
+
 			ci->deferred = qtrue;
 			CG_CopyClientInfoModel( match, ci );
 			return;
