@@ -777,7 +777,7 @@ validitycheck:
 
 	UpdateForceUsed();
 }
-extern int	uiSkinColor;
+extern team_t	uiSkinColor;
 
 qboolean UI_SkinColor_HandleKey(int flags, float *special, int key, int num, int min, int max, int type)
 {
