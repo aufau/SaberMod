@@ -2735,6 +2735,48 @@ CROSSHAIR
 ================================================================================
 */
 
+/*
+=================
+CG_DrawCrosshairArrows
+=================
+*/
+static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
+	if (cg_crosshairIndicators.integer & 1)
+	{
+		static const int	arrow[8][4] = {
+			// { left, forward, right, back }
+			{ 0, 1, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 1, 0, 0, 0 },
+			{ 1, 0, 0, 1 },
+			{ 0, 0, 0, 1 },
+			{ 0, 0, 1, 1 },
+			{ 0, 0, 1, 0 },
+			{ 0, 1, 1, 0 }
+		};
+
+		int dir;
+		int i;
+
+		w *= 0.5f * M_SQRT2;
+		h *= 0.5f * M_SQRT2;
+
+		x -= w;
+
+		dir = cg.snap->ps.movementDir;
+
+		if (dir < 0 || 8 <= dir) {
+			assert(0);
+			return;
+		}
+
+		for (i = 0; i < 4; i++) {
+			if (arrow[cg.snap->ps.movementDir][i]) {
+				CG_DrawRotatePic(x, y, w, h, 45 + 90 * i, cgs.media.crosshairArrow);
+			}
+		}
+	}
+}
 
 /*
 =================
@@ -2888,9 +2930,12 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
 
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5f * (640 - w),
-		y + cg.refdef.y + 0.5f * (480 - h),
-		w, h, 0, 0, 1, 1, hShader );
+	x += cg.refdef.x + 0.5f * SCREEN_WIDTH;
+	y += cg.refdef.y + 0.5f * SCREEN_HEIGHT;
+
+	trap_R_DrawStretchPic( x - 0.5f * w, y - 0.5f * h, w, h, 0, 0, 1, 1, hShader );
+
+	CG_DrawCrosshairIndicators( x, y, w, h );
 }
 
 qboolean CG_WorldCoordToScreenCoordFloat(const vec3_t worldCoord, float *x, float *y)
