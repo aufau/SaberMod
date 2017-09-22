@@ -4916,26 +4916,11 @@ UI_HeadCountByColor
 */
 static int UI_HeadCountByColor() {
 	int i, c;
-	const char *teamname;
-
-	c = 0;
-
-	switch(uiSkinColor)
-	{
-		case TEAM_BLUE:
-			teamname = "/blue";
-			break;
-		case TEAM_RED:
-			teamname = "/red";
-			break;
-		default:
-			teamname = "/default";
-	}
 
 	// Count each head with this color
-	for (i=0; i<uiInfo.q3HeadCount; i++)
+	for (i = 0, c = 0; i < uiInfo.q3HeadCount; i++)
 	{
-		if (uiInfo.q3HeadNames[i] && strstr(uiInfo.q3HeadNames[i], teamname))
+		if (uiInfo.q3HeadColors[i] == uiSkinColor)
 		{
 			c++;
 		}
@@ -5582,27 +5567,14 @@ UI_HeadCountByColor
 ==================
 */
 static const char *UI_SelectedTeamHead(int index, int *actual) {
-	const char *teamname;
-	int i,c=0;
+	int i, c;
 	*actual = 0;
-	switch(uiSkinColor)
-	{
-		case TEAM_BLUE:
-			teamname = "/blue";
-			break;
-		case TEAM_RED:
-			teamname = "/red";
-			break;
-		default:
-			teamname = "/default";
-			break;
-	}
 
 	// Count each head with this color
 
-	for (i=0; i<uiInfo.q3HeadCount; i++)
+	for (i = 0, c = 0; i < uiInfo.q3HeadCount; i++)
 	{
-		if (uiInfo.q3HeadNames[i] && strstr(uiInfo.q3HeadNames[i], teamname))
+		if (uiInfo.q3HeadColors[i] == uiSkinColor)
 		{
 			if (c==index)
 			{
@@ -5621,51 +5593,28 @@ static const char *UI_SelectedTeamHead(int index, int *actual) {
 static int UI_SelectTeamHead(const char *name)
 {
 	char model[MAX_QPATH];
-	char *skin;
-	team_t skinColor;
-	const char *teamname;
+	const char *skin;
 	int i, c;
 
 	Q_strncpyz(model, name, sizeof(model));
 
 	skin = strchr(model, '/');
 
-	if (skin) {
-		if (!strcmp(skin, "/red")) {
-			teamname = "/red";
-			skinColor = TEAM_RED;
-		} else if (!strcmp(skin, "/blue")) {
-			teamname = "/blue";
-			skinColor = TEAM_BLUE;
+	if (!skin) {
+		if (uiSkinColor == TEAM_RED) {
+			skin = "/red";
+		} else if (uiSkinColor == TEAM_BLUE) {
+			skin = "/blue";
 		} else {
-			teamname = "/default";
-			skinColor = TEAM_FREE;
-			*skin = '\0';
-			Q_strcat(model, sizeof(model), teamname);
+			skin = "/default";
 		}
 
-		if (skinColor != uiSkinColor) {
-			return -1;
-		}
-	} else {
-		switch (uiSkinColor) {
-		case TEAM_RED:
-			teamname = "/red";
-			break;
-		case TEAM_BLUE:
-			teamname = "/blue";
-			break;
-		default:
-			teamname = "/default";
-			break;
-		}
-
-		Q_strcat(model, sizeof(model), teamname);
+		Q_strcat(model, sizeof(model), skin);
 	}
 
 	for (i = 0, c = 0; i < uiInfo.q3HeadCount; i++)
 	{
-		if (uiInfo.q3HeadNames[i] && strstr(uiInfo.q3HeadNames[i], teamname))
+		if (uiInfo.q3HeadColors[i] == uiSkinColor)
 		{
 			if (!Q_stricmp(uiInfo.q3HeadNames[i], model))
 			{
@@ -5961,7 +5910,7 @@ static qhandle_t UI_FeederItemImage(float feederID, int index) {
 
 		if (index >= 0 && index < uiInfo.q3HeadCount)
 		{ //we want it to load them as it draws them, like the TA feeder
-		      //return uiInfo.q3HeadIcons[index];
+		      //return uinInfo.q3HeadIcons[index];
 			if (!uiInfo.q3HeadIcons[index])
 			{ //this isn't the best way of doing this I guess, but I didn't want a whole seperate string array
 			  //for storing shader names. I can't just replace q3HeadNames with the shader name, because we
@@ -6476,11 +6425,11 @@ static void UI_BuildQ3Model_List( void )
 	int		numfiles;
 	char	dirlist[2048];
 	char	filelist[2048];
-	char	skinname[64];
+	char	skinname[MAX_QPATH];
 	char*	dirptr;
 	char*	fileptr;
 	int		i;
-	int		j, k, p, s;
+	int		j;
 	int		dirlen;
 	int		filelen;
 
@@ -6496,81 +6445,56 @@ static void UI_BuildQ3Model_List( void )
 
 		dirlen = strlen(dirptr);
 
-		if (dirlen && dirptr[dirlen-1]=='/') dirptr[dirlen-1]='\0';
-
-		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
+		if (dirlen == 0) {
 			continue;
+		}
 
+		if (dirptr[dirlen-1]=='/') {
+			dirptr[dirlen-1]='\0';
+		}
 
 		numfiles = trap_FS_GetFileList( va("models/players/%s",dirptr), "skin", filelist, 2048 );
 		fileptr  = filelist;
 		for (j=0; j<numfiles && uiInfo.q3HeadCount < MAX_PLAYERMODELS;j++,fileptr+=filelen+1)
 		{
-			int skinLen = 0;
-
 			filelen = strlen(fileptr);
+
+			if (filelen == 0) {
+				continue;
+			}
 
 			COM_StripExtension(fileptr, skinname, sizeof(skinname));
 
-			skinLen = strlen(skinname);
-			k = 0;
-			while (k < skinLen && skinname[k] && skinname[k] != '_')
-			{
-				k++;
-			}
-			if (skinname[k] == '_')
-			{
-				p = 0;
+			// remove model_ prefix if present
+			if (!strncmp(skinname, "model_", 6)) {
+				char *skin = skinname + 6;
 
-				while (skinname[k])
-				{
-					skinname[p] = skinname[k];
-					k++;
-					p++;
-				}
-				skinname[p] = '\0';
+				memmove(skinname, skin, strlen(skin) + 1);
 			}
 
-			Com_sprintf(fpath, 2048, "models/players/%s/icon%s.jpg", dirptr, skinname);
+			Com_sprintf(fpath, 2048, "models/players/%s/icon_%s.jpg", dirptr, skinname);
 
 			trap_FS_FOpenFile(fpath, &f, FS_READ);
 
 			if (f)
-			{ //if it exists
-				qboolean iconExists = qfalse;
+			{
+				team_t skinColor;
 
 				trap_FS_FCloseFile(f);
 
-				if (skinname[0] == '_')
-				{ //change character to append properly
-					skinname[0] = '/';
+				if (!Q_stricmp(skinname, "red")) {
+					skinColor = TEAM_RED;
+				} else if (!Q_stricmp(skinname, "blue")) {
+					skinColor = TEAM_BLUE;
+				} else {
+					skinColor = TEAM_FREE;
 				}
 
-				s = 0;
-
-				while (s < uiInfo.q3HeadCount)
-				{ //check for dupes
-					if (!Q_stricmp(va("%s%s", dirptr, skinname), uiInfo.q3HeadNames[s]))
-					{
-						iconExists = qtrue;
-						break;
-					}
-					s++;
-				}
-
-				if (iconExists)
-				{
-					continue;
-				}
-
-				Com_sprintf( uiInfo.q3HeadNames[uiInfo.q3HeadCount], sizeof(uiInfo.q3HeadNames[uiInfo.q3HeadCount]), va("%s%s", dirptr, skinname));
-				uiInfo.q3HeadIcons[uiInfo.q3HeadCount++] = 0;//trap_R_RegisterShaderNoMip(fpath);
+				Q_strncpyz(uiInfo.q3HeadNames[uiInfo.q3HeadCount], va("%s/%s", dirptr, skinname), sizeof(uiInfo.q3HeadNames[0]));
+				uiInfo.q3HeadColors[uiInfo.q3HeadCount] = skinColor;
+				uiInfo.q3HeadIcons[uiInfo.q3HeadCount] = 0;//trap_R_RegisterShaderNoMip(fpath);
 				//rww - we are now registering them as they are drawn like the TA feeder, so as to decrease UI load time.
-			}
-
-			if (uiInfo.q3HeadCount >= MAX_PLAYERMODELS)
-			{
-				return;
+				uiInfo.q3HeadCount++;
 			}
 		}
 	}

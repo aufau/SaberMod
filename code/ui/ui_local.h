@@ -820,8 +820,9 @@ typedef struct {
 	sfxHandle_t newHighScoreSound;
 
 	int				q3HeadCount;
-	char			q3HeadNames[MAX_PLAYERMODELS][64];
-	qhandle_t	q3HeadIcons[MAX_PLAYERMODELS];
+	char			q3HeadNames[MAX_PLAYERMODELS][MAX_QPATH];
+	team_t			q3HeadColors[MAX_PLAYERMODELS];
+	qhandle_t		q3HeadIcons[MAX_PLAYERMODELS];
 	int				q3SelectedHead;
 
 	int				forceConfigCount;
