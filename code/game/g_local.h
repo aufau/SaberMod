@@ -749,6 +749,7 @@ void	G_SendG2KillQueue(void);
 void	G_KillG2Queue(int entNum);
 void	G_FreeEntity( gentity_t *ed );
 qboolean	G_EntitiesFree( void );
+void	G_FreeUnusedEntities( void );
 
 void	G_TouchTriggers (gentity_t *ent);
 void	G_TouchSolids (gentity_t *ent);

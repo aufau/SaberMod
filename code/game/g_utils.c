@@ -718,7 +718,29 @@ static gentity_t *G_SoundTempEntity( const vec3_t origin, int event, int channel
 	return e;
 }
 
+/*
+=================
+G_SoundTempEntity
 
+level.num_entities garbage collection
+=================
+*/
+void G_FreeUnusedEntities( void ) {
+	int			lastEntity = 0;
+	int			i;
+
+	for (i = 0; i < level.num_entities; i++) {
+		if (g_entities[i].inuse) {
+			lastEntity = i;
+		}
+	}
+
+	if (lastEntity + 1 < level.num_entities) {
+		level.num_entities = lastEntity + 1;
+		trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
+			&level.clients[0].ps, sizeof( level.clients[0] ) );
+	}
+}
 
 /*
 ==============================================================================

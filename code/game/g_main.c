@@ -3077,6 +3077,9 @@ end = trap_Milliseconds();
 	// for tracking changes
 	CheckCvars();
 
+	// garbage collection
+	G_FreeUnusedEntities();
+
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {
 			G_Printf("%4i: %s\n", i, g_entities[i].classname);
