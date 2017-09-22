@@ -479,7 +479,7 @@ gentity_t *G_Spawn( int blameEntityNum ) {
 			G_InitGentity( e, blameEntityNum );
 			return e;
 		}
-		if ( i != MAX_GENTITIES ) {
+		if ( i != ENTITYNUM_MAX_NORMAL ) {
 			break;
 		}
 	}
