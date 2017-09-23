@@ -117,7 +117,6 @@ const vec4_t colorTable[CT_MAX] =
 {	.567f,	.685f,	1.0f,	.75f},	// CT_ICON_BLUE
 {	.515f,	.406f,	.507f,	1},		// CT_NO_AMMO_RED
 {   1.0f,   .658f,  .062f, 1},		// CT_HUD_ORANGE
-
 };
 
 static const char * const HolocronIcons[] = {
@@ -570,6 +569,7 @@ vmCvar_t	cg_followKiller;
 vmCvar_t	cg_followPowerup;
 vmCvar_t	cg_privateDuel;
 vmCvar_t	cg_crosshairIndicators;
+vmCvar_t	cg_crosshairIndicatorsSpec;
 
 vmCvar_t	ui_myteam;
 
@@ -734,6 +734,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_crosshairIndicators, "cg_crosshairIndicators", "0", CVAR_ARCHIVE},
+	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicators", "1", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 
@@ -1787,7 +1788,7 @@ Ghoul2 Insert End
 
 	cgs.media.download	= trap_R_RegisterShaderNoMip( "gfx/menus/download" );
 	cgs.media.missing	= trap_R_RegisterShaderNoMip( "gfx/menus/missing" );
-	cgs.media.crosshairArrow = trap_R_RegisterShader("gfx/2d/crosshairarrow");
+	cgs.media.crosshairArrow = trap_R_RegisterShaderNoMip("gfx/2d/crosshairarrow");
 
 	// CG_ClearParticles ();
 /*

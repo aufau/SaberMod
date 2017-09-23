@@ -94,8 +94,15 @@ cg_crosshairColor <hex>
   Force crosshair color using hexadecimal rgb color code. Fourth
   position can be used to set transparency. Eg `#00ff00ff` is green.
 
-cg_crosshairIndicator <0|1>
-  Draw movement crosshair indicator.
+cg_crosshairIndicators <0|1>
+  Draw crosshair indicators. Sum values from the following list:
+
+  =====================  =====================
+  1 - Movement arrows    2 - Speedometer
+  =====================  =====================
+
+cg_crosshairIndicatorsSpec <0|1>
+  Same as above but only when following another player.
 
 cg_damagePlums <0|1>
   When you hit an enemy, draw a small damage plum coming out of his

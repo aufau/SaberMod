@@ -2741,7 +2741,15 @@ CG_DrawCrosshairArrows
 =================
 */
 static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
-	if (cg_crosshairIndicators.integer & 1)
+	int crosshairIndicators;
+
+	if (cg.snap->ps.pm_flags & PMF_FOLLOW) {
+		crosshairIndicators = cg_crosshairIndicatorsSpec.integer;
+	} else {
+		crosshairIndicators = cg_crosshairIndicators.integer;
+	}
+
+	if (crosshairIndicators & 1)
 	{
 		static const int	arrow[8][4] = {
 			// { left, forward, right, back }
@@ -2757,14 +2765,12 @@ static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
 
 		if (!(cg.snap->ps.pm_flags & PMF_STILL))
 		{
+			float arrowW = 0.5f * M_SQRT2 * w;
+			float arrowH = 0.5f * M_SQRT2 * h;
+			float arrowX = x - arrowW;
+			float arrowY = y;
 			int dir;
 			int i;
-
-			w *= 0.5f * M_SQRT2;
-			h *= 0.5f * M_SQRT2;
-
-
-			x -= w;
 
 			dir = cg.snap->ps.movementDir;
 
@@ -2775,10 +2781,27 @@ static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
 
 			for (i = 0; i < 4; i++) {
 				if (arrow[cg.snap->ps.movementDir][i]) {
-					CG_DrawRotatePic(x, y, w, h, 45 + 90 * i, cgs.media.crosshairArrow);
+					CG_DrawRotatePic(arrowX, arrowY, arrowW, arrowH,
+						45 + 90 * i, cgs.media.crosshairArrow);
 				}
 			}
 		}
+	}
+
+	if (crosshairIndicators & 2)
+	{
+		static vec4_t color = { 1, 1, 1, 1 };
+		const font_t font = FONT_SMALL;
+		const float scale = 0.5f;
+
+		float velocity = VectorLength(cg.snap->ps.velocity);
+		const char *s = va("%d", (int)velocity);
+		float textX = x - 0.5f * CG_Text_Width(s, scale, font);
+		float textY = y + h + 5;
+
+		color[3] = M_2_PI * atan2f(velocity, 300);
+
+		CG_Text_Paint(textX, textY, scale, color, s, 0, 0, 0, font);
 	}
 }
 
