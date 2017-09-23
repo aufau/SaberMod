@@ -1272,6 +1272,27 @@ static void AddFloat( char **buf_p, char * const buf_end, float fval, int width,
 	char	*buf;
 	int		val;
 
+	buf = *buf_p;
+
+	if (isnan(fval)) {
+		if (buf < buf_end) *buf++ = 'n';
+		if (buf < buf_end) *buf++ = 'a';
+		if (buf < buf_end) *buf++ = 'n';
+
+		*buf_p = buf;
+		return;
+	}
+
+	if (isinf(fval)) {
+		if (buf < buf_end && isinf(fval) == -1) *buf++ = '-';
+		if (buf < buf_end) *buf++ = 'i';
+		if (buf < buf_end) *buf++ = 'n';
+		if (buf < buf_end) *buf++ = 'f';
+
+		*buf_p = buf;
+		return;
+	}
+
 	// get the sign
 	signedVal = fval;
 	if ( fval < 0 ) {
@@ -1291,8 +1312,6 @@ static void AddFloat( char **buf_p, char * const buf_end, float fval, int width,
 	} else if ( flags & SIGN ) {
 		text[digits++] = '+';
 	}
-
-	buf = *buf_p;
 
 	while ( digits < width ) {
 		if ( buf < buf_end ) {

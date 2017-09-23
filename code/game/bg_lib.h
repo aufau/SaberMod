@@ -144,7 +144,8 @@ float expf( float x );
 float logf( float a );
 float powf( float x, float y );
 
-#define expmask (0xff << 23)
-#define mantissamask ((1 << 23) - 1)
+#define expmask (0xffu << 23u)
+#define mantissamask ((1u << 23u) - 1u)
 
-#define isnan(x) ((*(int *)&(x) & expmask) == expmask && (*(int *)&(x) & mantissamask) != 0)
+#define isnan(x) ((*(unsigned *)&(x) & expmask) == expmask && (*(unsigned *)&(x) & mantissamask) != 0)
+#define isinf(x) ((*(unsigned *)&(x) == 0x7f800000u) ? 1 : (*(unsigned *)&(x) == 0xff800000u) ? -1 : 0)
