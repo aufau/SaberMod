@@ -96,7 +96,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 		trap_G2API_DuplicateGhoul2Instance(cgs.clientinfo[snap->ps.clientNum].ghoul2Model, &cg_entities[snap->ps.clientNum].ghoul2);
 		CG_CopyG2WeaponInstance(FIRST_WEAPON, cg_entities[snap->ps.clientNum].ghoul2);
 	}
-	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].currentState, qfalse );
+	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].currentState, qfalse, qfalse );
 
 	// sort out solid entities
 	CG_BuildSolidList();
@@ -160,7 +160,7 @@ static void CG_TransitionSnapshot( void ) {
 	cg.snap = cg.nextSnap;
 
 	CG_CheckPlayerG2Weapons(&cg.snap->ps, &cg_entities[cg.snap->ps.clientNum]);
-	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, qfalse );
+	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, qfalse, qfalse );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qfalse;
 
 	for ( i = 0 ; i < cg.snap->numEntities ; i++ ) {
@@ -212,7 +212,7 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 	cg.nextSnap = snap;
 
 	CG_CheckPlayerG2Weapons(&cg.snap->ps, &cg_entities[cg.snap->ps.clientNum]);
-	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].nextState, qfalse );
+	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].nextState, qfalse, qfalse );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qtrue;
 
 	// check for extrapolation errors

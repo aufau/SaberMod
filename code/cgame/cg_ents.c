@@ -2507,7 +2507,7 @@ void CG_AddPacketEntities( void ) {
 	//reliably checked and cleared.
 	cg.predictedPlayerEntity.ghoul2 = cg_entities[ cg.snap->ps.clientNum].ghoul2;
 	CG_CheckPlayerG2Weapons(ps, &cg.predictedPlayerEntity);
-	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, qfalse );
+	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, qfalse, qfalse );
 
 	// add in the Ghoul2 stuff.
 	VectorCopy( cg_entities[ cg.snap->ps.clientNum].modelScale, cg.predictedPlayerEntity.modelScale);

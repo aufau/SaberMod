@@ -2222,7 +2222,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	// positively link the client, even if the command times are weird
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue, qfalse );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
 
