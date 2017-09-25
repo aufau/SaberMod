@@ -628,12 +628,12 @@ to ease the jerk.
 */
 void CG_PredictPlayerState( void ) {
 	static playerState_t	cgSendPS[MAX_CLIENTS];
+	const snapshot_t		*baseSnap;
 	int			cmdNum, current, i;
 	playerState_t	oldPlayerState;
 	qboolean	moved;
 	usercmd_t	oldestCmd;
 	usercmd_t	latestCmd;
-
 
 	cg.hyperspace = qfalse;	// will be set if touching a trigger_teleport
 
@@ -711,11 +711,16 @@ void CG_PredictPlayerState( void ) {
 	// because predicted player positions are going to
 	// be ahead of everything else anyway
 	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport ) {
-		cg.predictedPlayerState = cg.nextSnap->ps;
-		cg.physicsTime = cg.nextSnap->serverTime;
+		baseSnap = cg.nextSnap;
 	} else {
-		cg.predictedPlayerState = cg.snap->ps;
-		cg.physicsTime = cg.snap->serverTime;
+		baseSnap = cg.snap;
+	}
+
+	// don't recalculalate if base playerState hasn't changed
+	if (baseSnap->serverTime != cg.predictionBaseTime) {
+		cg.predictedPlayerState = baseSnap->ps;
+		cg.physicsTime = baseSnap->serverTime;
+		cg.predictionBaseTime = baseSnap->serverTime;
 	}
 
 	if ( pmove_msec.integer < 8 ) {

@@ -717,6 +717,7 @@ typedef struct {
 	qboolean	validPPS;				// clear until the first call to CG_PredictPlayerState
 	int			predictedErrorTime;
 	vec3_t		predictedError;
+	int			predictionBaseTime;		// serverTime of snapshot predictedPlayerState is based on
 
 	int			eventSequence;
 	int			predictableEvents[MAX_PREDICTED_EVENTS];
