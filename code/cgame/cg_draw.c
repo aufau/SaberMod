@@ -97,23 +97,14 @@ float CG_Text_Width(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
-	if (cg_mvapi >= 3) {
-		// this is needed because engine may use different font at different scale
-		return trap_MVAPI_R_Font_StrLenPixels(text, iFontIndex, scale * cgs.screenXFactor, scale) * cgs.screenXFactorInv;
-	} else {
-		return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
-	}
+	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
 float CG_Text_Height(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
 
-	if (cg_mvapi >= 3) {
-		return trap_MVAPI_R_Font_HeightPixels(iFontIndex, scale * cgs.screenXFactor, scale);
-	} else {
-		return trap_R_Font_HeightPixels(iFontIndex, scale);
-	}
+	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
 
 #include "../qcommon/qfiles.h"	// for STYLE_BLINK etc
@@ -132,14 +123,7 @@ void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char
 	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyle |= STYLE_DROPSHADOW;	break;	// JK2 drop shadow ( need a color for this )
 	}
 
-	if (cg_mvapi >= 3) {
-		float hScale = scale * cgs.screenXFactor;
-
-		x *= cgs.screenXFactor;
-		trap_MVAPI_R_Font_DrawString(x, y, text, color, iStyle, limit, hScale, scale);
-	} else {
-		trap_R_Font_DrawString(x, y, text, color, iStyle, limit, scale);
-	}
+	trap_R_Font_DrawString(x, y, text, color, iStyle, limit, scale);
 }
 
 /*

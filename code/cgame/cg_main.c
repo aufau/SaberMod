@@ -881,17 +881,22 @@ CG_UpdateWidescreen
 */
 static void CG_UpdateWidescreen( void ) {
 	if ( cg_widescreen.integer ) {
-		if ( cg_mvapi ) {
-			cgs.screenWidth = 480.0f * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
+		if ( cg_mvapi >= 3 ) {
+			cgs.screenWidth = SCREEN_HEIGHT * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
 		} else {
 			CG_Printf( "Widescreen fix is supported only on JK2MV 1.4 or newer\n" );
-			cgs.screenWidth = 640.0f;
+			cgs.screenWidth = SCREEN_WIDTH;
 		}
 	} else {
-		cgs.screenWidth = 640.0f;
+		cgs.screenWidth = SCREEN_WIDTH;
 	}
-	cgs.screenXFactor = 640.0f / cgs.screenWidth;
-	cgs.screenXFactorInv = cgs.screenWidth / 640.0f;
+
+	if ( cg_mvapi >= 3 ) {
+		trap_MVAPI_SetVirtualScreen(cgs.screenWidth, SCREEN_HEIGHT);
+	}
+
+	cgs.screenXFactor = SCREEN_WIDTH / cgs.screenWidth;
+	cgs.screenXFactorInv = cgs.screenWidth / SCREEN_WIDTH;
 }
 
 /*
