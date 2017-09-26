@@ -124,8 +124,6 @@ Coordinates are 640*480 virtual values
 void CG_FillRect( float x, float y, float width, float height, const float *color ) {
 	trap_R_SetColor( color );
 
-	x *= cgs.screenXFactor;
-	width *= cgs.screenXFactor;
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 
 	trap_R_SetColor( NULL );
@@ -141,14 +139,10 @@ A width of 0 will draw with the original image width
 =================
 */
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader ) {
-	x *= cgs.screenXFactor;
-	width *= cgs.screenXFactor;
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
 void CG_DrawPicExt( float x, float y, float width, float height, float s1, float t1, float s2, float t2, qhandle_t hShader ) {
-	x *= cgs.screenXFactor;
-	width *= cgs.screenXFactor;
 	trap_R_DrawStretchPic( x, y, width, height, s1, t1, s2, t2, hShader );
 }
 
@@ -162,28 +156,7 @@ rotates around the upper right corner of the passed in point
 =================
 */
 void CG_DrawRotatePic( float x, float y, float width, float height,float angle, qhandle_t hShader ) {
-	if (cg_mvapi >= 3) {
-		float s, c;
-		float m[2][2];
-
-		angle = DEG2RAD( angle );
-		s = sinf( angle );
-		c = cosf( angle );
-
-		m[0][0] = width * c * cgs.screenXFactor;
-		m[0][1] = width * s;
-		m[1][0] = height * -s * cgs.screenXFactor;
-		m[1][1] = height * c;
-
-		x = cgs.screenXFactor * (x + width);
-
-		x -= m[0][0];
-		y -= m[0][1];
-
-		trap_MVAPI_R_DrawTransformPic( x, y, &m, 0, 0, 1, 1, hShader );
-	} else {
-		trap_R_DrawRotatePic( x, y, width, height, 0, 0, 1, 1, angle, hShader );
-	}
+	trap_R_DrawRotatePic( x, y, width, height, 0, 0, 1, 1, angle, hShader );
 }
 
 /*
@@ -196,28 +169,7 @@ Actually rotates around the center point of the passed in coordinates
 =================
 */
 void CG_DrawRotatePic2( float x, float y, float width, float height,float angle, qhandle_t hShader ) {
-	if (cg_mvapi >= 3) {
-		float s, c;
-		float m[2][2];
-
-		x *= cgs.screenXFactor;
-
-		angle = DEG2RAD( angle );
-		s = sinf( angle );
-		c = cosf( angle );
-
-		m[0][0] = width * c * cgs.screenXFactor;
-		m[0][1] = width * s;
-		m[1][0] = height * -s * cgs.screenXFactor;
-		m[1][1] = height * c;
-
-		x -= 0.5f * (m[0][0] + m[1][0]);
-		y -= 0.5f * (m[0][1] + m[1][1]);
-
-		trap_MVAPI_R_DrawTransformPic( x, y, &m, 0, 0, 1, 1, hShader );
-	} else {
-		trap_R_DrawRotatePic2( x, y, width, height, 0, 0, 1, 1, angle, hShader );
-	}
+	trap_R_DrawRotatePic2( x, y, width, height, 0, 0, 1, 1, angle, hShader );
 }
 
 /*
@@ -240,9 +192,9 @@ static void CG_DrawChar( float x, float y, float width, float height, int ch ) {
 		return;
 	}
 
-	ax = x * cgs.screenXFactor;
+	ax = x;
 	ay = y;
-	aw = width * cgs.screenXFactor;
+	aw = width;
 	ah = height;
 
 	row = ch>>4;
