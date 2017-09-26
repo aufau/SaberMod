@@ -1654,6 +1654,7 @@ void CG_NextInventory_f(void);
 void CG_PrevInventory_f(void);
 void CG_NextForcePower_f(void);
 void CG_PrevForcePower_f(void);
+void CG_WideScreenMode(qboolean on);
 
 //
 // cg_view.c

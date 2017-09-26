@@ -876,6 +876,23 @@ static void CG_UpdateCrosshairColor( void ) {
 
 /*
 ===================
+CG_WideScreenMode
+
+Make 2D drawing functions use widescreen or 640x480 coordinates
+===================
+*/
+void CG_WideScreenMode(qboolean on) {
+	if (cg_mvapi >= 3) {
+		if (on) {
+			trap_MVAPI_SetVirtualScreen(cgs.screenWidth, SCREEN_HEIGHT);
+		} else {
+			trap_MVAPI_SetVirtualScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
+		}
+	}
+}
+
+/*
+===================
 CG_UpdateWidescreen
 ===================
 */

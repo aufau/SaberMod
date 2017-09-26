@@ -212,6 +212,8 @@ static void CG_DrawZoomMask( void )
 		// Using a magic number to convert the zoom level to scale amount
 		level *= 162.0f;
 
+		CG_WideScreenMode(qfalse);
+
 		// draw blue tinted distortion mask, trying to make it as small as is necessary to fill in the viewable area
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		trap_R_DrawStretchPic( 34, 48, 570, 362, 0, 0, 1, 1, cgs.media.binocularStatic );
@@ -219,6 +221,8 @@ static void CG_DrawZoomMask( void )
 		// Black out the area behind the numbers
 		trap_R_SetColor( colorTable[CT_BLACK]);
 		trap_R_DrawStretchPic( 212, 367, 200, 40, 0, 0, 1, 1, cgs.media.whiteShader );
+
+		CG_WideScreenMode(qtrue);
 
 		// Numbers should be kind of greenish
 		color1[0] = 0.2f;
@@ -260,6 +264,8 @@ static void CG_DrawZoomMask( void )
 			}
 		}
 
+		CG_WideScreenMode(qfalse);
+
 		trap_R_DrawStretchPic( 212, 367, 200, 28, 0, 0, 1, 1, cgs.media.binocularOverlay );
 
 		color1[0] = sinf( cg.time * 0.01f ) * 0.5f + 0.5f;
@@ -270,7 +276,11 @@ static void CG_DrawZoomMask( void )
 
 		trap_R_SetColor( color1 );
 
+		CG_WideScreenMode(qtrue);
+
 		CG_DrawPic( 82 * cgs.screenXFactorInv, 94, 16, 16, cgs.media.binocularCircle );
+
+		CG_WideScreenMode(qfalse);
 
 		// Flickery color
 		color1[0] = 0.7f + crandom() * 0.1f;
@@ -297,6 +307,8 @@ static void CG_DrawZoomMask( void )
 		{
 			flip = (qboolean)!flip;
 		}
+
+		CG_WideScreenMode(qtrue);
 	}
 	else if ( cg.predictedPlayerState.zoomMode == ZOOM_DISRUPTOR )
 	{
