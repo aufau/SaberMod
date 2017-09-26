@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "keycodes.h"
 #include "../game/bg_public.h"
 #include "ui_shared.h"
+#include "../game/mvapi.h"
 
 // global display context
 

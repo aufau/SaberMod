@@ -804,46 +804,10 @@ void trap_CG_RegisterSharedMemory(char *memory)
 Ghoul2 Insert End
 */
 
-void trap_MVAPI_R_Font_DrawString(
-	float fox, float foy,
-	const char *text,
-	const float *rgba,
-	int setIndex,
-	int iCharLimit,
-	float hScale, float vScale)
-{
-	syscall( MVAPI_R_FONT_DRAWSTRING,
-		PASSFLOAT(fox), PASSFLOAT(foy),
-		text, rgba, setIndex, iCharLimit,
-		PASSFLOAT(hScale), PASSFLOAT(vScale));
-}
-
-float trap_MVAPI_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale)
-{
-	floatint_t temp;
-	temp.i = syscall( MVAPI_R_FONT_STRLENPIXELS, text, iFontIndex, PASSFLOAT(hScale), PASSFLOAT(vScale));
-	return temp.f;
-}
-
-float trap_MVAPI_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale)
-{
-	floatint_t temp;
-	temp.i = syscall( MVAPI_R_FONT_STRHEIGHTPIXELS, iFontIndex, PASSFLOAT(hScale), PASSFLOAT(vScale));
-	return temp.f;
-}
-
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }
 
-void trap_MVAPI_R_DrawTransformPic(
-	float x, float y,
-	float (*m)[2][2],
-	float s1, float t1,
-	float s2, float t2,
-	qhandle_t hShader)
-{
-	syscall(MVAPI_R_DRAWTRANSFORMPIC,
-		PASSFLOAT(x), PASSFLOAT(y), m, PASSFLOAT(s1),
-		PASSFLOAT(t1), PASSFLOAT(s2), PASSFLOAT(t2), hShader);
+void trap_MVAPI_SetVirtualScreen(float w, float h) {
+	syscall(CG_MVAPI_SETVIRTUALSCREEN, PASSFLOAT(w), PASSFLOAT(h));
 }

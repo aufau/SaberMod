@@ -116,6 +116,7 @@ equ trap_R_RemapShader						 -91	; UI_R_REMAP_SHADER
 equ trap_SP_Register						-201	; UI_SP_REGISTER
 equ trap_SP_GetStringTextString				-202	; UI_SP_GETSTRINGTEXTSTRING
 equ trap_G2API_SetBoneAngles				-203	; UI_G2_ANGLEOVERRIDE
+equ trap_MVAPI_SetVirtualScreen				-701	; UI_MVAPI_SETVIRTUALSCREEN
 
 
 ; hardcoded functions

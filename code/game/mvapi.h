@@ -47,30 +47,17 @@ typedef enum {
 
 // ******** SYSCALLS ******** //
 
-// void trap_R_Font_DrawString(int fox, int foy, const char *text, const float *rgba, int setIndex, int iCharLimit, float hScale, float vScale);
-#define MVAPI_R_FONT_DRAWSTRING 700              /* asm: -701 */
-
-// float trap_R_Font_StrLenPixels(const char *text, qhandle_t iFontIndex, float hScale, float vScale);
-#define MVAPI_R_FONT_STRLENPIXELS 701            /* asm: -702 */
-
-// float trap_R_Font_HeightPixels(qhandle_t iFontIndex, float hScale, float vScale);
-#define MVAPI_R_FONT_STRHEIGHTPIXELS 702         /* asm: -703 */
-
 // qboolean trap_MVAPI_ControlFixes(int fixes);
 #define MVAPI_CONTROL_FIXES 703                  /* asm: -704 */
 
 // mvversion_t trap_MVAPI_GetVersion(void);
 #define MVAPI_GET_VERSION 704                    /* asm: -705 */
 
-// void trap_MVAPI_R_DrawTransformPic(float x, float y, float (*m)[2][2], float s1, float t1, float s2, float t2, qhandle_t hShader);
-#define MVAPI_R_DRAWTRANSFORMPIC 707             /* asm: -706 */
-
 // ******** VMCALLS ******** //
 
 // vmMain(MVAPI_AFTER_INIT, ...)
 #define MVAPI_AFTER_INIT 100
 
-// ************************** //
 // ----------------------------------------- GAME ------------------------------------------ //
 
 typedef enum {
@@ -100,30 +87,43 @@ typedef struct {
 // ******** SYSCALLS ******** //
 
 // qboolean trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message);
-#define MVAPI_SEND_CONNECTIONLESSPACKET 700      /* asm: -701 */
+#define G_MVAPI_SEND_CONNECTIONLESSPACKET 700      /* asm: -701 */
 
 // qboolean trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize);
-#define MVAPI_GET_CONNECTIONLESSPACKET 701       /* asm: -702 */
+#define G_MVAPI_GET_CONNECTIONLESSPACKET 701       /* asm: -702 */
 
 // qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t);
-#define MVAPI_LOCATE_GAME_DATA 702               /* asm: -703 */
+#define G_MVAPI_LOCATE_GAME_DATA 702               /* asm: -703 */
 
 // qboolean trap_MVAPI_DisableStructConversion(qboolean disable);
-#define MVAPI_DISABLE_STRUCT_CONVERSION 705		/* asm: -706 */
+#define G_MVAPI_DISABLE_STRUCT_CONVERSION 705		/* asm: -706 */
 
 // ******** VMCALLS ******** //
 
-// vmMain(MVAPI_RECV_CONNECTIONLESSPACKET, ...)
-#define MVAPI_RECV_CONNECTIONLESSPACKET 101
+// vmMain(GAME_MVAPI_RECV_CONNECTIONLESSPACKET, ...)
+#define GAME_MVAPI_RECV_CONNECTIONLESSPACKET 101
 
 // ------------------------------------------ UI ------------------------------------------- //
 
 #define MVSORT_CLIENTS_NOBOTS 5
 
-// -------------------------------------- UI & CGAME --------------------------------------- //
+// ******** SYSCALLS ******** //
 
 // void trap_R_AddRefEntityToScene2(const refEntity_t *re);
-#define MVAPI_R_ADDREFENTITYTOSCENE2 706         /* asm: -707 */
+#define UI_MVAPI_R_ADDREFENTITYTOSCENE2 706         /* asm: -707 */
+
+// void trap_MVAPI_SetVirtualScreen(float w, float h);
+#define UI_MVAPI_SETVIRTUALSCREEN 707				/* asm: -708 */
+
+// ---------------------------------------- CGAME ------------------------------------------ //
+
+// ******** SYSCALLS ******** //
+
+// void trap_R_AddRefEntityToScene2(const refEntity_t *re);
+#define CG_MVAPI_R_ADDREFENTITYTOSCENE2 706         /* asm: -707 */
+
+// void trap_MVAPI_SetVirtualScreen(float w, float h);
+#define CG_MVAPI_SETVIRTUALSCREEN 707				/* asm: -708 */
 
 // ----------------------------------------------------------------------------------------- //
 
