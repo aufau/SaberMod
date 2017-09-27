@@ -897,9 +897,11 @@ CG_UpdateWidescreen
 ===================
 */
 static void CG_UpdateWidescreen( void ) {
-	if ( cg_widescreen.integer ) {
+	if ( cg_widescreen.value > 0 ) {
 		if ( cg_mvapi >= 3 ) {
-			cgs.screenWidth = SCREEN_HEIGHT * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
+			float virtualW = SCREEN_HEIGHT * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
+
+			cgs.screenWidth = SCREEN_WIDTH + cg_widescreen.value * (virtualW - SCREEN_WIDTH);
 		} else {
 			CG_Printf( "Widescreen fix is supported only on JK2MV 1.4 or newer\n" );
 			cgs.screenWidth = SCREEN_WIDTH;
