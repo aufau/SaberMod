@@ -718,6 +718,7 @@ typedef struct {
 	int			predictedErrorTime;
 	vec3_t		predictedError;
 	int			predictionBaseTime;		// serverTime of snapshot predictedPlayerState is based on
+	vec3_t		predictedPlayerOrigin;	// predicted origin unaffected by BG_AdjustPositionForMover
 
 	int			eventSequence;
 	int			predictableEvents[MAX_PREDICTED_EVENTS];

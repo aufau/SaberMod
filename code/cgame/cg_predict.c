@@ -721,6 +721,9 @@ void CG_PredictPlayerState( void ) {
 		cg.predictedPlayerState = baseSnap->ps;
 		cg.physicsTime = baseSnap->serverTime;
 		cg.predictionBaseTime = baseSnap->serverTime;
+	} else {
+		// restore origin unaffected by BG_AdjustPositionForMover
+		VectorCopy(cg.predictedPlayerOrigin, cg.predictedPlayerState.origin);
 	}
 
 	if ( pmove_msec.integer < 8 ) {
@@ -860,6 +863,9 @@ void CG_PredictPlayerState( void ) {
 			cg_entities[i].currentState.saberMove = cgSendPS[i].saberMove;
 		}
 	}
+
+	// save origin before CG_AdjustPositionForMover
+	VectorCopy(cg.predictedPlayerState.origin, cg.predictedPlayerOrigin);
 
 	// adjust for the movement of the groundentity
 	CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
