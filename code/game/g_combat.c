@@ -1934,7 +1934,7 @@ static void G_PlayerDieHandleBody( gentity_t *self, int damage, meansOfDeath_t m
 	// for the no-blood option, we need to prevent the health
 	// from going to gib level
 	if ( self->health <= GIB_HEALTH ) {
-		self->health = GIB_HEALTH+1;
+		self->health = self->client->ps.stats[STAT_HEALTH] = GIB_HEALTH + 1;
 	}
 
 	self->client->respawnTime = level.time + 1000;//((self->client->animations[anim].numFrames*40)/(50.0f / self->client->animations[anim].frameLerp))+300;
