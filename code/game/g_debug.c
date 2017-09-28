@@ -25,6 +25,7 @@ void G_EntityCheckRep(const gentity_t *ent)
 	qboolean isSentryGun = qfalse;
 	qboolean isBody = qfalse;
 	qboolean isTempEntity = qfalse;
+	qboolean isSpawnEntity = qfalse;
 
 	assert(0 <= num && num < MAX_GENTITIES);
 
@@ -75,6 +76,10 @@ void G_EntityCheckRep(const gentity_t *ent)
 		assert(ent->eventTime && ent->freeAfterEvent);
 		assert(ET_EVENTS <= event && event < ET_EVENTS + EV_MAX);
 	}
+	else if (G_IsSpawnEntity(ent))
+	{
+		isSpawnEntity = qtrue;
+	}
 
 	// ent->spawnflags
 	assert(0 <= ent->teamnodmg && ent->teamnodmg < TEAM_NUM_TEAMS);
@@ -123,7 +128,7 @@ void G_EntityCheckRep(const gentity_t *ent)
 		if (isTempEntity) {
 			int event = ent->s.eType & ~EV_EVENT_BITS;
 			assert(ET_EVENTS <= event && event < ET_EVENTS + EV_MAX);
-		} else if (!ent->client) {
+		} else if (!ent->client && isSpawnEntity && g_checkSpawnEntities.integer) {
 			int event = ent->s.event & ~EV_EVENT_BITS;
 			assert(ET_EVENTS <= event && event < ET_EVENTS + EV_MAX);
 		}

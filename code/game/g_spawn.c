@@ -314,6 +314,23 @@ static const spawn_t	spawns[] = {
 
 /*
 ===============
+G_IsSpawnEntity
+===============
+*/
+qboolean G_IsSpawnEntity( const gentity_t *ent ) {
+	const spawn_t	*s;
+
+	for (s = spawns; s->name; s++) {
+		if (!strcmp(s->name, ent->classname)) {
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
+/*
+===============
 G_CallSpawn
 
 Finds the spawn function for the entity and calls it,

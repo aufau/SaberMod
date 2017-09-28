@@ -140,6 +140,8 @@ vmCvar_t	g_saberDmgDelay_Wound;
 
 vmCvar_t	g_saberDebugPrint;
 
+vmCvar_t	g_checkSpawnEntities;
+
 vmCvar_t    g_damagePlums;
 vmCvar_t	g_mode;
 vmCvar_t	g_modeIdleTime;
@@ -307,6 +309,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_saberDmgDelay_Wound, "g_saberDmgDelay_Wound", "0", CVAR_ARCHIVE, 0, qtrue  },
 
 	{ &g_saberDebugPrint, "g_saberDebugPrint", "0", CVAR_CHEAT, 0, qfalse  },
+
+	{ &g_checkSpawnEntities, "g_checkSpawnEntities", "0", CVAR_TEMP, 0, qfalse  },
 
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
 	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },

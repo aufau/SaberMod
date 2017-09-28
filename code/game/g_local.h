@@ -670,6 +670,7 @@ qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out );
 void		G_SpawnEntitiesFromString( void );
 char *G_NewString( const char *string );
+qboolean	G_IsSpawnEntity( const gentity_t *ent );
 
 //
 // g_cmds.c
@@ -1231,6 +1232,8 @@ extern	vmCvar_t	g_saberDmgDelay_Idle;
 extern	vmCvar_t	g_saberDmgDelay_Wound;
 
 extern	vmCvar_t	g_saberDebugPrint;
+
+extern	vmCvar_t	g_checkSpawnEntities;
 
 extern  vmCvar_t	g_damagePlums;
 extern	vmCvar_t	g_mode;
