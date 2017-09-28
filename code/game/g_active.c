@@ -665,25 +665,25 @@ Returns qfalse if the client is dropped
 =================
 */
 qboolean ClientInactivityTimer( gclient_t *client ) {
-	if ( ! g_inactivity.integer ) {
-		// give everyone some time, so if the operator sets g_inactivity during
-		// gameplay, everyone isn't kicked
-		client->inactivityTime = level.time + 60 * 1000;
-		client->inactivityWarning = qfalse;
-	} else if ( client->pers.cmd.forwardmove ||
+	if ( client->pers.cmd.forwardmove ||
 		client->pers.cmd.rightmove ||
 		client->pers.cmd.upmove ||
-		(client->pers.cmd.buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK)) ) {
-		client->inactivityTime = level.time + g_inactivity.integer * 1000;
+		(client->pers.cmd.buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK)) )
+	{
+		client->inactivityTime = level.time;
 		client->inactivityWarning = qfalse;
-	} else if ( !client->info.localClient ) {
-		if ( level.time > client->inactivityTime ) {
-			trap_DropClient( client - level.clients, "Dropped due to inactivity" );
-			return qfalse;
-		}
-		if ( level.time > client->inactivityTime - 10000 && !client->inactivityWarning ) {
-			client->inactivityWarning = qtrue;
-			trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"" );
+	}
+	else if ( g_inactivity.integer && !client->info.localClient )
+	{
+		if ( level.time > client->inactivityTime + g_inactivity.integer * 1000 - 10000 ) {
+			if ( level.time > client->inactivityTime + g_inactivity.integer * 1000 ) {
+				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
+				return qfalse;
+			}
+			if ( !client->inactivityWarning ) {
+				client->inactivityWarning = qtrue;
+				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"" );
+			}
 		}
 	}
 	return qtrue;

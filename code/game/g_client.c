@@ -2177,7 +2177,7 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.pm_time = 100;
 
 	client->respawnTime = level.time;
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
+	client->inactivityTime = level.time;
 	client->latched_buttons = 0;
 
 	// set default animations
