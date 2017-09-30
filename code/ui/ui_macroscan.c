@@ -29,6 +29,11 @@ static const char * const illegalCvars[] = {
 	"cl_timenudge",
 };
 
+static const char * const illegalCmds[] = {
+	"ping",
+	"cvarlist",
+};
+
 #define	MAX_CMD_BUFFER	16384
 #define	MAX_CMD_LINE	1024
 
@@ -199,6 +204,13 @@ static void UI_Cmd_Execute(void) {
 
 	for (i = 0; i < (int)ARRAY_LEN(illegalCvars); i++) {
 		if (!Q_stricmp(cmd_argv[ci], illegalCvars[i])) {
+			ui_scan.illegal = qtrue;
+			return;
+		}
+	}
+
+	for (i = 0; i < (int)ARRAY_LEN(illegalCmds); i++) {
+		if (!Q_stricmp(cmd_argv[0], illegalCmds[i])) {
 			ui_scan.illegal = qtrue;
 			return;
 		}
