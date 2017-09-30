@@ -1152,6 +1152,9 @@ typedef struct postGameInfo_s {
 	int baseScore;
 } postGameInfo_t;
 
-
+//
+// ui_macroscan.c
+//
+void UI_MacroScan_f();
 
 #endif

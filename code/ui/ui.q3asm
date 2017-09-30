@@ -1,1 +1,1 @@
--o "ui.qvm" ui_main ui_atoms ui_force ui_shared ui_gameinfo bg_misc bg_weapons bg_lib q_math q_shared ui_syscalls
+-o "ui.qvm" ui_main ui_atoms ui_force ui_shared ui_gameinfo bg_misc bg_weapons bg_lib q_math q_shared ui_syscalls ui_macroscan

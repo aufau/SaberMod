@@ -78,7 +78,7 @@ bg_panimate bg_pmove bg_lib bg_misc bg_saber q_math q_shared		\
 cg_syscalls
 
 srcs_ui = ui_main ui_atoms ui_force ui_shared ui_gameinfo bg_misc	\
-bg_weapons bg_lib q_math q_shared ui_syscalls
+bg_weapons bg_lib q_math q_shared ui_syscalls ui_macroscan
 
 dep_game	:= $(srcs_game:%=out/mod/%.d)
 dep_cgame	:= $(srcs_cgame:%=out/mod/%.d)

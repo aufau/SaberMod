@@ -374,6 +374,11 @@ qboolean UI_ConsoleCommand( int realTime ) {
 		return qtrue;
 	}
 
+	if ( Q_stricmp(cmd, "ui_macroscan") == 0 ) {
+		UI_MacroScan_f();
+		return qtrue;
+	}
+
 	return qfalse;
 }
 
