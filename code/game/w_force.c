@@ -4489,7 +4489,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 				if (self->client->pers.cmd.upmove &&
 					self->client->ps.fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1)
 				{ //force getup
-					G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP, self->s.clientNum);
+					G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP, self->s.number);
 					self->client->ps.forceDodgeAnim = 2;
 					self->client->ps.forceHandExtendTime = level.time + 500;
 

@@ -51,7 +51,6 @@ void G_EntityCheckRep(const gentity_t *ent)
 
 	if (ent->client) {
 		assert(level.clients + num == ent->client);
-		assert(ent->s.clientNum == num);
 		assert(ent->health == ent->client->ps.stats[STAT_HEALTH]);
 		assert(ent->blameEntityNum == num);
 		G_ClientCheckRep(ent->client);
