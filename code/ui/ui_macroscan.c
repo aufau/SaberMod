@@ -180,6 +180,7 @@ void UI_Cbuf_InsertText(const char *text) {
 
 static void UI_Cmd_Execute(void) {
 	char **cmd_argv = ui_scan.cmd_argv;
+	int cmd_argc = ui_scan.cmd_argc;
 	char *cmd = cmd_argv[0];
 	int ci, i;
 
@@ -203,7 +204,7 @@ static void UI_Cmd_Execute(void) {
 		}
 	}
 
-	if (!Q_stricmp(cmd_argv[0], "vstr")) {
+	if (!Q_stricmp(cmd_argv[0], "vstr") && cmd_argc == 2) {
 		char cvar[1024];
 		int len;
 
@@ -219,10 +220,25 @@ static void UI_Cmd_Execute(void) {
 		return;
 	}
 
-	if (!Q_stricmp(cmd_argv[0], "exec")) {
-		// todo
-		Com_Printf("Illegal Command: exec\n");
-		ui_scan.illegal = qtrue;
+	if (!Q_stricmp(cmd_argv[0], "exec") && cmd_argc == 2) {
+		fileHandle_t f;
+		char filename[MAX_QPATH];
+		char *buf;
+		int len;
+
+		Q_strncpyz(filename, cmd_argv[1], sizeof(filename));
+		COM_DefaultExtension(filename, sizeof(filename), ".cfg");
+		len = trap_FS_FOpenFile(filename, &f, FS_READ);
+
+		if (f && len > 0) {
+			buf = (char *)BG_TempAlloc(len + 1);
+			trap_FS_Read(buf, len, f);
+			trap_FS_FCloseFile(f);
+			buf[len] = '\0';
+			UI_Cbuf_InsertText(buf);
+			BG_TempFree(len);
+		}
+
 		return;
 	}
 }
