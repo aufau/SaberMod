@@ -311,14 +311,18 @@ Scan for illegal macros
 =================
 */
 void UI_MacroScan_f() {
+	qboolean developer = trap_Cvar_VariableValue("developer");
+	qboolean quiet = (qboolean)!!atoi(UI_Argv(1));
 	qboolean disabled = qfalse;
 	char kb[1024];
 	int start, end;
 	int i;
 
-	Com_Printf("Starting macro scan...\n");
+	if (developer || !quiet) {
+		Com_Printf("Starting macro scan...\n");
 
-	start = trap_Milliseconds();
+		start = trap_Milliseconds();
+	}
 
 	for (i = 0; i < MAX_KEYS; i++) {
 		trap_Key_GetBindingBuf(i, kb, sizeof(kb));
@@ -347,13 +351,15 @@ void UI_MacroScan_f() {
 		}
 	}
 
-	end = trap_Milliseconds();
+	if (developer || !quiet) {
+		end = trap_Milliseconds();
 
-	Com_Printf("Macro scan completed in %dms.", end - start);
+		Com_Printf("Macro scan completed in %dms.", end - start);
 
-	if (disabled) {
-		Com_Printf(" Some of your binds have been disabled.\n");
-	} else {
-		Com_Printf("\n");
+		if (disabled) {
+			Com_Printf(" Some of your binds have been disabled.\n");
+		} else {
+			Com_Printf("\n");
+		}
 	}
 }

@@ -758,7 +758,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	}
 
 	if ( cg.deferredPlayerLoading == 60 ) {
-		trap_SendConsoleCommand("ui_macroscan\n");
+		trap_SendConsoleCommand("ui_macroscan 1\n");
 	}
 
 	return qtrue;
