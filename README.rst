@@ -249,6 +249,10 @@ g_logFilter[1-4] <mask>
   32768 - Game Stats     65536 - Duel Stats     131072 - Vote
   =====================  =====================  =====================
 
+g_macroscan <0|1>
+  Enable scanning for and disabling binds that may give unfair
+  advantage. Works only on players using SaberMod Clientside.
+
 g_maxGameClients <limit>
   Removed. Use teamsize instead.
 

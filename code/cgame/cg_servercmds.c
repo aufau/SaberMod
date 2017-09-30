@@ -188,6 +188,12 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.instagib = (qboolean)atoi( Info_ValueForKey( info, "g_instagib" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 
+	val = atoi( Info_ValueForKey( info, "g_macroscan" ) );
+	if (val && !cgs.macroscan) {
+		cg.queueMacroscan = qtrue;
+	}
+	cgs.macroscan = (qboolean)val;
+
 
 	//rww - You must do this one here, Info_ValueForKey always uses the same memory pointer.
 	trap_Cvar_Set ( "ui_about_mapname", mapname );

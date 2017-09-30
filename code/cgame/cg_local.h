@@ -886,6 +886,8 @@ typedef struct {
 	// saber clash flare
 	int				saberFlashTime;
 	vec3_t			saberFlashPos;
+
+	qboolean		queueMacroscan;
 /*
 Ghoul2 Insert Start
 */
@@ -1374,6 +1376,7 @@ typedef struct {
 	int				fDisable;
 	qboolean		privateDuel;
 	qboolean		instagib;
+	qboolean		macroscan;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];

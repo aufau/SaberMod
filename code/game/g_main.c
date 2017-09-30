@@ -160,6 +160,7 @@ vmCvar_t	g_voteCooldown;
 vmCvar_t	g_unlagged;
 vmCvar_t	g_unlaggedMaxPing;
 vmCvar_t	g_ingameMotd;
+vmCvar_t	g_macroscan;
 
 
 int gDuelist1 = -1;
@@ -329,6 +330,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_unlagged, "g_unlagged", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_unlaggedMaxPing, "g_unlaggedMaxPing", "200", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_ingameMotd, "g_ingameMotd", "none", CVAR_ARCHIVE, 0, qfalse  },
+	{ &g_macroscan, "g_macroscan", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
