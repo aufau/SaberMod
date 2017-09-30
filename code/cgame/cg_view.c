@@ -1608,6 +1608,10 @@ Generates and draws a game scene and status information at the given time.
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
 	int		inwater;
 
+	if (cg.time == 0 && !demoPlayback) {
+		trap_SendConsoleCommand("ui_macroscan 0\n");
+	}
+
 	cg.time = CG_TimeBias( serverTime );
 	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;

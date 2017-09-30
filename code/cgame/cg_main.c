@@ -2626,8 +2626,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	CG_UpdateConfigString( CS_SHADERSTATE, qtrue );
 
-	trap_SendConsoleCommand("ui_macroscan 0\n");
-
 	trap_S_ClearLoopingSounds( qtrue );
 }
 
