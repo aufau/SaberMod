@@ -238,8 +238,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_teamAutoJoin, "g_teamAutoJoin", "0", CVAR_ARCHIVE  },
 	{ &g_teamForceBalance, "g_teamForceBalance", "0", CVAR_ARCHIVE  },
 
-	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_doWarmup, "g_doWarmup", "0", 0, 0, qtrue  },
+	{ &g_warmup, "g_warmup", "5", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_doWarmup, "g_doWarmup", "1", 0, 0, qtrue  },
 
 	{ &g_log[0], "g_log1", "games.log", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
 	{ &g_log[1], "g_log2", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
@@ -2524,15 +2524,32 @@ void CheckTournament( void ) {
 	} else if ( level.warmupTime != 0 ) {
 		int		counts[TEAM_NUM_TEAMS];
 		qboolean	notEnough = qfalse;
+		int			ready;
+		int			i;
 
-		if ( GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
+		ready = 0;
+		for ( i = 0; i < level.numPlayingClients; i++ ) {
+			gentity_t *ent = &g_entities[level.sortedClients[i]];
+
+			if (ent->r.svFlags & SVF_BOT) {
+				ready++;
+			} else {
+				ready += ent->client->pers.ready;
+			}
+		}
+
+		if ( ready < level.numPlayingClients ) {
+			notEnough = qtrue;
+		}
+
+		if ( !notEnough && GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE, qtrue );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED, qtrue );
 
 			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
 				notEnough = qtrue;
 			}
-		} else if ( level.numPlayingClients < 2 ) {
+		} if ( level.numPlayingClients < 2 ) {
 			notEnough = qtrue;
 		}
 

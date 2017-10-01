@@ -3981,6 +3981,17 @@ static void CG_DrawWarmup( void ) {
 		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
 		cg.warmupCount = 0;
+
+		if (cg.snap->ps.pm_flags & PMF_FOLLOW) {
+			return;
+		}
+
+		if (!cgs.clientinfo[cg.snap->ps.clientNum].ready) {
+			s = CG_GetStripEdString("SABERINGAME", "TYPE_READY");
+
+			w = CG_DrawStrlen( s ) * SMALLCHAR_WIDTH;
+			CG_DrawSmallString(320 - w / 2, 50, s, 1.0f);
+		}
 		return;
 	}
 

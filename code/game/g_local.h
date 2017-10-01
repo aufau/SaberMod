@@ -439,6 +439,7 @@ typedef struct {
 	int			accuracy_hits;		// total number of hits
 	vote_t		vote;
 	vote_t		teamVote;
+	qboolean	ready;
 
 	int			persistant[MAX_PERSISTANT];	// persistant fields for current
 											// player. ps.persistant is updated

@@ -1380,14 +1380,15 @@ void ClientUserinfoChanged( int clientNum ) {
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
 	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
+		s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d\\r\\1",
 			client->info.netname, team, model,  c1, c2,
 			client->info.maxHealth, client->sess.wins, client->sess.losses,
-			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
+			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader, client->pers.ready );
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
+		s = va("n\\%s\\t\\%i\\model\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\r\\%d",
 			client->info.netname, client->sess.sessionTeam, model, redTeam, blueTeam, c1, c2,
-			client->info.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
+			client->info.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader,
+			client->pers.ready);
 	}
 
 	trap_GetConfigstring( CS_PLAYERS+clientNum, oldUserinfo, sizeof( oldUserinfo ) );

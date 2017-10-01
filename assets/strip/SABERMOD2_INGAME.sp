@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 15
+COUNT 16
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -137,6 +137,15 @@ INDEX 14
    TEXT_LANGUAGE3 "Press 'Use' to follow next %s player on the scoreboard"
    TEXT_LANGUAGE6 "Press 'Use' to follow next %s player on the scoreboard"
    TEXT_LANGUAGE8 "Press 'Use' to follow next %s player on the scoreboard"
+}
+INDEX 15
+{
+   REFERENCE TYPE_READY
+   TEXT_LANGUAGE1 "^1Type \ready to start the match!"
+   TEXT_LANGUAGE2 "^1Type \ready to start the match!"
+   TEXT_LANGUAGE3 "^1Type \ready to start the match!"
+   TEXT_LANGUAGE6 "^1Type \ready to start the match!"
+   TEXT_LANGUAGE8 "^1Type \ready to start the match!"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

@@ -2672,6 +2672,12 @@ static void Cmd_RageQuit_f(gentity_t *ent)
 	trap_DropClient( ent-g_entities, S_COLOR_RED "ragequit" );
 }
 
+static void Cmd_Ready_f(gentity_t *ent)
+{
+	ent->client->pers.ready = (qboolean)!ent->client->pers.ready;
+	ClientUserinfoChanged(ent->s.number);
+}
+
 #ifdef _DEBUG
 void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 void ScorePlum( int clientNum, vec3_t origin, int score );
@@ -2920,6 +2926,7 @@ static const clientCommand_t commands[] = {
 	{ "follow", Cmd_Follow_f, CMD_NOINTERMISSION },
 	{ "follownext", Cmd_FollowNext_f, CMD_NOINTERMISSION },
 	{ "followprev", Cmd_FollowPrev_f, CMD_NOINTERMISSION },
+	{ "ready", Cmd_Ready_f, CMD_NOINTERMISSION },
 	{ "team", Cmd_Team_f, CMD_NOINTERMISSION },
 	{ "forcechanged", Cmd_ForceChanged_f, 0 },
 	{ "where", Cmd_Where_f, 0 },
