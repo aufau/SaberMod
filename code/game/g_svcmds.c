@@ -875,40 +875,42 @@ static void Svcmd_Players_f( void ) {
 	}
 }
 
+// items and spawnitems commands
+
+struct weaponItem_s {
+	const char	*name;
+	weapon_t	num;
+};
+
+static const struct weaponItem_s weapons[] = {
+	{ "baton", WP_STUN_BATON },
+	{ "saber", WP_SABER },
+	{ "bryar", WP_BRYAR_PISTOL },
+	{ "blaster", WP_BLASTER },
+	{ "disruptor", WP_DISRUPTOR },
+	{ "bowcaster", WP_BOWCASTER },
+	{ "repeater", WP_REPEATER },
+	{ "demp", WP_DEMP2 },
+	{ "flechette", WP_FLECHETTE },
+	{ "rocket", WP_ROCKET_LAUNCHER },
+	{ "detonator", WP_THERMAL },
+	{ "mine", WP_TRIP_MINE },
+	{ "detpack", WP_DET_PACK },
+};
+
+struct holdableItem_s {
+	const char	*name;
+	holdable_t	num;
+};
+
+static const struct holdableItem_s holdables[] = {
+	{ "seeker", HI_SEEKER },
+	{ "shield", HI_SHIELD },
+	{ "bacta", HI_MEDPAC },
+	{ "sentry", HI_SENTRY_GUN },
+};
+
 static void Svcmd_Items_f( void ) {
-	struct weaponItem_s {
-		const char	*name;
-		weapon_t	num;
-	};
-
-	static const struct weaponItem_s weapons[] = {
-		{ "baton", WP_STUN_BATON },
-		{ "saber", WP_SABER },
-		{ "bryar", WP_BRYAR_PISTOL },
-		{ "blaster", WP_BLASTER },
-		{ "disruptor", WP_DISRUPTOR },
-		{ "bowcaster", WP_BOWCASTER },
-		{ "repeater", WP_REPEATER },
-		{ "demp", WP_DEMP2 },
-		{ "flechette", WP_FLECHETTE },
-		{ "rocket", WP_ROCKET_LAUNCHER },
-		{ "detonator", WP_THERMAL },
-		{ "mine", WP_TRIP_MINE },
-		{ "detpack", WP_DET_PACK },
-	};
-
-	struct holdableItem_s {
-		const char	*name;
-		holdable_t	num;
-	};
-
-	static const struct holdableItem_s holdables[] = {
-		{ "seeker", HI_SEEKER },
-		{ "shield", HI_SHIELD },
-		{ "bacta", HI_MEDPAC },
-		{ "sentry", HI_SENTRY_GUN },
-	};
-
 	struct powerupItem_t {
 		const char	*name;
 		powerup_t	num;
@@ -934,7 +936,7 @@ static void Svcmd_Items_f( void ) {
 
 
 	const int columns = 4;
-#define COL_FORMAT " %c%-17s"
+	const char *fmt = " %c%-17s";
 
 	int	argc = trap_Argc();
 	int	i, j;
@@ -950,7 +952,7 @@ static void Svcmd_Items_f( void ) {
 				G_Printf("\n");
 			}
 
-			G_Printf(COL_FORMAT, value ? '-' : '+', weapons[i].name);
+			G_Printf(fmt, value ? '-' : '+', weapons[i].name);
 		}
 		G_Printf("\n");
 
@@ -963,7 +965,7 @@ static void Svcmd_Items_f( void ) {
 				G_Printf("\n");
 			}
 
-			G_Printf(COL_FORMAT, value ? '-' : '+', holdables[i].name);
+			G_Printf(fmt, value ? '-' : '+', holdables[i].name);
 		}
 		G_Printf("\n");
 
@@ -975,7 +977,7 @@ static void Svcmd_Items_f( void ) {
 				G_Printf("\n");
 			}
 
-			G_Printf(COL_FORMAT, value ? '-' : '+', health[i].name);
+			G_Printf(fmt, value ? '-' : '+', health[i].name);
 		}
 		G_Printf("\n");
 
@@ -988,7 +990,7 @@ static void Svcmd_Items_f( void ) {
 				G_Printf("\n");
 			}
 
-			G_Printf(COL_FORMAT, value ? '-' : '+', powerups[i].name);
+			G_Printf(fmt, value ? '-' : '+', powerups[i].name);
 		}
 		G_Printf("\n");
 
@@ -1096,6 +1098,116 @@ static void Svcmd_Items_f( void ) {
 	}
 }
 
+static void Svcmd_SpawnItems_f( void ) {
+	const int columns = 4;
+	const char *fmt = " %c%-17s";
+
+	int argc = trap_Argc();
+	int i, j;
+
+	if (argc <= 1) {
+		G_Printf("Pass one or more items. Precede with + to enable or - to disable.\n");
+
+		G_Printf("Weapons:");
+		for (i = 0; i < (int)ARRAY_LEN(weapons); i++) {
+			int value = g_spawnWeapons.integer & (1 << weapons[i].num);
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(fmt, value ? '+' : '-', weapons[i].name);
+		}
+		G_Printf("\n");
+
+		G_Printf("Holdables:");
+		for (i = 0; i < (int)ARRAY_LEN(holdables); i++) {
+			int value = g_spawnItems.integer & (1 << holdables[i].num);
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(fmt, value ? '+' : '-', holdables[i].name);
+		}
+		G_Printf("\n");
+
+		return;
+	}
+
+	for (i = 1; i < argc; i++) {
+		char		arg[MAX_TOKEN_CHARS];
+		const char	*item;
+		qboolean	add;
+		int			mask[2] = { 0, 0 };
+		int			value;
+
+		trap_Argv(i, arg, sizeof(arg));
+		item = arg;
+
+		switch (arg[0]) {
+		case '-':	item++;	add = qfalse;	break;
+		case '+':	item++;	add = qtrue;	break;
+		default:			add = qtrue;	break;
+		}
+
+		Q_strlwr(arg);
+
+		// weapons
+
+		for (j = 0; j < (int)ARRAY_LEN(weapons); j++) {
+			if (!strcmp(item, weapons[j].name)) {
+				mask[add] |= 1 << weapons[j].num;
+				break;
+			}
+		}
+
+		if (mask[0] || mask[1]) {
+			value = g_spawnWeapons.integer;
+			value |= mask[1];
+			value &= ~mask[0];
+
+			trap_Cvar_Set("g_spawnWeapons", va("%d", value));
+			goto parse_next;
+		}
+
+		// holdable items
+
+		for (j = 0; j < (int)ARRAY_LEN(holdables); j++) {
+			if (!strcmp(item, holdables[j].name)) {
+				mask[add] |= 1 << holdables[j].num;
+				break;
+			}
+		}
+
+		if (mask[0] || mask[1]) {
+			value = g_spawnItems.integer;
+			value |= mask[1];
+			value &= ~mask[0];
+
+			trap_Cvar_Set("g_spawnItems", va("%d", value));
+			goto parse_next;
+		}
+
+		// groups
+
+		if (!strcmp(item, "weapons")) {
+			trap_Cvar_Set("g_spawnWeapons", add ? "-1" : "0");
+			goto parse_next;
+		}
+
+		if (!strcmp(item, "holdables")) {
+			trap_Cvar_Set("g_spawnItems", add ? "-1" : "0");
+			goto parse_next;
+		}
+
+
+		G_Printf("Unrecognized item: %s\n", item);
+	parse_next:
+		;
+	}
+}
+
 /*
 =================
 ConsoleCommand
@@ -1189,6 +1301,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "items") == 0) {
 		Svcmd_Items_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "spawnitems") == 0) {
+		Svcmd_SpawnItems_f();
 		return qtrue;
 	}
 

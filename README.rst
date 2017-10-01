@@ -168,7 +168,7 @@ forceteam <player|all> <team>
   teams.
 
 items [items]
-  Enable/Disable items using human readable names. Use without
+  Enable/Disable items using human readable names. Type without
   argument to see usage instructions.
 
 (un)lockteam <teams>
@@ -180,6 +180,10 @@ mode <mode|default>
 
 players [team]
   Print various informations about players. Optionally filter by team.
+
+spawnitems [items]
+  Enable/Disable spawning items using human readable names. Type
+  without argument to see usage instructions.
 
 remove <player|all> [time]
   Remove `player` to spectator team for at least `time` seconds.
