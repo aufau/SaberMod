@@ -408,6 +408,7 @@ void Cmd_Give_f (gentity_t *ent)
 		else {
 			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
 		}
+		ent->client->ps.stats[STAT_HEALTH] = ent->health;
 		if (!give_all)
 			return;
 	}
