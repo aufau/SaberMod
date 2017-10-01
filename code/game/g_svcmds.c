@@ -875,6 +875,227 @@ static void Svcmd_Players_f( void ) {
 	}
 }
 
+static void Svcmd_Items_f( void ) {
+	struct weaponItem_s {
+		const char	*name;
+		weapon_t	num;
+	};
+
+	static const struct weaponItem_s weapons[] = {
+		{ "baton", WP_STUN_BATON },
+		{ "saber", WP_SABER },
+		{ "bryar", WP_BRYAR_PISTOL },
+		{ "blaster", WP_BLASTER },
+		{ "disruptor", WP_DISRUPTOR },
+		{ "bowcaster", WP_BOWCASTER },
+		{ "repeater", WP_REPEATER },
+		{ "demp", WP_DEMP2 },
+		{ "flechette", WP_FLECHETTE },
+		{ "rocket", WP_ROCKET_LAUNCHER },
+		{ "detonator", WP_THERMAL },
+		{ "mine", WP_TRIP_MINE },
+		{ "detpack", WP_DET_PACK },
+	};
+
+	struct holdableItem_s {
+		const char	*name;
+		holdable_t	num;
+	};
+
+	static const struct holdableItem_s holdables[] = {
+		{ "seeker", HI_SEEKER },
+		{ "shield", HI_SHIELD },
+		{ "bacta", HI_MEDPAC },
+		{ "sentry", HI_SENTRY_GUN },
+	};
+
+	struct powerupItem_t {
+		const char	*name;
+		powerup_t	num;
+	};
+
+	static const struct powerupItem_t powerups[] = {
+		{ "enlighten_light", PW_FORCE_ENLIGHTENED_LIGHT },
+		{ "enlighten_dark", PW_FORCE_ENLIGHTENED_DARK },
+		{ "force_boon", PW_FORCE_BOON },
+		{ "ysalamari", PW_YSALAMIRI },
+	};
+
+	struct itemItem_t {
+		const char	*name;
+		const char	*classname;
+	};
+
+	static const struct itemItem_t health[] = {
+		{ "medpak", "item_medpak_instant" },
+		{ "shield_sm", "item_shield_sm_instant" },
+		{ "shield_lrg", "item_shield_lrg_instant" },
+	};
+
+
+	const int columns = 4;
+#define COL_FORMAT " %c%-17s"
+
+	int	argc = trap_Argc();
+	int	i, j;
+
+	if (argc <= 1) {
+		G_Printf("Pass one or more items. Precede with + to enable or - to disable.\n");
+
+		G_Printf("Weapons:");
+		for (i = 0; i < (int)ARRAY_LEN(weapons); i++) {
+			int value = g_weaponDisable.integer & (1 << weapons[i].num);
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(COL_FORMAT, value ? '-' : '+', weapons[i].name);
+		}
+		G_Printf("\n");
+
+		G_Printf("Holdables:");
+		for (i = 0; i < (int)ARRAY_LEN(holdables); i++) {
+			gitem_t	*item = BG_FindItemForHoldable(holdables[i].num);
+			int		value = trap_Cvar_VariableIntegerValue(va("disable_%s", item->classname));
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(COL_FORMAT, value ? '-' : '+', holdables[i].name);
+		}
+		G_Printf("\n");
+
+		G_Printf("Health:");
+		for (i = 0; i < (int)ARRAY_LEN(health); i++) {
+			int	value = trap_Cvar_VariableIntegerValue(va("disable_%s", health[i].classname));
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(COL_FORMAT, value ? '-' : '+', health[i].name);
+		}
+		G_Printf("\n");
+
+		G_Printf("Powerups:");
+		for (i = 0; i < (int)ARRAY_LEN(powerups); i++) {
+			gitem_t	*item = BG_FindItemForPowerup(powerups[i].num);
+			int		value = trap_Cvar_VariableIntegerValue(va("disable_%s", item->classname));
+
+			if (i % columns == 0) {
+				G_Printf("\n");
+			}
+
+			G_Printf(COL_FORMAT, value ? '-' : '+', powerups[i].name);
+		}
+		G_Printf("\n");
+
+		return;
+	}
+
+	for (i = 1; i < argc; i++) {
+		char		arg[MAX_TOKEN_CHARS];
+		const char	*item;
+		qboolean	add;
+		int			mask[2] = { 0, 0 };
+		int			value;
+
+		trap_Argv(i, arg, sizeof(arg));
+		item = arg;
+
+		switch (arg[0]) {
+		case '-':	item++;	add = qfalse;	break;
+		case '+':	item++;	add = qtrue;	break;
+		default:			add = qtrue;	break;
+		}
+
+		Q_strlwr(arg);
+
+		// weapons
+
+		for (j = 0; j < (int)ARRAY_LEN(weapons); j++) {
+			if (!strcmp(item, weapons[j].name)) {
+				mask[add] |= 1 << weapons[j].num;
+				break;
+			}
+		}
+
+		if (mask[0] || mask[1]) {
+			value = g_weaponDisable.integer;
+			value |= mask[0];
+			value &= ~mask[1];
+
+			trap_Cvar_Set("g_weaponDisable", va("%d", value));
+			goto parse_next;
+		}
+
+		// holdable items
+
+		for (j = 0; j < (int)ARRAY_LEN(holdables); j++) {
+			if (!strcmp(item, holdables[j].name)) {
+				gitem_t *item = BG_FindItemForHoldable(holdables[j].num);
+				trap_Cvar_Set(va("disable_%s", item->classname), add ? "0" : "1");
+				goto parse_next;
+			}
+		}
+
+		// health
+
+		for (j = 0; j < (int)ARRAY_LEN(health); j++) {
+			if (!strcmp(item, health[j].name)) {
+				trap_Cvar_Set(va("disable_%s", health[j].classname), add ? "0" : "1");
+				goto parse_next;
+			}
+		}
+
+		// powerups
+
+		for (j = 0; j < (int)ARRAY_LEN(powerups); j++) {
+			if (!strcmp(item, powerups[j].name)) {
+				gitem_t *item = BG_FindItemForPowerup(powerups[j].num);
+				trap_Cvar_Set(va("disable_%s", item->classname), add ? "0" : "1");
+				goto parse_next;
+			}
+		}
+
+		// groups
+
+		if (!strcmp(item, "weapons")) {
+			trap_Cvar_Set("g_weaponDisable", add ? "0" : "-1");
+			goto parse_next;
+		}
+
+		if (!strcmp(item, "holdables")) {
+			for (j = 0; j < (int)ARRAY_LEN(holdables); j++) {
+				gitem_t *item = BG_FindItemForHoldable(holdables[j].num);
+				trap_Cvar_Set(va("disable_%s", item->classname), add ? "0" : "1");
+			}
+			goto parse_next;
+		}
+
+		if (!strcmp(item, "health")) {
+			for (j = 0; j < (int)ARRAY_LEN(health); j++) {
+				trap_Cvar_Set(va("disable_%s", health[j].classname), add ? "0" : "1");
+			}
+			goto parse_next;
+		}
+
+		if (!strcmp(item, "powerups")) {
+			for (j = 0; j < (int)ARRAY_LEN(powerups); j++) {
+				gitem_t *item = BG_FindItemForPowerup(powerups[j].num);
+				trap_Cvar_Set(va("disable_%s", item->classname), add ? "0" : "1");
+			}
+			goto parse_next;
+		}
+
+		G_Printf("Unrecognized item: %s\n", item);
+	parse_next:
+		;
+	}
+}
+
 /*
 =================
 ConsoleCommand
@@ -963,6 +1184,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "players") == 0) {
 		Svcmd_Players_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "items") == 0) {
+		Svcmd_Items_f();
 		return qtrue;
 	}
 

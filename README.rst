@@ -167,6 +167,10 @@ forceteam <player|all> <team>
   Little known original command allowing admin to move players between
   teams.
 
+items [items]
+  Enable/Disable items using human readable names. Use without
+  argument to see usage instructions.
+
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
