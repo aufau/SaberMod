@@ -3987,7 +3987,15 @@ static void CG_DrawWarmup( void ) {
 		}
 
 		if (!(cgs.readyClients & (1 << cg.snap->ps.clientNum))) {
-			s = CG_GetStripEdString("SABERINGAME", "TYPE_READY");
+			char	bind[16];
+
+			trap_Cvar_VariableStringBuffer("ui_bind_ready", bind, sizeof(bind));
+
+			if (bind[0]) {
+				s = va(CG_GetStripEdString("SABERINGAME", "PRESS_TO_START"), bind);
+			} else {
+				s = CG_GetStripEdString("SABERINGAME", "TYPE_READY");
+			}
 
 			w = CG_DrawStrlen( s ) * SMALLCHAR_WIDTH;
 			CG_DrawSmallString(320 - w / 2, 50, s, 1.0f);

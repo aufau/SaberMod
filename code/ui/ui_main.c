@@ -7298,6 +7298,8 @@ void UI_RegisterCvars( void ) {
 	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_callvote_kick", "0", CVAR_ARCHIVE );
+
+	trap_Cvar_Register( NULL, "ui_bind_ready", "", CVAR_ROM | CVAR_INTERNAL );
 }
 
 /*

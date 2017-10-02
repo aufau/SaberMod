@@ -60,9 +60,150 @@ typedef struct uiScan_s {
 	int			movementCmds;
 	qboolean	illegal;
 	qboolean	invalid;
+	qboolean	command_ready;
 } uiScan_t;
 
 static uiScan_t ui_scan;
+
+struct keyname_s {
+	const char	*name;
+	fakeAscii_t	key;
+};
+
+static const struct keyname_s keynames[MAX_KEYS] =
+{
+	{ "SHIFT", A_SHIFT },
+	{ "CTRL", A_CTRL },
+	{ "ALT", A_ALT },
+	{ "CAPSLOCK", A_CAPSLOCK },
+	{ "KP_NUMLOCK", A_NUMLOCK },
+	{ "SCROLLLOCK", A_SCROLLLOCK },
+	{ "PAUSE", A_PAUSE },
+	{ "BACKSPACE", A_BACKSPACE },
+	{ "TAB", A_TAB },
+	{ "ENTER", A_ENTER },
+	{ "KP_PLUS", A_KP_PLUS },
+	{ "KP_MINUS", A_KP_MINUS },
+	{ "KP_ENTER", A_KP_ENTER },
+	{ "KP_DEL", A_KP_PERIOD },
+	{ "KP_INS", A_KP_0 },
+	{ "KP_END", A_KP_1 },
+	{ "KP_DOWNARROW", A_KP_2 },
+	{ "KP_PGDN", A_KP_3 },
+	{ "KP_LEFTARROW", A_KP_4 },
+	{ "KP_5", A_KP_5 },
+	{ "KP_RIGHTARROW", A_KP_6 },
+	{ "KP_HOME", A_KP_7 },
+	{ "KP_UPARROW", A_KP_8 },
+	{ "KP_PGUP", A_KP_9 },
+	{ "CONSOLE", A_CONSOLE },
+	{ "ESCAPE", A_ESCAPE },
+	{ "F1", A_F1 },
+	{ "F2", A_F2 },
+	{ "F3", A_F3 },
+	{ "F4", A_F4 },
+	{ "SPACE", A_SPACE },
+	{ "SEMICOLON", A_SEMICOLON },
+	{ "DEL", A_DELETE },
+	{ "EURO", A_EURO },
+	{ "SHIFT", A_SHIFT2 },
+	{ "CTRL", A_CTRL2 },
+	{ "ALTGR", A_ALT2 },
+	{ "F5", A_F5 },
+	{ "F6", A_F6 },
+	{ "F7", A_F7 },
+	{ "F8", A_F8 },
+	{ "CIRCUMFLEX", A_CIRCUMFLEX },
+	{ "MWHEELUP", A_MWHEELUP },
+	{ "MWHEELDOWN", A_MWHEELDOWN },
+	{ "MOUSE1", A_MOUSE1 },
+	{ "MOUSE2", A_MOUSE2 },
+	{ "INS", A_INSERT },
+	{ "HOME", A_HOME },
+	{ "PGUP", A_PAGE_UP },
+	{ "F9", A_F9 },
+	{ "F10", A_F10 },
+	{ "F11", A_F11 },
+	{ "F12", A_F12 },
+	{ "SHIFT_ENTER", A_ENTER },
+	{ "END", A_END },
+	{ "PGDN", A_PAGE_DOWN },
+	{ "SHIFT_SPACE", A_SHIFT_SPACE },
+    { "SHIFT_KP_ENTER", A_SHIFT_KP_ENTER },
+	{ "MOUSE3", A_MOUSE3 },
+	{ "MOUSE4", A_MOUSE4 },
+	{ "MOUSE5", A_MOUSE5 },
+	{ "UPARROW", A_CURSOR_UP },
+	{ "DOWNARROW", A_CURSOR_DOWN },
+	{ "LEFTARROW", A_CURSOR_LEFT },
+	{ "RIGHTARROW", A_CURSOR_RIGHT },
+
+	{ "JOY0", A_JOY0 },
+	{ "JOY1", A_JOY1 },
+	{ "JOY2", A_JOY2 },
+	{ "JOY3", A_JOY3 },
+	{ "JOY4", A_JOY4 },
+	{ "JOY5", A_JOY5 },
+	{ "JOY6", A_JOY6 },
+	{ "JOY7", A_JOY7 },
+	{ "JOY8", A_JOY8 },
+	{ "JOY9", A_JOY9 },
+	{ "JOY10", A_JOY10 },
+	{ "JOY11", A_JOY11 },
+	{ "JOY12", A_JOY12 },
+	{ "JOY13", A_JOY13 },
+	{ "JOY14", A_JOY14 },
+	{ "JOY15", A_JOY15 },
+	{ "JOY16", A_JOY16 },
+	{ "JOY17", A_JOY17 },
+	{ "JOY18", A_JOY18 },
+	{ "JOY19", A_JOY19 },
+	{ "JOY20", A_JOY20 },
+	{ "JOY21", A_JOY21 },
+	{ "JOY22", A_JOY22 },
+	{ "JOY23", A_JOY23 },
+	{ "JOY24", A_JOY24 },
+	{ "JOY25", A_JOY25 },
+	{ "JOY26", A_JOY26 },
+	{ "JOY27", A_JOY27 },
+	{ "JOY28", A_JOY28 },
+	{ "JOY29", A_JOY29 },
+	{ "JOY30", A_JOY30 },
+	{ "JOY31", A_JOY31 },
+
+	{ "AUX0", A_AUX0 },
+	{ "AUX1", A_AUX1 },
+	{ "AUX2", A_AUX2 },
+	{ "AUX3", A_AUX3 },
+	{ "AUX4", A_AUX4 },
+	{ "AUX5", A_AUX5 },
+	{ "AUX6", A_AUX6 },
+	{ "AUX7", A_AUX7 },
+	{ "AUX8", A_AUX8 },
+	{ "AUX9", A_AUX9 },
+	{ "AUX10", A_AUX10 },
+	{ "AUX11", A_AUX11 },
+	{ "AUX12", A_AUX12 },
+	{ "AUX13", A_AUX13 },
+	{ "AUX14", A_AUX14 },
+	{ "AUX15", A_AUX15 },
+	{ "AUX16", A_AUX16 },
+	{ "AUX17", A_AUX17 },
+	{ "AUX18", A_AUX18 },
+	{ "AUX19", A_AUX19 },
+	{ "AUX20", A_AUX20 },
+	{ "AUX21", A_AUX21 },
+	{ "AUX22", A_AUX22 },
+	{ "AUX23", A_AUX23 },
+	{ "AUX24", A_AUX24 },
+	{ "AUX25", A_AUX25 },
+	{ "AUX26", A_AUX26 },
+	{ "AUX27", A_AUX27 },
+	{ "AUX28", A_AUX28 },
+	{ "AUX29", A_AUX29 },
+	{ "AUX30", A_AUX30 },
+	{ "AUX31", A_AUX31 },
+};
 
 static void UI_Cmd_TokenizeString(const char *text_in) {
 	const char	*text;
@@ -253,6 +394,11 @@ static void UI_Cmd_Execute(void) {
 
 		return;
 	}
+
+	if (!Q_stricmp(cmd_argv[0], "ready") && cmd_argc == 1) {
+		ui_scan.command_ready = qtrue;
+		return;
+	}
 }
 
 static void UI_Cmd_ExecuteString(const char *text) {
@@ -319,7 +465,7 @@ static void UI_Cbuf_Init(void) {
 =================
 UI_MacroScan_f
 
-Scan for illegal macros
+Scan for illegal macros and check binds
 =================
 */
 void UI_MacroScan_f() {
@@ -357,6 +503,25 @@ void UI_MacroScan_f() {
 			disabled = qtrue;
 			trap_Key_SetBinding(i, "");
 			continue;
+		}
+
+		if (ui_scan.command_ready) {
+			char		asciiName[2] = { 0, 0 };
+			const char	*name = asciiName;
+			int			j;
+
+			if (isgraph(i)) {
+				asciiName[0] = i;
+			}
+
+			for (j = 0; j < (int)ARRAY_LEN(keynames); j++) {
+				if (i == (int)keynames[j].key) {
+					name = keynames[j].name;
+					break;
+				}
+			}
+
+			trap_Cvar_Set("ui_bind_ready", name);
 		}
 	}
 
