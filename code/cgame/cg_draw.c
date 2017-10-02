@@ -3986,7 +3986,7 @@ static void CG_DrawWarmup( void ) {
 			return;
 		}
 
-		if (!cgs.clientinfo[cg.snap->ps.clientNum].ready) {
+		if (!(cgs.readyClients & (1 << cg.snap->ps.clientNum))) {
 			s = CG_GetStripEdString("SABERINGAME", "TYPE_READY");
 
 			w = CG_DrawStrlen( s ) * SMALLCHAR_WIDTH;

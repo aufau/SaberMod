@@ -2674,8 +2674,10 @@ static void Cmd_RageQuit_f(gentity_t *ent)
 
 static void Cmd_Ready_f(gentity_t *ent)
 {
-	ent->client->pers.ready = (qboolean)!ent->client->pers.ready;
-	ClientUserinfoChanged(ent->s.number);
+	if (level.warmupTime) {
+		ent->client->pers.ready = (qboolean)!ent->client->pers.ready;
+		G_UpdateClientReadyFlags();
+	}
 }
 
 #ifdef _DEBUG

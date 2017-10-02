@@ -977,6 +977,7 @@ void ClientThink_real		( gentity_t *ent );
 void ClientEndFrame			( gentity_t *ent );
 void G_RunClient			( gentity_t *ent );
 void G_Respawn				( gentity_t *ent );
+void G_UpdateClientReadyFlags( void );
 
 //
 // g_team.c
