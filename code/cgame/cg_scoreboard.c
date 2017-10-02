@@ -42,15 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Used when interleaved
 
-
-
-#define SB_LEFT_BOTICON_X	(SCOREBOARD_X+0)
-#define SB_LEFT_HEAD_X		(SCOREBOARD_X+32)
-#define SB_RIGHT_BOTICON_X	(SCOREBOARD_X+64)
-#define SB_RIGHT_HEAD_X		(SCOREBOARD_X+96)
-// Normal
-#define SB_BOTICON_X		(SCOREBOARD_X+32)
-#define SB_HEAD_X			(SCOREBOARD_X+64)
+#define SB_RIGHT_MARKER_X	(SCOREBOARD_X+68)
+#define SB_FLAGICON_X		(SCOREBOARD_X+68)
 
 #define SB_SCORELINE_X		(SCOREBOARD_X+100)
 #define SB_SCORELINE_WIDTH	(cgs.screenWidth - SB_SCORELINE_X * 2)
@@ -274,7 +267,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 
 	ci = &cgs.clientinfo[score->client];
 
-	iconx = SB_BOTICON_X + (SB_RATING_WIDTH / 2);
+	iconx = SB_FLAGICON_X;
 
 	// draw the handicap or bot skill marker (unless player has flag)
 	if ( ci->powerups & ( 1 << PW_NEUTRALFLAG ) ) {
@@ -378,13 +371,13 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	// add the "ready" marker for intermission exiting
 	if ( cgs.readyClients & ( 1 << score->client ) )
 	{
-		UI_DrawScaledProportionalString(SB_SCORELINE_X - 31, y + 2,
+		UI_DrawScaledProportionalString(SB_RIGHT_MARKER_X, y + 2,
 			CG_GetStripEdString("INGAMETEXT", "READY"), UI_RIGHT, colorWhite, 0.7f * scale);
 	}
 	else if ( GT_Round(cgs.gametype) && cg.predictedPlayerState.pm_type != PM_INTERMISSION &&
 		score->dead && ci->team != TEAM_SPECTATOR )
 	{
-		UI_DrawScaledProportionalString(SB_SCORELINE_X - 31, y + 2,
+		UI_DrawScaledProportionalString(SB_RIGHT_MARKER_X, y + 2,
 			CG_GetStripEdString("SABERINGAME", "DEAD"), UI_RIGHT, colorRed, 0.7f * scale);
 	}
 }
