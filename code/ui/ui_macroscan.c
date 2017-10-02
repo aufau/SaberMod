@@ -327,13 +327,10 @@ void UI_MacroScan_f() {
 	qboolean quiet = (qboolean)!!atoi(UI_Argv(1));
 	qboolean disabled = qfalse;
 	char kb[1024];
-	int start, end;
 	int i;
 
 	if (developer || !quiet) {
 		Com_Printf("Starting macro scan...\n");
-
-		start = trap_Milliseconds();
 	}
 
 	for (i = 0; i < MAX_KEYS; i++) {
@@ -364,9 +361,7 @@ void UI_MacroScan_f() {
 	}
 
 	if (developer || !quiet) {
-		end = trap_Milliseconds();
-
-		Com_Printf("Macro scan completed in %dms.", end - start);
+		Com_Printf("Macro scan completed.");
 
 		if (disabled) {
 			Com_Printf(" Some of your binds have been disabled.\n");
