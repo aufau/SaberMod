@@ -907,6 +907,7 @@ static const struct holdableItem_s holdables[] = {
 	{ "seeker", HI_SEEKER },
 	{ "shield", HI_SHIELD },
 	{ "bacta", HI_MEDPAC },
+	{ "binoculars", HI_BINOCULARS },
 	{ "sentry", HI_SENTRY_GUN },
 };
 

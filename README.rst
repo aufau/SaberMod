@@ -309,9 +309,10 @@ g_teamsizeMin <size>
 g_spawnItems <bitmask>
   What items will be given to players on spawn. Use following bitmask:
 
-  ================  ================  ===============  ===============
-  2 - Seeker Drone  4 - Forcefield    8 - Bacta        64 - Sentry
-  ================  ================  ===============  ===============
+  =====================  =====================  =====================
+  2 - Seeker Drone       4 - Forcefield         8 - Bacta
+  32 - Binoculars        64 - Sentry
+  =====================  =====================  =====================
 
 g_spawnWeapons <bitmask>
   Controls weapons given to players on spawn using the same bitmask

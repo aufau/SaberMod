@@ -468,7 +468,7 @@ typedef enum {
 } holdable_t;
 
 // HI_NONE breaks item selector cycle in cgame
-#define LEGAL_ITEMS ((1 << HI_SEEKER) | (1 << HI_SHIELD) | (1 << HI_MEDPAC) | (1 << HI_SENTRY_GUN))
+#define LEGAL_ITEMS ((1 << HI_SEEKER) | (1 << HI_SHIELD) | (1 << HI_MEDPAC) | (1 << HI_SENTRY_GUN) | (1 << HI_BINOCULARS))
 
 typedef enum {
 	CTFMESSAGE_FRAGGED_FLAG_CARRIER,
