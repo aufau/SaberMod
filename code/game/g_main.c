@@ -1582,7 +1582,7 @@ static void Shuffle( void )
 
 static void NextRound( void )
 {
-	char	warmup[2];
+	char	warmup[8];
 	int		i;
 
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
