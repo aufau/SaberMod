@@ -452,6 +452,11 @@ typedef struct {
 	qboolean	predictItemPickup;	// based on cg_predictItems userinfo
 	qboolean	pmoveFixed;			//
 	char		netname[MAX_NETNAME];
+	char		model[MAX_QPATH];
+	int			color1;				// lightsaber color
+	int			color2;
+	int			skill;				// 0 = human, 1-5 = bot
+	int			teamTask;			// 0 = none, 1 = offence, 2 = defence
 	int			maxHealth;			// for handicapping
 	qboolean	teamInfo;			// send team overlay updates?
 	qboolean	privateDuel;		// based on cg_privateDuel userinfo
@@ -963,6 +968,7 @@ gametype_t G_GametypeForString( const char *s );
 // g_client.c
 //
 const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
+void ClientUpdateConfigString( int clientNum );
 void ClientUserinfoChanged( int clientNum );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum, qboolean allowTeamReset );

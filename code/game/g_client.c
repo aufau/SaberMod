@@ -1228,8 +1228,34 @@ void SetupGameGhoul2Model(gclient_t *client, const char *modelname)
 	}
 }
 
+/*
+===========
+ClientUpdateConfigString
 
+Update player's configstring.
+===========
+*/
+void ClientUpdateConfigString( int clientNum ) {
+	const gclient_t	*client = &level.clients[clientNum];
+	char			*s;
 
+	// send over a subset of the userinfo keys so other clients can
+	// print scoreboards, display models, and play custom sounds
+	s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%i\\c2\\%i\\hc\\%i\\w\\%i\\l\\%i\\skill\\%i\\tt\\%i\\tl\\%i",
+		client->info.netname,
+		client->sess.sessionTeam,
+		client->info.model,
+		client->info.color1,
+		client->info.color2,
+		client->info.maxHealth,
+		client->sess.wins,
+		client->sess.losses,
+		client->info.skill,
+		client->info.teamTask,
+		client->sess.teamLeader);
+
+	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
+}
 
 /*
 ===========
@@ -1243,24 +1269,14 @@ if desired.
 ============
 */
 void ClientUserinfoChanged( int clientNum ) {
-	gentity_t	*ent;
 	gclient_t	*client;
 	qboolean	privateDuel;
 	const char	*s;
-	int		teamTask, teamLeader, team, health;
-	char	model[MAX_QPATH];
-	//char	headModel[MAX_QPATH];
-	char	forcePowers[MAX_QPATH];
-	char	oldname[MAX_NETNAME];
-	char	c1[11]; // Enough for hex color, just in case
-	char	c2[11]; // 0xffffffff
-	char	redTeam[MAX_TEAMNAME];
-	char	blueTeam[MAX_TEAMNAME];
-	char	userinfo[MAX_INFO_STRING];
-	char	oldUserinfo[MAX_INFO_STRING];
+	char		oldname[MAX_NETNAME];
+	char		userinfo[MAX_INFO_STRING];
+	int			health;
 
-	ent = g_entities + clientNum;
-	client = ent->client;
+	client = &level.clients[clientNum];
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -1305,37 +1321,12 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// set model
 	if( GT_Team(level.gametype) ) {
-		Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
-		//Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
+		s = Info_ValueForKey (userinfo, "team_model");
 	} else {
-		Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
-		//Q_strncpyz( headModel, Info_ValueForKey (userinfo, "headmodel"), sizeof( headModel ) );
+		s = Info_ValueForKey (userinfo, "model");
 	}
 
-	Q_strncpyz( forcePowers, Info_ValueForKey (userinfo, "forcepowers"), sizeof( forcePowers ) );
-
-	team = client->sess.sessionTeam;
-
-/*	NOTE: all client side now
-
-	// team
-	switch( team ) {
-	case TEAM_RED:
-		ForceClientSkin(client, model, "red");
-//		ForceClientSkin(client, headModel, "red");
-		break;
-	case TEAM_BLUE:
-		ForceClientSkin(client, model, "blue");
-//		ForceClientSkin(client, headModel, "blue");
-		break;
-	}
-	// don't ever use a default skin in teamplay, it would just waste memory
-	// however bots will always join a team but they spawn in as spectator
-	if ( GT_Team(level.gametype) && team == TEAM_SPECTATOR) {
-		ForceClientSkin(client, model, "red");
-//		ForceClientSkin(client, headModel, "red");
-	}
-*/
+	Q_strncpyz( client->info.model, s, sizeof( client->info.model ) );
 
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
 	if ( ! *s || atoi( s ) != 0 ) {
@@ -1359,44 +1350,20 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->info.privateDuel = privateDuel;
 
 		if (privateDuel) {
-			G_StartPrivateDuel( ent );
+			G_StartPrivateDuel( &g_entities[clientNum] );
 		} else {
-			G_StopPrivateDuel( ent );
+			G_StopPrivateDuel( &g_entities[clientNum] );
 		}
 	}
 
 	// team task (0 = none, 1 = offence, 2 = defence)
-	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
-	// team Leader (1 = leader, 0 is normal player)
-	teamLeader = client->sess.teamLeader;
+	client->info.teamTask = atoi( Info_ValueForKey(userinfo, "teamtask") );
 
 	// colors
-	Q_strncpyz(c1, Info_ValueForKey( userinfo, "color1" ), sizeof(c1));
-	Q_strncpyz(c2, Info_ValueForKey( userinfo, "color2" ), sizeof(c2));
+	client->info.color1 = atoi( Info_ValueForKey( userinfo, "color1" ) );
+	client->info.color2 = atoi( Info_ValueForKey( userinfo, "color2" ) );
 
-	Q_strncpyz(redTeam, Info_ValueForKey( userinfo, "g_redteam" ), sizeof(redTeam));
-	Q_strncpyz(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ), sizeof(blueTeam));
-
-	// send over a subset of the userinfo keys so other clients can
-	// print scoreboards, display models, and play custom sounds
-	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->info.netname, team, model,  c1, c2,
-			client->info.maxHealth, client->sess.wins, client->sess.losses,
-			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
-	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->info.netname, client->sess.sessionTeam, model, redTeam, blueTeam, c1, c2,
-			client->info.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
-	}
-
-	trap_GetConfigstring( CS_PLAYERS+clientNum, oldUserinfo, sizeof( oldUserinfo ) );
-	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
-
-	if ( strcmp( oldUserinfo, s ) != 0 )
-		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i %s\n", clientNum, s );
-	else
-		G_LogPrintf( LOG_USERINFO, "ClientUserinfoChanged: %i <no change>\n", clientNum );
+	ClientUpdateConfigString( clientNum );
 }
 
 
