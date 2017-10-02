@@ -1061,7 +1061,7 @@ static void G_SwitchTeam( gentity_t *ent ) {
 
 	// get and distribute relevent paramters
 	CalculateRanks();
-	ClientUserinfoChanged( clientNum );
+	ClientUpdateConfigString( clientNum );
 }
 
 /*
@@ -1331,8 +1331,8 @@ void ClientThink_real( gentity_t *ent ) {
 			}
 
 			duelAgainst->client->sess.losses++;
-			ClientUserinfoChanged( ent->client->ps.clientNum );
-			ClientUserinfoChanged( duelAgainst->client->ps.clientNum );
+			ClientUpdateConfigString( ent->client->ps.clientNum );
+			ClientUpdateConfigString( duelAgainst->client->ps.clientNum );
 		}
 		else
 		{

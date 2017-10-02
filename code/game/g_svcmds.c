@@ -773,7 +773,7 @@ static void	Svcmd_Shuffle_f( void )
 
 		if ( client->pers.connected != CON_DISCONNECTED ) {
 			if ( change[i] ) {
-				ClientUserinfoChanged( i );
+				ClientUpdateConfigString( i );
 
 				if ( client->pers.connected == CON_CONNECTED ) {
 					ClientBegin( i, qfalse );

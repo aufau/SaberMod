@@ -812,7 +812,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 	BroadcastTeamChange( client, oldTeam );
 
 	// get and distribute relevent paramters
-	ClientUserinfoChanged( clientNum );
+	ClientUpdateConfigString( clientNum );
 
 	ClientBegin( clientNum, qfalse );
 

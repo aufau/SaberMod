@@ -1041,13 +1041,13 @@ void AdjustTournamentScores( void ) {
 			clientNum = level.sortedClients[clSuccess];
 
 			level.clients[ clientNum ].sess.wins++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 			trap_SetConfigstring ( CS_CLIENT_DUELWINNER, va("%i", clientNum ) );
 
 			clientNum = level.sortedClients[clFailure];
 
 			level.clients[ clientNum ].sess.losses++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 		}
 		else
 		{
@@ -1057,13 +1057,13 @@ void AdjustTournamentScores( void ) {
 			clientNum = level.sortedClients[clSuccess];
 
 			level.clients[ clientNum ].sess.wins++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 			trap_SetConfigstring ( CS_CLIENT_DUELWINNER, va("%i", clientNum ) );
 
 			clientNum = level.sortedClients[clFailure];
 
 			level.clients[ clientNum ].sess.losses++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 		}
 	}
 	else
@@ -1071,7 +1071,7 @@ void AdjustTournamentScores( void ) {
 		clientNum = level.sortedClients[0];
 		if ( level.clients[ clientNum ].pers.connected == CON_CONNECTED ) {
 			level.clients[ clientNum ].sess.wins++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 
 			trap_SetConfigstring ( CS_CLIENT_DUELWINNER, va("%i", clientNum ) );
 		}
@@ -1079,7 +1079,7 @@ void AdjustTournamentScores( void ) {
 		clientNum = level.sortedClients[1];
 		if ( level.clients[ clientNum ].pers.connected == CON_CONNECTED ) {
 			level.clients[ clientNum ].sess.losses++;
-			ClientUserinfoChanged( clientNum );
+			ClientUpdateConfigString( clientNum );
 		}
 	}
 }
@@ -1574,7 +1574,7 @@ static void Shuffle( void )
 		ent = g_entities + clientNum;
 
 		respawn(ent);
-		ClientUserinfoChanged(clientNum);
+		ClientUpdateConfigString(clientNum);
 	}
 
 	CalculateRanks();
@@ -2713,11 +2713,11 @@ void SetLeader(team_t team, int client) {
 			continue;
 		if (level.clients[i].sess.teamLeader) {
 			level.clients[i].sess.teamLeader = qfalse;
-			ClientUserinfoChanged(i);
+			ClientUpdateConfigString(i);
 		}
 	}
 	level.clients[client].sess.teamLeader = qtrue;
-	ClientUserinfoChanged( client );
+	ClientUpdateConfigString( client );
 	PrintTeam(team, va("print \"%s" S_COLOR_WHITE " %s\n\"", level.clients[client].info.netname, G_GetStripEdString("SVINGAME", "NEWTEAMLEADER")) );
 }
 

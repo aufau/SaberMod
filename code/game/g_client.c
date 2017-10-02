@@ -2292,12 +2292,12 @@ void ClientDisconnect( int clientNum ) {
 		if ( level.sortedClients[1] == clientNum ) {
 			level.clients[ level.sortedClients[0] ].pers.persistant[PERS_SCORE] = 0;
 			level.clients[ level.sortedClients[0] ].sess.wins++;
-			ClientUserinfoChanged( level.sortedClients[0] );
+			ClientUpdateConfigString( level.sortedClients[0] );
 		}
 		else if ( level.sortedClients[0] == clientNum ) {
 			level.clients[ level.sortedClients[1] ].pers.persistant[PERS_SCORE] = 0;
 			level.clients[ level.sortedClients[1] ].sess.wins++;
-			ClientUserinfoChanged( level.sortedClients[1] );
+			ClientUpdateConfigString( level.sortedClients[1] );
 		}
 	}
 
