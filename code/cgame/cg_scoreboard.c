@@ -376,7 +376,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	}
 
 	// add the "ready" marker for intermission exiting
-	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) )
+	if ( cgs.readyClients & ( 1 << score->client ) )
 	{
 		UI_DrawScaledProportionalString(SB_SCORELINE_X - 31, y + 2,
 			CG_GetStripEdString("INGAMETEXT", "READY"), UI_RIGHT, colorWhite, 0.7f * scale);

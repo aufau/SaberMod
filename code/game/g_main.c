@@ -1838,30 +1838,25 @@ void CheckIntermissionExit( void ) {
 	int			ready, notReady;
 	int			i;
 	gclient_t	*cl;
-	int			readyMask;
 
-	// see which players are ready
-	ready = 0;
-	notReady = 0;
-	readyMask = 0;
-	for (i=0 ; i< level.maxclients ; i++) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		if ( g_entities[i].r.svFlags & SVF_BOT ) {
-			continue;
-		}
+    // see which players are ready
+    ready = 0;
+    notReady = 0;
+    for (i=0 ; i< level.maxclients ; i++) {
+        cl = level.clients + i;
+        if ( cl->pers.connected != CON_CONNECTED ) {
+            continue;
+        }
+        if ( g_entities[i].r.svFlags & SVF_BOT ) {
+            continue;
+        }
 
-		if ( cl->readyToExit ) {
-			ready++;
-			if ( i < 16 ) {
-				readyMask |= 1 << i;
-			}
-		} else {
-			notReady++;
-		}
-	}
+        if ( cl->pers.ready ) {
+            ready++;
+        } else {
+            notReady++;
+        }
+    }
 
 	if ( level.gametype == GT_TOURNAMENT && !gDidDuelStuff &&
 		(level.time > level.intermissiontime + 2000) )
@@ -1959,29 +1954,7 @@ void CheckIntermissionExit( void ) {
 			ExitLevel();
 			return;
 		}
-
-		for (i=0 ; i< level.maxclients ; i++)
-		{ //being in a "ready" state is not necessary here, so clear it for everyone
-		  //yes, I also thinking holding this in a ps value uniquely for each player
-		  //is bad and wrong, but it wasn't my idea.
-			cl = level.clients + i;
-			if ( cl->pers.connected != CON_CONNECTED )
-			{
-				continue;
-			}
-			cl->ps.stats[STAT_CLIENTS_READY] = 0;
-		}
 		return;
-	}
-
-	// copy the readyMask to each player's stats so
-	// it can be displayed on the scoreboard
-	for (i=0 ; i< level.maxclients ; i++) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		cl->ps.stats[STAT_CLIENTS_READY] = readyMask;
 	}
 
 	// never exit in less than five seconds

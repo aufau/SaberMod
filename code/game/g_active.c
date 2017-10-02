@@ -720,6 +720,28 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 }
 
 /*
+===========
+G_UpdateClientReadyFlags
+============
+*/
+void G_UpdateClientReadyFlags( void ) {
+	int mask = 0;
+	int i;
+
+	for (i = 0; i < level.maxclients; i++) {
+		gentity_t *ent = &g_entities[i];
+
+		if (ent->inuse) {
+			if (ent->r.svFlags & SVF_BOT || ent->client->pers.ready) {
+				mask |= 1 << i;
+			}
+		}
+	}
+
+	trap_SetConfigstring(CS_READY, va("%d", mask));
+}
+
+/*
 ====================
 ClientIntermissionThink
 ====================
@@ -735,7 +757,10 @@ void ClientIntermissionThink( gclient_t *client ) {
 	client->buttons = client->pers.cmd.buttons;
 	if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
 		// this used to be an ^1 but once a player says ready, it should stick
-		client->readyToExit = qtrue;
+		if (!client->pers.ready) {
+			client->pers.ready = qtrue;
+			G_UpdateClientReadyFlags();
+		}
 	}
 }
 

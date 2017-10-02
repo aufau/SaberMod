@@ -2275,7 +2275,7 @@ static const char *CG_FeederItemText(float feederID, int index, int column,
 				}
 		  break;
 			case 2:
-				if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << sp->client ) ) {
+				if ( cgs.readyClients & ( 1 << sp->client ) ) {
 					return "Ready";
 				}
 				if (team == -1) {

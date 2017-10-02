@@ -480,8 +480,6 @@ struct gclient_s {
 
 	forceLevel_t	saberCycleQueue;
 
-	qboolean	readyToExit;		// wishes to leave the intermission
-
 	qboolean	noclip;
 
 	int			lastCmdTime;		// level.time of last usercmd_t, for EF_CONNECTION

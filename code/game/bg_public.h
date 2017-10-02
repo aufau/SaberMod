@@ -126,6 +126,7 @@ Ghoul2 Insert End
 
 #define CS_NEW					(CS_STRING_PACKAGES + MAX_STRING_PACKAGES)
 #define CS_INGAME_MOTD			(CS_NEW + 0)
+#define CS_READY				(CS_NEW + 1)
 
 #define CS_MAPS					(CS_NEW + 32)
 
@@ -324,7 +325,7 @@ typedef enum {
 	STAT_WEAPONS,					// 16 bit fields
 	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
-	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
+	STAT_CLIENTS_READY,				// unused
 	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
 	STAT_MAX
 } statIndex_t;

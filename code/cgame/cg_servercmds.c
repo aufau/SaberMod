@@ -511,6 +511,9 @@ void CG_UpdateConfigString( int num, qboolean init )
 		case CS_INGAME_MOTD:
 			trap_Cvar_Set( "ui_about_motd", va( "%d", (int)( str[0] != '\0' ) ) );
 			break;
+		case CS_READY:
+			cgs.readyClients = atoi(str);
+			break;
 		default:
 			break;
 		}

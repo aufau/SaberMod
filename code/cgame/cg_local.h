@@ -1408,6 +1408,8 @@ typedef struct {
 	flagStatus_t	redflag, blueflag;		// flag status from configstrings
 	flagStatus_t	flagStatus;
 
+	int				readyClients;
+
 	qboolean  newHud;
 
 	//
