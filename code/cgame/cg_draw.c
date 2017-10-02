@@ -3976,17 +3976,15 @@ static void CG_DrawWarmup( void ) {
 	}
 
 	if ( sec < 0 ) {
-//		s = "Waiting for players";
-		s = CG_GetStripEdString("INGAMETEXT", "WAITING_FOR_PLAYERS");
-		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
-		cg.warmupCount = 0;
 
-		if (cg.snap->ps.pm_flags & PMF_FOLLOW) {
-			return;
+		if ((cg.snap->ps.pm_flags & PMF_FOLLOW) ||
+			(cgs.readyClients & (1 << cg.snap->ps.clientNum)))
+		{
+//			s = "Waiting for players";
+			s = CG_GetStripEdString("INGAMETEXT", "WAITING_FOR_PLAYERS");
 		}
-
-		if (!(cgs.readyClients & (1 << cg.snap->ps.clientNum))) {
+		else
+		{
 			char	bind[16];
 
 			trap_Cvar_VariableStringBuffer("ui_bind_ready", bind, sizeof(bind));
@@ -3996,10 +3994,12 @@ static void CG_DrawWarmup( void ) {
 			} else {
 				s = CG_GetStripEdString("SABERINGAME", "TYPE_READY");
 			}
-
-			w = CG_DrawStrlen( s ) * SMALLCHAR_WIDTH;
-			CG_DrawSmallString(320 - w / 2, 50, s, 1.0f);
 		}
+
+		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
+		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
+		cg.warmupCount = 0;
+
 		return;
 	}
 
