@@ -463,3 +463,7 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 /*
 Ghoul2 Insert End
 */
+
+void trap_MVAPI_SetVirtualScreen(float w, float h) {
+	syscall(UI_MVAPI_SETVIRTUALSCREEN, PASSFLOAT(w), PASSFLOAT(h));
+}

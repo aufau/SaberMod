@@ -807,3 +807,7 @@ Ghoul2 Insert End
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }
+
+void trap_MVAPI_SetVirtualScreen(float w, float h) {
+	syscall(CG_MVAPI_SETVIRTUALSCREEN, PASSFLOAT(w), PASSFLOAT(h));
+}

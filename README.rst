@@ -143,6 +143,9 @@ cg_privateDuel <0|1>
 cg_fixServerTime <0|1>
   Fix various engine issues on servers running for a few days.
 
+cg_widescreen <0|1>
+  Enable HUD adjustments for widescreen monitors
+
 Spectating
 ..........
 

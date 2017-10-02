@@ -143,10 +143,11 @@ static const char * const HolocronIcons[] = {
 static int forceModelModificationCount = -1;
 static int drawTeamOverlayModificationCount = -1;
 static int crosshairColorModificationCount = -1;
+static int widescreenModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
-void CG_MVAPI_AfterInit( void );
+void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
 
 void CG_CalcEntityLerpPositions( centity_t *cent );
@@ -169,13 +170,22 @@ This must be the very first function compiled into the .q3vm file
 ================
 */
 Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11  ) {
+	static int	initArgs[3];
+	int			requestedMVAPI;
 
 	switch ( command ) {
 	case CG_INIT:
-		CG_Init( arg0, arg1, arg2 );
-		return CG_MVAPI_Init(arg11);
+		requestedMVAPI = CG_MVAPI_Init(arg11);
+		if (requestedMVAPI) {
+			initArgs[0] = arg0;
+			initArgs[1] = arg1;
+			initArgs[2] = arg2;
+		} else {
+			CG_Init( arg0, arg1, arg2 );
+		}
+		return requestedMVAPI;
 	case MVAPI_AFTER_INIT:
-		CG_MVAPI_AfterInit();
+		CG_MVAPI_AfterInit( initArgs[0], initArgs[1], initArgs[2] );
 		return 0;
 	case CG_SHUTDOWN:
 		CG_Shutdown();
@@ -295,15 +305,18 @@ int CG_MVAPI_Init( int apilevel )
 		return 0;
 	}
 
+	cg_mvapi = apilevel;
 	CG_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
 	return MV_APILEVEL;
 
 }
 
-void CG_MVAPI_AfterInit( void )
+void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	// disable jk2mv fixes
 	trap_MVAPI_ControlFixes( MVFIX_WPGLOWING );
+
+	CG_Init( serverMessageNum, serverCommandSequence, clientNum );
 }
 
 static int C_PointContents(void)
@@ -412,7 +425,7 @@ cgs_t				cgs;
 centity_t			cg_entities[MAX_GENTITIES];
 weaponInfo_t		cg_weapons[MAX_WEAPONS];
 itemInfo_t			cg_items[MAX_ITEMS];
-
+int					cg_mvapi;
 
 vmCvar_t	cg_centertime;
 vmCvar_t	cg_runpitch;
@@ -570,6 +583,7 @@ vmCvar_t	cg_followPowerup;
 vmCvar_t	cg_privateDuel;
 vmCvar_t	cg_crosshairIndicators;
 vmCvar_t	cg_crosshairIndicatorsSpec;
+vmCvar_t	cg_widescreen;
 
 vmCvar_t	ui_myteam;
 
@@ -735,6 +749,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_crosshairIndicators, "cg_crosshairIndicators", "0", CVAR_ARCHIVE},
 	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicators", "1", CVAR_ARCHIVE},
+	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 
@@ -771,6 +786,7 @@ void CG_RegisterCvars( void ) {
 	cgs.localServer = (qboolean)!!atoi( var );
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
+	widescreenModificationCount = cg_widescreen.modificationCount;
 
 	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
 	trap_Cvar_Set( GAMEVERSION, GIT_VERSION );
@@ -811,6 +827,7 @@ static void CG_ForceModelChange( void ) {
 		CG_UpdateConfigString( CS_PLAYERS + i, qfalse );
 	}
 }
+
 /*
 ===================
 CG_UpdateCrosshairColor
@@ -861,6 +878,50 @@ static void CG_UpdateCrosshairColor( void ) {
 }
 
 /*
+===================
+CG_WideScreenMode
+
+Make 2D drawing functions use widescreen or 640x480 coordinates
+===================
+*/
+void CG_WideScreenMode(qboolean on) {
+	if (cg_mvapi >= 3) {
+		if (on) {
+			trap_MVAPI_SetVirtualScreen(cgs.screenWidth, SCREEN_HEIGHT);
+		} else {
+			trap_MVAPI_SetVirtualScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
+		}
+	}
+}
+
+/*
+===================
+CG_UpdateWidescreen
+===================
+*/
+static void CG_UpdateWidescreen( void ) {
+	if ( cg_widescreen.value > 0 ) {
+		if ( cg_mvapi >= 3 ) {
+			float virtualW = SCREEN_HEIGHT * cgs.glconfig.vidWidth / cgs.glconfig.vidHeight;
+
+			cgs.screenWidth = SCREEN_WIDTH + cg_widescreen.value * (virtualW - SCREEN_WIDTH);
+		} else {
+			CG_Printf( "Widescreen fix is supported only on JK2MV 1.4 or newer\n" );
+			cgs.screenWidth = SCREEN_WIDTH;
+		}
+	} else {
+		cgs.screenWidth = SCREEN_WIDTH;
+	}
+
+	if ( cg_mvapi >= 3 ) {
+		trap_MVAPI_SetVirtualScreen(cgs.screenWidth, SCREEN_HEIGHT);
+	}
+
+	cgs.screenXFactor = SCREEN_WIDTH / cgs.screenWidth;
+	cgs.screenXFactorInv = cgs.screenWidth / SCREEN_WIDTH;
+}
+
+/*
 =================
 CG_UpdateCvars
 =================
@@ -894,7 +955,13 @@ void CG_UpdateCvars( void ) {
 	}
 
 	if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
+		crosshairColorModificationCount = cg_crosshairColor.modificationCount;
 		CG_UpdateCrosshairColor();
+	}
+
+	if ( widescreenModificationCount != cg_widescreen.modificationCount ) {
+		widescreenModificationCount = cg_widescreen.modificationCount;
+		CG_UpdateWidescreen();
 	}
 }
 
@@ -2567,6 +2634,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_RegisterCvars();
 	CG_InitConsoleCommands();
 	CG_PreloadMedia();
+	CG_UpdateWidescreen();
 
 	cg.loadLCARSStage = 0;
 	CG_LoadingString( "server info" );

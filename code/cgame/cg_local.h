@@ -1354,7 +1354,9 @@ typedef struct {
 	glconfig_t		glconfig;			// rendering configuration
 	float			screenXScale;		// derived from glconfig
 	float			screenYScale;
-	float			screenXBias;
+	float			screenWidth;		// virtual screen width (originally 640)
+	float			screenXFactor;		// 640 / screenWidth (for calculations)
+	float			screenXFactorInv;	// screenWidth / 640
 
 	int				serverCommandSequence;	// reliable command stream counter
 	int				processedSnapshotNum;// the number of snapshots cgame has requested
@@ -1472,6 +1474,7 @@ extern	centity_t		cg_entities[MAX_GENTITIES];
 extern	weaponInfo_t	cg_weapons[MAX_WEAPONS];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
+extern	int				cg_mvapi;
 
 extern	vmCvar_t		cg_centertime;
 extern	vmCvar_t		cg_runpitch;
@@ -1621,6 +1624,7 @@ extern	vmCvar_t		cg_followPowerup;
 extern	vmCvar_t		cg_privateDuel;
 extern	vmCvar_t		cg_crosshairIndicators;
 extern	vmCvar_t		cg_crosshairIndicatorsSpec;
+extern	vmCvar_t		cg_widescreen;
 
 extern	vmCvar_t		ui_myteam;
 /*
@@ -1660,6 +1664,7 @@ void CG_NextInventory_f(void);
 void CG_PrevInventory_f(void);
 void CG_NextForcePower_f(void);
 void CG_PrevForcePower_f(void);
+void CG_WideScreenMode(qboolean on);
 
 //
 // cg_view.c
@@ -1695,19 +1700,20 @@ Ghoul2 Insert End
 //
 void CG_FillRect( float x, float y, float width, float height, const float *color );
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void CG_DrawPicExt( float x, float y, float width, float height, float s1, float t1, float s2, float t2, qhandle_t hShader );
 void CG_DrawRotatePic( float x, float y, float width, float height,float angle, qhandle_t hShader );
 void CG_DrawRotatePic2( float x, float y, float width, float height,float angle, qhandle_t hShader );
 void CG_DrawString( float x, float y, const char *string,
 				   float charWidth, float charHeight, const float *modulate );
 
-void CG_DrawNumField (int x, int y, int width, int value,int charWidth,int charHeight,int style,qboolean zeroFill);
+void CG_DrawNumField (float x, float y, int width, int value,int charWidth,int charHeight,int style,qboolean zeroFill);
 
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
+void CG_DrawStringExt( float x, float y, const char *string, const float *setColor,
 		qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars );
-void CG_DrawBigString( int x, int y, const char *s, float alpha );
-void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color );
-void CG_DrawSmallString( int x, int y, const char *s, float alpha );
-void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color );
+void CG_DrawBigString( float x, float y, const char *s, float alpha );
+void CG_DrawBigStringColor( float x, float y, const char *s, vec4_t color );
+void CG_DrawSmallString( float x, float y, const char *s, float alpha );
+void CG_DrawSmallStringColor( float x, float y, const char *s, vec4_t color );
 
 int CG_DrawStrlen( const char *str );
 
@@ -1716,8 +1722,8 @@ void CG_TileClear( void );
 void CG_ColorForHealth( vec4_t hcolor );
 void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
 
-void UI_DrawProportionalString( int x, int y, const char* str, int style, const vec4_t color );
-void UI_DrawScaledProportionalString( int x, int y, const char* str, int style, const vec4_t color, float scale);
+void UI_DrawProportionalString( float x, float y, const char* str, int style, const vec4_t color );
+void UI_DrawScaledProportionalString( float x, float y, const char* str, int style, const vec4_t color, float scale);
 void CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void CG_DrawSides(float x, float y, float w, float h, float size);
 void CG_DrawTopBottom(float x, float y, float w, float h, float size);
@@ -1735,11 +1741,11 @@ void CG_PrintMotd_f( void );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles );
 void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, team_t team, qboolean force2D );
-void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, team_t team );
+void CG_DrawTeamBackground( float x, float y, float w, float h, float alpha, team_t team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle,int font);
 void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont);
-int CG_Text_Width(const char *text, float scale, font_t iMenuFont);
-int CG_Text_Height(const char *text, float scale, font_t iMenuFont);
+float CG_Text_Width(const char *text, float scale, font_t iMenuFont);
+float CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
 
@@ -1954,6 +1960,7 @@ void CG_SagaObjectiveCompleted(centity_t *ent, int won, int objectivenum);
 // MVAPI
 
 qboolean	trap_MVAPI_ControlFixes(int fixes);
+void		trap_MVAPI_SetVirtualScreen(float w, float h);
 
 //
 // system traps

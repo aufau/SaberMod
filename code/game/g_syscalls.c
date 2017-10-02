@@ -957,15 +957,15 @@ Ghoul2 Insert End
 
 qboolean trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message)
 {
-	return (qboolean)syscall(MVAPI_SEND_CONNECTIONLESSPACKET, addr, message);
+	return (qboolean)syscall(G_MVAPI_SEND_CONNECTIONLESSPACKET, addr, message);
 }
 qboolean trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize)
 {
-	return (qboolean)syscall(MVAPI_GET_CONNECTIONLESSPACKET, addr, buf, bufsize);
+	return (qboolean)syscall(G_MVAPI_GET_CONNECTIONLESSPACKET, addr, buf, bufsize);
 }
 qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t)
 {
-	return (qboolean)syscall(MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
+	return (qboolean)syscall(G_MVAPI_LOCATE_GAME_DATA, mvEnts, numGEntities, sizeofmvsharedEntity_t);
 }
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
