@@ -473,11 +473,6 @@ qboolean CG_DrawOldScoreboard( void ) {
 		return qfalse;
 	}
 
-	// don't draw scoreboard during death while warmup up
-	if ( cg.warmup && !cg.showScores ) {
-		return qfalse;
-	}
-
 	if ( cg.showScores || cg.predictedPlayerState.pm_type == PM_DEAD ||
 		 cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		fade = 1.0;
@@ -492,6 +487,11 @@ qboolean CG_DrawOldScoreboard( void ) {
 			return qfalse;
 		}
 		fade = *fadeColor;
+	}
+
+	// don't draw scoreboard during death while warmup up
+	if ( cg.warmup && !cg.showScores ) {
+		return qfalse;
 	}
 
 	// fragged by ... line
