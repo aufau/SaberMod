@@ -83,7 +83,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // DOCME in g_allowVote description
 typedef enum {
 	CV_INVALID,
-	CV_MAP_RESTART,
+	CV_FIRST,
+	CV_MAP_RESTART = CV_FIRST,
 	CV_NEXTMAP,
 	CV_MAP,
 	CV_GAMETYPE,
@@ -95,15 +96,15 @@ typedef enum {
 	CV_ROUNDLIMIT,
 	CV_TEAMSIZE,
 	CV_REMOVE,
-	CV_KICK_MODE,
+	CV_WK,
 	CV_MODE,
 	CV_MATCH,
 	CV_CAPTURELIMIT,
 	CV_POLL,
 	CV_MAX
-} voteCommand_t;
+} voteCmd_t;
 
-q_static_assert(CV_MAX < 31);
+q_static_assert(CV_MAX <= 32);
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
@@ -614,7 +615,7 @@ typedef struct {
 	int			numVotingClients;		// set by CalculateRanks
 	int			voteCooldown;			// when voteClient may call a new vote
 
-	voteCommand_t	voteCmd;			// current vote
+	voteCmd_t	voteCmd;			// current vote
 	int			voteArg;				// vote argument for CheckVote
 	int			voteClient;				// client who called current/last vote
 

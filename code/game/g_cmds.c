@@ -1753,7 +1753,7 @@ Cmd_CallVote_f
 ==================
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
-	voteCommand_t	voteCmd;
+	voteCmd_t		voteCmd;
 	const char		*voteName;
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
@@ -1762,55 +1762,33 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	const char		*mapInfo;
 	arena_t			arena;
 	char			s[MAX_STRING_CHARS];
-
-	static const char *voteCanonicalName[CV_MAX] = {
-		"Invalid",		// CV_INVALID
-		"Map Restart",	// CV_MAP_RESTART
-		"Next Map",		// CV_NEXTMAP
-		"Map",			// CV_MAP
-		"Gametype",		// CV_GAMETYPE
-		"Kick",			// CV_KICK
-		"Shuffle",		// CV_SHUFFLE
-		"Do Warmup",	// CV_DOWARMUP
-		"Timelimit",	// CV_TIMELIMIT
-		"Fraglimit",	// CV_FRAGLIMIT
-		"Roundlimit",	// CV_ROUNDLIMIT
-		"Team Size",	// CV_TEAMSIZE
-		"Remove",		// CV_REMOVE
-		"Kick Mode",	// CV_KICK_MODE
-		"Mode",			// CV_MODE
-		"Match Mode",	// CV_MATCH
-		"Capturelimit",	// CV_CAPTURELIMIT
-		"Poll",			// CV_POLL
-	};
+	int				voteMask;
 
 	typedef struct {
-		const char		*alias;
-		voteCommand_t	voteCmd;
-	} voteAlias_t;
+		const char	*name;		// must be lowercase
+		const char	*longName;
+		const char	*synopsis;
+	} voteCmdInfo_t;
 
-	static const voteAlias_t voteAlias[] = {
-		{ "map_restart",	CV_MAP_RESTART },
-		{ "nextmap",		CV_NEXTMAP },
-		{ "map",			CV_MAP },
-		{ "g_gametype",		CV_GAMETYPE },
-		{ "gametype",		CV_GAMETYPE },
-		{ "kick",			CV_KICK },
-		{ "clientkick",		CV_KICK },
-		{ "shuffle",		CV_SHUFFLE },
-		{ "g_dowarmup",		CV_DOWARMUP },
-		{ "dowarmup",		CV_DOWARMUP },
-		{ "timelimit",		CV_TIMELIMIT },
-		{ "fraglimit",		CV_FRAGLIMIT },
-		{ "roundlimit",		CV_ROUNDLIMIT },
-		{ "teamsize",		CV_TEAMSIZE },
-		{ "remove",			CV_REMOVE },
-		{ "nk",				CV_KICK_MODE },
-		{ "wk",				CV_KICK_MODE },
-		{ "mode",			CV_MODE },
-		{ "match",			CV_MATCH },
-		{ "capturelimit",	CV_CAPTURELIMIT },
-		{ "poll",			CV_POLL },
+	static const voteCmdInfo_t voteCmds[CV_MAX] = {
+		{ "invalid",		"Invalid",		"" },				// CV_INVALID
+		{ "map_restart",	"Map Restart",	"" }, 				// CV_MAP_RESTART
+		{ "nextmap",		"Next Map",		"" },				// CV_NEXTMAP
+		{ "map",			"Map",			" <name>" },		// CV_MAP
+		{ "gametype",		"Gametype",		" <name>" },		// CV_GAMETYPE
+		{ "kick",			"Kick",			" <name|num>" },	// CV_KICK
+		{ "shuffle",		"Shuffle",		"" },				// CV_SHUFFLE
+		{ "g_dowarmup",		"Do Warmup",	" <0|1>" },			// CV_DOWARMUP
+		{ "timelimit",		"Timelimit",	" <minutes>" },		// CV_TIMELIMIT
+		{ "fraglimit",		"Fraglimit",	" <frags>" },		// CV_FRAGLIMIT
+		{ "roundlimit",		"Roundlimit",	" <rounds>" },		// CV_ROUNDLIMIT
+		{ "teamsize",		"Team Size",	" <size>" },		// CV_TEAMSIZE
+		{ "remove",			"Remove",		" <name|num>" },	// CV_REMOVE
+		{ "wk",				"With Kicks",	" <0|1>" },			// CV_WK
+		{ "mode",			"Mode",			" <name>" },		// CV_MODE
+		{ "matchmode",		"Match Mode",	" <0|1>" },			// CV_MATCH
+		{ "capturelimit",	"Capturelimit",	" <caps>" },		// CV_CAPTURELIMIT
+		{ "poll",			"Poll",			" <question>" },	// CV_POLL
 	};
 
 	if ( !g_allowVote.integer ) {
@@ -1838,6 +1816,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
+	if (g_allowVote.integer == 1) {
+		voteMask = -1;
+	} else {
+		voteMask = g_allowVote.integer;
+	}
+
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
 	arg2 = ConcatArgs( 2 );
@@ -1845,24 +1829,37 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	Q_strlwr( arg1 );
 
 	voteCmd = CV_INVALID;
-	for ( i = 0; i < (int)ARRAY_LEN(voteAlias); i++ ) {
-		if ( !strcmp( arg1, voteAlias[i].alias ) ) {
-			voteCmd = voteAlias[i].voteCmd;
+	for ( i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++ ) {
+		if ( !((1 << i) & voteMask) ) {
+			continue;
+		}
+		if ( !strcmp( arg1, voteCmds[i].name ) ) {
+			voteCmd = (voteCmd_t)i;
 			break;
 		}
 	}
 
 	if ( voteCmd == CV_INVALID ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>, shuffle.\n\"" );
-		return;
-	}
+		char		synopsis[1024];
+		qboolean	comma;
 
-	if ( g_allowVote.integer != 1 ) {
-		if ( ( ( 1 << voteCmd ) & g_allowVote.integer ) == 0 ) {
-			trap_SendServerCommand( ent-g_entities, "print \"This vote has been disabled by the server administrator.\n\"");
-			return;
+		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+
+		Q_strncpyz(synopsis, "print \"Allowed commands are: ", sizeof(synopsis));
+		comma = qfalse;
+		for (i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++) {
+			if ((1 << i) & voteMask) {
+				if (comma) {
+					Q_strcat(synopsis, sizeof(synopsis), ", ");
+				}
+				Q_strcat(synopsis, sizeof(synopsis), voteCmds[i].name);
+				Q_strcat(synopsis, sizeof(synopsis), voteCmds[i].synopsis);
+				comma = qtrue;
+			}
 		}
+		Q_strcat(synopsis, sizeof(synopsis), ".\n\"");
+		trap_SendServerCommand(ent-g_entities, synopsis);
+		return;
 	}
 
 	if( strchr( arg2, ';' ) || strchr( arg2, '\n' ) || strchr( arg2, '\r' ) ) {
@@ -1870,7 +1867,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	voteName = voteCanonicalName[voteCmd];
+	voteName = voteCmds[voteCmd].longName;
 
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
@@ -1974,8 +1971,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
 			voteName, g_entities[i].client->info.netname );
 		break;
-	case CV_KICK_MODE:
-		if ( !Q_stricmp( arg1, "nk" ) )
+	case CV_WK:
+		i = atoi( arg2 );
+
+		if ( i == 0 )
 		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
 				"dmflags %d; g_friendlyFire 1", g_dmflags.integer | DF_NO_KICK );
@@ -2264,7 +2263,6 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
 	}
 }
-
 
 /*
 =================
