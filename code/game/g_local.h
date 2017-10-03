@@ -413,6 +413,7 @@ typedef struct {
 	qboolean			setForce;			// set to true once player is given the chance to set force powers
 	qboolean			teamLeader;			// true when this client is a team leader
 	qboolean			motdSeen;
+	qboolean			referee;
 } clientSession_t;
 
 //

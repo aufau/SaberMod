@@ -191,6 +191,9 @@ mode <mode|default>
 players [team]
   Print various informations about players. Optionally filter by team.
 
+(un)referee <player>
+  Make player a referee.
+
 spawnitems [items]
   Enable/Disable spawning items using human readable names. Type
   without argument to see usage instructions.

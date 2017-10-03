@@ -875,6 +875,26 @@ static void Svcmd_Players_f( void ) {
 	}
 }
 
+static void Svcmd_Referee_f( qboolean make ) {
+	char		str[MAX_TOKEN_CHARS];
+	const char	*errorMsg;
+	int			clientNum;
+
+	if ( trap_Argc() < 2 ) {
+		G_Printf( "Usage: %sreferee <player>\n", make ? "" : "un" );
+		return;
+	}
+
+	trap_Argv( 1, str, sizeof( str ) );
+	clientNum = G_ClientNumberFromString( str, &errorMsg );
+	if ( clientNum == -1 ) {
+		trap_Print( errorMsg );
+		return;
+	}
+
+	level.clients[clientNum].sess.referee = make;
+}
+
 // items and spawnitems commands
 
 struct weaponItem_s {
@@ -1307,6 +1327,16 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "spawnitems") == 0) {
 		Svcmd_SpawnItems_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "referee") == 0) {
+		Svcmd_Referee_f( qtrue );
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "unreferee") == 0) {
+		Svcmd_Referee_f( qfalse );
 		return qtrue;
 	}
 
