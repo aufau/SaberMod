@@ -2911,7 +2911,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
 
-	CG_DrawPic( x + cg.refdef.x - 0.5f * w, y + cg.refdef.y - 0.5f * w, w, h, hShader );
+	CG_DrawPic( x - 0.5f * w, y - 0.5f * w, w, h, hShader );
 }
 
 qboolean CG_WorldCoordToScreenCoord(const vec3_t worldCoord, float *x, float *y)

@@ -1645,7 +1645,7 @@ static void CG_RegisterGraphics( void ) {
 
 	cg.loadLCARSStage = 4;
 
-	cgs.media.backTileShader = trap_R_RegisterShaderNoMip( "gfx/2d/backtile" );
+	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
 #ifdef UNUSED
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad" );

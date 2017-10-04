@@ -340,13 +340,21 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-static void CG_TileClearBox( int x, int y, int w, int h, qhandle_t hShader ) {
+static void CG_TileClearBox( float x, float y, float w, float h, qhandle_t hShader ) {
 	float	s1, t1, s2, t2;
+	float	xscale, yscale;
 
 	s1 = x/64.0f;
 	t1 = y/64.0f;
 	s2 = (x+w)/64.0f;
 	t2 = (y+h)/64.0f;
+
+	xscale = (float)cgs.screenWidth / cgs.glconfig.vidWidth;
+	yscale = (float)SCREEN_HEIGHT / cgs.glconfig.vidHeight;
+	x *= xscale;
+	w *= xscale;
+	y *= yscale;
+	h *= yscale;
 	trap_R_DrawStretchPic( x, y, w, h, s1, t1, s2, t2, hShader );
 }
 
