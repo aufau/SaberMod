@@ -877,6 +877,7 @@ static void Svcmd_Players_f( void ) {
 
 static void Svcmd_Referee_f( qboolean make ) {
 	char		str[MAX_TOKEN_CHARS];
+	const char	*name;
 	const char	*errorMsg;
 	int			clientNum;
 
@@ -892,7 +893,24 @@ static void Svcmd_Referee_f( qboolean make ) {
 		return;
 	}
 
+	name = level.clients[clientNum].info.netname;
+
+	if (make == level.clients[clientNum].sess.referee) {
+		if (make) {
+			G_Printf("%s" S_COLOR_WHITE " is a referee\n", name);
+		} else {
+			G_Printf("%s" S_COLOR_WHITE " is not a referee\n", name);
+		}
+		return;
+	}
+
 	level.clients[clientNum].sess.referee = make;
+
+	if (make) {
+		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"", name);
+	} else {
+		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"", name);
+	}
 }
 
 // items and spawnitems commands
