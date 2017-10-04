@@ -960,6 +960,7 @@ void G_LogPrintf( int event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
+void G_SendServerCommand( int clientNum, const char *fmt, ... );
 const char *G_GetStripEdString(const char *refSection, const char *refName);
 gametype_t G_GametypeForString( const char *s );
 

@@ -466,6 +466,17 @@ Q_NORETURN void QDECL G_Error( const char *fmt, ... ) {
 	trap_Error( text );
 }
 
+void G_SendServerCommand( int clientNum, const char *fmt, ... ) {
+	va_list		argptr;
+	char		text[1024];
+
+	va_start(argptr, fmt);
+	vsnprintf(text, sizeof(text), fmt, argptr);
+	va_end(argptr);
+
+	trap_SendServerCommand(clientNum, text);
+}
+
 /*
 ================
 G_GametypeForString
