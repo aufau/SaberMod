@@ -1615,6 +1615,7 @@ extern	vmCvar_t		cg_followKiller;
 extern	vmCvar_t		cg_followPowerup;
 extern	vmCvar_t		cg_privateDuel;
 extern	vmCvar_t		cg_widescreen;
+extern	vmCvar_t		cg_widescreenFov;
 
 extern	vmCvar_t		ui_myteam;
 /*

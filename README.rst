@@ -136,6 +136,13 @@ cg_fixServerTime <0|1>
 cg_widescreen <0|1>
   Enable HUD adjustments for widescreen monitors
 
+cg_widescreenFov <0|1>
+
+  Change Field Of View calculations so that they don't disadvantage
+  widescreen monitors. Instead of cropping top and bottom parts of the
+  screen it's extended to the sides, compared to 4:3 display. Works
+  only when cg_widescreen is enabled.
+
 Spectating
 ..........
 
