@@ -221,6 +221,10 @@ dmflags <bitmask>
 duel_fraglimit
   Removed. Use roundlimit instead.
 
+g_allowRefVote <0|1|bitmask>
+  Control what commands are available to referees. Uses the same
+  bitmask as g_allowVote below.
+
 g_allowVote <0|1|bitmask>
   0 / 1 - disable / enable all votes.
 

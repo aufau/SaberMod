@@ -161,6 +161,7 @@ vmCvar_t	g_unlagged;
 vmCvar_t	g_unlaggedMaxPing;
 vmCvar_t	g_ingameMotd;
 vmCvar_t	g_macroscan;
+vmCvar_t	g_allowRefVote;
 
 
 int gDuelist1 = -1;
@@ -331,6 +332,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_unlaggedMaxPing, "g_unlaggedMaxPing", "200", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_ingameMotd, "g_ingameMotd", "none", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_macroscan, "g_macroscan", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &g_allowRefVote, "g_allowRefVote", "-1", CVAR_ARCHIVE, 0, qfalse },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -2669,7 +2671,14 @@ void CheckVote( void ) {
 	}
 	else
 	{
-		if ( level.voteYes > level.numVotingClients/2 ) {
+		if ( level.voteReferee == VOTE_YES ) {
+			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
+			level.voteExecuteTime = level.time + 3000;
+			G_LogPrintf( LOG_VOTE, "VotePassedRef: %d %d %d: %s\n", level.voteCmd,
+				level.voteYes, level.voteNo, level.voteDisplayString );
+		} else if ( level.voteReferee == VOTE_NO ) {
+			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
+		} else if ( level.voteYes > level.numVotingClients/2 ) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
 			level.voteExecuteTime = level.time + 3000;

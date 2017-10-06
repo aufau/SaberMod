@@ -1791,35 +1791,43 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "poll",			"Poll",			" <question>" },	// CV_POLL
 	};
 
-	if ( !g_allowVote.integer ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE")) );
-		return;
-	}
-
-	if ( level.voteTime || level.voteExecuteTime ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
-		return;
-	}
-	/*
-	if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXVOTES")) );
-		return;
-	}
-	*/
-	if ( ent->s.number == level.voteClient && level.voteCooldown > level.time ) {
-		trap_SendServerCommand( ent-g_entities,
-			va("print \"You must wait %d seconds before calling a new vote.\n\"", g_voteCooldown.integer) );
-		return;
-	}
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSPECVOTE")) );
-		return;
-	}
-
-	if (g_allowVote.integer == 1) {
-		voteMask = -1;
+	if ( ent->client->sess.referee ) {
+		if (g_allowRefVote.integer == 1) {
+			voteMask = -1;
+		} else {
+			voteMask = g_allowRefVote.integer;
+		}
 	} else {
-		voteMask = g_allowVote.integer;
+		if ( !g_allowVote.integer ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE")) );
+			return;
+		}
+
+		if ( level.voteTime || level.voteExecuteTime ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
+			return;
+		}
+		/*
+		  if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
+		  trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXVOTES")) );
+		  return;
+		  }
+		*/
+		if ( ent->s.number == level.voteClient && level.voteCooldown > level.time ) {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"You must wait %d seconds before calling a new vote.\n\"", g_voteCooldown.integer) );
+			return;
+		}
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSPECVOTE")) );
+			return;
+		}
+
+		if (g_allowVote.integer == 1) {
+			voteMask = -1;
+		} else {
+			voteMask = g_allowVote.integer;
+		}
 	}
 
 	// make sure it is a valid command to vote on
@@ -1845,7 +1853,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 
-		Q_strncpyz(synopsis, "print \"Allowed commands are: ", sizeof(synopsis));
+		Q_strncpyz(synopsis, "print \"Allowed votes are: ", sizeof(synopsis));
 		comma = qfalse;
 		for (i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++) {
 			if ((1 << i) & voteMask) {
@@ -2049,6 +2057,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	level.voteYes = 1;
 	level.voteNo = 0;
 	level.voteClient = ent->s.number;
+	level.voteReferee = ent->client->sess.referee ? VOTE_YES : VOTE_NONE;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;
@@ -2061,6 +2070,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );
 	trap_SetConfigstring( CS_VOTE_YES, "1" );
 	trap_SetConfigstring( CS_VOTE_NO, "0" );
+
 }
 
 /*
@@ -2085,6 +2095,10 @@ void Cmd_Vote_f( gentity_t *ent ) {
 
 	trap_Argv( 1, msg, sizeof( msg ) );
 	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
+
+	if ( ent->client->sess.referee ) {
+		level.voteReferee = vote;
+	}
 
 	if ( vote != ent->client->pers.vote ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );

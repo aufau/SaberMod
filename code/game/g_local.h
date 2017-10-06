@@ -614,6 +614,7 @@ typedef struct {
 	int			voteNo;
 	int			numVotingClients;		// set by CalculateRanks
 	int			voteCooldown;			// when voteClient may call a new vote
+	vote_t		voteReferee;
 
 	voteCmd_t	voteCmd;			// current vote
 	int			voteArg;				// vote argument for CheckVote
@@ -1257,6 +1258,7 @@ extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
+extern	vmCvar_t	g_allowRefVote;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
