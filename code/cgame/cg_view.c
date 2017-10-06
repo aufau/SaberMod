@@ -1056,8 +1056,23 @@ static int CG_CalcFov( void ) {
 		}
 	}
 
-	x = cg.refdef.width / tanf( DEG2RAD( 0.5f * fov_x ) );
-	fov_y = RAD2DEG( 2 * atan2f( cg.refdef.height, x ) );
+	// don't allow without cg_widescreen so people don't use it to
+	// stretch disruptor zoom mask
+    if ( cg_widescreen.integer && cg_widescreenFov.integer &&
+		cg.refdef.width * 3 > cg.refdef.height * 4 )
+	{
+        // 4:3 screen with fov_x must fit INTO widescreen
+        float width = cg.refdef.height * (4.0f / 3.0f);
+
+        x = width / tanf( DEG2RAD( 0.5f * fov_x ) );
+        fov_x = RAD2DEG( 2 * atan2f( cg.refdef.width, x ) );
+        fov_y = RAD2DEG( 2 * atan2f( cg.refdef.height, x ) );
+    }
+	else
+	{
+        x = cg.refdef.width / tanf( DEG2RAD( 0.5f * fov_x ) );
+        fov_y = RAD2DEG( 2 * atan2f( cg.refdef.height, x ) );
+	}
 
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );

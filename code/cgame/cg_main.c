@@ -584,6 +584,7 @@ vmCvar_t	cg_privateDuel;
 vmCvar_t	cg_crosshairIndicators;
 vmCvar_t	cg_crosshairIndicatorsSpec;
 vmCvar_t	cg_widescreen;
+vmCvar_t	cg_widescreenFov;
 
 vmCvar_t	ui_myteam;
 
@@ -750,6 +751,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_crosshairIndicators, "cg_crosshairIndicators", "0", CVAR_ARCHIVE},
 	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicators", "1", CVAR_ARCHIVE},
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
+	{ &cg_widescreenFov, "cg_widescreenFov", "1", CVAR_ARCHIVE},
 
 	{ &ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 
