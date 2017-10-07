@@ -3847,7 +3847,7 @@ static qboolean CG_DrawFollow( void )
 	CG_Text_Paint(x , 60, 1.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
 	s = cgs.clientinfo[ cg.snap->ps.clientNum ].name;
-	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 1.0f, FONT_MEDIUM));
+	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 2.0f, FONT_MEDIUM));
 	CG_Text_Paint (x, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
 	if ( !cg_drawSpectatorHints.integer ) {
