@@ -474,12 +474,6 @@
 			text                    @MENUS1_CALL_VOTE
 			type                    1
 			style                   WINDOW_STYLE_FILLED
-			cvarTest                "ui_singleplayeractive"
-			disableCvar
-			{
-				"1"
-			}
-
 			rect                    495 0 70 32
 			font                    2
 			textscale               .8
@@ -490,6 +484,44 @@
 			forecolor               1 1 1 1
 			backcolor               0 0 0 0
 			visible                 1
+			cvarTest                ui_referee
+			showCvar                { 0 }
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_callvote 1 ;
+				open                    ingame_callvote ;
+				close					ingame_setup ;
+				close					ingame_setup_original ;
+			}
+			mouseenter
+			{
+				show                    callvoteButton
+			}
+			mouseexit
+			{
+				hide                    callvoteButton
+			}
+		}
+
+		itemDef
+		{
+			name                    callvote
+			text                    @SABERMENUS_REFEREE
+			type                    1
+			style                   WINDOW_STYLE_FILLED
+			rect                    495 0 70 32
+			font                    2
+			textscale               .8
+			textstyle               3
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              35
+			textaligny              2
+			forecolor               1 1 1 1
+			backcolor               0 0 0 0
+			visible                 1
+			cvarTest                ui_referee
+			hideCvar                { 0 }
 			action
 			{
 				play                    "sound/interface/button1.wav" ;

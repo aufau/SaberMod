@@ -815,6 +815,8 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "ui_about_needpass",		"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_botminplayers",	"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register(NULL, "ui_about_motd",			"0", CVAR_ROM|CVAR_INTERNAL );
+
+	trap_Cvar_Register(NULL, "ui_referee",				"0", CVAR_ROM|CVAR_INTERNAL );
 }
 
 /*

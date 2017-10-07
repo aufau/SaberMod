@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 59
+COUNT 60
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -532,4 +532,13 @@ INDEX 58
    TEXT_LANGUAGE3 "In Clan Arena (CA) there are two teams trying to eliminate each other.  Match is split into a number of rounds and whichever team manages to sweep majority of them wins.  Players who die must wait for a current round to end as observers.  When a new round commences all players start fully rejuvenated with all available items and ammunition.  If a time limit is reached before any team is eliminated, a number of surviving players and collective hp of each team is used to determine the winner.\n\nTEAM SCORING\n  Winning a round:  +1 point\n\nINDIVIDUAL SCORING\n  Eliminating a member of the enemy team:  +1 point\n  Dealing 50 damage to enemy team: +1 point\n\nThe team whose score reaches round limit first wins the game."
    TEXT_LANGUAGE6 "In Clan Arena (CA) there are two teams trying to eliminate each other.  Match is split into a number of rounds and whichever team manages to sweep majority of them wins.  Players who die must wait for a current round to end as observers.  When a new round commences all players start fully rejuvenated with all available items and ammunition.  If a time limit is reached before any team is eliminated, a number of surviving players and collective hp of each team is used to determine the winner.\n\nTEAM SCORING\n  Winning a round:  +1 point\n\nINDIVIDUAL SCORING\n  Eliminating a member of the enemy team:  +1 point\n  Dealing 50 damage to enemy team: +1 point\n\nThe team whose score reaches round limit first wins the game."
    TEXT_LANGUAGE8 "In Clan Arena (CA) there are two teams trying to eliminate each other.  Match is split into a number of rounds and whichever team manages to sweep majority of them wins.  Players who die must wait for a current round to end as observers.  When a new round commences all players start fully rejuvenated with all available items and ammunition.  If a time limit is reached before any team is eliminated, a number of surviving players and collective hp of each team is used to determine the winner.\n\nTEAM SCORING\n  Winning a round:  +1 point\n\nINDIVIDUAL SCORING\n  Eliminating a member of the enemy team:  +1 point\n  Dealing 50 damage to enemy team: +1 point\n\nThe team whose score reaches round limit first wins the game."
+}
+INDEX 59
+{
+   REFERENCE REFEREE
+   TEXT_LANGUAGE1 "Referee"
+   TEXT_LANGUAGE2 "Referee"
+   TEXT_LANGUAGE3 "Referee"
+   TEXT_LANGUAGE6 "Referee"
+   TEXT_LANGUAGE8 "Referee"
 }

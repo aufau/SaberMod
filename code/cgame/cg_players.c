@@ -1088,6 +1088,9 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	// referee
 	v = Info_ValueForKey( configstring, "r" );
 	newInfo.referee = (qboolean)atoi(v);
+	if (clientNum == cg.clientNum) {
+		trap_Cvar_Set("ui_referee", v);
+	}
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
