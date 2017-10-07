@@ -204,6 +204,17 @@ remove <player|all> [time]
 shuffle
   Randomize teams.
 
+Referee Commands
+................
+
+These commands can be used only by a registered referee.
+
+referee <player>
+  Make player a referee without loosing own referee status.
+
+unreferee
+  Give up referee status.
+
 Game Cvars
 ..........
 

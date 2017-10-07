@@ -1005,6 +1005,24 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 	CG_LoadClientInfo( ci );
 }
 
+
+/*
+======================
+CG_NewClientInfo
+======================
+*/
+static void CG_RefereeMode(qboolean enable) {
+	trap_Cvar_Set("ui_referee", va("%d", enable));
+
+	if (enable) {
+		trap_AddCommand("referee");
+		trap_AddCommand("unreferee");
+	} else {
+		trap_RemoveCommand("referee");
+		trap_RemoveCommand("unreferee");
+	}
+}
+
 /*
 ======================
 CG_NewClientInfo
@@ -1018,6 +1036,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	void *oldGhoul2;
 	int i = 0;
 	qboolean wasATST = qfalse;
+	qboolean wasReferee;
 
 	ci = &cgs.clientinfo[clientNum];
 
@@ -1087,9 +1106,11 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// referee
 	v = Info_ValueForKey( configstring, "r" );
+	wasReferee = ci->referee;
 	newInfo.referee = (qboolean)atoi(v);
-	if (clientNum == cg.clientNum) {
-		trap_Cvar_Set("ui_referee", v);
+
+	if (wasReferee != newInfo.referee && clientNum == cg.clientNum) {
+		CG_RefereeMode(newInfo.referee);
 	}
 
 	// model

@@ -1119,6 +1119,11 @@ void G_EntityCheckRep(const gentity_t *ent);
 #define G_EntityCheckRep(x)
 #endif
 
+// g_referee.c
+void Cmd_Referee_f(gentity_t *ent);
+void Cmd_UnReferee_f(gentity_t *ent);
+
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);

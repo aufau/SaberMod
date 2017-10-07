@@ -2940,6 +2940,7 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 #define CMD_NOINTERMISSION	0x01
 #define CMD_CHEAT			0x02
 #define CMD_ALIVE			0x04
+#define CMD_REFEREE			0x08
 
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
@@ -2975,6 +2976,8 @@ static const clientCommand_t commands[] = {
 	{ "levelshot", Cmd_LevelShot_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "thedestroyer", Cmd_TheDestroyer_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "addbot", Cmd_AddBot_f, 0 },
+	{ "referee", Cmd_Referee_f, CMD_REFEREE },
+	{ "unreferee", Cmd_UnReferee_f, CMD_REFEREE },
 #ifdef _DEBUG
 	{ "headexplodey", Cmd_HeadExplodey_f, CMD_CHEAT },
 	{ "g2animent", G_CreateExampleAnimEnt, CMD_CHEAT },
@@ -3043,6 +3046,12 @@ void ClientCommand( int clientNum ) {
 		if ( ent->health <= 0 || ent->client->sess.spectatorState != SPECTATOR_NOT ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MUSTBEALIVE")));
 			return;
+		}
+	}
+
+	if ( command->flags & CMD_REFEREE ) {
+		if ( !ent->client->sess.referee ) {
+			trap_SendServerCommand( clientNum, "print \"Only referees may use this command.\n\"" );
 		}
 	}
 
