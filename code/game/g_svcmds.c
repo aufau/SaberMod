@@ -875,14 +875,27 @@ static void Svcmd_Players_f( void ) {
 	}
 }
 
-static void Svcmd_Referee_f( qboolean make ) {
+static void Svcmd_UnReferee_f( void ) {
+	int	i;
+
+	for (i = 0; i < level.maxclients; i++) {
+		gclient_t	*client = &level.clients[i];
+
+		if (client->pers.connected != CON_DISCONNECTED && client->sess.referee) {
+			client->sess.referee = qfalse;
+			G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
+				client->info.netname);
+		}
+	}
+}
+
+static void Svcmd_Referee_f( void ) {
 	char		str[MAX_TOKEN_CHARS];
-	const char	*name;
 	const char	*errorMsg;
 	int			clientNum;
 
 	if ( trap_Argc() < 2 ) {
-		G_Printf( "Usage: %sreferee <player>\n", make ? "" : "un" );
+		G_Printf( "Usage: referee <player>\n" );
 		return;
 	}
 
@@ -893,24 +906,11 @@ static void Svcmd_Referee_f( qboolean make ) {
 		return;
 	}
 
-	name = level.clients[clientNum].info.netname;
+	Svcmd_UnReferee_f();
 
-	if (make == level.clients[clientNum].sess.referee) {
-		if (make) {
-			G_Printf("%s" S_COLOR_WHITE " is a referee\n", name);
-		} else {
-			G_Printf("%s" S_COLOR_WHITE " is not a referee\n", name);
-		}
-		return;
-	}
-
-	level.clients[clientNum].sess.referee = make;
-
-	if (make) {
-		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"", name);
-	} else {
-		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"", name);
-	}
+	level.clients[clientNum].sess.referee = qtrue;
+	G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"",
+		level.clients[clientNum].info.netname);
 }
 
 // items and spawnitems commands
@@ -1349,12 +1349,12 @@ qboolean	ConsoleCommand( void ) {
 	}
 
 	if (Q_stricmp (cmd, "referee") == 0) {
-		Svcmd_Referee_f( qtrue );
+		Svcmd_Referee_f();
 		return qtrue;
 	}
 
 	if (Q_stricmp (cmd, "unreferee") == 0) {
-		Svcmd_Referee_f( qfalse );
+		Svcmd_UnReferee_f();
 		return qtrue;
 	}
 
