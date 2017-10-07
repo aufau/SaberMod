@@ -890,6 +890,10 @@
 				fadeout                 message_arena ;
 				setitemcolor            mode bordercolor .5 .5 .5 .5
 			}
+			doubleClick
+			{
+				uiScript					selectMode ;
+			}
 			action
 			{
 				play                    "sound/interface/button1.wav" ;

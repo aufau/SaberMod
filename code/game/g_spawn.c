@@ -611,6 +611,63 @@ static int QDECL SortStrcmp( const void *a, const void *b )
 	return strcmp(*(const char **)a, *(const char **) b);
 }
 
+static int G_AddModes( char *cs, int nummodes, const char *dir ) {
+	char	*modes[MAX_MODES];
+	char	filelist[MAX_INFO_STRING * 3];
+	char	*file;
+	char	realDir[MAX_QPATH];
+	int		numfiles;
+	int		i;
+
+	Com_sprintf(realDir, sizeof(realDir), "modes/%s", dir);
+
+	numfiles = trap_FS_GetFileList( realDir, "/", filelist, sizeof(filelist) );
+	file = filelist;
+
+	for (i = 0; i < numfiles; i++) {
+		modes[i] = file;
+		file += strlen(file) + 1;
+	}
+
+	qsort( modes, numfiles, sizeof( modes[0] ), SortStrcmp );
+
+	for (i = 0; i < numfiles; i++) {
+		if (strcmp(modes[i], "") && strcmp(modes[i], ".") && strcmp(modes[i], "..")) {
+			char	subDir[MAX_QPATH];
+
+			Q_strncpyz(subDir, dir, sizeof(subDir));
+			Q_strcat(subDir, sizeof(subDir), modes[i]);
+			Q_strcat(subDir, sizeof(subDir), "/");
+			nummodes = G_AddModes(cs, nummodes, subDir);
+		}
+	}
+
+	numfiles = trap_FS_GetFileList( realDir, ".cfg", filelist, sizeof(filelist) );
+	file = filelist;
+
+	if (numfiles > MAX_MODES - nummodes) {
+		numfiles = MAX_MODES - nummodes;
+	}
+
+	for ( i = 0; i < numfiles; i++ ) {
+		int len = strlen( file );
+
+		file[len - 4] = '\\'; // strip extension and use '\\' as separator
+		file[len - 3] = '\0';
+		modes[i] = file;
+		file += len + 1;
+	}
+
+	qsort( modes, numfiles, sizeof( modes[0] ), SortStrcmp );
+
+	for (i = 0; i < numfiles; i++) {
+		Q_strcat(cs, MAX_INFO_STRING, dir);
+		Q_strcat(cs, MAX_INFO_STRING, modes[i]);
+	}
+
+	return nummodes + numfiles;
+}
+
 static const char * const defaultStyles[32][3] =
 {
 	{	// 0 normal
@@ -898,33 +955,12 @@ void SP_worldspawn( void )
 
 	// write available modes to CS_MODES
 	{
+
 		char	cs[MAX_INFO_STRING];
-		char	filelist[MAX_INFO_STRING * 3];
-		char	*modes[MAX_MODES] = { NULL };
-		char	*file = filelist;
-		int		numfiles;
-		int		len;
-		int		i;
 
 		cs[0] = '\0';
-		numfiles = trap_FS_GetFileList( "modes", ".cfg", filelist, sizeof(filelist) );
-		// filelist looks like this: tffa.cfg\0ctf.cfg\0ca.cfg\0
 
-		if (numfiles > MAX_MODES)
-			numfiles = MAX_MODES;
-
-		for ( i = 0; i < numfiles; i++ ) {
-			len = strlen( file );
-			file[len - 4] = '\\'; // strip extension and use '\\' as separator
-			file[len - 3] = '\0';
-			modes[i] = file;
-			file += len + 1;
-		}
-
-		qsort( modes, numfiles, sizeof( modes[0] ), SortStrcmp );
-
-		for ( i = 0; i < numfiles; i++ )
-			Q_strcat( cs, sizeof( cs ), modes[i] );
+		G_AddModes( cs, 0, "" );
 
 		if ( strlen( cs ) + 1 >= sizeof( cs ) )
 			Com_Printf( S_COLOR_YELLOW "WARNING: Too many modes. Delete some or use shorter names.\n" );

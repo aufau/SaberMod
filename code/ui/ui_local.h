@@ -791,6 +791,7 @@ typedef struct {
 	int serverMapCount;
 	int serverMapIndex;
 
+	char modeDir[MAX_QPATH];
 	char modeBuf[MAX_INFO_STRING];
 	const char *modeList[MAX_MODES];
 	int modeCount;
@@ -1106,7 +1107,7 @@ void UI_SPUnlockMedals_f( void );
 
 void UI_InitGameinfo( void );
 
-void UI_LoadModes( void );
+void UI_LoadModes( const char *dir );
 void UI_LoadServerMaps( void );
 void UI_GetHTTPDownloads( void );
 

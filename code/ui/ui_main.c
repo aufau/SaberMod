@@ -4382,7 +4382,7 @@ static void UI_RunMenuScript(const char **args)
 		} else if (Q_stricmp(name, "LoadMods") == 0) {
 			UI_LoadMods();
 		} else if (Q_stricmp(name, "loadModes") == 0) {
-			UI_LoadModes();
+			UI_LoadModes("");
 		} else if (Q_stricmp(name, "loadServerMaps") == 0) {
 			UI_LoadServerMaps();
 			UI_GetHTTPDownloads();
@@ -4500,7 +4500,31 @@ static void UI_RunMenuScript(const char **args)
 			}
 		} else if (Q_stricmp(name, "voteMode") == 0) {
 			if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
-				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote mode \"%s\"\n",uiInfo.modeList[uiInfo.modeIndex]) );
+				trap_Cmd_ExecuteText( EXEC_APPEND,
+					va("callvote mode \"%s%s\"\n", uiInfo.modeDir, uiInfo.modeList[uiInfo.modeIndex]) );
+			}
+		} else if (Q_stricmp(name, "selectMode") == 0) {
+			if (uiInfo.modeIndex >= 0 && uiInfo.modeIndex < uiInfo.modeCount) {
+				int index = uiInfo.modeIndex;
+
+				if (!strcmp(uiInfo.modeList[index], "..")) {
+					char *sep = strrchr(uiInfo.modeDir, '/');
+
+					assert(sep);
+					if (sep) {
+						*sep = '\0';
+						sep = strrchr(uiInfo.modeDir, '/');
+						if (sep) {
+							sep[1] = '\0';
+							UI_LoadModes(uiInfo.modeDir);
+						} else {
+							UI_LoadModes("");
+						}
+					}
+				} else if (strchr(uiInfo.modeList[index], '/')) {
+					// directory
+					UI_LoadModes(uiInfo.modeList[index]);
+				}
 			}
 		} else if (Q_stricmp(name, "voteKick") == 0) {
 			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {

@@ -327,26 +327,58 @@ const char *UI_GetBotNameByNumber( int num ) {
 	return "Kyle";
 }
 
-void UI_LoadModes( void ) {
+void UI_LoadModes( const char *directory ) {
+	char dir[MAX_QPATH];
 	char *mode;
+	int nummodes;
 	int i;
 
+	Q_strncpyz(dir, directory, sizeof(dir));
 	trap_GetConfigString( CS_MODES, uiInfo.modeBuf, sizeof( uiInfo.modeBuf ) );
 	mode = uiInfo.modeBuf;
+	nummodes = 0;
+
+	if (dir[0]) {
+		uiInfo.modeList[nummodes] = "..";
+		nummodes++;
+	}
 
 	for ( i = 0; i < MAX_MODES; i++ ) {
-		const char *name = mode;
+		char *name = mode;
+		int len;
+		char *sep;
 
 		mode = strchr( mode, '\\' );
 		if (!mode)
 			break;
 		*mode++ = '\0';
 
-		uiInfo.modeList[i] = name;
+		len = strlen(dir);
+
+		if (!strncmp(name, dir, len)) {
+			name += len;
+			sep = strchr(name, '/');
+
+			if (sep) {
+				// mode in a sub-directory
+				sep[1] = '\0';
+
+				// don't duplicate directories
+				if (!nummodes || strcmp(name, uiInfo.modeList[nummodes - 1])) {
+					uiInfo.modeList[nummodes] = name;
+					nummodes++;
+				}
+			} else {
+				// mode on this directory level
+				uiInfo.modeList[nummodes] = name;
+				nummodes++;
+			}
+		}
 	}
 
-	uiInfo.modeCount = i;
+	uiInfo.modeCount = nummodes;
 	uiInfo.modeIndex = 0;
+	Q_strncpyz(uiInfo.modeDir, dir, sizeof(uiInfo.modeDir));
 }
 
 static int SortServerMapsLoadName( const void *a, const void *b ) {
