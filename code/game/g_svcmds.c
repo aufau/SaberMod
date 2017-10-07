@@ -883,6 +883,7 @@ static void Svcmd_UnReferee_f( void ) {
 
 		if (client->pers.connected != CON_DISCONNECTED && client->sess.referee) {
 			client->sess.referee = qfalse;
+			ClientUpdateConfigString(i);
 			G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
 				client->info.netname);
 		}
@@ -909,6 +910,7 @@ static void Svcmd_Referee_f( void ) {
 	Svcmd_UnReferee_f();
 
 	level.clients[clientNum].sess.referee = qtrue;
+	ClientUpdateConfigString(clientNum);
 	G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"",
 		level.clients[clientNum].info.netname);
 }

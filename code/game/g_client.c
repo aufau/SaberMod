@@ -1241,7 +1241,7 @@ void ClientUpdateConfigString( int clientNum ) {
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
-	s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%i\\c2\\%i\\hc\\%i\\w\\%i\\l\\%i\\skill\\%i\\tt\\%i\\tl\\%i",
+	s = va("n\\%s\\t\\%i\\model\\%s\\c1\\%i\\c2\\%i\\hc\\%i\\w\\%i\\l\\%i\\skill\\%i\\tt\\%i\\tl\\%i\\r\\%i",
 		client->info.netname,
 		client->sess.sessionTeam,
 		client->info.model,
@@ -1252,7 +1252,8 @@ void ClientUpdateConfigString( int clientNum ) {
 		client->sess.losses,
 		client->info.skill,
 		client->info.teamTask,
-		client->sess.teamLeader);
+		client->sess.teamLeader,
+		client->sess.referee);
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 }

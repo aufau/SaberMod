@@ -1085,6 +1085,10 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	v = Info_ValueForKey( configstring, "g_blueteam" );
 	Q_strncpyz(newInfo.blueTeam, v, MAX_TEAMNAME);
 
+	// referee
+	v = Info_ValueForKey( configstring, "r" );
+	newInfo.referee = (qboolean)atoi(v);
+
 	// model
 	v = Info_ValueForKey( configstring, "model" );
 	if ( cg_forceModel.integer ) {

@@ -570,6 +570,8 @@ typedef struct {
 
 	int				legsAnim;
 	int				torsoAnim;
+
+	qboolean		referee;
 } clientInfo_t;
 
 
