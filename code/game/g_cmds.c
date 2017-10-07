@@ -1789,6 +1789,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "matchmode",		"Match Mode",	" <0|1>" },			// CV_MATCH
 		{ "capturelimit",	"Capturelimit",	" <caps>" },		// CV_CAPTURELIMIT
 		{ "poll",			"Poll",			" <question>" },	// CV_POLL
+		{ "referee",		"Referee",		" <name|num>" },	// CV_REFEREE
 	};
 
 	if ( ent->client->sess.referee ) {
@@ -1944,6 +1945,21 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		level.voteArg = i;
 
 		Com_sprintf ( level.voteString, sizeof(level.voteString ), "clientkick %d", i );
+		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
+			voteName, g_entities[i].client->info.netname );
+		break;
+	case CV_REFEREE:
+		i = G_ClientNumberFromString( arg2, &errorMsg );
+
+		if ( i == -1 )
+		{
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
+			return;
+		}
+
+		level.voteArg = i;
+
+		Com_sprintf ( level.voteString, sizeof(level.voteString ), "referee %d", i );
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
 			voteName, g_entities[i].client->info.netname );
 		break;

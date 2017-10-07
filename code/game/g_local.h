@@ -101,6 +101,7 @@ typedef enum {
 	CV_MATCH,
 	CV_CAPTURELIMIT,
 	CV_POLL,
+	CV_REFEREE,
 	CV_MAX
 } voteCmd_t;
 

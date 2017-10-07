@@ -237,7 +237,7 @@ g_allowVote <0|1|bitmask>
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
-  65536 - Capturelimit   131072 - Poll
+  65536 - Capturelimit   131072 - Poll          262144 - Referee
   =====================  =====================  =====================
 
 g_damagePlums <0|1>
