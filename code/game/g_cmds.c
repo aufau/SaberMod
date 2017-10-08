@@ -1849,25 +1849,31 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	}
 
 	if ( voteCmd == CV_INVALID ) {
-		char		synopsis[1024];
-		qboolean	comma;
+		const int	columns = 3;
+		const char	*fmt = "%-26s";
+		char		line[DEFAULT_CONSOLE_WIDTH + 1];
+		int			j;
 
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+		trap_SendServerCommand(ent-g_entities, "print \"Invalid vote string. Allowed votes are:\n\"" );
 
-		Q_strncpyz(synopsis, "print \"Allowed votes are: ", sizeof(synopsis));
-		comma = qfalse;
+		line[0] = '\0';
+		j = 0;
 		for (i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++) {
 			if ((1 << i) & voteMask) {
-				if (comma) {
-					Q_strcat(synopsis, sizeof(synopsis), ", ");
+				char	synopsis[DEFAULT_CONSOLE_WIDTH + 1];
+
+				Com_sprintf(synopsis, sizeof(synopsis), "%s%s", voteCmds[i].name, voteCmds[i].synopsis);
+				Q_strcat(line, sizeof(line), va(fmt, synopsis));
+
+				j++;
+				if (j % columns == 0) {
+					trap_SendServerCommand(ent-g_entities, va("print \"%s\n\"", line));
+					line[0] = '\0';
 				}
-				Q_strcat(synopsis, sizeof(synopsis), voteCmds[i].name);
-				Q_strcat(synopsis, sizeof(synopsis), voteCmds[i].synopsis);
-				comma = qtrue;
 			}
 		}
-		Q_strcat(synopsis, sizeof(synopsis), ".\n\"");
-		trap_SendServerCommand(ent-g_entities, synopsis);
+
+		trap_SendServerCommand(ent-g_entities, va("print \"%s\n\"", line));
 		return;
 	}
 
