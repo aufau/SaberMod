@@ -242,6 +242,11 @@ void CG_DrawStringExt( float x, float y, const char *string, const float *setCol
 		vec4_t		color;
 		const char	*s;
 		float		xx;
+		int			i;
+
+		if (maxChars == 0) {
+			maxChars = 1024;
+		}
 
 		// draw the drop shadow
 		if (shadow) {
@@ -250,7 +255,8 @@ void CG_DrawStringExt( float x, float y, const char *string, const float *setCol
 			trap_R_SetColor( color );
 			s = string;
 			xx = x;
-			while ( *s ) {
+			i = 0;
+			while ( *s && i < maxChars ) {
 				if ( Q_IsColorString( s ) ) {
 					s += 2;
 					continue;
@@ -258,14 +264,16 @@ void CG_DrawStringExt( float x, float y, const char *string, const float *setCol
 				CG_DrawChar( xx + 2, y + 2, charWidth, charHeight, *s );
 				xx += charWidth;
 				s++;
+				i++;
 			}
 		}
 
 		// draw the colored text
 		s = string;
 		xx = x;
+		i = 0;
 		trap_R_SetColor( setColor );
-		while ( *s ) {
+		while ( *s && i < maxChars ) {
 			if ( Q_IsColorString( s ) ) {
 				if ( !forceColor ) {
 					VectorCopy( g_color_table[ColorIndex(*(s+1))], color );
@@ -278,6 +286,7 @@ void CG_DrawStringExt( float x, float y, const char *string, const float *setCol
 			CG_DrawChar( xx, y, charWidth, charHeight, *s );
 			xx += charWidth;
 			s++;
+			i++;
 		}
 		trap_R_SetColor( NULL );
 	}
