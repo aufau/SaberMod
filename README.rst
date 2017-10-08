@@ -78,17 +78,20 @@ Referee Commands
 
 These commands can be used only by a registered referee.
 
-referee <player>
-  Make player a referee without loosing own referee status.
+announce <message|motd>
+  Print `message` or ingame message of the day on everyone's screen.
 
-unreferee
-  Give up referee status.
+forceteam <player|all> <team>
+  Move players between teams.
 
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
-forceteam <player|all> <team>
-  Move players between teams.
+referee <player>
+  Make player a referee without losing own referee status.
+
+unreferee
+  Give up referee status.
 
 CGame Cvars
 ...........

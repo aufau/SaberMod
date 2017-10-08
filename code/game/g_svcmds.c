@@ -70,8 +70,6 @@ static ipFilter_t	ipFilters[MAX_IPFILTERS];
 static int			numIPFilters;
 
 
-char	*ConcatArgs( int start );
-
 /*
 =================
 StringToFilter
@@ -554,7 +552,7 @@ void	Svcmd_Remove_f( void )
 	trap_SendServerCommand( -1, cp );
 }
 
-static void G_CenterPrintPersistant( const char *str ) {
+void G_CenterPrintPersistant( const char *str ) {
 	const char	*cmd[2];
 	int			i;
 

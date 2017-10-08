@@ -693,6 +693,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent);
 int G_ItemUsable(playerState_t *ps, holdable_t forcedUse);
 void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
+char *ConcatArgs( int start );
 
 int G_ClientNumberFromString (const char *s, const char **errorMsg);
 
@@ -925,6 +926,7 @@ qboolean	ConsoleCommand( void );
 void G_ProcessIPBans(void);
 qboolean G_FilterPacket (const char *from);
 qipv4_t G_StringToIPv4(const char *s);
+void G_CenterPrintPersistant( const char *str );
 
 //
 // g_weapon.c
@@ -1124,6 +1126,7 @@ void Cmd_Referee_f(gentity_t *ent);
 void Cmd_UnReferee_f(gentity_t *ent);
 void Cmd_LockTeam_f(gentity_t *ent);
 void Cmd_ForceTeam_f(gentity_t *ent);
+void Cmd_Announce_f(gentity_t *ent);
 
 // ai_main.c
 

@@ -393,8 +393,6 @@ int BotIsAChickenWuss(bot_state_t *bs);
 int GetNearestVisibleWP(vec3_t org, int ignore);
 int GetBestIdleGoal(bot_state_t *bs);
 
-char *ConcatArgs( int start );
-
 extern vmCvar_t bot_forcepowers;
 extern vmCvar_t bot_forgimmick;
 extern vmCvar_t bot_honorableduelacceptance;

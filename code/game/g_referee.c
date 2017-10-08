@@ -136,3 +136,18 @@ void Cmd_ForceTeam_f(gentity_t *ent) {
 		}
 	}
 }
+
+void Cmd_Announce_f(gentity_t *ent) {
+	char	*str = ConcatArgs(1);
+
+	if (!str[0]) {
+		trap_SendServerCommand(ent->s.number, "print \"Usage: announce <message|motd>\n\"");
+		return;
+	}
+
+	if (!Q_stricmp(str, "motd")) {
+		trap_SendServerCommand(-1, "motd");
+	} else {
+		G_CenterPrintPersistant(Q_SanitizeStr(str));
+	}
+}
