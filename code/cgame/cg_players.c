@@ -1026,6 +1026,7 @@ static void CG_RefereeMode(qboolean enable) {
 	UpdateCommand("unreferee");
 	UpdateCommand("lockteam");
 	UpdateCommand("unlockteam");
+	UpdateCommand("forceteam");
 }
 
 /*

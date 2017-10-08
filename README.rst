@@ -87,6 +87,9 @@ unreferee
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
+forceteam <player|all> <team>
+  Move players between teams.
+
 CGame Cvars
 ...........
 

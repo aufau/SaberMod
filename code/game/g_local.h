@@ -1123,7 +1123,7 @@ void G_EntityCheckRep(const gentity_t *ent);
 void Cmd_Referee_f(gentity_t *ent);
 void Cmd_UnReferee_f(gentity_t *ent);
 void Cmd_LockTeam_f(gentity_t *ent);
-
+void Cmd_ForceTeam_f(gentity_t *ent);
 
 // ai_main.c
 

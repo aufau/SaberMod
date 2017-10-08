@@ -92,3 +92,47 @@ void Cmd_LockTeam_f(gentity_t *ent) {
 	}
 
 }
+
+void Cmd_ForceTeam_f(gentity_t *ent) {
+	char		str[MAX_TOKEN_CHARS];
+	const char	*errorMsg;
+	int			clientNum;
+	int			lastClient;
+	team_t		team;
+
+	if (trap_Argc() < 3) {
+		G_SendServerCommand(ent->s.number, "print \""
+			"Usage: forceteam <player> <team>\n"
+			"       forceteam all <team>\n" "\"");
+		return;
+	}
+	// find the player
+	trap_Argv(1, str, sizeof(str));
+	if (!strcmp(str, "all")) {
+		clientNum = 0;
+		lastClient = level.maxclients - 1;
+	} else {
+		clientNum = G_ClientNumberFromString(str, &errorMsg);
+		if (clientNum == -1) {
+			G_SendServerCommand(ent->s.number, "print \"%s\"", errorMsg);
+			return;
+		}
+		lastClient = clientNum;
+	}
+
+	// set the team
+	trap_Argv(2, str, sizeof(str));
+	team = BG_TeamFromString(str);
+	if (team == TEAM_NUM_TEAMS) {
+		return;
+	}
+
+	for (; clientNum <= lastClient; clientNum++) {
+		gentity_t *targEnt = &g_entities[clientNum];
+
+		if (targEnt->inuse) {
+			SetTeam( targEnt, team );
+			targEnt->client->prof.switchTeamTime = level.time + 5000;
+		}
+	}
+}
