@@ -73,6 +73,20 @@ teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
+Referee Commands
+................
+
+These commands can be used only by a registered referee.
+
+referee <player>
+  Make player a referee without loosing own referee status.
+
+unreferee
+  Give up referee status.
+
+(un)lockteam <teams>
+  Prevent players from joining `teams`.
+
 CGame Cvars
 ...........
 
@@ -203,17 +217,6 @@ remove <player|all> [time]
 
 shuffle
   Randomize teams.
-
-Referee Commands
-................
-
-These commands can be used only by a registered referee.
-
-referee <player>
-  Make player a referee without loosing own referee status.
-
-unreferee
-  Give up referee status.
 
 Game Cvars
 ..........

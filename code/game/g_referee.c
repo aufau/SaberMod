@@ -57,3 +57,38 @@ void Cmd_UnReferee_f(gentity_t *ent) {
 			ent->client->info.netname);
 	}
 }
+
+void Cmd_LockTeam_f(gentity_t *ent) {
+	qboolean	lock;
+	const char	*prefix;
+	char		str[MAX_TOKEN_CHARS];
+	team_t		team;
+	int			argc = trap_Argc();
+	int			i;
+
+	trap_Argv(0, str, sizeof(str));
+
+	lock = (qboolean)!Q_stricmp(str, "lockteam");
+	prefix = lock ? "" : "un";
+
+	if (argc < 2) {
+		G_SendServerCommand(ent->s.number, "print \"Usage: %slockteam <teams>\n\"", prefix);
+		return;
+	}
+
+	for (i = 1; i < argc; i++) {
+		trap_Argv( i, str, sizeof( str ) );
+
+		team = BG_TeamFromString( str );
+		if ( team == TEAM_NUM_TEAMS ) {
+			return;
+		}
+
+		if (level.teamLock[team] != lock) {
+			level.teamLock[team] = lock;
+			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " team was %slocked.\n\"",
+					BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL), prefix) );
+		}
+	}
+
+}

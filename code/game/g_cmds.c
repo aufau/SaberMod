@@ -2940,7 +2940,7 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 #define CMD_NOINTERMISSION	0x01
 #define CMD_CHEAT			0x02
 #define CMD_ALIVE			0x04
-#define CMD_REFEREE			0x08
+#define CMD_REFEREE			0x08	// update these in cg_players.c::CG_RefereeMode
 
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
@@ -2978,6 +2978,8 @@ static const clientCommand_t commands[] = {
 	{ "addbot", Cmd_AddBot_f, 0 },
 	{ "referee", Cmd_Referee_f, CMD_REFEREE },
 	{ "unreferee", Cmd_UnReferee_f, CMD_REFEREE },
+	{ "lockteam", Cmd_LockTeam_f, CMD_REFEREE },
+	{ "unlockteam", Cmd_LockTeam_f, CMD_REFEREE },
 #ifdef _DEBUG
 	{ "headexplodey", Cmd_HeadExplodey_f, CMD_CHEAT },
 	{ "g2animent", G_CreateExampleAnimEnt, CMD_CHEAT },

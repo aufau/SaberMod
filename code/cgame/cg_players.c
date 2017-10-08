@@ -1012,15 +1012,20 @@ CG_NewClientInfo
 ======================
 */
 static void CG_RefereeMode(qboolean enable) {
-	trap_Cvar_Set("ui_referee", va("%d", enable));
+	void (*UpdateCommand)(const char *);
 
 	if (enable) {
-		trap_AddCommand("referee");
-		trap_AddCommand("unreferee");
+		UpdateCommand = trap_AddCommand;
 	} else {
-		trap_RemoveCommand("referee");
-		trap_RemoveCommand("unreferee");
+		UpdateCommand = trap_RemoveCommand;
 	}
+
+	trap_Cvar_Set("ui_referee", va("%d", enable));
+
+	UpdateCommand("referee");
+	UpdateCommand("unreferee");
+	UpdateCommand("lockteam");
+	UpdateCommand("unlockteam");
 }
 
 /*
