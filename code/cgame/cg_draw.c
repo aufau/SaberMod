@@ -2015,7 +2015,6 @@ static void CG_DrawCountdown( void )
 	UI_DrawProportionalString( 0.5f * cgs.screenWidth, 125, s, UI_CENTER, colorRed );
 }
 
-
 /*
 ==============
 CG_DrawClock
@@ -2710,10 +2709,6 @@ static void CG_DrawCenterString( void ) {
 	int		i;
 	float	*color;
 	const float scale = 1.0; //0.5
-
-	if ( !cg.centerPrintTime ) {
-		return;
-	}
 
 	color = CG_FadeColor( cg.centerPrintTime, cg.centerPrintMsec );
 	if ( !color ) {
@@ -3983,13 +3978,28 @@ static void CG_DrawWarmup( void ) {
 	clientInfo_t	*ci1, *ci2;
 	const char	*s;
 
-	sec = cg.warmup;
-	if ( !sec ) {
+	if (cgs.unpauseTime > cg.serverTime)
+	{
+		sec = (cgs.unpauseTime - cg.serverTime) / 1000;
+
+		if (sec < 60) {
+			s = va(CG_GetStripEdString("SABERINGAME", "MATCH_WILL_RESUME"), sec); // "Game will resume in %d seconds"
+		} else {
+			s = CG_GetStripEdString("SABERINGAME", "MATCH_PAUSED");
+		}
+
+		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
+		CG_DrawBigString(0.5f * (cgs.screenWidth - w), 24, s, 1.0F);
 		return;
 	}
 
-	if ( sec < 0 ) {
+	sec = cg.warmup;
 
+	if (!sec) {
+		return;
+	}
+
+	if (sec < 0) {
 		if ((cg.snap->ps.pm_flags & PMF_FOLLOW) ||
 			(cgs.readyClients & (1 << cg.snap->ps.clientNum)))
 		{

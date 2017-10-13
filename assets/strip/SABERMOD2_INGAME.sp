@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 17
+COUNT 19
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -155,6 +155,24 @@ INDEX 16
    TEXT_LANGUAGE3 "^1Press %s to start the match!"
    TEXT_LANGUAGE6 "^1Press %s to start the match!"
    TEXT_LANGUAGE8 "^1Press %s to start the match!"
+}
+INDEX 17
+{
+   REFERENCE MATCH_PAUSED
+   TEXT_LANGUAGE1 "Match is paused"
+   TEXT_LANGUAGE2 "Match is paused"
+   TEXT_LANGUAGE3 "Match is paused"
+   TEXT_LANGUAGE6 "Match is paused"
+   TEXT_LANGUAGE8 "Match is paused"
+}
+INDEX 18
+{
+   REFERENCE MATCH_WILL_RESUME
+   TEXT_LANGUAGE1 "Match will resume in %d seconds"
+   TEXT_LANGUAGE2 "Match will resume in %d seconds"
+   TEXT_LANGUAGE3 "Match will resume in %d seconds"
+   TEXT_LANGUAGE6 "Match will resume in %d seconds"
+   TEXT_LANGUAGE8 "Match will resume in %d seconds"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.
