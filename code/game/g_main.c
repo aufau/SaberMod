@@ -2918,6 +2918,44 @@ void SlowMoDuelTimescale(void) {
 
 /*
 ================
+G_RunPausedFrame
+================
+*/
+qboolean G_RunPausedFrame( int levelTime ) {
+	static qboolean paused = qfalse;
+
+	if (level.unpauseTime > levelTime)
+	{
+		paused = qtrue;
+	}
+	else
+	{
+		if (paused)
+		{
+			paused = qfalse;
+		}
+
+		return qfalse;
+	}
+
+	// get any cvar changes
+	G_UpdateCvars();
+
+	// cancel vote if timed out
+	CheckVote();
+
+	// check team votes
+	CheckTeamVote( TEAM_RED );
+	CheckTeamVote( TEAM_BLUE );
+
+	// for tracking changes
+	CheckCvars();
+
+	return qtrue;
+}
+
+/*
+================
 G_RunFrame
 
 Advances the non-player objects in the world
@@ -2949,6 +2987,10 @@ void G_RunFrame( int levelTime ) {
 	level.previousTime = level.time;
 	level.time = levelTime;
 	msec = level.time - level.previousTime;
+
+	if (G_RunPausedFrame(levelTime)) {
+		return;
+	}
 
 	// get any cvar changes
 	G_UpdateCvars();

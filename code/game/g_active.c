@@ -1907,6 +1907,10 @@ void ClientThink( int clientNum ) {
 	// phone jack if they don't get any for a while
 	client->lastCmdTime = level.time;
 
+	if (level.unpauseTime > level.time) {
+		return;
+	}
+
 	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
 		ClientThink_real( ent );
 	}
