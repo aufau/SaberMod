@@ -2857,9 +2857,6 @@ void G_RunThink (gentity_t *ent) {
 	ent->think (ent);
 }
 
-int g_LastFrameTime = 0;
-int g_TimeSinceLastFrame = 0;
-
 qboolean gDoSlowMoDuel = qfalse;
 int gSlowMoDuelTime = 0;
 
@@ -2952,8 +2949,6 @@ void G_RunFrame( int levelTime ) {
 	level.previousTime = level.time;
 	level.time = levelTime;
 	msec = level.time - level.previousTime;
-
-	g_TimeSinceLastFrame = (level.time - g_LastFrameTime);
 
 	// get any cvar changes
 	G_UpdateCvars();
@@ -3108,8 +3103,6 @@ end = trap_Milliseconds();
 	}
 
 	level.snapnum++;
-
-	g_LastFrameTime = level.time;
 
 	// suppress unused-but-set warnings
 	(void)start;

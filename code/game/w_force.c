@@ -3616,9 +3616,6 @@ static void RemoveTrickedEnt(forcedata_t *fd, int client)
 	}
 }
 
-extern int g_LastFrameTime;
-extern int g_TimeSinceLastFrame;
-
 static void WP_UpdateMindtrickEnts(gentity_t *self)
 {
 	int i = 0;
@@ -3634,7 +3631,7 @@ static void WP_UpdateMindtrickEnts(gentity_t *self)
 			{
 				RemoveTrickedEnt(&self->client->ps.fd, i);
 			}
-			else if ((level.time - self->client->dangerTime) < g_TimeSinceLastFrame*4)
+			else if (level.time < self->client->dangerTime + 200)
 			{ //Untrick this entity if the tricker (self) fires while in his fov
 				if (trap_InPVS(ent->client->ps.origin, self->client->ps.origin) &&
 					OrgVisible(ent->client->ps.origin, self->client->ps.origin, ent->s.number))
@@ -4452,11 +4449,6 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	{
 		self->client->sess.selectedFP = self->client->ps.fd.forcePowerSelected;
 		self->client->sess.saberLevel = self->client->ps.fd.saberAnimLevel;
-	}
-
-	if (!g_LastFrameTime)
-	{
-		g_LastFrameTime = level.time;
 	}
 
 	if (self->client->ps.forceHandExtend == HANDEXTEND_KNOCKDOWN)
