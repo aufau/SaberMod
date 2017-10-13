@@ -188,6 +188,9 @@ mode <mode|default>
   Change to `mode` or list all available modes when passed without
   arguments.
 
+(un)pause [seconds]
+  Pause match for a specified number of seconds or until unpaused.
+
 players [team]
   Print various informations about players. Optionally filter by team.
 
