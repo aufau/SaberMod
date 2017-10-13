@@ -2324,7 +2324,7 @@ static void CG_DrawReward( void ) {
 				cg.rewardShader[i] = cg.rewardShader[i+1];
 				cg.rewardCount[i] = cg.rewardCount[i+1];
 			}
-			cg.rewardTime = cg.time;
+			cg.rewardTime = cg.serverTime;
 			cg.rewardStack--;
 			color = CG_FadeColor( cg.rewardTime, REWARD_TIME );
 			trap_S_StartLocalSound(cg.rewardSound[0], CHAN_ANNOUNCER);
@@ -2633,7 +2633,7 @@ void CG_CenterPrint( const char *str, int y ) {
 
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
-	cg.centerPrintTime = cg.time;
+	cg.centerPrintTime = cg.serverTime;
 	cg.centerPrintY = y;
 
 	// count the number of lines for centering
@@ -3423,13 +3423,13 @@ static void CG_ScanForCrosshairEntity( void ) {
 
 	if ( trace.entityNum >= MAX_CLIENTS ) {
 		cg.crosshairClientNum = trace.entityNum;
-		cg.crosshairClientTime = cg.time;
+		cg.crosshairClientTime = cg.serverTime;
 		return;
 	}
 
 	// update the fade timer
 	cg.crosshairClientNum = trace.entityNum;
-	cg.crosshairClientTime = cg.time;
+	cg.crosshairClientTime = cg.serverTime;
 }
 
 
@@ -3817,7 +3817,7 @@ static void CG_DrawIntermission( void ) {
 	//	CG_DrawCenterString();
 	//	return;
 	//}
-	cg.scoreFadeTime = cg.time;
+	cg.scoreFadeTime = cg.serverTime;
 	cg.scoreBoardShowing = CG_DrawScoreboard();
 }
 
