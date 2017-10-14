@@ -425,6 +425,12 @@ to the facing dir
 ================
 */
 static void PM_SetMovementDir( void ) {
+	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
+		pm->ps->pm_flags |= PMF_STILL;
+	} else {
+		pm->ps->pm_flags &= ~PMF_STILL;
+	}
+
 	if ( pm->cmd.forwardmove || pm->cmd.rightmove ) {
 		if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 ) {
 			pm->ps->movementDir = 0;
@@ -1534,9 +1540,6 @@ static void PM_AirMove( void ) {
 	cmd = pm->cmd;
 	scale = PM_CmdScale( &cmd );
 
-	// set the movementDir so clients can rotate the legs for strafing
-	PM_SetMovementDir();
-
 	// project moves down to flat plane
 	pml.forward[2] = 0;
 	pml.right[2] = 0;
@@ -1642,9 +1645,6 @@ static void PM_WalkMove( void ) {
 
 	cmd = pm->cmd;
 	scale = PM_CmdScale( &cmd );
-
-	// set the movementDir so clients can rotate the legs for strafing
-	PM_SetMovementDir();
 
 	// project moves down to flat plane
 	pml.forward[2] = 0;
@@ -4443,12 +4443,6 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
 
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
-		pm->ps->pm_flags |= PMF_STILL;
-	} else {
-		pm->ps->pm_flags &= ~PMF_STILL;
-	}
-
 	// set the talk balloon flag
 	if ( pm->cmd.buttons & BUTTON_TALK ) {
 		pm->ps->eFlags |= EF_TALK;
@@ -4581,6 +4575,9 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.forwardmove = 50;
 		pm->cmd.rightmove = 0;//*= 0.1;
 	}
+
+	// set the movementDir so clients can rotate the legs for strafing
+	PM_SetMovementDir();
 
 	if ( pm->ps->pm_type == PM_SPECTATOR ) {
 		PM_CheckDuck ();
