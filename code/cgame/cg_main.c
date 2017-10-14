@@ -2649,7 +2649,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	}
 
 	// new config strings
-	CG_UpdateConfigString( CS_INGAME_MOTD, qtrue );
+	for ( i = 0; i < CS_MAPS; i++ ) {
+		CG_UpdateConfigString( i, qtrue );
+	}
 
 	// load the new map
 	CG_LoadingString( "collision map" );
