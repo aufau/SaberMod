@@ -2922,17 +2922,36 @@ G_RunPausedFrame
 ================
 */
 qboolean G_RunPausedFrame( int levelTime ) {
+	static int		pauseTime = 0;
 	static qboolean paused = qfalse;
 
 	if (level.unpauseTime > levelTime)
 	{
-		paused = qtrue;
+		if (!paused)
+		{
+			paused = qtrue;
+			pauseTime = levelTime;
+		}
 	}
 	else
 	{
 		if (paused)
 		{
+			int		time = levelTime - pauseTime;
+
 			paused = qfalse;
+
+#define ADJUST(x) if ((x) > 0) (x) += time;
+
+			ADJUST(level.startTime)
+			ADJUST(level.warmupTime)
+			ADJUST(level.intermissiontime)
+			ADJUST(level.roundQueued)
+			ADJUST(level.intermissionQueued)
+			ADJUST(level.exitTime)
+
+			trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
 		}
 
 		return qfalse;
