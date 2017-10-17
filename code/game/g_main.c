@@ -2938,6 +2938,7 @@ qboolean G_RunPausedFrame( int levelTime ) {
 		if (paused)
 		{
 			int		time = levelTime - pauseTime;
+			int		i, j;
 
 			paused = qfalse;
 
@@ -2952,6 +2953,90 @@ qboolean G_RunPausedFrame( int levelTime ) {
 
 			trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
+
+			for (i = 0; i < level.maxclients; i++) {
+				if (level.clients[i].pers.connected != CON_DISCONNECTED) {
+					gclient_t		*client = &level.clients[i];
+					playerState_t	*ps = &client->ps;
+
+					ADJUST(ps->weaponChargeTime)
+					ADJUST(ps->weaponChargeSubtractTime)
+					ADJUST(ps->externalEventTime)
+					ADJUST(ps->painTime)
+					ADJUST(ps->lastOnGround)
+					ADJUST(ps->saberLockTime)
+					ADJUST(ps->saberDidThrowTime)
+					ADJUST(ps->saberHitWallSoundDebounceTime)
+					ADJUST(ps->rocketLastValidTime)
+					ADJUST(ps->rocketLockTime)
+					ADJUST(ps->rocketTargetTime)
+					ADJUST(ps->emplacedTime)
+					ADJUST(ps->droneFireTime)
+					ADJUST(ps->droneExistTime)
+					ADJUST(ps->holocronCantTouchTime)
+					ADJUST(ps->electrifyTime)
+					ADJUST(ps->saberBlockTime)
+					ADJUST(ps->otherKillerTime)
+					ADJUST(ps->otherKillerDebounceTime)
+					ADJUST(ps->forceHandExtendTime)
+					ADJUST(ps->forceRageDrainTime)
+					ADJUST(ps->forceGripMoveInterval)
+					ADJUST(ps->footstepTime)
+					ADJUST(ps->otherSoundTime)
+					ADJUST(ps->duelTime)
+					ADJUST(ps->holdMoveTime)
+					ADJUST(ps->forceAllowDeactivateTime)
+					ADJUST(ps->zoomTime)
+					ADJUST(ps->zoomLockTime)
+					ADJUST(ps->useDelay)
+					ADJUST(ps->fallingToDeath)
+					ADJUST(ps->saberIdleWound)
+					ADJUST(ps->saberAttackWound)
+					ADJUST(ps->saberThrowDelay)
+
+					for (j = 0; j < MAX_POWERUPS; j++) {
+						ADJUST(ps->powerups[j])
+					}
+
+					for (j = 0; j < NUM_FORCE_POWERS; j++) {
+						ADJUST(ps->holocronsCarried[j])
+					}
+
+					for (j = 0; j < NUM_FORCE_POWERS; j++) {
+						ADJUST(ps->fd.forcePowerDebounce[j])
+					}
+
+					for (j = 0; j < NUM_FORCE_POWERS; j++) {
+						ADJUST(ps->fd.forcePowerDuration[j])
+					}
+
+					ADJUST(ps->fd.forcePowerRegenDebounceTime)
+					ADJUST(ps->fd.forceJumpAddTime)
+					ADJUST(ps->fd.forceGripDamageDebounceTime)
+					ADJUST(ps->fd.forceGripStarted)
+					ADJUST(ps->fd.forceGripBeingGripped)
+					ADJUST(ps->fd.forceGripUseTime)
+					ADJUST(ps->fd.forceGripSoundTime)
+					ADJUST(ps->fd.forceHealTime)
+					ADJUST(ps->fd.forceRageRecoveryTime)
+					ADJUST(ps->fd.forceDrainTime)
+
+					ADJUST(client->invulnerableTimer)
+					ADJUST(client->respawnTime)
+					ADJUST(client->inactivityTime)
+					ADJUST(client->rewardTime)
+					ADJUST(client->airOutTime)
+					ADJUST(client->lastKillTime)
+					ADJUST(client->lastSaberStorageTime)
+					ADJUST(client->dangerTime)
+					ADJUST(client->forcePowerSoundDebounce)
+
+					ADJUST(client->pers.teamState.lastfraggedcarrier)
+					ADJUST(client->pers.teamState.lasthurtcarrier)
+					ADJUST(client->pers.teamState.lastreturnedflag)
+					ADJUST(client->pers.teamState.flagsince)
+				}
+			}
 		}
 
 		return qfalse;

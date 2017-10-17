@@ -338,7 +338,7 @@ typedef struct playerState_s {
 	int				saberThrowDelay;
 	qboolean		saberCanThrow;
 	int				saberDidThrowTime;
-	int				saberDamageDebounceTime;
+	int				saberDamageDebounceTime;		// unused
 	int				saberHitWallSoundDebounceTime;
 	int				saberEventFlags;
 
@@ -394,7 +394,7 @@ typedef struct playerState_s {
 	int				forceDodgeAnim;
 	qboolean		quickerGetup;
 
-	int				groundTime;		// time when first left ground
+	int				groundTime;		// time when first left ground; unused
 
 	int				footstepTime;
 
