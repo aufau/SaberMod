@@ -514,6 +514,8 @@ void CG_UpdateConfigString( int num, qboolean init )
 		case CS_READY:
 			cgs.readyClients = atoi(str);
 			break;
+		case CS_UNPAUSE:
+			cgs.unpauseTime = atoi(str);
 		default:
 			break;
 		}

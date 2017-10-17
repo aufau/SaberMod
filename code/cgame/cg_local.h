@@ -1409,6 +1409,7 @@ typedef struct {
 	flagStatus_t	flagStatus;
 
 	int				readyClients;
+	int				unpauseTime;
 
 	qboolean  newHud;
 
