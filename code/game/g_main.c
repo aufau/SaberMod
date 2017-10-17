@@ -3063,11 +3063,11 @@ qboolean G_RunPausedFrame( int levelTime ) {
 					ADJUST(ent->pain_debounce_time)
 					ADJUST(ent->fly_sound_debounce_time)
 					ADJUST(ent->last_move_time)
+					ADJUST(ent->time1)
+					ADJUST(ent->time2)
 
 					// ent->s.genericenemyindex
 					// ent->s.powerups
-					// ent->boltpoint1
-					// ent->boltpoint2
 					// ent->bolt_RArm
 					// ent->bolt_LArm
 					// ent->bolt_LLeg
