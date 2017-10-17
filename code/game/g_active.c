@@ -1908,6 +1908,7 @@ void ClientThink( int clientNum ) {
 	client->lastCmdTime = level.time;
 
 	if (level.unpauseTime > level.time) {
+		client->ps.commandTime = client->pers.cmd.serverTime;
 		return;
 	}
 
