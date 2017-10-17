@@ -1909,6 +1909,7 @@ void ClientThink( int clientNum ) {
 
 	if (level.unpauseTime > level.time) {
 		client->ps.commandTime = client->pers.cmd.serverTime;
+		SetClientViewAngle(ent, client->ps.viewangles);
 		return;
 	}
 
