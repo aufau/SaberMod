@@ -3037,6 +3037,44 @@ qboolean G_RunPausedFrame( int levelTime ) {
 					ADJUST(client->pers.teamState.flagsince)
 				}
 			}
+
+			for (i = 0; i < level.num_entities; i++) {
+				if (g_entities[i].inuse) {
+					gentity_t	*ent = &g_entities[i];
+
+					if (ent->s.pos.trType != TR_STATIONARY) {
+						ent->s.pos.trTime += time;
+					}
+					if (ent->s.apos.trType != TR_STATIONARY) {
+						ent->s.apos.trTime += time;
+					}
+					// ADJUST(ent->s.time)
+					// ADJUST(ent->s.time2)
+
+					ADJUST(ent->nextthink)
+
+					ADJUST(ent->aimDebounceTime)
+					ADJUST(ent->painDebounceTime)
+					ADJUST(ent->attackDebounceTime)
+					ADJUST(ent->freetime)
+					ADJUST(ent->eventTime)
+					ADJUST(ent->timestamp)
+					ADJUST(ent->setTime)
+					ADJUST(ent->pain_debounce_time)
+					ADJUST(ent->fly_sound_debounce_time)
+					ADJUST(ent->last_move_time)
+
+					// ent->s.genericenemyindex
+					// ent->s.powerups
+					// ent->boltpoint1
+					// ent->boltpoint2
+					// ent->bolt_RArm
+					// ent->bolt_LArm
+					// ent->bolt_LLeg
+					// ent->bolt_Head
+
+				}
+			}
 		}
 
 		return qfalse;
