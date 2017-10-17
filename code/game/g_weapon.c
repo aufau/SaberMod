@@ -1108,7 +1108,7 @@ static void WP_DEMP2_MainFire( gentity_t *ent )
 
 void DEMP2_AltRadiusDamage( gentity_t *ent )
 {
-	float		frac = ( level.time - ent->bolt_Head ) / 800.0f; // / 1600.0f; // synchronize with demp2 effect
+	float		frac = ( level.time - ent->time1 ) / 800.0f; // / 1600.0f; // synchronize with demp2 effect
 	float		dist, radius, fact;
 	gentity_t	*gent;
 	int			iEntityList[MAX_GENTITIES];
@@ -1249,7 +1249,7 @@ void DEMP2_AltDetonate( gentity_t *ent )
 		efEnt->s.weapon = ent->count*2;
 	}
 
-	ent->bolt_Head = level.time;
+	ent->time1 = level.time;
 	ent->bolt_LArm = 0;
 	ent->nextthink = level.time + 50;
 	ent->think = DEMP2_AltRadiusDamage;
@@ -1749,7 +1749,7 @@ void thermalDetonatorExplode( gentity_t *ent )
 	{
 		G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/weapons/thermal/warning.wav" ) );
 		ent->count = 1;
-		ent->bolt_Head = level.time + 500;
+		ent->time1 = level.time + 500;
 		ent->think = thermalThinkStandard;
 		ent->nextthink = level.time;
 		ent->r.svFlags |= SVF_BROADCAST;//so everyone hears/sees the explosion?
@@ -1781,7 +1781,7 @@ void thermalDetonatorExplode( gentity_t *ent )
 
 void thermalThinkStandard(gentity_t *ent)
 {
-	if (ent->bolt_Head < level.time)
+	if (ent->time1 < level.time)
 	{
 		ent->think = thermalDetonatorExplode;
 		ent->nextthink = level.time;
@@ -1838,7 +1838,7 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 	}
 
 	// normal ones bounce, alt ones explode on impact
-	bolt->bolt_Head = level.time + TD_TIME; // How long 'til she blows
+	bolt->time1 = level.time + TD_TIME; // How long 'til she blows
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->parent = ent;
 	bolt->r.ownerNum = ent->s.number;
@@ -3274,7 +3274,7 @@ void emplaced_gun_update(gentity_t *self)
 	{
 		self->s.time = 0;
 		self->boltpoint4 = 0;
-		self->boltpoint3 = 0;
+		self->time2 = 0;
 		self->health = EMPLACED_GUN_HEALTH*0.4;
 	}
 
@@ -3290,7 +3290,7 @@ void emplaced_gun_update(gentity_t *self)
 		//G_PlayEffect(EFFECT_EXPLOSION, explOrg, /*self->r.currentAngles*/puffAngle);
 		G_PlayEffect(EFFECT_EXPLOSION_DETPACK, explOrg, /*self->r.currentAngles*/puffAngle, self->s.number);
 
-		self->boltpoint3 = level.time + Q_irand(2500, 3500);
+		self->time2 = level.time + Q_irand(2500, 3500);
 
 		G_RadiusDamage(self->r.currentOrigin, self, self->splashDamage, self->splashRadius, self, MOD_UNKNOWN);
 
@@ -3299,9 +3299,9 @@ void emplaced_gun_update(gentity_t *self)
 		self->boltpoint4 = 2;
 	}
 
-	if (self->boltpoint3 > level.time)
+	if (self->time2 > level.time)
 	{
-		if (self->boltpoint2 < level.time)
+		if (self->time1 < level.time)
 		{
 			VectorSet( puffAngle, 0, 0, 1 );
 			VectorCopy(self->r.currentOrigin, smokeOrg);
@@ -3311,7 +3311,7 @@ void emplaced_gun_update(gentity_t *self)
 			//What.. was I thinking?
 			G_PlayEffect(EFFECT_SMOKE, smokeOrg, puffAngle, self->s.number);
 
-			self->boltpoint2 = level.time + Q_irand(250, 400);
+			self->time1 = level.time + Q_irand(250, 400);
 			//This would be much better if we checked a value on the entity on the client
 			//and then spawned smoke there instead of sending over a bunch of events. But
 			//this will do for now, an event every 250-400ms isn't too bad.

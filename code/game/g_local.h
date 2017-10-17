@@ -310,6 +310,9 @@ struct gentity_s {
 	int			boltpoint3;
 	int			boltpoint4;
 
+	int			time1;
+	int			time2;
+
 	int			bolt_Head;
 	int			bolt_LArm;
 	int			bolt_RArm;
