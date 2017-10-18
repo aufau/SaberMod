@@ -1220,6 +1220,7 @@ static void Svcmd_Pause_f( void ) {
 	}
 
 	trap_SetConfigstring(CS_UNPAUSE, va("%d", level.unpauseTime));
+	G_Printf("Game paused\n");
 }
 
 static void Svcmd_UnPause_f( void ) {

@@ -2941,6 +2941,7 @@ qboolean G_RunPausedFrame( int levelTime ) {
 			int		i, j;
 
 			paused = qfalse;
+			G_Printf("Game unpaused\n");
 
 #define ADJUST(x) if ((x) > 0) (x) += time;
 
