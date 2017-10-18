@@ -35,6 +35,12 @@ players [?|team]
   List players connected to server with some additional
   info. Optionally limit to members of `team`.
 
+timein
+  Resume paused game.
+
+timeout
+  Pause game for 30 seconds.
+
 ragequit
   Reserved for God, do not use.
 

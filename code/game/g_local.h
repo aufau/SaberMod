@@ -664,6 +664,8 @@ typedef struct {
 
 	char		queuedCmd[1024];
 	int			queuedCmdSnap;
+
+	int			timeoutClient;
 } level_locals_t;
 
 //

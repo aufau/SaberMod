@@ -730,4 +730,6 @@ void CG_InitConsoleCommands( void ) {
 
 	trap_AddCommand ("ragequit");
 	trap_AddCommand ("seek");
+	trap_AddCommand ("timeout");
+	trap_AddCommand ("timein");
 }

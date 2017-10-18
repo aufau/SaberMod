@@ -1218,6 +1218,8 @@ static void Svcmd_Pause_f( void ) {
 		trap_Argv(1, arg, sizeof(arg));
 		level.unpauseTime = level.time + 1000 * atoi(arg);
 	}
+
+	level.timeoutClient = -1;
 }
 
 static void Svcmd_UnPause_f( void ) {
