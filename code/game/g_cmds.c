@@ -2682,7 +2682,13 @@ static void Cmd_Ready_f(gentity_t *ent)
 
 static void Cmd_Timeout_f(gentity_t *ent)
 {
+	if (ent->client->pers.timeouts >= g_timeoutLimit.integer) {
+		trap_SendServerCommand(ent-g_entities, "print \"You may not call any more timeouts this game.\n\"");
+		return;
+	}
+
 	if (level.unpauseTime < level.time) {
+		ent->client->pers.timeouts++;
 		level.timeoutClient = ent->s.number;
 		level.unpauseTime = level.time + 30000;
 		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " called a timeout.\n\"", ent->client->info.netname));

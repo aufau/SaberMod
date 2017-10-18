@@ -336,6 +336,9 @@ g_spawnWeapons <bitmask>
   spawned on a map. Setting this cvar to 0 restores original behaviour
   of `g_weaponDisable`.
 
+g_timeoutLimit <number>
+  Maximum number of times a player is allowed to call a timeout.
+  
 g_unlagged <0|1>
   Experimental "unlagged" disruptor hit detection.
 

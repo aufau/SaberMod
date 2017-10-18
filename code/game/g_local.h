@@ -441,6 +441,7 @@ typedef struct {
 	vote_t		vote;
 	vote_t		teamVote;
 	qboolean	ready;
+	int			timeouts;			// number of timeouts called
 
 	int			persistant[MAX_PERSISTANT];	// persistant fields for current
 											// player. ps.persistant is updated
@@ -1260,6 +1261,7 @@ extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
+extern	vmCvar_t	g_timeoutLimit;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
