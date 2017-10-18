@@ -2923,6 +2923,7 @@ G_RunPausedFrame
 */
 qboolean G_RunPausedFrame( int levelTime ) {
 	static int		pauseTime = 0;
+	static int		unpauseTime = 0;
 	static qboolean paused = qfalse;
 
 	if (level.unpauseTime > levelTime)
@@ -2931,6 +2932,13 @@ qboolean G_RunPausedFrame( int levelTime ) {
 		{
 			paused = qtrue;
 			pauseTime = levelTime;
+			G_Printf("Game paused\n");
+		}
+
+		if (unpauseTime != level.unpauseTime)
+		{
+			unpauseTime = level.unpauseTime;
+			trap_SetConfigstring(CS_UNPAUSE, va("%d", unpauseTime));
 		}
 	}
 	else
@@ -2941,6 +2949,7 @@ qboolean G_RunPausedFrame( int levelTime ) {
 			int		i, j;
 
 			paused = qfalse;
+			trap_SetConfigstring(CS_UNPAUSE, "");
 			G_Printf("Game unpaused\n");
 
 #define ADJUST(x) if ((x) > 0) (x) += time;

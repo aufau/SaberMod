@@ -1218,14 +1218,10 @@ static void Svcmd_Pause_f( void ) {
 		trap_Argv(1, arg, sizeof(arg));
 		level.unpauseTime = level.time + 1000 * atoi(arg);
 	}
-
-	trap_SetConfigstring(CS_UNPAUSE, va("%d", level.unpauseTime));
-	G_Printf("Game paused\n");
 }
 
 static void Svcmd_UnPause_f( void ) {
 	level.unpauseTime = 0;
-	trap_SetConfigstring(CS_UNPAUSE, "0");
 }
 
 /*
