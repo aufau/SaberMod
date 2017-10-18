@@ -646,6 +646,7 @@ void CG_PredictPlayerState( void ) {
 	}
 
 	if (cgs.unpauseTime > cg.serverTime) {
+		cg.predictedPlayerState = cg.nextSnap ? cg.nextSnap->ps : cg.snap->ps;
 		return;
 	}
 
