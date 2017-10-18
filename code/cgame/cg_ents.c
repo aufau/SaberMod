@@ -1109,10 +1109,10 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
-	if ( cent->currentState.time > cg.serverTime && cent->currentState.weapon == WP_EMPLACED_GUN )
+	if ( cent->currentState.time > cg.gameTime && cent->currentState.weapon == WP_EMPLACED_GUN )
 	{
 		// make the gun pulse red to warn about it exploding
-		val = (1.0f - (float)(cent->currentState.time - cg.serverTime) / 3200.0f ) * 0.3f;
+		val = (1.0f - (float)(cent->currentState.time - cg.gameTime) / 3200.0f ) * 0.3f;
 
 		ent.customShader = trap_R_RegisterShader( "gfx/effects/turretflashdie" );
 		ent.shaderRGBA[0] = (sinf( cg.time * 0.04f ) * val * 0.4f + val) * 255;
@@ -1927,7 +1927,7 @@ static void CG_Missile( centity_t *cent ) {
 		if ( weapon->altMissileSound ) {
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.gameTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->altMissileSound );
 		}
@@ -1954,7 +1954,7 @@ static void CG_Missile( centity_t *cent ) {
 		{
 			vec3_t	velocity;
 
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.serverTime, velocity );
+			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.gameTime, velocity );
 
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->missileSound );
 		}
@@ -2335,8 +2335,8 @@ void CG_CalcEntityLerpPositions( centity_t *cent ) {
 	}
 
 	// just use the current frame and evaluate as best we can
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.serverTime, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.serverTime, cent->lerpAngles );
+	BG_EvaluateTrajectory( &cent->currentState.pos, cg.gameTime, cent->lerpOrigin );
+	BG_EvaluateTrajectory( &cent->currentState.apos, cg.gameTime, cent->lerpAngles );
 
 	// adjust for riding a mover if it wasn't rolled into the predicted
 	// player state
