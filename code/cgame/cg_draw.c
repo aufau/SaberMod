@@ -4001,6 +4001,7 @@ static void CG_DrawWarmup( void ) {
 
 	if (sec < 0) {
 		if ((cg.snap->ps.pm_flags & PMF_FOLLOW) ||
+			(cg.snap->ps.pm_type == PM_SPECTATOR) ||
 			(cgs.readyClients & (1 << cg.snap->ps.clientNum)))
 		{
 //			s = "Waiting for players";
@@ -4815,9 +4816,8 @@ static void CG_Draw2D( void ) {
 		CG_DrawUpperRight();
 	}
 
-	if ( !CG_DrawFollow() ) {
-		CG_DrawWarmup();
-	}
+	CG_DrawFollow();
+	CG_DrawWarmup();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreBoardShowing = CG_DrawScoreboard();
