@@ -2956,8 +2956,12 @@ qboolean G_RunPausedFrame( int levelTime ) {
 
 			for (i = 0; i < level.maxclients; i++) {
 				if (level.clients[i].pers.connected != CON_DISCONNECTED) {
-					gclient_t		*client = &level.clients[i];
+					gentity_t		*ent = &g_entities[i];
+					gclient_t		*client = ent->client;
 					playerState_t	*ps = &client->ps;
+
+					ADJUST(ent->s.constantLight)
+					ADJUST(ent->s.emplacedOwner)
 
 					ADJUST(ps->weaponChargeTime)
 					ADJUST(ps->weaponChargeSubtractTime)
