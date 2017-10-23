@@ -23,13 +23,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // g_referee.c -- exclusive referee commands
 
-void Ref_Referee_f(gentity_t *ent) {
+refCmdContext_t	ref;
+
+void Ref_Referee_f(void) {
 	const char	*errorMsg;
-	gclient_t	*client = ent->client;
+	gclient_t	*client;
 	int			targetNum;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
+		ref.Printf("Usage: referee <player>\n");
 		return;
 	}
 
@@ -37,30 +40,50 @@ void Ref_Referee_f(gentity_t *ent) {
 
 	targetNum = G_ClientNumberFromString(arg, &errorMsg);
 	if (targetNum == -1) {
-		trap_SendServerCommand(ent->s.number, va("print \"%s\"", errorMsg));
+		ref.Printf("%s", errorMsg);
 		return;
 	}
 
+	client = &level.clients[targetNum];
+
 	if (!client->sess.referee) {
 		client->sess.referee = qtrue;
-		ClientUpdateConfigString(ent->s.number);
+		ClientUpdateConfigString(targetNum);
 		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"",
 			client->info.netname);
 	}
 }
 
-void Ref_UnReferee_f(gentity_t *ent) {
-	if (ent->client->sess.referee) {
-		ent->client->sess.referee = qfalse;
-		ClientUpdateConfigString(ent->s.number);
+void Ref_UnReferee_f(void) {
+	const char	*errorMsg;
+	gclient_t	*client;
+	int			targetNum;
+	char		arg[MAX_TOKEN_CHARS];
+
+	if (trap_Argc() < 2) {
+		ref.Printf("Usage: unreferee <player>\n");
+		return;
+	}
+
+	trap_Argv(1, arg, sizeof(arg));
+
+	targetNum = G_ClientNumberFromString(arg, &errorMsg);
+	if (targetNum == -1) {
+		ref.Printf("%s", errorMsg);
+		return;
+	}
+
+	client = &level.clients[targetNum];
+
+	if (client->sess.referee) {
+		client->sess.referee = qfalse;
+		ClientUpdateConfigString(targetNum);
 		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
-			ent->client->info.netname);
+			client->info.netname);
 	}
 }
 
-void Ref_LockTeam_f(gentity_t *ent) {
-	qboolean	lock;
-	const char	*prefix;
+void Ref_LockTeam_f(void) {
 	char		str[MAX_TOKEN_CHARS];
 	team_t		team;
 	int			argc = trap_Argc();
@@ -68,11 +91,8 @@ void Ref_LockTeam_f(gentity_t *ent) {
 
 	trap_Argv(0, str, sizeof(str));
 
-	lock = (qboolean)!Q_stricmp(str + STRLEN("ref_"), "lockteam");
-	prefix = lock ? "" : "un";
-
 	if (argc < 2) {
-		G_SendServerCommand(ent->s.number, "print \"Usage: %slockteam <teams>\n\"", prefix);
+		ref.Printf("Usage: lockteam <teams>\n");
 		return;
 	}
 
@@ -84,16 +104,44 @@ void Ref_LockTeam_f(gentity_t *ent) {
 			return;
 		}
 
-		if (level.teamLock[team] != lock) {
-			level.teamLock[team] = lock;
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " team was %slocked.\n\"",
-					BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL), prefix) );
+		if (level.teamLock[team] != qtrue) {
+			level.teamLock[team] = qtrue;
+			G_SendServerCommand(-1, "print \"%s%s" S_COLOR_WHITE " team was locked.\n\"",
+				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL));
 		}
 	}
-
 }
 
-void Ref_ForceTeam_f(gentity_t *ent) {
+void Ref_UnLockTeam_f(void) {
+	char		str[MAX_TOKEN_CHARS];
+	team_t		team;
+	int			argc = trap_Argc();
+	int			i;
+
+	trap_Argv(0, str, sizeof(str));
+
+	if (argc < 2) {
+		ref.Printf("Usage: unlockteam <teams>\n");
+		return;
+	}
+
+	for (i = 1; i < argc; i++) {
+		trap_Argv( i, str, sizeof( str ) );
+
+		team = BG_TeamFromString( str );
+		if ( team == TEAM_NUM_TEAMS ) {
+			return;
+		}
+
+		if (level.teamLock[team] != qfalse) {
+			level.teamLock[team] = qfalse;
+			G_SendServerCommand(-1, "print \"%s%s" S_COLOR_WHITE " team was unlocked.\n\"",
+				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL));
+		}
+	}
+}
+
+void Ref_ForceTeam_f(void) {
 	char		str[MAX_TOKEN_CHARS];
 	const char	*errorMsg;
 	int			clientNum;
@@ -101,9 +149,9 @@ void Ref_ForceTeam_f(gentity_t *ent) {
 	team_t		team;
 
 	if (trap_Argc() < 3) {
-		G_SendServerCommand(ent->s.number, "print \""
+		ref.Printf(
 			"Usage: forceteam <player> <team>\n"
-			"       forceteam all <team>\n" "\"");
+			"       forceteam all <team>\n");
 		return;
 	}
 	// find the player
@@ -114,7 +162,7 @@ void Ref_ForceTeam_f(gentity_t *ent) {
 	} else {
 		clientNum = G_ClientNumberFromString(str, &errorMsg);
 		if (clientNum == -1) {
-			G_SendServerCommand(ent->s.number, "print \"%s\"", errorMsg);
+			ref.Printf("%s", errorMsg);
 			return;
 		}
 		lastClient = clientNum;
@@ -137,11 +185,11 @@ void Ref_ForceTeam_f(gentity_t *ent) {
 	}
 }
 
-void Ref_Announce_f(gentity_t *ent) {
+void Ref_Announce_f(void) {
 	char	*str = ConcatArgs(1);
 
 	if (!str[0]) {
-		trap_SendServerCommand(ent->s.number, "print \"Usage: announce <message|motd>\n\"");
+		ref.Printf("Usage: announce <message|motd>\n");
 		return;
 	}
 
@@ -154,25 +202,24 @@ void Ref_Announce_f(gentity_t *ent) {
 
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
-	void		(*function)(gentity_t *);
+	void		(*function)(void);
 } refereeCommand_t;
 
 static const refereeCommand_t refCommands[] = {
 	{ "referee", Ref_Referee_f },
 	{ "unreferee", Ref_UnReferee_f },
 	{ "lockteam", Ref_LockTeam_f },
-	{ "unlockteam", Ref_LockTeam_f },
+	{ "unlockteam", Ref_UnLockTeam_f },
 	{ "forceteam", Ref_ForceTeam_f },
 	{ "announce", Ref_Announce_f },
 };
 
-void RefereeCommand(const char *cmd, int clientNum) {
-	gentity_t	*ent = &g_entities[clientNum];
-	int			i;
+void RefereeCommand(const char *cmd) {
+	int	i;
 
 	for (i = 0; i < (int)ARRAY_LEN(refCommands); i++) {
 		if (!strcmp(cmd, refCommands[i].name)) {
-			refCommands[i].function(ent);
+			refCommands[i].function();
 			break;
 		}
 	}

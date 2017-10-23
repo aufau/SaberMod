@@ -2943,6 +2943,18 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 }
 #endif // _DEBUG
 
+static int printfClientNum;
+static void G_CmdPrintf(const char *fmt, ...) {
+	va_list		argptr;
+	char		text[1024];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+	G_SendServerCommand(printfClientNum, "print \"%s\"", text);
+}
+
 #define CMD_NOINTERMISSION	0x01
 #define CMD_CHEAT			0x02
 #define CMD_ALIVE			0x04
@@ -3022,7 +3034,9 @@ void ClientCommand( int clientNum ) {
 
 	// redirect referee commands
 	if (ent->client->sess.referee && !strncmp(cmd, "ref_", 4)) {
-		RefereeCommand(cmd + 4, clientNum);
+		printfClientNum = clientNum;
+		ref.Printf = G_CmdPrintf;
+		RefereeCommand(cmd + 4);
 		return;
 	}
 

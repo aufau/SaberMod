@@ -1122,7 +1122,13 @@ void G_EntityCheckRep(const gentity_t *ent);
 #endif
 
 // g_referee.c
-void RefereeCommand(const char *cmd, int clientNum);
+typedef struct {
+	void	(*Printf)(const char *fmt, ...);
+} refCmdContext_t;
+
+extern refCmdContext_t ref;
+
+void RefereeCommand(const char *cmd);
 
 // ai_main.c
 
