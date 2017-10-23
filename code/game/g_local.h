@@ -1128,7 +1128,7 @@ typedef struct {
 
 extern refCmdContext_t ref;
 
-void RefereeCommand(const char *cmd);
+qboolean RefereeCommand(const char *cmd);
 
 // ai_main.c
 

@@ -214,13 +214,15 @@ static const refereeCommand_t refCommands[] = {
 	{ "announce", Ref_Announce_f },
 };
 
-void RefereeCommand(const char *cmd) {
+qboolean RefereeCommand(const char *cmd) {
 	int	i;
 
 	for (i = 0; i < (int)ARRAY_LEN(refCommands); i++) {
 		if (!strcmp(cmd, refCommands[i].name)) {
 			refCommands[i].function();
-			break;
+			return qtrue;
 		}
 	}
+
+	return qfalse;
 }
