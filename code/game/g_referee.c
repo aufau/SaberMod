@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // g_referee.c -- exclusive referee commands
 
-void Cmd_Referee_f(gentity_t *ent) {
+void Ref_Referee_f(gentity_t *ent) {
 	const char	*errorMsg;
 	gclient_t	*client = ent->client;
 	int			targetNum;
@@ -49,7 +49,7 @@ void Cmd_Referee_f(gentity_t *ent) {
 	}
 }
 
-void Cmd_UnReferee_f(gentity_t *ent) {
+void Ref_UnReferee_f(gentity_t *ent) {
 	if (ent->client->sess.referee) {
 		ent->client->sess.referee = qfalse;
 		ClientUpdateConfigString(ent->s.number);
@@ -58,7 +58,7 @@ void Cmd_UnReferee_f(gentity_t *ent) {
 	}
 }
 
-void Cmd_LockTeam_f(gentity_t *ent) {
+void Ref_LockTeam_f(gentity_t *ent) {
 	qboolean	lock;
 	const char	*prefix;
 	char		str[MAX_TOKEN_CHARS];
@@ -68,7 +68,7 @@ void Cmd_LockTeam_f(gentity_t *ent) {
 
 	trap_Argv(0, str, sizeof(str));
 
-	lock = (qboolean)!Q_stricmp(str, "lockteam");
+	lock = (qboolean)!Q_stricmp(str + STRLEN("ref_"), "lockteam");
 	prefix = lock ? "" : "un";
 
 	if (argc < 2) {
@@ -93,7 +93,7 @@ void Cmd_LockTeam_f(gentity_t *ent) {
 
 }
 
-void Cmd_ForceTeam_f(gentity_t *ent) {
+void Ref_ForceTeam_f(gentity_t *ent) {
 	char		str[MAX_TOKEN_CHARS];
 	const char	*errorMsg;
 	int			clientNum;
@@ -137,7 +137,7 @@ void Cmd_ForceTeam_f(gentity_t *ent) {
 	}
 }
 
-void Cmd_Announce_f(gentity_t *ent) {
+void Ref_Announce_f(gentity_t *ent) {
 	char	*str = ConcatArgs(1);
 
 	if (!str[0]) {
@@ -149,5 +149,31 @@ void Cmd_Announce_f(gentity_t *ent) {
 		trap_SendServerCommand(-1, "motd");
 	} else {
 		G_CenterPrintPersistant(Q_SanitizeStr(str));
+	}
+}
+
+typedef struct {
+	const char	*name;				// must be lower-case for comparing
+	void		(*function)(gentity_t *);
+} refereeCommand_t;
+
+static const refereeCommand_t refCommands[] = {
+	{ "referee", Ref_Referee_f },
+	{ "unreferee", Ref_UnReferee_f },
+	{ "lockteam", Ref_LockTeam_f },
+	{ "unlockteam", Ref_LockTeam_f },
+	{ "forceteam", Ref_ForceTeam_f },
+	{ "announce", Ref_Announce_f },
+};
+
+void RefereeCommand(const char *cmd, int clientNum) {
+	gentity_t	*ent = &g_entities[clientNum];
+	int			i;
+
+	for (i = 0; i < (int)ARRAY_LEN(refCommands); i++) {
+		if (!strcmp(cmd, refCommands[i].name)) {
+			refCommands[i].function(ent);
+			break;
+		}
 	}
 }

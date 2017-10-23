@@ -1122,11 +1122,7 @@ void G_EntityCheckRep(const gentity_t *ent);
 #endif
 
 // g_referee.c
-void Cmd_Referee_f(gentity_t *ent);
-void Cmd_UnReferee_f(gentity_t *ent);
-void Cmd_LockTeam_f(gentity_t *ent);
-void Cmd_ForceTeam_f(gentity_t *ent);
-void Cmd_Announce_f(gentity_t *ent);
+void RefereeCommand(const char *cmd, int clientNum);
 
 // ai_main.c
 

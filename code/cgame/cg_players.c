@@ -1022,12 +1022,12 @@ static void CG_RefereeMode(qboolean enable) {
 
 	trap_Cvar_Set("ui_referee", va("%d", enable));
 
-	UpdateCommand("referee");
-	UpdateCommand("unreferee");
-	UpdateCommand("lockteam");
-	UpdateCommand("unlockteam");
-	UpdateCommand("forceteam");
-	UpdateCommand("announce");
+	UpdateCommand("ref_referee");
+	UpdateCommand("ref_unreferee");
+	UpdateCommand("ref_lockteam");
+	UpdateCommand("ref_unlockteam");
+	UpdateCommand("ref_forceteam");
+	UpdateCommand("ref_announce");
 }
 
 /*

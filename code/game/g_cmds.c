@@ -2982,12 +2982,6 @@ static const clientCommand_t commands[] = {
 	{ "levelshot", Cmd_LevelShot_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "thedestroyer", Cmd_TheDestroyer_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "addbot", Cmd_AddBot_f, 0 },
-	{ "referee", Cmd_Referee_f, CMD_REFEREE },
-	{ "unreferee", Cmd_UnReferee_f, CMD_REFEREE },
-	{ "lockteam", Cmd_LockTeam_f, CMD_REFEREE },
-	{ "unlockteam", Cmd_LockTeam_f, CMD_REFEREE },
-	{ "forceteam", Cmd_ForceTeam_f, CMD_REFEREE },
-	{ "announce", Cmd_Announce_f, CMD_REFEREE },
 #ifdef _DEBUG
 	{ "headexplodey", Cmd_HeadExplodey_f, CMD_CHEAT },
 	{ "g2animent", G_CreateExampleAnimEnt, CMD_CHEAT },
@@ -3025,6 +3019,12 @@ void ClientCommand( int clientNum ) {
 		return;
 	}
 	//end rww
+
+	// redirect referee commands
+	if (ent->client->sess.referee && !strncmp(cmd, "ref_", 4)) {
+		RefereeCommand(cmd + 4, clientNum);
+		return;
+	}
 
 	for ( i = 0; i < ARRAY_LEN(commands); i++ ) {
 		if ( !strcmp( cmd, commands[i].name ) ) {
