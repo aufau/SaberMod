@@ -156,7 +156,7 @@ void W_TraceSetStart( gentity_t *ent, vec3_t start, vec3_t mins, vec3_t maxs )
 	VectorCopy( ent->s.pos.trBase, eyePoint);
 	eyePoint[2] += ent->client->ps.viewheight;
 
-	trap_Trace( &tr, eyePoint, mins, maxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP );
+	G_Trace( &tr, eyePoint, mins, maxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -454,7 +454,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	traces = 0;
 	while ( traces < 10 )
 	{//need to loop this in case we hit a Jedi who dodges the shot
-		trap_Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT );
+		G_Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT );
 
 		traceEnt = &g_entities[tr.entityNum];
 
@@ -658,7 +658,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 		VectorMA( start, shotRange, forward, end );
 
-		trap_Trace ( tr, start, NULL, NULL, end, skip, MASK_SHOT);
+		G_Trace ( tr, start, NULL, NULL, end, skip, MASK_SHOT);
 		tracesTotal++;
 		traceEnt = &g_entities[tr->entityNum];
 
@@ -1298,7 +1298,7 @@ static void WP_DEMP2_AltFire( gentity_t *ent )
 
 	//damage *= ( 1 + ( count * ( count - 1 )));// yields damage of 12,36,84...gives a higher bonus for longer charge
 
-	trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	G_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	// we treat the trace fraction like it's a time value, meaning that the shot can travel a whopping 4096 units in 1 second
 
@@ -1420,7 +1420,7 @@ static void WP_TraceSetStart( gentity_t *ent, vec3_t start, const vec3_t mins, c
 		return;
 	}
 
-	trap_Trace( &tr, ent->client->ps.origin, mins, maxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP );
+	G_Trace( &tr, ent->client->ps.origin, mins, maxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -2002,7 +2002,7 @@ void laserTrapThink ( gentity_t *ent )
 
 	// Find the main impact point
 	VectorMA ( ent->s.pos.trBase, 1024, ent->movedir, end );
-	trap_Trace ( &tr, ent->r.currentOrigin, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	G_Trace ( &tr, ent->r.currentOrigin, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	traceEnt = &g_entities[ tr.entityNum ];
 
@@ -2587,7 +2587,7 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 	VectorSet( maxs, 6, 6, 6 );
 	VectorScale( maxs, -1, mins );
 
-	trap_Trace ( &tr, muzzleStun, mins, maxs, end, ent->s.number, MASK_SHOT );
+	G_Trace ( &tr, muzzleStun, mins, maxs, end, ent->s.number, MASK_SHOT );
 
 	if ( tr.entityNum >= ENTITYNUM_WORLD )
 	{
@@ -3400,7 +3400,7 @@ void SP_emplaced_gun( gentity_t *ent )
 
 	down[2] -= 1024;
 
-	trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, down, ent->s.number, MASK_SOLID);
+	G_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, down, ent->s.number, MASK_SOLID);
 
 	if (tr.fraction != 1 && !tr.allsolid && !tr.startsolid)
 	{

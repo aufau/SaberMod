@@ -625,7 +625,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 		pm.ps = &client->ps;
 		pm.cmd = *ucmd;
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;	// spectators can fly through bodies
-		pm.trace = trap_Trace;
+		pm.trace = G_Trace;
 		pm.pointcontents = trap_PointContents;
 
 		pm.animations = NULL;
@@ -1355,20 +1355,6 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	for (i = 0; i < level.maxclients; i++) {
-		gentity_t *other = g_entities + i;
-
-		if (!other->inuse) {
-			continue;
-		}
-		if (other->s.number == ent->s.number) {
-			continue;
-		}
-		if (!G_CommonDimension(ent, other)) {
-			other->r.contents &= ~CONTENTS_BODY;
-		}
-	}
-
 	/*
 	if ( client->ps.powerups[PW_HASTE] ) {
 		client->ps.speed *= 1.3;
@@ -1412,7 +1398,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 		// ClientThink_real is called in G_Respawn with updated
 		// gclient_t state, don't continue here
-		goto reset_contents;
+		return;
 	}
 
 	if (ent->client->ps.otherKillerTime > level.time &&
@@ -1451,7 +1437,7 @@ void ClientThink_real( gentity_t *ent ) {
 	else {
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
-	pm.trace = trap_Trace;
+	pm.trace = G_Trace;
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = (qboolean)((g_dmflags.integer & DF_NO_FOOTSTEPS) > 0);
@@ -1816,7 +1802,7 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
 				G_Respawn( ent );
-				goto reset_contents;
+				return;
 			}
 
 			// pressing attack or use is the normal respawn method
@@ -1828,33 +1814,13 @@ void ClientThink_real( gentity_t *ent ) {
 		{
 			client->respawnTime = level.time + 1000;
 		}
-		goto reset_contents;
+		return;
 	}
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );
 
 	G_UpdateClientBroadcasts ( ent );
-reset_contents:
-	// Reset CONTENTS_BODY flag. Unfortunately it's tied to pm_type now.
-	for (i = 0; i < level.maxclients; i++) {
-		gentity_t *other = g_entities + i;
-
-		if (!other->inuse) {
-			continue;
-		}
-
-		switch (other->client->ps.pm_type) {
-		case PM_NORMAL:
-		case PM_FLOAT:
-		case PM_FREEZE:
-		case PM_HARMLESS:
-			other->r.contents |= CONTENTS_BODY;
-			break;
-		default:
-			break;
-		}
-	}
 }
 
 /*

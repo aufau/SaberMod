@@ -734,7 +734,7 @@ int CanGetToVector(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 {
 	trace_t tr;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 	{
@@ -754,7 +754,7 @@ int CanGetToVectorTravel(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 	mins[2] = -13;
 	maxs[2] = 13;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, org1, mins, maxs, org2, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction != 1 || tr.startsolid || tr.allsolid)
 	{
@@ -776,14 +776,14 @@ int CanGetToVectorTravel(vec3_t org1, vec3_t org2, vec3_t mins, vec3_t maxs)
 	VectorCopy(org1, dmid);
 	dmid[2] -= 1024;
 
-	trap_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
 
 	startheight = org1[2] - tr.endpos[2];
 
 	VectorCopy(midpos, dmid);
 	dmid[2] -= 1024;
 
-	trap_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, midpos, NULL, NULL, dmid, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.startsolid || tr.allsolid)
 	{
@@ -859,7 +859,7 @@ int ConnectTrail(int startindex, int endindex)
 
 	starttrace[2] -= 4096;
 
-	trap_Trace(&tr, startplace, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, startplace, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 	baseheight = startplace[2] - tr.endpos[2];
 
@@ -898,7 +898,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
+				G_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -929,7 +929,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
+				G_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -960,7 +960,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
+				G_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -991,7 +991,7 @@ int ConnectTrail(int startindex, int endindex)
 
 				starttrace[2] -= 4096;
 
-				trap_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
+				G_Trace(&tr, testspot, NULL, NULL, starttrace, ENTITYNUM_NONE, MASK_SOLID);
 
 				testspot[2] = tr.endpos[2]+baseheight;
 
@@ -1104,7 +1104,7 @@ int DoorBlockingSection(int start, int end)
 		return 0;
 	}
 
-	trap_Trace(&tr, gWPArray[start]->origin, NULL, NULL, gWPArray[end]->origin, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, gWPArray[start]->origin, NULL, NULL, gWPArray[end]->origin, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1125,7 +1125,7 @@ int DoorBlockingSection(int start, int end)
 
 	start_trace_index = tr.entityNum;
 
-	trap_Trace(&tr, gWPArray[end]->origin, NULL, NULL, gWPArray[start]->origin, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, gWPArray[end]->origin, NULL, NULL, gWPArray[start]->origin, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1190,11 +1190,11 @@ int OrgVisibleCurve(vec3_t org1, vec3_t mins, vec3_t maxs, vec3_t org2, int igno
 	VectorCopy(org1, evenorg1);
 	evenorg1[2] = org2[2];
 
-	trap_Trace(&tr, evenorg1, mins, maxs, org2, ignore, MASK_SOLID);
+	G_Trace(&tr, evenorg1, mins, maxs, org2, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 	{
-		trap_Trace(&tr, evenorg1, mins, maxs, org1, ignore, MASK_SOLID);
+		G_Trace(&tr, evenorg1, mins, maxs, org1, ignore, MASK_SOLID);
 
 		if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 		{
@@ -1959,7 +1959,7 @@ void FlagObjects(void)
 
 			if (tlen < bestdist)
 			{
-				trap_Trace(&tr, flag_red->s.pos.trBase, mins, maxs, gWPArray[i]->origin, flag_red->s.number, MASK_SOLID);
+				G_Trace(&tr, flag_red->s.pos.trBase, mins, maxs, gWPArray[i]->origin, flag_red->s.number, MASK_SOLID);
 
 				if (tr.fraction == 1 || tr.entityNum == flag_red->s.number)
 				{
@@ -1996,7 +1996,7 @@ void FlagObjects(void)
 
 			if (tlen < bestdist)
 			{
-				trap_Trace(&tr, flag_blue->s.pos.trBase, mins, maxs, gWPArray[i]->origin, flag_blue->s.number, MASK_SOLID);
+				G_Trace(&tr, flag_blue->s.pos.trBase, mins, maxs, gWPArray[i]->origin, flag_blue->s.number, MASK_SOLID);
 
 				if (tr.fraction == 1 || tr.entityNum == flag_blue->s.number)
 				{

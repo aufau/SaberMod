@@ -359,7 +359,7 @@ static gentity_t *G_CrosshairPlayer( gentity_t *ent, int maxDist ) {
 	org[2] += ent->client->ps.viewheight;
 	VectorMA(org, maxDist, forward, fwdOrg);
 
-	trap_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
+	G_Trace(&tr, org, NULL, NULL, fwdOrg, ent->s.number, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS) {
 		return &g_entities[tr.entityNum];
@@ -2362,7 +2362,7 @@ int G_ItemUsable(playerState_t *ps, holdable_t forcedUse)
 		trtest[1] = fwdorg[1] + fwd[1]*16;
 		trtest[2] = fwdorg[2] + fwd[2]*16;
 
-		trap_Trace(&tr, ps->origin, mins, maxs, trtest, ps->clientNum, MASK_PLAYERSOLID);
+		G_Trace(&tr, ps->origin, mins, maxs, trtest, ps->clientNum, MASK_PLAYERSOLID);
 
 		if ((tr.fraction != 1 && tr.entityNum != ps->clientNum) || tr.startsolid || tr.allsolid)
 		{
@@ -2383,12 +2383,12 @@ int G_ItemUsable(playerState_t *ps, holdable_t forcedUse)
 		AngleVectors (ps->viewangles, fwd, NULL, NULL);
 		fwd[2] = 0;
 		VectorMA(ps->origin, 64, fwd, dest);
-		trap_Trace(&tr, ps->origin, mins, maxs, dest, ps->clientNum, MASK_SHOT );
+		G_Trace(&tr, ps->origin, mins, maxs, dest, ps->clientNum, MASK_SHOT );
 		if (tr.fraction > 0.9f && !tr.startsolid && !tr.allsolid)
 		{
 			VectorCopy(tr.endpos, pos);
 			VectorSet( dest, pos[0], pos[1], pos[2] - 4096 );
-			trap_Trace( &tr, pos, mins, maxs, dest, ps->clientNum, MASK_SOLID );
+			G_Trace( &tr, pos, mins, maxs, dest, ps->clientNum, MASK_SOLID );
 			if ( !tr.startsolid && !tr.allsolid )
 			{
 				return 1;
@@ -2789,7 +2789,7 @@ static void Cmd_DebugSetBodyAnim_f(gentity_t *self)
 	pmv.ps = &self->client->ps;
 	pmv.animations = bgGlobalAnimations;
 	pmv.cmd = self->client->pers.cmd;
-	pmv.trace = trap_Trace;
+	pmv.trace = G_Trace;
 	pmv.pointcontents = trap_PointContents;
 	pmv.gametype = level.gametype;
 
@@ -2821,7 +2821,7 @@ static void StandardSetBodyAnim(gentity_t *self, int anim, unsigned flags)
 	pmv.ps = &self->client->ps;
 	pmv.animations = bgGlobalAnimations;
 	pmv.cmd = self->client->pers.cmd;
-	pmv.trace = trap_Trace;
+	pmv.trace = G_Trace;
 	pmv.pointcontents = trap_PointContents;
 	pmv.gametype = level.gametype;
 
@@ -2840,7 +2840,7 @@ static void Cmd_LoveAndPeace_f(gentity_t *ent)
 	fPos[1] = ent->client->ps.origin[1] + fPos[1]*40;
 	fPos[2] = ent->client->ps.origin[2] + fPos[2]*40;
 
-	trap_Trace(&tr, ent->client->ps.origin, 0, 0, fPos, ent->s.number, ent->clipmask);
+	G_Trace(&tr, ent->client->ps.origin, 0, 0, fPos, ent->s.number, ent->clipmask);
 
 	if (tr.entityNum < MAX_CLIENTS && tr.entityNum != ent->s.number)
 	{

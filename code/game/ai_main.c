@@ -991,7 +991,7 @@ int OrgVisible(vec3_t org1, vec3_t org2, int ignore)
 {
 	trace_t tr;
 
-	trap_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_SOLID);
+	G_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1006,11 +1006,11 @@ int WPOrgVisible(gentity_t *bot, vec3_t org1, vec3_t org2, int ignore)
 	trace_t tr;
 	gentity_t *ownent;
 
-	trap_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_SOLID);
+	G_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
-		trap_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_PLAYERSOLID);
+		G_Trace(&tr, org1, NULL, NULL, org2, ignore, MASK_PLAYERSOLID);
 
 		if (tr.fraction != 1 && tr.entityNum != ENTITYNUM_NONE && g_entities[tr.entityNum].s.eType == ET_SPECIAL)
 		{
@@ -1036,7 +1036,7 @@ int OrgVisibleBox(vec3_t org1, vec3_t mins, vec3_t maxs, vec3_t org2, int ignore
 {
 	trace_t tr;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, ignore, MASK_SOLID);
+	G_Trace(&tr, org1, mins, maxs, org2, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 	{
@@ -1056,7 +1056,7 @@ int CheckForFunc(vec3_t org, int ignore)
 
 	under[2] -= 64;
 
-	trap_Trace(&tr, org, NULL, NULL, under, ignore, MASK_SOLID);
+	G_Trace(&tr, org, NULL, NULL, under, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1521,7 +1521,7 @@ static int BotTrace_Strafe(bot_state_t *bs, const vec3_t traceto)
 	to[1] = from[1] + forward[1]*32;
 	to[2] = from[2] + forward[2]*32;
 
-	trap_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1538,7 +1538,7 @@ static int BotTrace_Strafe(bot_state_t *bs, const vec3_t traceto)
 	to[1] += right[1]*32;
 	to[2] += right[2]*32;
 
-	trap_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1553,7 +1553,7 @@ static int BotTrace_Strafe(bot_state_t *bs, const vec3_t traceto)
 	to[1] -= right[1]*64;
 	to[2] -= right[2]*64;
 
-	trap_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, from, playerMins, playerMaxs, to, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1586,7 +1586,7 @@ static int BotTrace_Jump(bot_state_t *bs, const vec3_t traceto)
 	maxs[1] = 15;
 	maxs[2] = 32;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, bs->origin, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1607,7 +1607,7 @@ static int BotTrace_Jump(bot_state_t *bs, const vec3_t traceto)
 	maxs[1] = 15;
 	maxs[2] = 8;
 
-	trap_Trace(&tr, tracefrom_mod, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, tracefrom_mod, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -1648,7 +1648,7 @@ static int BotTrace_Duck(bot_state_t *bs, const vec3_t traceto)
 	maxs[1] = 15;
 	maxs[2] = 8;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, bs->origin, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1)
 	{
@@ -1667,7 +1667,7 @@ static int BotTrace_Duck(bot_state_t *bs, const vec3_t traceto)
 	maxs[1] = 15;
 	maxs[2] = 32;
 
-	trap_Trace(&tr, tracefrom_mod, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, tracefrom_mod, mins, maxs, traceto_mod, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1)
 	{
@@ -2369,7 +2369,7 @@ gentity_t *GetNearestBadThing(bot_state_t *bs)
 
 			if (glen < bestdist * factor * factor && trap_InPVS(bs->origin, ent->s.pos.trBase))
 			{
-				trap_Trace(&tr, bs->origin, NULL, NULL, ent->s.pos.trBase, bs->client, MASK_SOLID);
+				G_Trace(&tr, bs->origin, NULL, NULL, ent->s.pos.trBase, bs->client, MASK_SOLID);
 
 				if (tr.fraction == 1 || tr.entityNum == ent->s.number)
 				{
@@ -2669,7 +2669,7 @@ static void GetNewFlagPoint(wpobject_t *wp, gentity_t *flagEnt, team_t team)
 
 	if (bestdist <= WP_KEEP_FLAG_DIST)
 	{
-		trap_Trace(&tr, wp->origin, mins, maxs, flagEnt->s.pos.trBase, flagEnt->s.number, MASK_SOLID);
+		G_Trace(&tr, wp->origin, mins, maxs, flagEnt->s.pos.trBase, flagEnt->s.number, MASK_SOLID);
 
 		if (tr.fraction == 1)
 		{ //this point is good
@@ -2684,7 +2684,7 @@ static void GetNewFlagPoint(wpobject_t *wp, gentity_t *flagEnt, team_t team)
 
 		if (testdist < bestdist)
 		{
-			trap_Trace(&tr, gWPArray[i]->origin, mins, maxs, flagEnt->s.pos.trBase, flagEnt->s.number, MASK_SOLID);
+			G_Trace(&tr, gWPArray[i]->origin, mins, maxs, flagEnt->s.pos.trBase, flagEnt->s.number, MASK_SOLID);
 
 			if (tr.fraction == 1)
 			{
@@ -2948,7 +2948,7 @@ int EntityVisibleBox(vec3_t org1, vec3_t mins, vec3_t maxs, vec3_t org2, int ign
 {
 	trace_t tr;
 
-	trap_Trace(&tr, org1, mins, maxs, org2, ignore, MASK_SOLID);
+	G_Trace(&tr, org1, mins, maxs, org2, ignore, MASK_SOLID);
 
 	if (tr.fraction == 1 && !tr.startsolid && !tr.allsolid)
 	{
@@ -3258,7 +3258,7 @@ int SagaTakesPriority(bot_state_t *bs)
 				}
 				else
 				{
-					trap_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
+					G_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
 
 					if (tr.fraction != 1 && tr.entityNum != bs->shootGoal->s.number)
 					{
@@ -3283,7 +3283,7 @@ int SagaTakesPriority(bot_state_t *bs)
 			}
 			else
 			{
-				trap_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
+				G_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
 
 				if (tr.fraction != 1 && tr.entityNum != bs->shootGoal->s.number)
 				{
@@ -3307,7 +3307,7 @@ int SagaTakesPriority(bot_state_t *bs)
 			}
 			else
 			{
-				trap_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
+				G_Trace(&tr, bs->origin, NULL, NULL, dif, bs->client, MASK_SOLID);
 
 				if (tr.fraction != 1 && tr.entityNum != bs->shootGoal->s.number)
 				{
@@ -4207,14 +4207,14 @@ void MeleeCombatHandling(bot_state_t *bs)
 	VectorCopy(usethisvec, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	en_down = (int)tr.endpos[2];
 
 	VectorCopy(bs->origin, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	me_down = (int)tr.endpos[2];
 
@@ -4229,7 +4229,7 @@ void MeleeCombatHandling(bot_state_t *bs)
 	VectorCopy(midorg, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	mid_down = (int)tr.endpos[2];
 
@@ -4291,7 +4291,7 @@ void SaberCombatHandling(bot_state_t *bs)
 	VectorCopy(usethisvec, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, usethisvec, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	en_down = (int)tr.endpos[2];
 
@@ -4305,7 +4305,7 @@ void SaberCombatHandling(bot_state_t *bs)
 		VectorCopy(bs->origin, downvec);
 		downvec[2] -= 4096;
 
-		trap_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+		G_Trace(&tr, bs->origin, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 		me_down = (int)tr.endpos[2];
 
@@ -4327,7 +4327,7 @@ void SaberCombatHandling(bot_state_t *bs)
 	VectorCopy(midorg, downvec);
 	downvec[2] -= 4096;
 
-	trap_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, midorg, mins, maxs, downvec, ENTITYNUM_NONE, MASK_SOLID);
 
 	mid_down = (int)tr.endpos[2];
 
@@ -4400,7 +4400,7 @@ void SaberCombatHandling(bot_state_t *bs)
 
 			groundcheck[2] -= 64;
 
-			trap_Trace(&tr, bs->goalPosition, NULL, NULL, groundcheck, bs->client, MASK_SOLID);
+			G_Trace(&tr, bs->goalPosition, NULL, NULL, groundcheck, bs->client, MASK_SOLID);
 
 			if (tr.fraction == 1.0f)
 			{ //don't back off of a ledge
@@ -4914,7 +4914,7 @@ int BotFallbackNavigation(bot_state_t *bs)
 	trto[1] = bs->origin[1] + fwd[1]*16;
 	trto[2] = bs->origin[2] + fwd[2]*16;
 
-	trap_Trace(&tr, bs->origin, mins, maxs, trto, ENTITYNUM_NONE, MASK_SOLID);
+	G_Trace(&tr, bs->origin, mins, maxs, trto, ENTITYNUM_NONE, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{
@@ -5293,7 +5293,7 @@ void StrafeTracing(bot_state_t *bs)
 		rorg[2] = bs->origin[2] + right[2]*32;
 	}
 
-	trap_Trace(&tr, bs->origin, mins, maxs, rorg, bs->client, MASK_SOLID);
+	G_Trace(&tr, bs->origin, mins, maxs, rorg, bs->client, MASK_SOLID);
 
 	if (tr.fraction != 1)
 	{
@@ -5304,7 +5304,7 @@ void StrafeTracing(bot_state_t *bs)
 
 	drorg[2] -= 32;
 
-	trap_Trace(&tr, rorg, NULL, NULL, drorg, bs->client, MASK_SOLID);
+	G_Trace(&tr, rorg, NULL, NULL, drorg, bs->client, MASK_SOLID);
 
 	if (tr.fraction == 1)
 	{ //this may be a dangerous ledge, so don't strafe over it just in case
@@ -5404,7 +5404,7 @@ gentity_t *CheckForFriendInLOF(bot_state_t *bs)
 	trto[1] = trfrom[1] + fwd[1]*2048;
 	trto[2] = trfrom[2] + fwd[2]*2048;
 
-	trap_Trace(&tr, trfrom, mins, maxs, trto, bs->client, MASK_PLAYERSOLID);
+	G_Trace(&tr, trfrom, mins, maxs, trto, bs->client, MASK_PLAYERSOLID);
 
 	if (tr.fraction != 1 && tr.entityNum < MAX_CLIENTS)
 	{
@@ -5551,7 +5551,7 @@ void CTFFlagMovement(bot_state_t *bs)
 
 				if (VectorLength(a) <= BOT_FLAG_GET_DISTANCE)
 				{
-					trap_Trace(&tr, bs->origin, mins, maxs, desiredDrop->s.pos.trBase, bs->client, MASK_SOLID);
+					G_Trace(&tr, bs->origin, mins, maxs, desiredDrop->s.pos.trBase, bs->client, MASK_SOLID);
 
 					if (tr.fraction == 1 || tr.entityNum == desiredDrop->s.number)
 					{
@@ -5673,7 +5673,7 @@ int BotSurfaceNear(bot_state_t *bs)
 	fwd[1] = bs->origin[1]+(fwd[1]*64);
 	fwd[2] = bs->origin[2]+(fwd[2]*64);
 
-	trap_Trace(&tr, bs->origin, NULL, NULL, fwd, bs->client, MASK_SOLID);
+	G_Trace(&tr, bs->origin, NULL, NULL, fwd, bs->client, MASK_SOLID);
 
 	if (tr.fraction != 1)
 	{

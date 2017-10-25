@@ -173,3 +173,35 @@ void G_StopPrivateDuel(gentity_t *ent)
 		}
 	}
 }
+
+/*
+================
+G_Trace
+
+Dimension-aware trace
+================
+*/
+void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask) {
+    gentity_t *ent;
+    gentity_t *passEnt;
+
+    trap_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
+
+	if (results->entityNum >= ENTITYNUM_MAX_NORMAL) {
+		return;
+	}
+
+    passEnt = g_entities + passEntityNum;
+    ent = g_entities + results->entityNum;
+
+    if (!(ent->dimension & passEnt->dimension)) {
+        int contents;
+
+        contents = ent->r.contents;
+        ent->r.contents = 0;
+
+        G_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
+
+        ent->r.contents = contents;
+    }
+}

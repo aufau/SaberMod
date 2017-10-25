@@ -57,7 +57,7 @@ void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 		startspot[2] += forwhom->r.mins[2] + 4;
 		VectorCopy( startspot, endspot );
 		endspot[2] -= 300;
-		trap_Trace( &trace, forwhom->r.currentOrigin, vec3_origin, vec3_origin, endspot, forwhom->s.number, MASK_SOLID );
+		G_Trace( &trace, forwhom->r.currentOrigin, vec3_origin, vec3_origin, endspot, forwhom->s.number, MASK_SOLID );
 //		if(trace_fraction>0.05&&forwhom.movetype==MOVETYPE_STEP)
 //			forwhom.flags(-)FL_ONGROUND;
 
@@ -208,7 +208,7 @@ void G_RunObject( gentity_t *ent )
 	}
 	// trace a line from the previous position to the current position,
 	// ignoring interactions with the missile owner
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
+	G_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
 		ent->parent ? ent->parent->s.number : ent->s.number, ent->clipmask );
 
 	if ( !tr.startsolid && !tr.allsolid && tr.fraction )

@@ -572,7 +572,7 @@ void SP_misc_holocron(gentity_t *ent)
 	ent->r.maxs[2] -= 0.1f;
 
 	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
-	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
+	G_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
 	if ( tr.startsolid )
 	{
 		G_Printf ("SP_misc_holocron: misc_holocron startsolid at %s\n", vtos(ent->s.origin));
@@ -849,7 +849,7 @@ void SP_misc_shield_floor_unit( gentity_t *ent )
 	ent->r.maxs[2] -= 0.1f;
 
 	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
-	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
+	G_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
 	if ( tr.startsolid )
 	{
 		G_Printf ("SP_misc_shield_floor_unit: misc_shield_floor_unit startsolid at %s\n", vtos(ent->s.origin));
@@ -2009,7 +2009,7 @@ static int ExampleAnimEntMove(gentity_t *self, const vec3_t moveTo, float stepSi
 	stepGoal[1] = self->r.currentOrigin[1] + stepSub[1]*stepSize;
 	stepGoal[2] = self->r.currentOrigin[2] + stepSub[2]*stepSize;
 
-	trap_Trace(&tr, self->r.currentOrigin, self->r.mins, self->r.maxs, stepGoal, self->s.number, self->clipmask);
+	G_Trace(&tr, self->r.currentOrigin, self->r.mins, self->r.maxs, stepGoal, self->s.number, self->clipmask);
 
 	if (!tr.startsolid && !tr.allsolid && tr.fraction)
 	{
@@ -2050,7 +2050,7 @@ static int ExampleAnimEntMove(gentity_t *self, const vec3_t moveTo, float stepSi
 
 		if (VectorLength(vecMeasure) > 1)
 		{
-			trap_Trace(&tr, trFrom, self->r.mins, self->r.maxs, trTo, self->s.number, self->clipmask);
+			G_Trace(&tr, trFrom, self->r.mins, self->r.maxs, trTo, self->s.number, self->clipmask);
 
 			if (!tr.startsolid && !tr.allsolid && tr.fraction == 1)
 			{ //clear trace here, probably up a step
@@ -2058,7 +2058,7 @@ static int ExampleAnimEntMove(gentity_t *self, const vec3_t moveTo, float stepSi
 				VectorCopy(tr.endpos, trDown);
 				trDown[2] -= 16;
 
-				trap_Trace(&tr, trFrom, self->r.mins, self->r.maxs, trTo, self->s.number, self->clipmask);
+				G_Trace(&tr, trFrom, self->r.mins, self->r.maxs, trTo, self->s.number, self->clipmask);
 
 				if (!tr.startsolid && !tr.allsolid)
 				{ //plop us down on the step after moving up
@@ -2124,7 +2124,7 @@ qboolean ExampleAnimEntClearLOS(gentity_t *self, vec3_t point)
 {
 	trace_t tr;
 
-	trap_Trace(&tr, self->r.currentOrigin, 0, 0, point, self->s.number, self->clipmask);
+	G_Trace(&tr, self->r.currentOrigin, 0, 0, point, self->s.number, self->clipmask);
 
 	if (ExampleAnimEntAlignment(self) == ANIMENT_ALIGNED_GOOD)
 	{
@@ -2216,7 +2216,7 @@ qboolean ExampleAnimEntWayValidCheck(gentity_t *self)
 		return qfalse;
 	}
 
-	trap_Trace(&tr, self->r.currentOrigin, 0, 0, currentWP->origin, self->s.number, self->clipmask);
+	G_Trace(&tr, self->r.currentOrigin, 0, 0, currentWP->origin, self->s.number, self->clipmask);
 
 	if (tr.fraction == 1)
 	{ //allow one second for time you cannot see the point. If we go beyond that, kill the connection.
@@ -3064,7 +3064,7 @@ void AESpawner_Think(gentity_t *ent)
 		VectorSet(playerMins, -15, -15, DEFAULT_MINS_2);
 		VectorSet(playerMaxs, 15, 15, DEFAULT_MAXS_2);
 
-		trap_Trace(&tr, ent->s.origin, playerMins, playerMaxs, ent->s.origin, ent->s.number, MASK_PLAYERSOLID);
+		G_Trace(&tr, ent->s.origin, playerMins, playerMaxs, ent->s.origin, ent->s.number, MASK_PLAYERSOLID);
 
 		if (tr.fraction == 1)
 		{

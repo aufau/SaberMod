@@ -1102,6 +1102,8 @@ unsigned G_GetFreeDuelDimension(void);
 unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
+void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins,
+	const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
 
 // g_unlagged.c
 void G_BackupWorld( void );
