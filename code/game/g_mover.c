@@ -267,7 +267,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 	// unlink the pusher so we don't get it in the entityList
 	trap_UnlinkEntity( pusher );
 
-	listedEntities = trap_EntitiesInBox( totalMins, totalMaxs, entityList, MAX_GENTITIES );
+	listedEntities = G_EntitiesInBox( totalMins, totalMaxs, entityList, MAX_GENTITIES, pusher->s.number );
 
 	// move the pusher to it's final position
 	VectorAdd( pusher->r.currentOrigin, move, pusher->r.currentOrigin );

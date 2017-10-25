@@ -228,7 +228,7 @@ int G_RadiusList ( const vec3_t origin, float radius,	gentity_t *ignore, qboolea
 		maxs[i] = origin[i] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	numListedEntities = G_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES, ignore->s.number );
 
 	for ( e = 0 ; e < numListedEntities ; e++ )
 	{
@@ -768,7 +768,7 @@ void G_KillBox (gentity_t *ent) {
 
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES, ent->s.number );
 
 	for (i=0 ; i<num ; i++) {
 		if (ent->s.number == touch[i]) {

@@ -467,7 +467,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	VectorSubtract( ent->client->ps.origin, range, mins );
 	VectorAdd( ent->client->ps.origin, range, maxs );
 
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES, ent->s.number );
 
 	// can't use ent->r.absmin, because that has a one unit pad
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
@@ -563,7 +563,7 @@ void G_MoverTouchPushTriggers( gentity_t *ent, const vec3_t oldOrg )
 		VectorSubtract( checkSpot, range, mins );
 		VectorAdd( checkSpot, range, maxs );
 
-		num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+		num = G_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES, ent->s.number );
 
 		// can't use ent->r.absmin, because that has a one unit pad
 		VectorAdd( checkSpot, ent->r.mins, mins );

@@ -3576,7 +3576,7 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, int damage, int ra
 		maxs[i] = origin[i] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	numListedEntities = G_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES, attacker->s.number );
 
 	for ( e = 0 ; e < numListedEntities ; e++ ) {
 		ent = &g_entities[entityList[ e ]];

@@ -1104,6 +1104,7 @@ void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
 void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins,
 	const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
+int G_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum);
 
 // g_unlagged.c
 void G_BackupWorld( void );

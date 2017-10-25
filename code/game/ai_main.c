@@ -2309,7 +2309,7 @@ gentity_t *GetNearestBadThing(bot_state_t *bs)
 	VectorCopy(bs->origin, maxs);
 	VectorAdd(maxs, box, maxs);
 
-	num = trap_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES );
+	num = G_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES, bs->client);
 
 	for (i = 0; i < num; i++)
 	{

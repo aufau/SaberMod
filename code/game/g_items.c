@@ -696,7 +696,7 @@ void pas_think( gentity_t *ent )
 	testMaxs[1] = ent->r.currentOrigin[1] + ent->r.maxs[1]-4;
 	testMaxs[2] = ent->r.currentOrigin[2] + ent->r.maxs[2]-4;
 
-	numListedEntities = trap_EntitiesInBox( testMins, testMaxs, iEntityList, MAX_GENTITIES );
+	numListedEntities = G_EntitiesInBox( testMins, testMaxs, iEntityList, MAX_GENTITIES, ent->s.number );
 
 	while (i < numListedEntities)
 	{
@@ -704,7 +704,7 @@ void pas_think( gentity_t *ent )
 		{ //client stuck inside me. go nonsolid.
 			int clNum = iEntityList[i];
 
-			numListedEntities = trap_EntitiesInBox( g_entities[clNum].r.absmin, g_entities[clNum].r.absmax, iEntityList, MAX_GENTITIES );
+			numListedEntities = G_EntitiesInBox( g_entities[clNum].r.absmin, g_entities[clNum].r.absmax, iEntityList, MAX_GENTITIES, clNum );
 
 			i = 0;
 			while (i < numListedEntities)

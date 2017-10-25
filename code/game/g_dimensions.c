@@ -205,3 +205,35 @@ void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins, const vec
         ent->r.contents = contents;
     }
 }
+
+/*
+================
+G_Trace
+
+Dimension-aware trap_EntitiesInBox
+================
+*/
+int G_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
+{
+	int dimension = g_entities[entityNum].dimension;
+	int	fullEntityList[MAX_GENTITIES];
+	int	fullCount;
+	int	count;
+	int	i;
+
+	if (maxcount > MAX_GENTITIES) {
+		maxcount = MAX_GENTITIES;
+	}
+
+	fullCount = trap_EntitiesInBox(mins, maxs, fullEntityList, maxcount);
+
+	count = 0;
+	for (i = 0; i < fullCount; i++) {
+		if (dimension & g_entities[fullEntityList[i]].dimension) {
+			entityList[count] = fullEntityList[i];
+			count++;
+		}
+	}
+
+	return count;
+}

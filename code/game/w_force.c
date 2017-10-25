@@ -1614,7 +1614,7 @@ void ForceShootLightning( gentity_t *self )
 			mins[i] = center[i] - radius;
 			maxs[i] = center[i] + radius;
 		}
-		numListedEntities = trap_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES );
+		numListedEntities = G_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES, self->s.number );
 
 		i = 0;
 		while (i < numListedEntities)
@@ -1895,7 +1895,7 @@ int ForceShootDrain( gentity_t *self )
 			mins[i] = center[i] - radius;
 			maxs[i] = center[i] + radius;
 		}
-		numListedEntities = trap_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES );
+		numListedEntities = G_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES, self->s.number );
 
 		i = 0;
 		while (i < numListedEntities)
@@ -2390,7 +2390,7 @@ void ForceTelepathy(gentity_t *self)
 	}
 	else
 	{
-		numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		numListedEntities = G_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES, self->s.number );
 
 		e = 0;
 
@@ -2740,7 +2740,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 	}
 	else
 	{
-		numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		numListedEntities = G_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES, self->s.number );
 
 		e = 0;
 

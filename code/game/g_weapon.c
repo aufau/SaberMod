@@ -1150,7 +1150,7 @@ void DEMP2_AltRadiusDamage( gentity_t *ent )
 		maxs[i] = ent->r.currentOrigin[i] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES );
+	numListedEntities = G_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES, ent->s.number );
 
 	i = 0;
 	while (i < numListedEntities)
