@@ -301,6 +301,9 @@ g_kickMethod <method>
   3 - League Mod
   =====================  =====================  =====================
 
+g_requireClientside <0|1>
+  Allow only players with matching clientside to join the game.
+
 g_restrictChat <0|1>
   Prevent spectators from speaking to players and all clients from
   speaking to dueling players.

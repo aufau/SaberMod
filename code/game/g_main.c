@@ -162,6 +162,7 @@ vmCvar_t	g_unlaggedMaxPing;
 vmCvar_t	g_ingameMotd;
 vmCvar_t	g_macroscan;
 vmCvar_t	g_timeoutLimit;
+vmCvar_t	g_requireClientside;
 
 
 int gDuelist1 = -1;
@@ -333,6 +334,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_ingameMotd, "g_ingameMotd", "none", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_macroscan, "g_macroscan", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &g_timeoutLimit, "g_timeoutLimit", "2", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_requireClientside, "g_requireClientside", "0", CVAR_ARCHIVE, 0, qtrue },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );

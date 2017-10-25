@@ -999,7 +999,13 @@ void Cmd_Team_f( gentity_t *ent ) {
 		return;
 	}
 
-	trap_Argv( 1, s, sizeof( s ) );
+	if (g_requireClientside.integer && !ent->client->pers.registered) {
+		// clientside message will be printed in ClientBegin
+		ClientBegin( ent->s.number, qfalse );
+		return;
+	} else {
+		trap_Argv( 1, s, sizeof( s ) );
+	}
 
 	SetTeamFromString( ent, s );
 }

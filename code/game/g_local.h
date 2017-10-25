@@ -1265,6 +1265,7 @@ extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
 extern	vmCvar_t	g_timeoutLimit;
+extern	vmCvar_t	g_requireClientside;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

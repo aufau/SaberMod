@@ -1648,6 +1648,11 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 			client->sess.motdSeen = qtrue;
 		}
 	} else {
+		if (g_requireClientside.integer && client->sess.sessionTeam != TEAM_SPECTATOR) {
+			SetTeam(ent, TEAM_SPECTATOR);
+			return;
+		}
+
 		if (gameversion[0] == '\0') {
 			trap_SendServerCommand( clientNum, "cp \"Please download\n" GAME_VERSION " clientside\"");
 		} else {
