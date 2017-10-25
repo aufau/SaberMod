@@ -1756,16 +1756,6 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 		}
 	}
 
-	if (en->client->ps.duelInProgress && en->client->ps.duelIndex != bs->client)
-	{
-		return 0;
-	}
-
-	if (bs->cur_ps.duelInProgress && en->s.number != bs->cur_ps.duelIndex)
-	{
-		return 0;
-	}
-
 	if (level.gametype == GT_JEDIMASTER && !en->client->ps.isJediMaster && !bs->cur_ps.isJediMaster)
 	{ //rules for attacking non-JM in JM mode
 		vec3_t vs;

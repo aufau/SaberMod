@@ -1698,20 +1698,6 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 			return qfalse;
 		}
 
-		if (g_entities[tr.entityNum].inuse && g_entities[tr.entityNum].client &&
-			g_entities[tr.entityNum].client->ps.duelInProgress &&
-			g_entities[tr.entityNum].client->ps.duelIndex != self->s.number)
-		{
-			return qfalse;
-		}
-
-		if (g_entities[tr.entityNum].inuse && g_entities[tr.entityNum].client &&
-			self->client->ps.duelInProgress &&
-			self->client->ps.duelIndex != g_entities[tr.entityNum].s.number)
-		{
-			return qfalse;
-		}
-
 		self->client->ps.saberIdleWound = level.time + g_saberDmgDelay_Idle.integer;
 
 		didHit = qtrue;
@@ -1828,20 +1814,6 @@ qboolean CheckSaberDamage(gentity_t *self, vec3_t saberStart, vec3_t saberEnd, q
 			otherOwner->client &&
 			OnSameTeam(self, otherOwner) &&
 			!g_friendlySaber.integer)
-		{
-			return qfalse;
-		}
-
-		if (otherOwner && otherOwner->client &&
-			otherOwner->client->ps.duelInProgress &&
-			otherOwner->client->ps.duelIndex != self->s.number)
-		{
-			return qfalse;
-		}
-
-		if (otherOwner && otherOwner->client &&
-			self->client->ps.duelInProgress &&
-			self->client->ps.duelIndex != otherOwner->s.number)
 		{
 			return qfalse;
 		}
@@ -2199,16 +2171,6 @@ qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *saberOwner, gen
 	{ //hit a client
 		if ( ent->client->sess.spectatorState != SPECTATOR_NOT ||
 			ent->client->pers.connected != CON_CONNECTED)
-		{
-			return qfalse;
-		}
-		if (ent->client->ps.duelInProgress &&
-			ent->client->ps.duelIndex != saberOwner->s.number)
-		{
-			return qfalse;
-		}
-		if (saberOwner->client->ps.duelInProgress &&
-			saberOwner->client->ps.duelIndex != ent->s.number)
 		{
 			return qfalse;
 		}

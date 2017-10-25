@@ -466,15 +466,6 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 			continue;
 		}
 
-		if (traceEnt->client && traceEnt->client->ps.duelInProgress &&
-			traceEnt->client->ps.duelIndex != ent->s.number)
-		{
-			VectorCopy( tr.endpos, start );
-			ignore = tr.entityNum;
-			traces++;
-			continue;
-		}
-
 		if ( Jedi_DodgeEvasion( traceEnt, ent, &tr, G_GetHitLocation(traceEnt, tr.endpos) ) )
 		{//act like we didn't even hit him
 			VectorCopy( tr.endpos, start );
@@ -666,15 +657,6 @@ void WP_DisruptorAltFire( gentity_t *ent )
 		{
 			skip = tr->entityNum;
 			VectorCopy(tr->endpos, start);
-			continue;
-		}
-
-		if (traceEnt->client && traceEnt->client->ps.duelInProgress &&
-			traceEnt->client->ps.duelIndex != ent->s.number)
-		{
-			skip = tr->entityNum;
-			VectorCopy(tr->endpos, start);
-			traces--;
 			continue;
 		}
 
@@ -2595,22 +2577,6 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 	}
 
 	tr_ent = &g_entities[tr.entityNum];
-
-	if (tr_ent && tr_ent->takedamage && tr_ent->client)
-	{
-		if (tr_ent->client->ps.duelInProgress &&
-			tr_ent->client->ps.duelIndex != ent->s.number)
-		{
-			return;
-		}
-
-		if (ent->client &&
-			ent->client->ps.duelInProgress &&
-			ent->client->ps.duelIndex != tr_ent->s.number)
-		{
-			return;
-		}
-	}
 
 	if ( tr_ent && tr_ent->takedamage )
 	{
