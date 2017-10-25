@@ -422,7 +422,7 @@ static void CG_DrawZoomMask( void )
 			trap_R_SetColor( colorTable[CT_WHITE] );
 
 			// draw the charge level
-			max = ( cg.serverTime - cg.predictedPlayerState.weaponChargeTime ) / ( 50.0f * 30.0f ); // bad hardcodedness 50 is disruptor charge unit and 30 is max charge units allowed.
+			max = ( cg.gameTime - cg.predictedPlayerState.weaponChargeTime ) / ( 50.0f * 30.0f ); // bad hardcodedness 50 is disruptor charge unit and 30 is max charge units allowed.
 
 			if ( max > 1.0f )
 			{
@@ -2015,7 +2015,6 @@ static void CG_DrawCountdown( void )
 	UI_DrawProportionalString( 0.5f * cgs.screenWidth, 125, s, UI_CENTER, colorRed );
 }
 
-
 /*
 ==============
 CG_DrawClock
@@ -2229,9 +2228,9 @@ static void CG_DrawPowerupIcons(int y)
 
 	for (j = 0; j < PW_NUM_POWERUPS; j++)
 	{
-		if (cg.snap->ps.powerups[j] > cg.serverTime)
+		if (cg.snap->ps.powerups[j] > cg.gameTime)
 		{
-			int secondsleft = (cg.snap->ps.powerups[j] - cg.serverTime)/1000;
+			int secondsleft = (cg.snap->ps.powerups[j] - cg.gameTime)/1000;
 
 			item = BG_FindItemForPowerup( (powerup_t)j );
 
@@ -2325,7 +2324,7 @@ static void CG_DrawReward( void ) {
 				cg.rewardShader[i] = cg.rewardShader[i+1];
 				cg.rewardCount[i] = cg.rewardCount[i+1];
 			}
-			cg.rewardTime = cg.time;
+			cg.rewardTime = cg.serverTime;
 			cg.rewardStack--;
 			color = CG_FadeColor( cg.rewardTime, REWARD_TIME );
 			trap_S_StartLocalSound(cg.rewardSound[0], CHAN_ANNOUNCER);
@@ -2634,7 +2633,7 @@ void CG_CenterPrint( const char *str, int y ) {
 
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
-	cg.centerPrintTime = cg.time;
+	cg.centerPrintTime = cg.serverTime;
 	cg.centerPrintY = y;
 
 	// count the number of lines for centering
@@ -2710,10 +2709,6 @@ static void CG_DrawCenterString( void ) {
 	int		i;
 	float	*color;
 	const float scale = 1.0; //0.5
-
-	if ( !cg.centerPrintTime ) {
-		return;
-	}
 
 	color = CG_FadeColor( cg.centerPrintTime, cg.centerPrintMsec );
 	if ( !color ) {
@@ -3178,7 +3173,7 @@ static void CG_DrawActivePowers(void)
 	}
 
 	//additionally, draw an icon force force rage recovery
-	if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+	if (cg.snap->ps.fd.forceRageRecoveryTime > cg.gameTime)
 	{
 		CG_DrawPic( startx, starty, endx, endy, cgs.media.rageRecShader);
 	}
@@ -3194,7 +3189,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 	static	int oldDif = 0;
 	centity_t *cent = &cg_entities[lockEntNum];
 	vec4_t color={0.0f,0.0f,0.0f,0.0f};
-	int dif = ( cg.serverTime - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
+	int dif = ( cg.gameTime - cg.snap->ps.rocketLockTime ) / ( 1200 / /*8*/16 );
 	int i;
 
 	if (!cg.snap->ps.rocketLockTime)
@@ -3428,13 +3423,13 @@ static void CG_ScanForCrosshairEntity( void ) {
 
 	if ( trace.entityNum >= MAX_CLIENTS ) {
 		cg.crosshairClientNum = trace.entityNum;
-		cg.crosshairClientTime = cg.time;
+		cg.crosshairClientTime = cg.serverTime;
 		return;
 	}
 
 	// update the fade timer
 	cg.crosshairClientNum = trace.entityNum;
-	cg.crosshairClientTime = cg.time;
+	cg.crosshairClientTime = cg.serverTime;
 }
 
 
@@ -3822,7 +3817,7 @@ static void CG_DrawIntermission( void ) {
 	//	CG_DrawCenterString();
 	//	return;
 	//}
-	cg.scoreFadeTime = cg.time;
+	cg.scoreFadeTime = cg.serverTime;
 	cg.scoreBoardShowing = CG_DrawScoreboard();
 }
 
@@ -3983,14 +3978,30 @@ static void CG_DrawWarmup( void ) {
 	clientInfo_t	*ci1, *ci2;
 	const char	*s;
 
-	sec = cg.warmup;
-	if ( !sec ) {
+	if (cgs.unpauseTime > cg.serverTime)
+	{
+		sec = (cgs.unpauseTime - cg.serverTime) / 1000;
+
+		if (sec < 60) {
+			s = va(CG_GetStripEdString("SABERINGAME", "MATCH_WILL_RESUME"), sec); // "Game will resume in %d seconds"
+		} else {
+			s = CG_GetStripEdString("SABERINGAME", "MATCH_PAUSED");
+		}
+
+		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
+		CG_DrawBigString(0.5f * (cgs.screenWidth - w), 24, s, 1.0F);
 		return;
 	}
 
-	if ( sec < 0 ) {
+	sec = cg.warmup;
 
+	if (!sec) {
+		return;
+	}
+
+	if (sec < 0) {
 		if ((cg.snap->ps.pm_flags & PMF_FOLLOW) ||
+			(cg.snap->ps.pm_type == PM_SPECTATOR) ||
 			(cgs.readyClients & (1 << cg.snap->ps.clientNum)))
 		{
 //			s = "Waiting for players";
@@ -4046,7 +4057,7 @@ static void CG_DrawWarmup( void ) {
 		CG_Text_Paint(0.5f * (cgs.screenWidth - w), 90, 1.5f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE,FONT_MEDIUM);
 	}
 
-	sec = ( sec - cg.serverTime );
+	sec = ( sec - cg.gameTime );
 	if ( sec < 0 ) {
 		cg.warmup = 0;
 		sec = 0;
@@ -4305,7 +4316,7 @@ static void CG_DrawForceEffects( void ) {
 			rageTime = 0.15f;
 		}
 
-		if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+		if (cg.snap->ps.fd.forceRageRecoveryTime > cg.gameTime)
 		{
 			float checkRageRecTime = rageTime;
 
@@ -4337,7 +4348,7 @@ static void CG_DrawForceEffects( void ) {
 		}
 		else
 		{
-			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.gameTime)
 			{
 				hcolor[3] = 0.15f;
 				hcolor[0] = 0.2f;
@@ -4348,7 +4359,7 @@ static void CG_DrawForceEffects( void ) {
 			cgRageTime = 0;
 		}
 	}
-	else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+	else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.gameTime)
 	{
 		if (!cgRageRecTime)
 		{
@@ -4636,7 +4647,7 @@ static void CG_DrawFallingToDeath( void ) {
 		vec4_t	hcolor;
 		float	fallTime;
 
-		fallTime = (float)(cg.serverTime - cg.snap->ps.fallingToDeath);
+		fallTime = (float)(cg.gameTime - cg.snap->ps.fallingToDeath);
 
 		fallTime /= (FALL_FADE_TIME/2);
 
@@ -4692,7 +4703,7 @@ static void CG_Draw2D( void ) {
 
 	CG_DrawForceEffects();
 
-	if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.serverTime - cg.snap->ps.rocketLockTime) > 0)
+	if (cg.snap->ps.rocketLockIndex != MAX_CLIENTS && (cg.gameTime - cg.snap->ps.rocketLockTime) > 0)
 	{
 		CG_DrawRocketLocking( cg.snap->ps.rocketLockIndex, cg.snap->ps.rocketLockTime );
 	}
@@ -4701,7 +4712,7 @@ static void CG_Draw2D( void ) {
 	{
 		CG_DrawHolocronIcons();
 	}
-	if (cg.snap->ps.fd.forcePowersActive || cg.snap->ps.fd.forceRageRecoveryTime > cg.serverTime)
+	if (cg.snap->ps.fd.forcePowersActive || cg.snap->ps.fd.forceRageRecoveryTime > cg.gameTime)
 	{
 		CG_DrawActivePowers();
 	}
@@ -4805,9 +4816,8 @@ static void CG_Draw2D( void ) {
 		CG_DrawUpperRight();
 	}
 
-	if ( !CG_DrawFollow() ) {
-		CG_DrawWarmup();
-	}
+	CG_DrawFollow();
+	CG_DrawWarmup();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreBoardShowing = CG_DrawScoreboard();

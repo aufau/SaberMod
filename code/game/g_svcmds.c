@@ -1209,6 +1209,23 @@ static void Svcmd_SpawnItems_f( void ) {
 	}
 }
 
+static void Svcmd_Pause_f( void ) {
+	char	arg[MAX_TOKEN_CHARS];
+
+	if (trap_Argc() == 1) {
+		level.unpauseTime = INT_MAX;
+	} else {
+		trap_Argv(1, arg, sizeof(arg));
+		level.unpauseTime = level.time + 1000 * atoi(arg);
+	}
+
+	level.timeoutClient = -1;
+}
+
+static void Svcmd_UnPause_f( void ) {
+	level.unpauseTime = 0;
+}
+
 /*
 =================
 ConsoleCommand
@@ -1307,6 +1324,16 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "spawnitems") == 0) {
 		Svcmd_SpawnItems_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "pause") == 0) {
+		Svcmd_Pause_f();
+		return qtrue;
+	}
+
+	if (Q_stricmp (cmd, "unpause") == 0) {
+		Svcmd_UnPause_f();
 		return qtrue;
 	}
 

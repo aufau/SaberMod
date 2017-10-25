@@ -127,6 +127,7 @@ Ghoul2 Insert End
 #define CS_NEW					(CS_STRING_PACKAGES + MAX_STRING_PACKAGES)
 #define CS_INGAME_MOTD			(CS_NEW + 0)
 #define CS_READY				(CS_NEW + 1)
+#define CS_UNPAUSE				(CS_NEW + 2)
 
 #define CS_MAPS					(CS_NEW + 32)
 

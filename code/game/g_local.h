@@ -310,6 +310,9 @@ struct gentity_s {
 	int			boltpoint3;
 	int			boltpoint4;
 
+	int			time1;
+	int			time2;
+
 	int			bolt_Head;
 	int			bolt_LArm;
 	int			bolt_RArm;
@@ -438,6 +441,7 @@ typedef struct {
 	vote_t		vote;
 	vote_t		teamVote;
 	qboolean	ready;
+	int			timeouts;			// number of timeouts called
 
 	int			persistant[MAX_PERSISTANT];	// persistant fields for current
 											// player. ps.persistant is updated
@@ -584,6 +588,7 @@ typedef struct {
 	int			previousTime;			// so movers can back up when blocked
 
 	int			startTime;				// level.time the map was started
+	int			unpauseTime;			// unpause after this time
 
 	int			teamScores[TEAM_NUM_TEAMS];
 	int			lastTeamLocationTime;		// last time of client team location update
@@ -660,6 +665,8 @@ typedef struct {
 
 	char		queuedCmd[1024];
 	int			queuedCmdSnap;
+
+	int			timeoutClient;
 } level_locals_t;
 
 //
@@ -1254,6 +1261,7 @@ extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
+extern	vmCvar_t	g_timeoutLimit;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

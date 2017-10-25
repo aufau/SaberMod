@@ -751,7 +751,7 @@ void pas_think( gentity_t *ent )
 		return;
 	}
 
-	if ((ent->bolt_LLeg+TURRET_LIFETIME) < level.time)
+	if ((ent->time1 + TURRET_LIFETIME) < level.time)
 	{
 		G_Sound( ent, CHAN_BODY, G_SoundIndex( "sound/chars/turret/shutdown.wav" ));
 		ent->s.bolt2 = ENTITYNUM_NONE;
@@ -1042,7 +1042,7 @@ void ItemUse_Sentry( gentity_t *ent )
 
 	sentry->bolt_Head = 1000;
 
-	sentry->bolt_LLeg = level.time;
+	sentry->time1 = level.time;
 
 	sentry->noDamageTeam = ent->client->sess.sessionTeam;
 

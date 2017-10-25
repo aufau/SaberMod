@@ -432,7 +432,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	self->s.modelindex = 0;
 	self->enemy = other;
 
-	self->boltpoint1 = level.time + HOLOCRON_RESPAWN_TIME;
+	self->time1 = level.time + HOLOCRON_RESPAWN_TIME;
 
 	/*
 	if (self->count == FP_SABERATTACK && !HasSetSaberOnly())
@@ -457,7 +457,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 
 void HolocronThink(gentity_t *ent)
 {
-	if (ent->boltpoint1 && (!ent->enemy || !ent->enemy->client || ent->enemy->health < 1))
+	if (ent->time1 && (!ent->enemy || !ent->enemy->client || ent->enemy->health < 1))
 	{
 		if (ent->enemy && ent->enemy->client)
 		{
@@ -473,9 +473,9 @@ void HolocronThink(gentity_t *ent)
 			goto justthink;
 		}
 	}
-	else if (ent->boltpoint1 && ent->enemy && ent->enemy->client)
+	else if (ent->time1 && ent->enemy && ent->enemy->client)
 	{
-		ent->boltpoint1 = level.time + HOLOCRON_RESPAWN_TIME;
+		ent->time1 = level.time + HOLOCRON_RESPAWN_TIME;
 	}
 
 	if (ent->enemy && ent->enemy->client)
@@ -511,7 +511,7 @@ void HolocronThink(gentity_t *ent)
 
 			ent->s.pos.trTime = level.time;
 
-			ent->boltpoint1 = 0;
+			ent->time1 = 0;
 
 			trap_LinkEntity(ent);
 
@@ -519,7 +519,7 @@ void HolocronThink(gentity_t *ent)
 		}
 	}
 
-	if (ent->boltpoint1 && ent->boltpoint1 < level.time)
+	if (ent->time1 && ent->time1 < level.time)
 	{ //isn't in original place and has been there for (HOLOCRON_RESPAWN_TIME) seconds without being picked up, so respawn
 		VectorCopy(ent->s.origin2, ent->s.pos.trBase);
 		VectorCopy(ent->s.origin2, ent->s.origin);
@@ -527,7 +527,7 @@ void HolocronThink(gentity_t *ent)
 
 		ent->s.pos.trTime = level.time;
 
-		ent->boltpoint1 = 0;
+		ent->time1 = 0;
 
 		trap_LinkEntity(ent);
 	}

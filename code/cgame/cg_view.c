@@ -577,7 +577,7 @@ static void CG_OffsetThirdPersonView( void )
 	dtime += cg.predictedTimeFrac - cam.lastTimeFrac;
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport )
+	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport || cgs.unpauseTime > cg.serverTime)
 	{
 		CG_ResetThirdPersonViewDamp();
 	}
@@ -1043,7 +1043,7 @@ static int CG_CalcFov( void ) {
 			fov_x = zoomFov;
 			break;
 		case ZOOM_NONE:
-			f = ( cg.serverTime - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
+			f = ( cg.gameTime - cg.predictedPlayerState.zoomTime ) * ( 1.0f / ZOOM_OUT_TIME );
 
 			if ( f < 1.0f ) {
 				fov_x = zoomFov + f * (fov_x - zoomFov);
@@ -1344,10 +1344,10 @@ static void CG_PowerupTimerSounds( void ) {
 	// powerup timers going away
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
 		t = cg.snap->ps.powerups[i];
-		if ( t <= cg.serverTime ) {
+		if ( t <= cg.gameTime ) {
 			continue;
 		}
-		if ( t - cg.serverTime >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
+		if ( t - cg.gameTime >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
 			continue;
 		}
 		/*
@@ -1597,7 +1597,8 @@ precision float (at least for 4h39m after CGame initialization).
 static int CG_TimeBias( int serverTime ) {
 	static int	bias = 0;
 
-	if (cg.time == 0 && serverTime != 0) {
+	if (cg.time == 0 && serverTime != 0)
+	{
 		char buf[2];
 
 		trap_Cvar_VariableStringBuffer( "cg_fixServerTime", buf, sizeof(buf) );
@@ -1608,6 +1609,10 @@ static int CG_TimeBias( int serverTime ) {
 			// may help with client synchronization in some cases
 			bias += serverTime & 4095;
 		}
+	}
+	else if (cgs.unpauseTime > serverTime)
+	{
+		bias = cg.time - serverTime;
 	}
 
 	return serverTime + bias;
@@ -1626,6 +1631,10 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.time = CG_TimeBias( serverTime );
 	cg.serverTime = serverTime;
 	cg.demoPlayback = demoPlayback;
+
+	if (!cg.gameTime || cgs.unpauseTime <= serverTime) {
+		cg.gameTime = serverTime;
+	}
 
 	if (CG_SeekFrame()) {
 		return;

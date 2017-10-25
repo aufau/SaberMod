@@ -5536,7 +5536,7 @@ static void CG_DrawNoForceSphere(centity_t *cent, const vec3_t origin, float sca
 	VectorScale(ent.axis[1], scale, ent.axis[1]);
 	VectorScale(ent.axis[2], -scale, ent.axis[2]);
 
-	ent.shaderRGBA[3] = (cent->currentState.genericenemyindex - cg.serverTime)/8;
+	ent.shaderRGBA[3] = (cent->currentState.genericenemyindex - cg.gameTime)/8;
 	ent.renderfx |= RF_RGB_TINT;
 	if (ent.shaderRGBA[3] > 200)
 	{
@@ -5707,9 +5707,9 @@ void CG_G2Animated( centity_t *cent )
 
 	// Electricity
 	//------------------------------------------------
-	if ( cent->currentState.emplacedOwner > cg.serverTime )
+	if ( cent->currentState.emplacedOwner > cg.gameTime )
 	{
-		int	dif = cent->currentState.emplacedOwner - cg.serverTime;
+		int	dif = cent->currentState.emplacedOwner - cg.gameTime;
 
 		if ( dif > 0 && random() > 0.4f )
 		{
@@ -5744,7 +5744,7 @@ void CG_G2Animated( centity_t *cent )
 		}
 	}
 
-	if (cent->currentState.genericenemyindex > cg.serverTime)
+	if (cent->currentState.genericenemyindex > cg.gameTime)
 	{
 		CG_DrawNoForceSphere(cent, cent->lerpOrigin, 1.4f, cgs.media.ysalimariShader );
 	}
@@ -6129,7 +6129,7 @@ void CG_Player( centity_t *cent ) {
 
 		if (cent->currentState.genericenemyindex > 1024)
 		{
-			prefig = (cent->currentState.genericenemyindex-cg.serverTime)/80;
+			prefig = (cent->currentState.genericenemyindex-cg.gameTime)/80;
 
 			if (prefig > 55)
 			{
@@ -6931,8 +6931,8 @@ stillDoSaber:
 
 				//cent->bolt4 = 1;
 
-				saberEnt->currentState.pos.trTime = cg.serverTime;
-				saberEnt->currentState.apos.trTime = cg.serverTime;
+				saberEnt->currentState.pos.trTime = cg.gameTime;
+				saberEnt->currentState.apos.trTime = cg.gameTime;
 
 				VectorCopy(saberEnt->currentState.pos.trBase, saberEnt->lerpOrigin);
 				VectorCopy(saberEnt->currentState.apos.trBase, saberEnt->lerpAngles);
@@ -6958,8 +6958,8 @@ stillDoSaber:
 
 						VectorCopy(saberEnt->currentState.pos.trBase, saberEnt->lerpOrigin);
 						VectorCopy(saberEnt->currentState.apos.trBase, saberEnt->lerpAngles);
-						saberEnt->currentState.pos.trTime = cg.serverTime;
-						saberEnt->currentState.apos.trTime = cg.serverTime;
+						saberEnt->currentState.pos.trTime = cg.gameTime;
+						saberEnt->currentState.apos.trTime = cg.gameTime;
 					}
 				}
 			}
@@ -7452,9 +7452,9 @@ doEssentialThree:
 
 	// Electricity
 	//------------------------------------------------
-	if ( cent->currentState.emplacedOwner > cg.serverTime )
+	if ( cent->currentState.emplacedOwner > cg.gameTime )
 	{
-		int	dif = cent->currentState.emplacedOwner - cg.serverTime;
+		int	dif = cent->currentState.emplacedOwner - cg.gameTime;
 
 		if ( dif > 0 && random() > 0.4f )
 		{
@@ -7537,8 +7537,8 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	CG_ClearLerpFrame( cent, &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.legs, cent->currentState.legsAnim, qfalse);
 	CG_ClearLerpFrame( cent, &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.torso, cent->currentState.torsoAnim, qtrue);
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.serverTime, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.serverTime, cent->lerpAngles );
+	BG_EvaluateTrajectory( &cent->currentState.pos, cg.gameTime, cent->lerpOrigin );
+	BG_EvaluateTrajectory( &cent->currentState.apos, cg.gameTime, cent->lerpAngles );
 
 	VectorCopy( cent->lerpOrigin, cent->rawOrigin );
 	VectorCopy( cent->lerpAngles, cent->rawAngles );

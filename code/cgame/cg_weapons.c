@@ -610,18 +610,18 @@ Ghoul2 Insert End
 		if ( cent->currentState.weapon == WP_BRYAR_PISTOL )
 		{
 			// Hardcoded max charge time of 1 second
-			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.gameTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.bryarFrontFlash;
 		}
 		else if ( cent->currentState.weapon == WP_BOWCASTER )
 		{
 			// Hardcoded max charge time of 1 second
-			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.gameTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.greenFrontFlash;
 		}
 		else if ( cent->currentState.weapon == WP_DEMP2 )
 		{
-			val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
+			val = ( cg.gameTime - cent->currentState.constantLight ) * 0.001f;
 			shader = cgs.media.lightningFlash;
 			scale = 1.75f;
 		}
@@ -1634,7 +1634,7 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 			(ent->weapon == WP_BOWCASTER && !altFire) ||
 			(ent->weapon == WP_DEMP2 && altFire))
 		{
-			float val = ( cg.serverTime - cent->currentState.constantLight ) * 0.001f;
+			float val = ( cg.gameTime - cent->currentState.constantLight ) * 0.001f;
 
 			if (val > 3)
 			{

@@ -2680,6 +2680,29 @@ static void Cmd_Ready_f(gentity_t *ent)
 	}
 }
 
+static void Cmd_Timeout_f(gentity_t *ent)
+{
+	if (ent->client->pers.timeouts >= g_timeoutLimit.integer) {
+		trap_SendServerCommand(ent-g_entities, "print \"You may not call any more timeouts this game.\n\"");
+		return;
+	}
+
+	if (level.unpauseTime < level.time) {
+		ent->client->pers.timeouts++;
+		level.timeoutClient = ent->s.number;
+		level.unpauseTime = level.time + 30000;
+		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " called a timeout.\n\"", ent->client->info.netname));
+	}
+}
+
+static void Cmd_Timein_f(gentity_t *ent)
+{
+	if (level.unpauseTime > level.time + 5000 && level.timeoutClient == ent->s.number) {
+		level.unpauseTime = level.time + 5000;
+		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " called a timein.\n\"", ent->client->info.netname));
+	}
+}
+
 #ifdef _DEBUG
 void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 void ScorePlum( int clientNum, vec3_t origin, int score );
@@ -2938,6 +2961,8 @@ static const clientCommand_t commands[] = {
 	{ "teamvote", Cmd_TeamVote_f, CMD_NOINTERMISSION },
 	{ "ragequit", Cmd_RageQuit_f, 0 },
 	{ "gc", Cmd_GameCommand_f, CMD_NOINTERMISSION },
+	{ "timeout", Cmd_Timeout_f, CMD_ALIVE | CMD_NOINTERMISSION },
+	{ "timein", Cmd_Timein_f, CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "give", Cmd_Give_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "god", Cmd_God_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "notarget", Cmd_Notarget_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },

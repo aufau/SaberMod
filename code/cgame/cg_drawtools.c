@@ -413,7 +413,7 @@ float *CG_FadeColor( int startMsec, int totalMsec ) {
 		return NULL;
 	}
 
-	t = cg.time - startMsec;
+	t = cg.serverTime - startMsec;
 
 	if ( t >= totalMsec ) {
 		return NULL;

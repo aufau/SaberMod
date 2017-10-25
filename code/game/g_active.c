@@ -1907,6 +1907,12 @@ void ClientThink( int clientNum ) {
 	// phone jack if they don't get any for a while
 	client->lastCmdTime = level.time;
 
+	if (level.unpauseTime > level.time) {
+		client->ps.commandTime = client->pers.cmd.serverTime;
+		SetClientViewAngle(ent, client->ps.viewangles);
+		return;
+	}
+
 	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
 		ClientThink_real( ent );
 	}

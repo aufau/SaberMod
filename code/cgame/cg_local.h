@@ -698,6 +698,7 @@ typedef struct {
 								// used for renderer, effects and ghoul2 submodules
 	int			oldServerTime;	// server time at last frame
 
+	int			gameTime;		// serverTime stopped during pauses
 	int			physicsTime;	// either cg.snap->time or cg.nextSnap->time
 
 	int			timelimitWarnings;	// 5 min, 1 min, overtime
@@ -1409,6 +1410,7 @@ typedef struct {
 	flagStatus_t	flagStatus;
 
 	int				readyClients;
+	int				unpauseTime;
 
 	qboolean  newHud;
 

@@ -645,6 +645,11 @@ void CG_PredictPlayerState( void ) {
 		cg.predictedPlayerState = cg.snap->ps;
 	}
 
+	if (cgs.unpauseTime > cg.serverTime) {
+		cg.predictedPlayerState = cg.nextSnap ? cg.nextSnap->ps : cg.snap->ps;
+		return;
+	}
+
 	// demo playback just copies the moves
 	if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
 		CG_InterpolatePlayerState( qfalse );

@@ -35,6 +35,12 @@ players [?|team]
   List players connected to server with some additional
   info. Optionally limit to members of `team`.
 
+timein
+  Resume paused game.
+
+timeout
+  Pause game for 30 seconds.
+
 ragequit
   Reserved for God, do not use.
 
@@ -188,6 +194,9 @@ mode <mode|default>
   Change to `mode` or list all available modes when passed without
   arguments.
 
+(un)pause [seconds]
+  Pause match for a specified number of seconds or until unpaused.
+
 players [team]
   Print various informations about players. Optionally filter by team.
 
@@ -327,6 +336,9 @@ g_spawnWeapons <bitmask>
   spawned on a map. Setting this cvar to 0 restores original behaviour
   of `g_weaponDisable`.
 
+g_timeoutLimit <number>
+  Maximum number of times a player is allowed to call a timeout.
+  
 g_unlagged <0|1>
   Experimental "unlagged" disruptor hit detection.
 
