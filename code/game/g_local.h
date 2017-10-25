@@ -908,7 +908,7 @@ int TeamLeader( team_t team );
 team_t PickTeam( int ignoreClientNum );
 void ResetClientState( gentity_t *self );
 void SetClientViewAngle( gentity_t *ent, const vec3_t angle );
-gentity_t *SelectSpawnPoint ( const vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+gentity_t *SelectSpawnPoint ( gentity_t *ent, const vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 void CopyToBodyQue( gentity_t *ent );
 void respawn (gentity_t *ent);
 void BeginIntermission (void);
@@ -917,7 +917,7 @@ void ClientSpawn( gentity_t *ent );
 void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, meansOfDeath_t meansOfDeath);
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
-qboolean SpotWouldTelefrag( gentity_t *spot );
+qboolean SpotWouldTelefrag( gentity_t *ent, gentity_t *spot );
 
 extern gentity_t *gJMSaberEnt;
 

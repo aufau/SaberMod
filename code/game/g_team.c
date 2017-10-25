@@ -910,7 +910,7 @@ go to a random point that doesn't telefrag
 ================
 */
 #define	MAX_TEAM_SPAWN_POINTS	32
-static gentity_t *SelectRandomTeamSpawnPoint( playerTeamStateState_t teamstate, team_t team ) {
+static gentity_t *SelectRandomTeamSpawnPoint( gentity_t *ent, playerTeamStateState_t teamstate, team_t team ) {
 	gentity_t	*spot;
 	int			count;
 	int			selection;
@@ -951,7 +951,7 @@ static gentity_t *SelectRandomTeamSpawnPoint( playerTeamStateState_t teamstate, 
 	spot = NULL;
 
 	while ((spot = G_Find (spot, FOFS(classname), classname)) != NULL) {
-		if ( SpotWouldTelefrag( spot ) ) {
+		if ( SpotWouldTelefrag( ent, spot ) ) {
 			continue;
 		}
 		spots[ count ] = spot;
@@ -974,13 +974,13 @@ SelectCTFSpawnPoint
 
 ============
 */
-gentity_t *SelectCTFSpawnPoint ( team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
+gentity_t *SelectCTFSpawnPoint ( gentity_t *ent, team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 
-	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
+	spot = SelectRandomTeamSpawnPoint ( ent, teamstate, team );
 
 	if (!spot) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
+		return SelectSpawnPoint( ent, vec3_origin, origin, angles );
 	}
 
 	VectorCopy (spot->s.origin, origin);
@@ -996,13 +996,13 @@ SelectSagaSpawnPoint
 
 ============
 */
-gentity_t *SelectSagaSpawnPoint ( team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
+gentity_t *SelectSagaSpawnPoint ( gentity_t *ent, team_t team, playerTeamStateState_t teamstate, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 
-	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
+	spot = SelectRandomTeamSpawnPoint ( ent, teamstate, team );
 
 	if (!spot) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
+		return SelectSpawnPoint( ent, vec3_origin, origin, angles );
 	}
 
 	VectorCopy (spot->s.origin, origin);
