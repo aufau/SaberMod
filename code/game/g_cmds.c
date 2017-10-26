@@ -3033,10 +3033,10 @@ void ClientCommand( int clientNum ) {
 	//end rww
 
 	// redirect referee commands
-	if (ent->client->sess.referee && !strncmp(cmd, "ref_", 4)) {
-		printfClientNum = clientNum;
-		ref.Printf = G_CmdPrintf;
-		RefereeCommand(cmd + 4);
+	printfClientNum = clientNum;
+	ref.Printf = G_CmdPrintf;
+
+	if (ent->client->sess.referee && RefereeCommand(cmd)) {
 		return;
 	}
 
