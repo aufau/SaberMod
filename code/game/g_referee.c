@@ -200,6 +200,8 @@ void Ref_Announce_f(void) {
 	}
 }
 
+void Ref_Help_f(void);
+
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
 	void		(*function)(void);
@@ -212,7 +214,31 @@ static const refereeCommand_t refCommands[] = {
 	{ "unlockteam", Ref_UnLockTeam_f },
 	{ "forceteam", Ref_ForceTeam_f },
 	{ "announce", Ref_Announce_f },
+	{ "help", Ref_Help_f },
 };
+
+void Ref_Help_f(void) {
+	const int	columns = 3;
+	const char	*fmt = "%-26s";
+	char		line[DEFAULT_CONSOLE_WIDTH + 1];
+	int			i;
+
+	ref.Printf("Referee commands:\n");
+
+	line[0] = '\0';
+	for (i = CV_FIRST; i < (int)ARRAY_LEN(refCommands); i++) {
+		Q_strcat(line, sizeof(line), va(fmt, refCommands[i].name));
+
+		if (i % columns == 0) {
+			ref.Printf("%s\n", line);
+			line[0] = '\0';
+		}
+	}
+
+	if (line[0]) {
+		ref.Printf("%s\n", line);
+	}
+}
 
 qboolean RefereeCommand(const char *cmd) {
 	int	i;

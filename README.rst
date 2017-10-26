@@ -84,6 +84,9 @@ announce <message|motd>
 forceteam <player|all> <team>
   Move players between teams.
 
+help
+  List referee commands
+
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
