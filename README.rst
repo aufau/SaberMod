@@ -193,19 +193,11 @@ Server-Side
 Console Commands
 ................
 
-announce <message|motd>
-  Print `message` or ingame message of the day on everyone's screen.
-
-forceteam <player|all> <team>
-  Little known original command allowing admin to move players between
-  teams.
+All referee commands can be used as console commands.
 
 items [items]
   Enable/Disable items using human readable names. Type without
   argument to see usage instructions.
-
-(un)lockteam <teams>
-  Prevent players from joining `teams`.
 
 mode <mode|default>
   Change to `mode` or list all available modes when passed without
@@ -213,9 +205,6 @@ mode <mode|default>
 
 players [team]
   Print various informations about players. Optionally filter by team.
-
-(un)referee <player>
-  Make player a referee. Removes referee status from all other players.
 
 spawnitems [items]
   Enable/Disable spawning items using human readable names. Type
