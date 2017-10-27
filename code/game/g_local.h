@@ -1124,6 +1124,7 @@ void G_EntityCheckRep(const gentity_t *ent);
 // g_referee.c
 typedef struct {
 	void	(*Printf)(const char *fmt, ...);
+	void	(*LogPrintf)(int event, const char *fmt, ...);
 } refCmdContext_t;
 
 extern refCmdContext_t ref;

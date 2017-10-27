@@ -2954,6 +2954,16 @@ static void G_CmdPrintf(const char *fmt, ...) {
 
 	G_SendServerCommand(printfClientNum, "print \"%s\"", text);
 }
+static void G_CmdLogPrintf(int event, const char *fmt, ...) {
+	va_list		argptr;
+	char		text[1024];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+	G_LogPrintf(event, "Referee: %d %s", printfClientNum, text);
+}
 
 #define CMD_NOINTERMISSION	0x01
 #define CMD_CHEAT			0x02
@@ -3035,6 +3045,7 @@ void ClientCommand( int clientNum ) {
 	// redirect referee commands
 	printfClientNum = clientNum;
 	ref.Printf = G_CmdPrintf;
+	ref.LogPrintf = G_CmdLogPrintf;
 
 	if (ent->client->sess.referee && RefereeCommand(cmd)) {
 		return;

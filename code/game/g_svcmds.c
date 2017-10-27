@@ -1179,6 +1179,7 @@ qboolean	ConsoleCommand( void ) {
 	}
 
 	ref.Printf = G_Printf;
+	ref.LogPrintf = G_LogPrintf;
 	if (RefereeCommand(cmd)) {
 		return qtrue;
 	}
