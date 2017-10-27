@@ -2674,8 +2674,9 @@ void CheckVote( void ) {
 		if ( level.voteReferee == VOTE_YES ) {
 			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
 			level.voteExecuteTime = level.time + 3000;
-			G_LogPrintf( LOG_VOTE, "VotePassedRef: %d %d %d: %s\n", level.voteCmd,
-				level.voteYes, level.voteNo, level.voteDisplayString );
+			G_LogPrintf( LOG_VOTE | LOG_REFEREE, "Referee: %d VotePassed: %d %d %d: %s\n",
+				level.voteClient, level.voteCmd, level.voteYes, level.voteNo,
+				level.voteDisplayString );
 		} else if ( level.voteReferee == VOTE_NO ) {
 			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
 		} else if ( level.voteYes > level.numVotingClients/2 ) {
