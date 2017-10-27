@@ -51,6 +51,8 @@ void Ref_Referee_f(void) {
 		ClientUpdateConfigString(targetNum);
 		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " became a referee\n\"",
 			client->info.netname);
+		ref.LogPrintf(LOG_REFEREE, "Referee: %d: %s became a referee\n",
+			targetNum, client->info.netname);
 	}
 }
 
@@ -80,6 +82,8 @@ void Ref_UnReferee_f(void) {
 		ClientUpdateConfigString(targetNum);
 		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
 			client->info.netname);
+		ref.LogPrintf(LOG_REFEREE, "UnReferee: %d: %s is not a referee anymore\n",
+			targetNum, client->info.netname);
 	}
 }
 
@@ -108,6 +112,7 @@ void Ref_LockTeam_f(void) {
 			level.teamLock[team] = qtrue;
 			G_SendServerCommand(-1, "print \"%s%s" S_COLOR_WHITE " team was locked.\n\"",
 				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL));
+			ref.LogPrintf(LOG_REFEREE, "LockTeam: %s\n", BG_TeamName(team, CASE_UPPER));
 		}
 	}
 }
@@ -137,6 +142,7 @@ void Ref_UnLockTeam_f(void) {
 			level.teamLock[team] = qfalse;
 			G_SendServerCommand(-1, "print \"%s%s" S_COLOR_WHITE " team was unlocked.\n\"",
 				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL));
+			ref.LogPrintf(LOG_REFEREE, "UnLockTeam: %s\n", BG_TeamName(team, CASE_UPPER));
 		}
 	}
 }
@@ -175,6 +181,14 @@ void Ref_ForceTeam_f(void) {
 		return;
 	}
 
+	if (clientNum == lastClient) {
+		ref.LogPrintf(LOG_REFEREE, "ForceTeam: %d %s\n",
+			clientNum, BG_TeamName(team, CASE_UPPER));
+	} else {
+		ref.LogPrintf(LOG_REFEREE, "ForceTeam: ALL %s\n",
+			BG_TeamName(team, CASE_UPPER));
+	}
+
 	for (; clientNum <= lastClient; clientNum++) {
 		gentity_t *targEnt = &g_entities[clientNum];
 
@@ -198,6 +212,8 @@ void Ref_Announce_f(void) {
 	} else {
 		G_CenterPrintPersistant(Q_SanitizeStr(str));
 	}
+
+	ref.LogPrintf(LOG_REFEREE, "Announce: %s\n", str);
 }
 
 void Ref_Help_f(void);

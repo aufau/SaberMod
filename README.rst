@@ -284,6 +284,7 @@ g_logFilter[1-4] <mask>
   512 - Say Team         1024 - Tell            2048 - Voice Tell
   4096 - Item Pickup     8192 - Flag            16384 - Weapon Stats
   32768 - Game Stats     65536 - Duel Stats     131072 - Vote
+  262144 - Referee Cmds
   =====================  =====================  =====================
 
 g_macroscan <0|1>
