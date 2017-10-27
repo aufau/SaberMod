@@ -57,13 +57,20 @@ G_BackupWorld
 */
 void G_BackupWorld( void ) {
 	savedState_t	*state = &states[stateNum & STATE_MASK];
+	int				num_entities;
 	int				i;
+
+	if (g_unlagged.integer == 1) {
+		num_entities = level.maxclients;
+	} else {
+		num_entities = level.num_entities;
+	}
 
 	stateNum++;
 	state->time = level.time;
-	state->num_entities = level.num_entities;
+	state->num_entities = num_entities;
 
-	for ( i = 0; i < level.num_entities; i++ ) {
+	for ( i = 0; i < num_entities; i++ ) {
 		state->entities[i].r = g_entities[i].r;
 		state->entities[i].s.pos = g_entities[i].s.pos;
 		state->entities[i].s.apos = g_entities[i].s.apos;

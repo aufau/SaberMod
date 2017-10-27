@@ -342,8 +342,9 @@ g_spawnWeapons <bitmask>
 g_timeoutLimit <number>
   Maximum number of times a player is allowed to call a timeout.
   
-g_unlagged <0|1>
-  Experimental "unlagged" disruptor hit detection.
+g_unlagged <0|1|2>
+  Experimental "unlagged" disruptor hit detection. 2 accounts for
+  doors and other movers too at some server performance penalty.
 
 g_unlaggedMaxPing <msec>
   Maximum lag compensation. Unlagged has subjective, counter-intuitive
