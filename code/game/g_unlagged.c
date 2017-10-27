@@ -71,10 +71,17 @@ void G_BackupWorld( void ) {
 	state->num_entities = num_entities;
 
 	for ( i = 0; i < num_entities; i++ ) {
-		state->entities[i].r = g_entities[i].r;
-		state->entities[i].s.pos = g_entities[i].s.pos;
-		state->entities[i].s.apos = g_entities[i].s.apos;
-		state->entities[i].s.groundEntityNum = g_entities[i].s.groundEntityNum;
+		gentity_t		*ent = &g_entities[i];
+		savedGentity_t	*savedEnt = &state->entities[i];
+
+		if (ent->r.linked) {
+			savedEnt->r = ent->r;
+			savedEnt->s.pos = ent->s.pos;
+			savedEnt->s.apos = ent->s.apos;
+			savedEnt->s.groundEntityNum = ent->s.groundEntityNum;
+		} else {
+			savedEnt->r.linked = qfalse;
+		}
 	}
 }
 
