@@ -58,32 +58,40 @@ void Ref_Referee_f(void) {
 
 void Ref_UnReferee_f(void) {
 	const char	*errorMsg;
-	gclient_t	*client;
 	int			targetNum;
+	int			lastTarget;
 	char		arg[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		ref.Printf("Usage: unreferee <player>\n");
+		ref.Printf("Usage: unreferee <player|all>\n");
 		return;
 	}
 
 	trap_Argv(1, arg, sizeof(arg));
 
-	targetNum = G_ClientNumberFromString(arg, &errorMsg);
-	if (targetNum == -1) {
-		ref.Printf("%s", errorMsg);
-		return;
+	if (!Q_stricmp(arg, "all")) {
+		targetNum = 0;
+		lastTarget = level.maxclients - 1;
+	} else {
+		targetNum = G_ClientNumberFromString(arg, &errorMsg);
+		if (targetNum == -1) {
+			ref.Printf("%s", errorMsg);
+			return;
+		}
+		lastTarget = targetNum;
 	}
 
-	client = &level.clients[targetNum];
+	for (; targetNum <= lastTarget; targetNum++) {
+		gclient_t	*client = &level.clients[targetNum];
 
-	if (client->sess.referee) {
-		client->sess.referee = qfalse;
-		ClientUpdateConfigString(targetNum);
-		G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
-			client->info.netname);
-		ref.LogPrintf(LOG_REFEREE, "UnReferee: %d: %s is not a referee anymore\n",
-			targetNum, client->info.netname);
+		if (client->pers.connected != CON_DISCONNECTED && client->sess.referee) {
+			client->sess.referee = qfalse;
+			ClientUpdateConfigString(targetNum);
+			G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
+				client->info.netname);
+			ref.LogPrintf(LOG_REFEREE, "UnReferee: %d: %s is not a referee anymore\n",
+				targetNum, client->info.netname);
+		}
 	}
 }
 

@@ -93,8 +93,8 @@ help
 referee <player>
   Make player a referee without losing own referee status.
 
-unreferee
-  Give up referee status.
+unreferee <player|all>
+  Remove referee status.
 
 CGame Cvars
 ...........
