@@ -161,6 +161,13 @@ void G_RollbackWorld( int serverTime, int contents ) {
 		{
 			savedEntities[i] = currEnt->r;
 			saved[i] = qtrue;
+
+			// wasn't on player's screen one way or another
+			if (!ent->r.linked) {
+				trap_UnlinkEntity( currEnt );
+				continue;
+			}
+
 			currEnt->r = ent->r;
 
 			// interpolate position as in CG_CalcEntityLerpPositions
@@ -208,19 +215,9 @@ void G_RollbackWorld( int serverTime, int contents ) {
 				}
 			}
 
-			// If old is unlinked then it's a new entity and player
-			// didn't know about it - go through. If new is unlinked
-			// then old could still have blocked player's shot on his
-			// screen - link it but leave gentity_t::inuse field a
-			// false. Same logic goes for other fields like contents
-			// or ownerNum.
-			if ( ent->r.linked ) {
-				trap_LinkEntity( currEnt );
-			} else {
-				trap_UnlinkEntity( currEnt );
-			}
-
 			// TODO: Prepare other fields - roffing
+
+			trap_LinkEntity( currEnt );
 		} else {
 			saved[i] = qfalse;
 		}
