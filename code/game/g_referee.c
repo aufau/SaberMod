@@ -224,6 +224,26 @@ void Ref_Announce_f(void) {
 	ref.LogPrintf(LOG_REFEREE, "Announce: %s\n", str);
 }
 
+static void Ref_Pause_f( void ) {
+	char	arg[MAX_TOKEN_CHARS];
+
+	if (trap_Argc() == 1) {
+		level.unpauseTime = INT_MAX;
+	} else {
+		trap_Argv(1, arg, sizeof(arg));
+		level.unpauseTime = level.time + 1000 * atoi(arg);
+	}
+
+	level.timeoutClient = -1;
+
+	ref.LogPrintf(LOG_REFEREE, "Pause\n", str);
+}
+
+static void Ref_UnPause_f( void ) {
+	level.unpauseTime = 0;
+	ref.LogPrintf(LOG_REFEREE, "UnPause\n", str);
+}
+
 void Ref_Help_f(void);
 
 typedef struct {
@@ -239,6 +259,8 @@ static const refereeCommand_t refCommands[] = {
 	{ "forceteam", Ref_ForceTeam_f },
 	{ "announce", Ref_Announce_f },
 	{ "help", Ref_Help_f },
+	{ "pause", Ref_Pause_f },
+	{ "unpause", Ref_UnPause_f },
 };
 
 void Ref_Help_f(void) {

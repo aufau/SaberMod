@@ -96,6 +96,9 @@ help
 (un)lockteam <teams>
   Prevent players from joining `teams`.
 
+(un)pause [seconds]
+  Pause match for a specified number of seconds or until unpaused.
+
 referee <player>
   Make player a referee without losing own referee status.
 
@@ -199,7 +202,7 @@ Server-Side
 Console Commands
 ................
 
-All referee commands can be used as console commands.
+All `Referee Commands`_ can be used as console commands.
 
 items [items]
   Enable/Disable items using human readable names. Type without
@@ -208,9 +211,6 @@ items [items]
 mode <mode|default>
   Change to `mode` or list all available modes when passed without
   arguments.
-
-(un)pause [seconds]
-  Pause match for a specified number of seconds or until unpaused.
 
 players [team]
   Print various informations about players. Optionally filter by team.
