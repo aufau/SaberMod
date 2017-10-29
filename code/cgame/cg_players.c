@@ -1029,6 +1029,8 @@ static void CG_RefereeMode(qboolean enable) {
 	UpdateCommand("forceteam");
 	UpdateCommand("announce");
 	UpdateCommand("help");
+	UpdateCommand("pause");
+	UpdateCommand("unpause");
 }
 
 /*
