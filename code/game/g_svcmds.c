@@ -1178,15 +1178,6 @@ qboolean	ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	if (Q_stricmp (cmd, "pause") == 0) {
-		Svcmd_Pause_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "unpause") == 0) {
-		Svcmd_UnPause_f();
-	}
-
 	ref.Printf = G_Printf;
 	ref.LogPrintf = G_LogPrintf;
 	if (RefereeCommand(cmd)) {

@@ -236,12 +236,12 @@ static void Ref_Pause_f( void ) {
 
 	level.timeoutClient = -1;
 
-	ref.LogPrintf(LOG_REFEREE, "Pause\n", str);
+	ref.LogPrintf(LOG_REFEREE, "Pause\n");
 }
 
 static void Ref_UnPause_f( void ) {
 	level.unpauseTime = 0;
-	ref.LogPrintf(LOG_REFEREE, "UnPause\n", str);
+	ref.LogPrintf(LOG_REFEREE, "Unpause\n");
 }
 
 void Ref_Help_f(void);
