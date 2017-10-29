@@ -70,8 +70,6 @@ static ipFilter_t	ipFilters[MAX_IPFILTERS];
 static int			numIPFilters;
 
 
-char	*ConcatArgs( int start );
-
 /*
 =================
 StringToFilter
@@ -397,93 +395,6 @@ void	Svcmd_EntityList_f (void) {
 
 /*
 ===================
-Svcmd_ForceTeam_f
-
-forceteam <player> <team>
-===================
-*/
-void	Svcmd_ForceTeam_f( void ) {
-	char		str[MAX_TOKEN_CHARS];
-	const char	*errorMsg;
-	int			clientNum;
-	int			lastClient;
-	gentity_t	*ent;
-	team_t		team;
-
-	if ( trap_Argc() < 3 ) {
-		G_Printf(
-			"Usage: forceteam <player> <team>\n"
-			"       forceteam all <team>\n" );
-		return;
-	}
-	// find the player
-	trap_Argv( 1, str, sizeof( str ) );
-	if ( !strcmp(str, "all") ) {
-		clientNum = 0;
-		lastClient = level.maxclients - 1;
-	} else {
-		clientNum = G_ClientNumberFromString( str, &errorMsg );
-		if ( clientNum == -1 ) {
-			trap_Print( errorMsg );
-			return;
-		}
-		lastClient = clientNum;
-	}
-
-	// set the team
-	trap_Argv( 2, str, sizeof( str ) );
-	team = BG_TeamFromString( str );
-	if ( team == TEAM_NUM_TEAMS ) {
-		return;
-	}
-
-	for ( ; clientNum <= lastClient; clientNum++ ) {
-		ent = g_entities + clientNum;
-		if ( ent->inuse ) {
-			SetTeam( ent, team );
-			ent->client->prof.switchTeamTime = level.time + 5000;
-		}
-	}
-}
-
-/*
-===================
-Svcmd_LockTeam_f
-
-lockteam <teams>
-===================
-*/
-void	Svcmd_LockTeam_f( qboolean lock )
-{
-	const char	*prefix = lock ? "" : "un";
-	char		str[MAX_TOKEN_CHARS];
-	team_t		team;
-	int			argc = trap_Argc();
-	int			i;
-
-	if ( argc < 2 ) {
-		G_Printf( "Usage: %slockteam <teams>\n", prefix );
-		return;
-	}
-
-	for (i = 1; i < argc; i++) {
-		trap_Argv( i, str, sizeof( str ) );
-
-		team = BG_TeamFromString( str );
-		if ( team == TEAM_NUM_TEAMS ) {
-			return;
-		}
-
-		if (level.teamLock[team] != lock) {
-			level.teamLock[team] = lock;
-			trap_SendServerCommand( -1, va("print \"%s%s" S_COLOR_WHITE " team was %slocked.\n\"",
-					BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL), prefix) );
-		}
-	}
-}
-
-/*
-===================
 Svcmd_Remove_f
 
 remove <player> [seconds]
@@ -554,7 +465,7 @@ void	Svcmd_Remove_f( void )
 	trap_SendServerCommand( -1, cp );
 }
 
-static void G_CenterPrintPersistant( const char *str ) {
+void G_CenterPrintPersistant( const char *str ) {
 	const char	*cmd[2];
 	int			i;
 
@@ -569,29 +480,6 @@ static void G_CenterPrintPersistant( const char *str ) {
 		}
 
 		trap_SendServerCommand( i, cmd[client->pers.registered] );
-	}
-}
-
-/*
-===================
-Svcmd_Announce_f
-
-announce "<message|motd>"
-===================
-*/
-void	Svcmd_Announce_f( void )
-{
-	char	*str = ConcatArgs(1);
-
-	if ( !str[0] ) {
-		G_Printf( "Usage: announce <message|motd>\n" );
-		return;
-	}
-
-	if ( !Q_stricmp( str, "motd" ) ) {
-		trap_SendServerCommand( -1, "motd" );
-	} else {
-		G_CenterPrintPersistant( Q_SanitizeStr( str ) );
 	}
 }
 
@@ -1242,11 +1130,6 @@ qboolean	ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	if ( Q_stricmp (cmd, "forceteam") == 0 ) {
-		Svcmd_ForceTeam_f();
-		return qtrue;
-	}
-
 	if (Q_stricmp (cmd, "game_memory") == 0) {
 		Svcmd_GameMem_f();
 		return qtrue;
@@ -1282,23 +1165,8 @@ qboolean	ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	if (Q_stricmp (cmd, "announce") == 0) {
-		Svcmd_Announce_f();
-		return qtrue;
-	}
-
 	if (Q_stricmp (cmd, "remove") == 0) {
 		Svcmd_Remove_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "lockteam") == 0) {
-		Svcmd_LockTeam_f( qtrue );
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "unlockteam") == 0) {
-		Svcmd_LockTeam_f( qfalse );
 		return qtrue;
 	}
 
@@ -1334,6 +1202,11 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "unpause") == 0) {
 		Svcmd_UnPause_f();
+	}
+
+	ref.Printf = G_Printf;
+	ref.LogPrintf = G_LogPrintf;
+	if (RefereeCommand(cmd)) {
 		return qtrue;
 	}
 

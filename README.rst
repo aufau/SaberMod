@@ -79,6 +79,29 @@ teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
+Referee Commands
+................
+
+These commands can be used only by a registered referee.
+
+announce <message|motd>
+  Print `message` or ingame message of the day on everyone's screen.
+
+forceteam <player|all> <team>
+  Move players between teams.
+
+help
+  List referee commands
+
+(un)lockteam <teams>
+  Prevent players from joining `teams`.
+
+referee <player>
+  Make player a referee without losing own referee status.
+
+unreferee <player|all>
+  Remove referee status.
+
 CGame Cvars
 ...........
 
@@ -176,19 +199,11 @@ Server-Side
 Console Commands
 ................
 
-announce <message|motd>
-  Print `message` or ingame message of the day on everyone's screen.
-
-forceteam <player|all> <team>
-  Little known original command allowing admin to move players between
-  teams.
+All referee commands can be used as console commands.
 
 items [items]
   Enable/Disable items using human readable names. Type without
   argument to see usage instructions.
-
-(un)lockteam <teams>
-  Prevent players from joining `teams`.
 
 mode <mode|default>
   Change to `mode` or list all available modes when passed without
@@ -227,6 +242,10 @@ dmflags <bitmask>
 duel_fraglimit
   Removed. Use roundlimit instead.
 
+g_allowRefVote <0|1|bitmask>
+  Control what commands are available to referees. Uses the same
+  bitmask as g_allowVote below.
+
 g_allowVote <0|1|bitmask>
   0 / 1 - disable / enable all votes.
 
@@ -239,7 +258,7 @@ g_allowVote <0|1|bitmask>
   128 - Do Warmup        256 - Timelimit        512 - Fraglimit
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
-  65536 - Capturelimit   131072 - Poll
+  65536 - Capturelimit   131072 - Poll          262144 - Referee
   =====================  =====================  =====================
 
 g_damagePlums <0|1>
@@ -274,6 +293,7 @@ g_logFilter[1-4] <mask>
   512 - Say Team         1024 - Tell            2048 - Voice Tell
   4096 - Item Pickup     8192 - Flag            16384 - Weapon Stats
   32768 - Game Stats     65536 - Duel Stats     131072 - Vote
+  262144 - Referee Cmds
   =====================  =====================  =====================
 
 g_macroscan <0|1>

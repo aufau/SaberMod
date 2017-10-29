@@ -74,6 +74,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOG_GAME_STATS		0x00008000
 #define LOG_AUSTRIAN		0x00010000
 #define LOG_VOTE			0x00020000
+#define LOG_REFEREE			0x00040000
 
 #define LOG_DEFAULT			41943
 
@@ -83,7 +84,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // DOCME in g_allowVote description
 typedef enum {
 	CV_INVALID,
-	CV_MAP_RESTART,
+	CV_FIRST,
+	CV_MAP_RESTART = CV_FIRST,
 	CV_NEXTMAP,
 	CV_MAP,
 	CV_GAMETYPE,
@@ -95,15 +97,16 @@ typedef enum {
 	CV_ROUNDLIMIT,
 	CV_TEAMSIZE,
 	CV_REMOVE,
-	CV_KICK_MODE,
+	CV_WK,
 	CV_MODE,
 	CV_MATCH,
 	CV_CAPTURELIMIT,
 	CV_POLL,
+	CV_REFEREE,
 	CV_MAX
-} voteCommand_t;
+} voteCmd_t;
 
-q_static_assert(CV_MAX < 31);
+q_static_assert(CV_MAX <= 32);
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
@@ -416,6 +419,7 @@ typedef struct {
 	qboolean			setForce;			// set to true once player is given the chance to set force powers
 	qboolean			teamLeader;			// true when this client is a team leader
 	qboolean			motdSeen;
+	qboolean			referee;
 } clientSession_t;
 
 //
@@ -617,8 +621,9 @@ typedef struct {
 	int			voteNo;
 	int			numVotingClients;		// set by CalculateRanks
 	int			voteCooldown;			// when voteClient may call a new vote
+	vote_t		voteReferee;
 
-	voteCommand_t	voteCmd;			// current vote
+	voteCmd_t	voteCmd;			// current vote
 	int			voteArg;				// vote argument for CheckVote
 	int			voteClient;				// client who called current/last vote
 
@@ -696,6 +701,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent);
 int G_ItemUsable(playerState_t *ps, holdable_t forcedUse);
 void Cmd_ToggleSaber_f(gentity_t *ent);
 void Cmd_EngageDuel_f(gentity_t *ent);
+char *ConcatArgs( int start );
 
 int G_ClientNumberFromString (const char *s, const char **errorMsg);
 
@@ -928,6 +934,7 @@ qboolean	ConsoleCommand( void );
 void G_ProcessIPBans(void);
 qboolean G_FilterPacket (const char *from);
 qipv4_t G_StringToIPv4(const char *s);
+void G_CenterPrintPersistant( const char *str );
 
 //
 // g_weapon.c
@@ -966,6 +973,7 @@ void G_LogPrintf( int event, const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 Q_NORETURN void QDECL G_Error( const char *fmt, ... );
+void G_SendServerCommand( int clientNum, const char *fmt, ... );
 const char *G_GetStripEdString(const char *refSection, const char *refName);
 gametype_t G_GametypeForString( const char *s );
 
@@ -1124,6 +1132,16 @@ void G_EntityCheckRep(const gentity_t *ent);
 #define G_EntityCheckRep(x)
 #endif
 
+// g_referee.c
+typedef struct {
+	void	(*Printf)(const char *fmt, ...);
+	void	(*LogPrintf)(int event, const char *fmt, ...);
+} refCmdContext_t;
+
+extern refCmdContext_t ref;
+
+qboolean RefereeCommand(const char *cmd);
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
@@ -1266,6 +1284,7 @@ extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
 extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
+extern	vmCvar_t	g_allowRefVote;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

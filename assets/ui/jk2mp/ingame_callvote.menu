@@ -455,7 +455,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote nk" ;
+				exec                    "cmd callvote wk 0" ;
 				uiScript                closeingame
 			}
 		}
@@ -477,7 +477,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote wk" ;
+				exec                    "cmd callvote wk 1" ;
 				uiScript                closeingame
 			}
 		}

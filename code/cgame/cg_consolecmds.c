@@ -484,6 +484,10 @@ static void CG_Players_f( void ) {
 				flag[1] = 'o';
 				flag[2] = 't';
 			} else {
+				if (cgs.clientinfo[i].referee) {
+					flagColor[0] = S_COLOR_RED;
+					flag[0] = 'R';
+				}
 				if (cgs.clientinfo[i].handicap > 0 && cgs.clientinfo[i].handicap < 100) {
 					flagColor[2] = S_COLOR_MAGENTA;
 					flag[2] = 'H';

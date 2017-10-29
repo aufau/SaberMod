@@ -1759,7 +1759,7 @@ Cmd_CallVote_f
 ==================
 */
 void Cmd_CallVote_f( gentity_t *ent ) {
-	voteCommand_t	voteCmd;
+	voteCmd_t		voteCmd;
 	const char		*voteName;
 	int				i;
 	char			arg1[MAX_STRING_TOKENS];
@@ -1768,80 +1768,73 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	const char		*mapInfo;
 	arena_t			arena;
 	char			s[MAX_STRING_CHARS];
-
-	static const char *voteCanonicalName[CV_MAX] = {
-		"Invalid",		// CV_INVALID
-		"Map Restart",	// CV_MAP_RESTART
-		"Next Map",		// CV_NEXTMAP
-		"Map",			// CV_MAP
-		"Gametype",		// CV_GAMETYPE
-		"Kick",			// CV_KICK
-		"Shuffle",		// CV_SHUFFLE
-		"Do Warmup",	// CV_DOWARMUP
-		"Timelimit",	// CV_TIMELIMIT
-		"Fraglimit",	// CV_FRAGLIMIT
-		"Roundlimit",	// CV_ROUNDLIMIT
-		"Team Size",	// CV_TEAMSIZE
-		"Remove",		// CV_REMOVE
-		"Kick Mode",	// CV_KICK_MODE
-		"Mode",			// CV_MODE
-		"Match Mode",	// CV_MATCH
-		"Capturelimit",	// CV_CAPTURELIMIT
-		"Poll",			// CV_POLL
-	};
+	int				voteMask;
 
 	typedef struct {
-		const char		*alias;
-		voteCommand_t	voteCmd;
-	} voteAlias_t;
+		const char	*name;		// must be lowercase
+		const char	*longName;
+		const char	*synopsis;
+	} voteCmdInfo_t;
 
-	static const voteAlias_t voteAlias[] = {
-		{ "map_restart",	CV_MAP_RESTART },
-		{ "nextmap",		CV_NEXTMAP },
-		{ "map",			CV_MAP },
-		{ "g_gametype",		CV_GAMETYPE },
-		{ "gametype",		CV_GAMETYPE },
-		{ "kick",			CV_KICK },
-		{ "clientkick",		CV_KICK },
-		{ "shuffle",		CV_SHUFFLE },
-		{ "g_dowarmup",		CV_DOWARMUP },
-		{ "dowarmup",		CV_DOWARMUP },
-		{ "timelimit",		CV_TIMELIMIT },
-		{ "fraglimit",		CV_FRAGLIMIT },
-		{ "roundlimit",		CV_ROUNDLIMIT },
-		{ "teamsize",		CV_TEAMSIZE },
-		{ "remove",			CV_REMOVE },
-		{ "nk",				CV_KICK_MODE },
-		{ "wk",				CV_KICK_MODE },
-		{ "mode",			CV_MODE },
-		{ "match",			CV_MATCH },
-		{ "capturelimit",	CV_CAPTURELIMIT },
-		{ "poll",			CV_POLL },
+	static const voteCmdInfo_t voteCmds[CV_MAX] = {
+		{ "invalid",		"Invalid",		"" },				// CV_INVALID
+		{ "map_restart",	"Map Restart",	"" }, 				// CV_MAP_RESTART
+		{ "nextmap",		"Next Map",		"" },				// CV_NEXTMAP
+		{ "map",			"Map",			" <name>" },		// CV_MAP
+		{ "gametype",		"Gametype",		" <name>" },		// CV_GAMETYPE
+		{ "kick",			"Kick",			" <name|num>" },	// CV_KICK
+		{ "shuffle",		"Shuffle",		"" },				// CV_SHUFFLE
+		{ "g_dowarmup",		"Do Warmup",	" <0|1>" },			// CV_DOWARMUP
+		{ "timelimit",		"Timelimit",	" <minutes>" },		// CV_TIMELIMIT
+		{ "fraglimit",		"Fraglimit",	" <frags>" },		// CV_FRAGLIMIT
+		{ "roundlimit",		"Roundlimit",	" <rounds>" },		// CV_ROUNDLIMIT
+		{ "teamsize",		"Team Size",	" <size>" },		// CV_TEAMSIZE
+		{ "remove",			"Remove",		" <name|num>" },	// CV_REMOVE
+		{ "wk",				"With Kicks",	" <0|1>" },			// CV_WK
+		{ "mode",			"Mode",			" <name>" },		// CV_MODE
+		{ "matchmode",		"Match Mode",	" <0|1>" },			// CV_MATCH
+		{ "capturelimit",	"Capturelimit",	" <caps>" },		// CV_CAPTURELIMIT
+		{ "poll",			"Poll",			" <question>" },	// CV_POLL
+		{ "referee",		"Referee",		" <name|num>" },	// CV_REFEREE
 	};
 
-	if ( !g_allowVote.integer ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE")) );
-		return;
-	}
+	if ( ent->client->sess.referee ) {
+		if (g_allowRefVote.integer == 1) {
+			voteMask = -1;
+		} else {
+			voteMask = g_allowRefVote.integer;
+		}
+	} else {
+		if ( !g_allowVote.integer ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOVOTE")) );
+			return;
+		}
 
-	if ( level.voteTime || level.voteExecuteTime ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
-		return;
-	}
-	/*
-	if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXVOTES")) );
-		return;
-	}
-	*/
-	if ( ent->s.number == level.voteClient && level.voteCooldown > level.time ) {
-		trap_SendServerCommand( ent-g_entities,
-			va("print \"You must wait %d seconds before calling a new vote.\n\"", g_voteCooldown.integer) );
-		return;
-	}
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSPECVOTE")) );
-		return;
+		if ( level.voteTime || level.voteExecuteTime ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEINPROGRESS")) );
+			return;
+		}
+		/*
+		  if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
+		  trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MAXVOTES")) );
+		  return;
+		  }
+		*/
+		if ( ent->s.number == level.voteClient && level.voteCooldown > level.time ) {
+			trap_SendServerCommand( ent-g_entities,
+				va("print \"You must wait %d seconds before calling a new vote.\n\"", g_voteCooldown.integer) );
+			return;
+		}
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "NOSPECVOTE")) );
+			return;
+		}
+
+		if (g_allowVote.integer == 1) {
+			voteMask = -1;
+		} else {
+			voteMask = g_allowVote.integer;
+		}
 	}
 
 	// make sure it is a valid command to vote on
@@ -1851,24 +1844,43 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	Q_strlwr( arg1 );
 
 	voteCmd = CV_INVALID;
-	for ( i = 0; i < (int)ARRAY_LEN(voteAlias); i++ ) {
-		if ( !strcmp( arg1, voteAlias[i].alias ) ) {
-			voteCmd = voteAlias[i].voteCmd;
+	for ( i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++ ) {
+		if ( !((1 << i) & voteMask) ) {
+			continue;
+		}
+		if ( !strcmp( arg1, voteCmds[i].name ) ) {
+			voteCmd = (voteCmd_t)i;
 			break;
 		}
 	}
 
 	if ( voteCmd == CV_INVALID ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, gametype <name>, kick <player|num>, doWarmup <0|1>, timelimit <time>, fraglimit <frags>, roundlimit <rounds>, teamsize <size>, remove <player>, wk, nk, mode <name>, match <0|1>, poll <question>, shuffle.\n\"" );
-		return;
-	}
+		const int	columns = 3;
+		const char	*fmt = "%-26s";
+		char		line[DEFAULT_CONSOLE_WIDTH + 1];
+		int			j;
 
-	if ( g_allowVote.integer != 1 ) {
-		if ( ( ( 1 << voteCmd ) & g_allowVote.integer ) == 0 ) {
-			trap_SendServerCommand( ent-g_entities, "print \"This vote has been disabled by the server administrator.\n\"");
-			return;
+		trap_SendServerCommand(ent-g_entities, "print \"Invalid vote string. Allowed votes are:\n\"" );
+
+		line[0] = '\0';
+		j = 0;
+		for (i = CV_FIRST; i < (int)ARRAY_LEN(voteCmds); i++) {
+			if ((1 << i) & voteMask) {
+				char	synopsis[DEFAULT_CONSOLE_WIDTH + 1];
+
+				Com_sprintf(synopsis, sizeof(synopsis), "%s%s", voteCmds[i].name, voteCmds[i].synopsis);
+				Q_strcat(line, sizeof(line), va(fmt, synopsis));
+
+				j++;
+				if (j % columns == 0) {
+					trap_SendServerCommand(ent-g_entities, va("print \"%s\n\"", line));
+					line[0] = '\0';
+				}
+			}
 		}
+
+		trap_SendServerCommand(ent-g_entities, va("print \"%s\n\"", line));
+		return;
 	}
 
 	if( strchr( arg2, ';' ) || strchr( arg2, '\n' ) || strchr( arg2, '\r' ) ) {
@@ -1876,7 +1888,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	voteName = voteCanonicalName[voteCmd];
+	voteName = voteCmds[voteCmd].longName;
 
 	switch ( voteCmd ) {
 	case CV_GAMETYPE:
@@ -1948,6 +1960,21 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
 			voteName, g_entities[i].client->info.netname );
 		break;
+	case CV_REFEREE:
+		i = G_ClientNumberFromString( arg2, &errorMsg );
+
+		if ( i == -1 )
+		{
+			trap_SendServerCommand( ent-g_entities, va("print \"%s\"", errorMsg) );
+			return;
+		}
+
+		level.voteArg = i;
+
+		Com_sprintf ( level.voteString, sizeof(level.voteString ), "referee %d", i );
+		Com_sprintf ( level.voteDisplayString, sizeof(level.voteDisplayString), "%s %s",
+			voteName, g_entities[i].client->info.netname );
+		break;
 	case CV_NEXTMAP:
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
 		if (!*s) {
@@ -1980,8 +2007,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
 			voteName, g_entities[i].client->info.netname );
 		break;
-	case CV_KICK_MODE:
-		if ( !Q_stricmp( arg1, "nk" ) )
+	case CV_WK:
+		i = atoi( arg2 );
+
+		if ( i == 0 )
 		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
 				"dmflags %d; g_friendlyFire 1", g_dmflags.integer | DF_NO_KICK );
@@ -2056,6 +2085,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	level.voteYes = 1;
 	level.voteNo = 0;
 	level.voteClient = ent->s.number;
+	level.voteReferee = ent->client->sess.referee ? VOTE_YES : VOTE_NONE;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;
@@ -2068,6 +2098,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );
 	trap_SetConfigstring( CS_VOTE_YES, "1" );
 	trap_SetConfigstring( CS_VOTE_NO, "0" );
+
 }
 
 /*
@@ -2092,6 +2123,10 @@ void Cmd_Vote_f( gentity_t *ent ) {
 
 	trap_Argv( 1, msg, sizeof( msg ) );
 	vote = ( msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1' ) ? VOTE_YES : VOTE_NO;
+
+	if ( ent->client->sess.referee ) {
+		level.voteReferee = vote;
+	}
 
 	if ( vote != ent->client->pers.vote ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLVOTECAST")) );
@@ -2270,7 +2305,6 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEALREADYCAST")) );
 	}
 }
-
 
 /*
 =================
@@ -2938,9 +2972,32 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 }
 #endif // _DEBUG
 
+static int printfClientNum;
+static void G_CmdPrintf(const char *fmt, ...) {
+	va_list		argptr;
+	char		text[1024];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+	G_SendServerCommand(printfClientNum, "print \"%s\"", text);
+}
+static void G_CmdLogPrintf(int event, const char *fmt, ...) {
+	va_list		argptr;
+	char		text[1024];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+	G_LogPrintf(event, "Referee: %d %s", printfClientNum, text);
+}
+
 #define CMD_NOINTERMISSION	0x01
 #define CMD_CHEAT			0x02
 #define CMD_ALIVE			0x04
+#define CMD_REFEREE			0x08	// update these in cg_players.c::CG_RefereeMode
 
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
@@ -3016,6 +3073,15 @@ void ClientCommand( int clientNum ) {
 	}
 	//end rww
 
+	// redirect referee commands
+	printfClientNum = clientNum;
+	ref.Printf = G_CmdPrintf;
+	ref.LogPrintf = G_CmdLogPrintf;
+
+	if (ent->client->sess.referee && RefereeCommand(cmd)) {
+		return;
+	}
+
 	for ( i = 0; i < ARRAY_LEN(commands); i++ ) {
 		if ( !strcmp( cmd, commands[i].name ) ) {
 			command = &commands[i];
@@ -3046,6 +3112,12 @@ void ClientCommand( int clientNum ) {
 		if ( ent->health <= 0 || ent->client->sess.spectatorState != SPECTATOR_NOT ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "MUSTBEALIVE")));
 			return;
+		}
+	}
+
+	if ( command->flags & CMD_REFEREE ) {
+		if ( !ent->client->sess.referee ) {
+			trap_SendServerCommand( clientNum, "print \"Only referees may use this command.\n\"" );
 		}
 	}
 

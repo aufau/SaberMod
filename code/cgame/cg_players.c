@@ -1005,6 +1005,32 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 	CG_LoadClientInfo( ci );
 }
 
+
+/*
+======================
+CG_NewClientInfo
+======================
+*/
+static void CG_RefereeMode(qboolean enable) {
+	void (*UpdateCommand)(const char *);
+
+	if (enable) {
+		UpdateCommand = trap_AddCommand;
+	} else {
+		UpdateCommand = trap_RemoveCommand;
+	}
+
+	trap_Cvar_Set("ui_referee", va("%d", enable));
+
+	UpdateCommand("referee");
+	UpdateCommand("unreferee");
+	UpdateCommand("lockteam");
+	UpdateCommand("unlockteam");
+	UpdateCommand("forceteam");
+	UpdateCommand("announce");
+	UpdateCommand("help");
+}
+
 /*
 ======================
 CG_NewClientInfo
@@ -1018,6 +1044,7 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	void *oldGhoul2;
 	int i = 0;
 	qboolean wasATST = qfalse;
+	qboolean wasReferee;
 
 	ci = &cgs.clientinfo[clientNum];
 
@@ -1084,6 +1111,15 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	v = Info_ValueForKey( configstring, "g_blueteam" );
 	Q_strncpyz(newInfo.blueTeam, v, MAX_TEAMNAME);
+
+	// referee
+	v = Info_ValueForKey( configstring, "r" );
+	wasReferee = ci->referee;
+	newInfo.referee = (qboolean)atoi(v);
+
+	if (wasReferee != newInfo.referee && clientNum == cg.clientNum) {
+		CG_RefereeMode(newInfo.referee);
+	}
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
