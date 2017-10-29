@@ -737,3 +737,86 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("timeout");
 	trap_AddCommand ("timein");
 }
+
+void CG_ShutDownConsoleCommands( void ) {
+	int		i;
+
+	for ( i = 0 ; i < (int)ARRAY_LEN( commands ) ; i++ ) {
+		trap_RemoveCommand( commands[i].cmd );
+	}
+
+	trap_RemoveCommand ("forcechanged");
+	trap_RemoveCommand ("sv_invnext");
+	trap_RemoveCommand ("sv_invprev");
+	trap_RemoveCommand ("sv_forcenext");
+	trap_RemoveCommand ("sv_forceprev");
+	trap_RemoveCommand ("sv_saberswitch");
+	trap_RemoveCommand ("engage_duel");
+	trap_RemoveCommand ("force_heal");
+	trap_RemoveCommand ("force_speed");
+	trap_RemoveCommand ("force_throw");
+	trap_RemoveCommand ("force_pull");
+	trap_RemoveCommand ("force_distract");
+	trap_RemoveCommand ("force_rage");
+	trap_RemoveCommand ("force_protect");
+	trap_RemoveCommand ("force_absorb");
+	trap_RemoveCommand ("force_healother");
+	trap_RemoveCommand ("force_forcepowerother");
+	trap_RemoveCommand ("force_seeing");
+	trap_RemoveCommand ("use_seeker");
+	trap_RemoveCommand ("use_field");
+	trap_RemoveCommand ("use_bacta");
+	trap_RemoveCommand ("use_electrobinoculars");
+	trap_RemoveCommand ("zoom");
+	trap_RemoveCommand ("use_sentry");
+	trap_RemoveCommand ("bot_order");
+	trap_RemoveCommand ("saberAttackCycle");
+	trap_RemoveCommand ("kill");
+	trap_RemoveCommand ("say");
+	trap_RemoveCommand ("say_team");
+	trap_RemoveCommand ("tell");
+#ifdef MISSIONPACK
+	trap_RemoveCommand ("vsay");
+	trap_RemoveCommand ("vsay_team");
+	trap_RemoveCommand ("vtell");
+	trap_RemoveCommand ("vtaunt");
+	trap_RemoveCommand ("vosay");
+	trap_RemoveCommand ("vosay_team");
+	trap_RemoveCommand ("votell");
+#endif
+	trap_RemoveCommand ("give");
+	trap_RemoveCommand ("god");
+	trap_RemoveCommand ("notarget");
+	trap_RemoveCommand ("noclip");
+	trap_RemoveCommand ("team");
+	trap_RemoveCommand ("follow");
+	trap_RemoveCommand ("follownext");
+	trap_RemoveCommand ("followprev");
+	trap_RemoveCommand ("levelshot");
+	trap_RemoveCommand ("addbot");
+	trap_RemoveCommand ("setviewpos");
+	trap_RemoveCommand ("callvote");
+	trap_RemoveCommand ("vote");
+	trap_RemoveCommand ("callteamvote");
+	trap_RemoveCommand ("teamvote");
+	trap_RemoveCommand ("stats");
+	trap_RemoveCommand ("teamtask");
+	trap_RemoveCommand ("loaddefered");	// spelled wrong, but not changing for demo
+
+	trap_RemoveCommand ("ragequit");
+	trap_RemoveCommand ("seek");
+	trap_RemoveCommand ("timeout");
+	trap_RemoveCommand ("timein");
+
+	// referee commands
+
+	trap_RemoveCommand ("referee");
+	trap_RemoveCommand ("unreferee");
+	trap_RemoveCommand ("lockteam");
+	trap_RemoveCommand ("unlockteam");
+	trap_RemoveCommand ("forceteam");
+	trap_RemoveCommand ("announce");
+	trap_RemoveCommand ("help");
+	trap_RemoveCommand ("pause");
+	trap_RemoveCommand ("unpause");
+}

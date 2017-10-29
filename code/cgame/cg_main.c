@@ -2727,6 +2727,8 @@ void CG_Shutdown( void )
 		}
 		cg.seekTime = 0;
 	}
+
+	CG_ShutDownConsoleCommands();
 }
 
 
