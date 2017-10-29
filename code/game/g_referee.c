@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 refCmdContext_t	ref;
 
-void Ref_Referee_f(void) {
+static void Ref_Referee_f(void) {
 	const char	*errorMsg;
 	gclient_t	*client;
 	int			targetNum;
@@ -56,7 +56,7 @@ void Ref_Referee_f(void) {
 	}
 }
 
-void Ref_UnReferee_f(void) {
+static void Ref_Unreferee_f(void) {
 	const char	*errorMsg;
 	int			targetNum;
 	int			lastTarget;
@@ -89,13 +89,13 @@ void Ref_UnReferee_f(void) {
 			ClientUpdateConfigString(targetNum);
 			G_SendServerCommand(-1, "print \"%s" S_COLOR_WHITE " is not a referee anymore\n\"",
 				client->info.netname);
-			ref.LogPrintf(LOG_REFEREE, "UnReferee: %d: %s is not a referee anymore\n",
+			ref.LogPrintf(LOG_REFEREE, "Unreferee: %d: %s is not a referee anymore\n",
 				targetNum, client->info.netname);
 		}
 	}
 }
 
-void Ref_LockTeam_f(void) {
+static void Ref_LockTeam_f(void) {
 	char		str[MAX_TOKEN_CHARS];
 	team_t		team;
 	int			argc = trap_Argc();
@@ -125,7 +125,7 @@ void Ref_LockTeam_f(void) {
 	}
 }
 
-void Ref_UnLockTeam_f(void) {
+static void Ref_UnlockTeam_f(void) {
 	char		str[MAX_TOKEN_CHARS];
 	team_t		team;
 	int			argc = trap_Argc();
@@ -150,12 +150,12 @@ void Ref_UnLockTeam_f(void) {
 			level.teamLock[team] = qfalse;
 			G_SendServerCommand(-1, "print \"%s%s" S_COLOR_WHITE " team was unlocked.\n\"",
 				BG_TeamColor(team), BG_TeamName(team, CASE_NORMAL));
-			ref.LogPrintf(LOG_REFEREE, "UnLockTeam: %s\n", BG_TeamName(team, CASE_UPPER));
+			ref.LogPrintf(LOG_REFEREE, "UnlockTeam: %s\n", BG_TeamName(team, CASE_UPPER));
 		}
 	}
 }
 
-void Ref_ForceTeam_f(void) {
+static void Ref_ForceTeam_f(void) {
 	char		str[MAX_TOKEN_CHARS];
 	const char	*errorMsg;
 	int			clientNum;
@@ -207,7 +207,7 @@ void Ref_ForceTeam_f(void) {
 	}
 }
 
-void Ref_Announce_f(void) {
+static void Ref_Announce_f(void) {
 	char	*str = ConcatArgs(1);
 
 	if (!str[0]) {
@@ -239,12 +239,12 @@ static void Ref_Pause_f( void ) {
 	ref.LogPrintf(LOG_REFEREE, "Pause\n");
 }
 
-static void Ref_UnPause_f( void ) {
+static void Ref_Unpause_f( void ) {
 	level.unpauseTime = 0;
 	ref.LogPrintf(LOG_REFEREE, "Unpause\n");
 }
 
-void Ref_Help_f(void);
+static void Ref_Help_f(void);
 
 typedef struct {
 	const char	*name;				// must be lower-case for comparing
@@ -253,17 +253,17 @@ typedef struct {
 
 static const refereeCommand_t refCommands[] = {
 	{ "referee", Ref_Referee_f },
-	{ "unreferee", Ref_UnReferee_f },
+	{ "unreferee", Ref_Unreferee_f },
 	{ "lockteam", Ref_LockTeam_f },
-	{ "unlockteam", Ref_UnLockTeam_f },
+	{ "unlockteam", Ref_UnlockTeam_f },
 	{ "forceteam", Ref_ForceTeam_f },
 	{ "announce", Ref_Announce_f },
 	{ "help", Ref_Help_f },
 	{ "pause", Ref_Pause_f },
-	{ "unpause", Ref_UnPause_f },
+	{ "unpause", Ref_Unpause_f },
 };
 
-void Ref_Help_f(void) {
+static void Ref_Help_f(void) {
 	const int	columns = 3;
 	const char	*fmt = "%-26s";
 	char		line[DEFAULT_CONSOLE_WIDTH + 1];
