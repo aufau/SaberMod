@@ -97,9 +97,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 		tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN, player->s.number );
 		tent->s.clientNum = player->s.number;
 	} else if ( player->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
-		// this is not perfect for players not in TEAM_SPECTATOR but
-		// only Cmd_SetViewpos_f can call it for them
-		SetTeam( player, TEAM_SPECTATOR );
+		StopFollowing( player );
 	}
 
 	VectorCopy ( origin, player->client->ps.origin );
