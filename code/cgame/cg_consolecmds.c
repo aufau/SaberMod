@@ -675,31 +675,6 @@ void CG_InitConsoleCommands( void ) {
 	// forwarded to the server after they are not recognized locally
 	//
 	trap_AddCommand ("forcechanged");
-	trap_AddCommand ("sv_invnext");
-	trap_AddCommand ("sv_invprev");
-	trap_AddCommand ("sv_forcenext");
-	trap_AddCommand ("sv_forceprev");
-	trap_AddCommand ("sv_saberswitch");
-	trap_AddCommand ("engage_duel");
-	trap_AddCommand ("force_heal");
-	trap_AddCommand ("force_speed");
-	trap_AddCommand ("force_throw");
-	trap_AddCommand ("force_pull");
-	trap_AddCommand ("force_distract");
-	trap_AddCommand ("force_rage");
-	trap_AddCommand ("force_protect");
-	trap_AddCommand ("force_absorb");
-	trap_AddCommand ("force_healother");
-	trap_AddCommand ("force_forcepowerother");
-	trap_AddCommand ("force_seeing");
-	trap_AddCommand ("use_seeker");
-	trap_AddCommand ("use_field");
-	trap_AddCommand ("use_bacta");
-	trap_AddCommand ("use_electrobinoculars");
-	trap_AddCommand ("zoom");
-	trap_AddCommand ("use_sentry");
-	trap_AddCommand ("bot_order");
-	trap_AddCommand ("saberAttackCycle");
 	trap_AddCommand ("kill");
 	trap_AddCommand ("say");
 	trap_AddCommand ("say_team");
@@ -746,31 +721,6 @@ void CG_ShutDownConsoleCommands( void ) {
 	}
 
 	trap_RemoveCommand ("forcechanged");
-	trap_RemoveCommand ("sv_invnext");
-	trap_RemoveCommand ("sv_invprev");
-	trap_RemoveCommand ("sv_forcenext");
-	trap_RemoveCommand ("sv_forceprev");
-	trap_RemoveCommand ("sv_saberswitch");
-	trap_RemoveCommand ("engage_duel");
-	trap_RemoveCommand ("force_heal");
-	trap_RemoveCommand ("force_speed");
-	trap_RemoveCommand ("force_throw");
-	trap_RemoveCommand ("force_pull");
-	trap_RemoveCommand ("force_distract");
-	trap_RemoveCommand ("force_rage");
-	trap_RemoveCommand ("force_protect");
-	trap_RemoveCommand ("force_absorb");
-	trap_RemoveCommand ("force_healother");
-	trap_RemoveCommand ("force_forcepowerother");
-	trap_RemoveCommand ("force_seeing");
-	trap_RemoveCommand ("use_seeker");
-	trap_RemoveCommand ("use_field");
-	trap_RemoveCommand ("use_bacta");
-	trap_RemoveCommand ("use_electrobinoculars");
-	trap_RemoveCommand ("zoom");
-	trap_RemoveCommand ("use_sentry");
-	trap_RemoveCommand ("bot_order");
-	trap_RemoveCommand ("saberAttackCycle");
 	trap_RemoveCommand ("kill");
 	trap_RemoveCommand ("say");
 	trap_RemoveCommand ("say_team");
