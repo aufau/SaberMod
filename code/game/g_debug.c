@@ -68,11 +68,11 @@ void G_EntityCheckRep(const gentity_t *ent)
 		for (i = 0; i < BODY_QUEUE_SIZE && level.bodyQue[i] != ent; i++);
 		assert(i < BODY_QUEUE_SIZE); // in body queue
 	}
-	else if (!strcmp(ent->classname, "tempEntity"))
+	else if (!strcmp(ent->classname, "tempEntity") && !(ent->s.eFlags & EF_SOUNDTRACKER))
 	{
 		int event = ent->s.eType & ~EV_EVENT_BITS;
 		isTempEntity = qtrue;
-		assert(ent->eventTime && ent->freeAfterEvent);
+		assert(ent->freeAfterEvent);
 		assert(ET_EVENTS <= event && event < ET_EVENTS + EV_MAX);
 	}
 	else if (G_IsSpawnEntity(ent))
