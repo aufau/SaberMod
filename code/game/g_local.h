@@ -468,11 +468,17 @@ typedef struct {
 	qboolean	privateDuel;		// based on cg_privateDuel userinfo
 } clientUserinfo_t;
 
+typedef struct {
+	float R;
+	float RD;
+} glicko_t;
+
 // client data that stays across reconnections.
 typedef struct {
 	qipv4_t		ip;
 	int			qport;
 	int			switchTeamTime;		// time the player switched teams
+	glicko_t	glicko;
 } clientProfile_t;
 
 // this structure is cleared on each ClientSpawn(),
@@ -585,6 +591,7 @@ typedef struct {
 	// store latched cvars here that we want to get at often
 	int			maxclients;
 	gametype_t	gametype;
+	qboolean	glickoLadder;
 
 	int			framenum;
 	int			snapnum;				// snapshot currently being prepared
@@ -1140,6 +1147,11 @@ extern refCmdContext_t ref;
 
 qboolean RefereeCommand(const char *cmd);
 
+// g_glicko.c
+void G_GlickoAddResult(gentity_t *winner, gentity_t *loser);
+void G_GlickoAddDraw(gentity_t *player1, gentity_t *player2);
+void G_GlickoUpdateScore(gentity_t *player);
+
 // ai_main.c
 
 int		OrgVisible		( vec3_t org1, vec3_t org2, int ignore);
@@ -1283,6 +1295,8 @@ extern	vmCvar_t	g_unlaggedMaxPing;
 extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
+extern	vmCvar_t	g_glickoMaxRD;
+extern	vmCvar_t	g_glickoMinRD;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

@@ -1453,6 +1453,8 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	} else {
 		client->prof.ip = ip;
 		client->prof.qport = qport;
+		client->prof.glicko.R = 1500;
+		client->prof.glicko.RD = g_glickoMaxRD.value;
 
 		if ( level.voteClient == clientNum ) {
 			level.voteCooldown = 0;
@@ -1586,6 +1588,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
+	G_GlickoUpdateScore( ent );
 
 	G_UpdateClientReadyFlags();
 

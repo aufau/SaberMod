@@ -1287,6 +1287,8 @@ void ClientThink_real( gentity_t *ent ) {
 					minutes, seconds,
 					ent->client->ps.stats[STAT_HEALTH],	ent->client->ps.stats[STAT_ARMOR]);
 
+				G_GlickoAddResult(ent, duelAgainst);
+
 				s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE
 					" in " S_COLOR_CYAN "%02i" S_COLOR_WHITE ":" S_COLOR_CYAN "%02i" S_COLOR_WHITE
 					" with " S_COLOR_RED "%i" S_COLOR_WHITE "/" S_COLOR_GREEN "%i" S_COLOR_WHITE " left!\n\"",
@@ -1304,6 +1306,8 @@ void ClientThink_real( gentity_t *ent ) {
 					"DuelTie: %i %i: The duel between %s and %s is ended in a draw, both fighters have died\n",
 					ent->s.number, duelAgainst->s.number,
 					ent->client->info.netname, duelAgainst->client->info.netname);
+
+				G_GlickoAddDraw(ent, duelAgainst);
 
 				s = va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "PLDUELTIE"));
 			}

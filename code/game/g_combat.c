@@ -571,6 +571,9 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	{
 		return;
 	}
+	if (level.glickoLadder) {
+		return;
+	}
 	// show score plum
 	//ScorePlum(ent, origin, score);
 	//

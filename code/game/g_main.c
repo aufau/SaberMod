@@ -164,6 +164,9 @@ vmCvar_t	g_macroscan;
 vmCvar_t	g_timeoutLimit;
 vmCvar_t	g_requireClientside;
 vmCvar_t	g_allowRefVote;
+vmCvar_t	g_glickoLadder;
+vmCvar_t	g_glickoMaxRD;
+vmCvar_t	g_glickoMinRD;
 
 
 int gDuelist1 = -1;
@@ -187,6 +190,10 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_teamsize, "teamsize", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue  },
 	{ &g_teamsizeMin, "g_teamsizeMin", "2", CVAR_ARCHIVE , 0, qfalse  },
+
+	{ &g_glickoLadder, "g_glickoLadder", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_glickoMaxRD, "g_glickoMaxRD", "350", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_glickoMinRD, "g_glickoMinRD", "30", CVAR_ARCHIVE, 0, qfalse },
 
 	// change anytime vars
 	{ &g_ff_objectives, "g_ff_objectives", "0", /*CVAR_SERVERINFO |*/  CVAR_NORESTART, 0, qtrue },
@@ -709,6 +716,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 	// set numeric value for engine hacks
 	trap_Cvar_Set( "g_gametype", va( "%d", level.gametype ) );
+
+	if (level.gametype == GT_FFA && g_privateDuel.integer && g_glickoLadder.integer) {
+		level.glickoLadder = qtrue;
+	}
 
 	G_UpdateCollisionMap();
 
