@@ -2752,20 +2752,34 @@ static void Cmd_Timein_f(gentity_t *ent)
 
 #ifdef _DEBUG
 void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
-void ScorePlum( int clientNum, vec3_t origin, int score );
+void DamagePlum( int clientNum, const playerState_t *ps, int score );
+void RatingPlum( int clientNum, const playerState_t *ps, int rating );
 
 static void Cmd_DebugPlum_f(gentity_t *self)
 {
 	int argNum = trap_Argc();
 	char arg[MAX_STRING_CHARS];
 	int score = 30;
+	plumType_t type = PLUM_DAMAGE;
 
 	if (argNum > 1)
 	{
 		trap_Argv( 1, arg, sizeof( arg ) );
 		score = atoi(arg);
 	}
-	ScorePlum(self->s.number, self->client->ps.origin, score);
+	if (argNum > 2)
+	{
+		trap_Argv( 2, arg, sizeof( arg ) );
+		type = atoi(arg);
+	}
+	if (type == PLUM_DAMAGE)
+	{
+		DamagePlum(self->s.number, &self->client->ps, score);
+	}
+	else
+	{
+		RatingPlum(self->s.number, &self->client->ps, score);
+	}
 }
 
 extern stringID_table_t animTable[MAX_ANIMATIONS+1];

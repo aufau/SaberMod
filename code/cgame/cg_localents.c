@@ -662,22 +662,38 @@ void CG_AddScorePlum( localEntity_t *le ) {
 
 	score = le->radius;
 
-	if (score < 5) {
-		re->shaderRGBA[0] = 0xff;
-		re->shaderRGBA[1] = 0xff;
-		re->shaderRGBA[2] = 0xff;
-	} else if (score < 30) {
-		re->shaderRGBA[0] = 0x59;
-		re->shaderRGBA[1] = 0xdd;
-		re->shaderRGBA[2] = 0xff;
-	} else if (score < 50) {
-		re->shaderRGBA[0] = 0xfd;
-		re->shaderRGBA[1] = 0xff;
-		re->shaderRGBA[2] = 0x50;
+	if (le->leFlags == PLUM_DAMAGE) {
+		if (score < 5) {
+			re->shaderRGBA[0] = 0xff;
+			re->shaderRGBA[1] = 0xff;
+			re->shaderRGBA[2] = 0xff;
+		} else if (score < 30) {
+			re->shaderRGBA[0] = 0x59;
+			re->shaderRGBA[1] = 0xdd;
+			re->shaderRGBA[2] = 0xff;
+		} else if (score < 50) {
+			re->shaderRGBA[0] = 0xfd;
+			re->shaderRGBA[1] = 0xff;
+			re->shaderRGBA[2] = 0x50;
+		} else {
+			re->shaderRGBA[0] = 0xff;
+			re->shaderRGBA[1] = 0x8a;
+			re->shaderRGBA[2] = 0x8a;
+		}
 	} else {
-		re->shaderRGBA[0] = 0xff;
-		re->shaderRGBA[1] = 0x8a;
-		re->shaderRGBA[2] = 0x8a;
+		if (score < 0) {
+			re->shaderRGBA[0] = 0xff;
+			re->shaderRGBA[1] = 0x00;
+			re->shaderRGBA[2] = 0x00;
+		} else if (score > 0) {
+			re->shaderRGBA[0] = 0x00;
+			re->shaderRGBA[1] = 0xff;
+			re->shaderRGBA[2] = 0x00;
+		} else {
+			re->shaderRGBA[0] = 0xff;
+			re->shaderRGBA[1] = 0xff;
+			re->shaderRGBA[2] = 0xff;
+		}
 	}
 
 	if (c < 0.25f)
@@ -688,15 +704,19 @@ void CG_AddScorePlum( localEntity_t *le ) {
 		re->shaderRGBA[3] = (1.0f - c) * 0xff * 4;
 
 
-	minSize = cg_param1.value > 0 ? cg_param1.value : 4.0f;
-	scaling = cg_param2.value > 0 ? cg_param2.value : 10.0f;
+	if (le->leFlags == PLUM_DAMAGE) {
+		minSize = cg_param1.value > 0 ? cg_param1.value : 4.0f;
+		scaling = cg_param2.value > 0 ? cg_param2.value : 10.0f;
 
-	numberSize = (score - 1 + minSize * scaling) / scaling;
-	//numberSize = (score + 19) / 5.0f;
+		numberSize = (score - 1 + minSize * scaling) / scaling;
+	} else {
+		numberSize = 4;
+	}
+
 	re->radius = numberSize / 2.0f;
 
 	VectorCopy(le->pos.trBase, origin);
-	origin[2] += 90 - c * 70;
+	origin[2] += 70 - c * 70;
 
 	VectorSubtract(cg.refdef.vieworg, origin, dir);
 	CrossProduct(dir, up, vec);

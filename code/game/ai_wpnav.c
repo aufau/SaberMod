@@ -275,6 +275,7 @@ void BotWaypointRender(void)
 			plum = G_TempEntity( gWPArray[i]->origin, EV_SCOREPLUM, ENTITYNUM_WORLD );
 			plum->r.svFlags |= SVF_BROADCAST;
 			plum->s.time = i;
+			plum->s.eventParm = PLUM_BOT;
 
 			n = 0;
 
@@ -356,6 +357,7 @@ checkprint:
 		plum = G_TempEntity( gWPArray[bestindex]->origin, EV_SCOREPLUM, ENTITYNUM_WORLD );
 		plum->r.svFlags |= SVF_BROADCAST;
 		plum->s.time = bestindex; //render it once
+		plum->s.eventParm = PLUM_BOT;
 	}
 	else if (!gotbestindex)
 	{

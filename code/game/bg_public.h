@@ -753,6 +753,12 @@ typedef enum {
 	MOD_MAX
 } meansOfDeath_t;
 
+typedef enum {
+	PLUM_SCORE,
+	PLUM_BOT,
+	PLUM_DAMAGE,
+	PLUM_RATING,
+} plumType_t;
 
 //---------------------------------------------------------
 

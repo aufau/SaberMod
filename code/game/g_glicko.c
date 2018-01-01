@@ -44,9 +44,26 @@ static glicko_t G_GlickoUpdate(const glicko_t *A, const glicko_t *B, float resul
 	return glicko;
 }
 
+void RatingPlum(int clientNum, const playerState_t *ps, int rating) {
+	gentity_t	*plum;
+	vec3_t		origin;
+
+	VectorCopy(ps->origin, origin);
+	origin[2] += ps->viewheight;
+	plum = G_TempEntity( origin, EV_SCOREPLUM, clientNum );
+	// only send this temp entity to a single client
+	plum->r.svFlags |= SVF_SINGLECLIENT;
+	plum->r.singleClient = clientNum;
+	//
+	plum->s.otherEntityNum = clientNum;
+	plum->s.time = rating;
+	plum->s.eventParm = PLUM_RATING;
+}
+
 void G_GlickoAddResult(gentity_t *winner, gentity_t *loser) {
 	glicko_t	winnerGlicko;
 	glicko_t	loserGlicko;
+	int			deltaR;
 
 	if (!level.glickoLadder) {
 		return;
@@ -54,6 +71,11 @@ void G_GlickoAddResult(gentity_t *winner, gentity_t *loser) {
 
 	winnerGlicko = G_GlickoUpdate(&winner->client->prof.glicko, &loser->client->prof.glicko, 1);
 	loserGlicko = G_GlickoUpdate(&loser->client->prof.glicko, &winner->client->prof.glicko, 0);
+
+	deltaR = (int)winnerGlicko.R - (int)winner->client->prof.glicko.R;
+	RatingPlum(winner->s.number, &winner->client->ps, deltaR);
+	deltaR = (int)loserGlicko.R - (int)loser->client->prof.glicko.R;
+	RatingPlum(loser->s.number, &loser->client->ps, deltaR);
 
 	winner->client->prof.glicko = winnerGlicko;
 	loser->client->prof.glicko = loserGlicko;

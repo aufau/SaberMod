@@ -1891,7 +1891,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p,
 				   qhandle_t hShader );
 void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, int maxShards);
 void CG_CreateDebris(int entnum, const vec3_t org, const vec3_t mins, const vec3_t maxs, int debrissound, int debrismodel);
-void CG_ScorePlum( int client, const vec3_t org, int score );
+void CG_ScorePlum( int client, const vec3_t org, int score, plumType_t type );
 #ifdef UNUSED
 void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_Bleed( vec3_t origin, int entityNum );

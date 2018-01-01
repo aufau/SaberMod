@@ -895,7 +895,7 @@ void CG_CreateDebris(int entnum, const vec3_t org, const vec3_t mins, const vec3
 CG_ScorePlum
 ==================
 */
-void CG_ScorePlum( int client, const vec3_t org, int score ) {
+void CG_ScorePlum( int client, const vec3_t org, int score, plumType_t type ) {
 	localEntity_t	*le;
 	refEntity_t		*re;
 	vec3_t			angles;
@@ -906,10 +906,10 @@ void CG_ScorePlum( int client, const vec3_t org, int score ) {
 	}
 
 	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
+	le->leFlags = type;
 	le->leType = LE_SCOREPLUM;
 	le->startTime = cg.time;
-	le->endTime = cg.time + 1000;
+	le->endTime = cg.time + (type == PLUM_DAMAGE ? 1000 : 2000);
 	le->lifeRate = 1.0f / ( le->endTime - le->startTime );
 
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
