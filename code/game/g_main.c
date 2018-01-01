@@ -1396,7 +1396,7 @@ void CalculateRanks( void ) {
 	if ( level.intermissiontime || level.gametype == GT_TOURNAMENT ) {
 		gQueueScoreMessage = qtrue;
 		gQueueScoreMessageTime = level.time + 500;
-		//SendScoreboardMessageToAllClients();
+		//DeathmatchScoreboardMessage(-1);
 		//rww - Made this operate on a "queue" system because it was causing large overflows
 	}
 }
@@ -1409,24 +1409,6 @@ MAP CHANGING
 
 ========================================================================
 */
-
-/*
-========================
-SendScoreboardMessageToAllClients
-
-Do this at BeginIntermission time and whenever ranks are recalculated
-due to enters/exits/forced team changes
-========================
-*/
-void SendScoreboardMessageToAllClients( void ) {
-	int		i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
-			DeathmatchScoreboardMessage( g_entities + i );
-		}
-	}
-}
 
 /*
 ========================
@@ -1550,7 +1532,7 @@ void BeginIntermission( void ) {
 	}
 
 	// send the current scoring to all clients
-	SendScoreboardMessageToAllClients();
+	DeathmatchScoreboardMessage(-1);
 
 }
 
@@ -3336,7 +3318,7 @@ end = trap_Milliseconds();
 	{
 		if (gQueueScoreMessageTime < level.time)
 		{
-			SendScoreboardMessageToAllClients();
+			DeathmatchScoreboardMessage(-1);
 
 			gQueueScoreMessageTime = 0;
 			gQueueScoreMessage = qfalse;

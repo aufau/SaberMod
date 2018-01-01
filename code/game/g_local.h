@@ -955,7 +955,7 @@ void BlowDetpacks(gentity_t *ent);
 //
 void MoveClientToIntermission (gentity_t *ent);
 void G_SetStats (gentity_t *ent);
-void DeathmatchScoreboardMessage (gentity_t *ent);
+void DeathmatchScoreboardMessage (int clientMask);
 
 //
 // g_cmds.c
@@ -978,7 +978,6 @@ void SetLeader(team_t team, int client);
 void CheckTeamLeader( team_t team );
 void G_RunThink (gentity_t *ent);
 void G_LogPrintf( int event, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
-void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
 Q_NORETURN void QDECL G_Error( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
 void G_SendServerCommand( int clientNum, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));

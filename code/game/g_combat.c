@@ -1985,6 +1985,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			killer;
 	int			i;
 	qboolean	wasJediMaster = qfalse;
+	int			clientMask;
 
 	if ( self->client->ps.pm_type == PM_DEAD ) {
 		return;
@@ -2085,6 +2086,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// send updated scores to any clients that are following this one,
 	// or they would get stale scoreboards
+	clientMask = 0;
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		gclient_t	*client = &level.clients[i];
 
@@ -2092,9 +2094,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			continue;
 		}
 		if ( client->ps.clientNum == self->s.number ) {
-			Cmd_Score_f( g_entities + i );
+			clientMask |= (1 << i);
 		}
 	}
+	DeathmatchScoreboardMessage(clientMask);
 
 	self->r.contents = CONTENTS_CORPSE;
 

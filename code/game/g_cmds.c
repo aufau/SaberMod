@@ -41,7 +41,7 @@ DeathmatchScoreboardMessage
 
 ==================
 */
-void DeathmatchScoreboardMessage( gentity_t *ent ) {
+void DeathmatchScoreboardMessage( int clientMask ) {
 	char		entry[1024];
 	char		string[1400];
 	int			stringlength;
@@ -60,6 +60,10 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	{
 		numSorted = MAX_CLIENT_SCORE_SEND;
 	}
+
+	stringlength = Com_sprintf(string, sizeof(string), "scores %i %i %i",
+		level.numConnectedClients,
+		level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE]);
 
 	for (i=0 ; i < numSorted ; i++) {
 		int		ping;
@@ -112,14 +116,16 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		stringlength += j;
 	}
 
-	//still want to know the total # of clients
-	i = level.numConnectedClients;
-
-	trap_SendServerCommand( ent-g_entities, va("scores %i %i %i%s", i,
-		level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE],
-		string ) );
+	if (clientMask == -1) {
+		trap_SendServerCommand(-1, string);
+	} else {
+		for (j = 0; j < MAX_CLIENTS; j++) {
+			if (clientMask & (1 << j)) {
+				trap_SendServerCommand(j, string);
+			}
+		}
+	}
 }
-
 
 /*
 ==================
@@ -129,7 +135,7 @@ Request current scoreboard information
 ==================
 */
 void Cmd_Score_f( gentity_t *ent ) {
-	DeathmatchScoreboardMessage( ent );
+	DeathmatchScoreboardMessage( ent-g_entities );
 }
 
 /*
