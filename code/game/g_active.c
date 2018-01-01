@@ -1359,6 +1359,27 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
+	// send updated scores to any clients that are following this one,
+	// or they would get stale scoreboards
+	if (client->diedLastFrame) {
+		int	clientMask = 0;
+
+		client->diedLastFrame = qfalse;
+
+		for ( i = 0 ; i < level.maxclients ; i++ ) {
+			gclient_t	*cl = &level.clients[i];
+
+			if ( cl->pers.connected != CON_CONNECTED ) {
+				continue;
+			}
+			if ( cl->ps.clientNum == ent->s.number ) {
+				clientMask |= (1 << i);
+			}
+		}
+
+		DeathmatchScoreboardMessage(clientMask);
+	}
+
 	/*
 	if ( client->ps.powerups[PW_HASTE] ) {
 		client->ps.speed *= 1.3;

@@ -135,7 +135,7 @@ Request current scoreboard information
 ==================
 */
 void Cmd_Score_f( gentity_t *ent ) {
-	DeathmatchScoreboardMessage( ent-g_entities );
+	DeathmatchScoreboardMessage( 1 << (ent-g_entities) );
 }
 
 /*

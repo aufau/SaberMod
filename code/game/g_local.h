@@ -565,6 +565,7 @@ struct gclient_s {
 
 	qboolean	fjDidJump;
 	qboolean	duelStarted;
+	qboolean	diedLastFrame;
 
 	ucmdStat_t	cmdStats[CMD_MASK + 1];
 	int			cmdIndex;
