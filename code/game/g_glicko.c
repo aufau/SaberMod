@@ -64,9 +64,19 @@ void G_GlickoAddResult(gentity_t *winner, gentity_t *loser) {
 	glicko_t	winnerGlicko;
 	glicko_t	loserGlicko;
 	int			deltaR;
+	static fileHandle_t glickoLog;
 
 	if (!level.glickoLadder) {
 		return;
+	}
+
+	if (!glickoLog) {
+		trap_FS_FOpenFile(va("glicko-%d.log", trap_RealTime(NULL)), &glickoLog, FS_WRITE);
+	}
+
+	{
+		char *s = va("%d %d\n", winner->client->prof.id, loser->client->prof.id);
+		trap_FS_Write(s, strlen(s), glickoLog);
 	}
 
 	winnerGlicko = G_GlickoUpdate(&winner->client->prof.glicko, &loser->client->prof.glicko, 1);

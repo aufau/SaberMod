@@ -479,6 +479,7 @@ typedef struct {
 	int			qport;
 	int			switchTeamTime;		// time the player switched teams
 	glicko_t	glicko;
+	int			id;
 } clientProfile_t;
 
 // this structure is cleared on each ClientSpawn(),

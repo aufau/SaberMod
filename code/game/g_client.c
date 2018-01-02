@@ -1404,6 +1404,7 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	int			qport;
 	qboolean	reconnected = qfalse;
 	clientProfile_t	savedProf;
+	static int id = 0;
 
 	ent = &g_entities[ clientNum ];
 
@@ -1455,6 +1456,7 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		client->prof.qport = qport;
 		client->prof.glicko.R = 1500;
 		client->prof.glicko.RD = g_glickoMaxRD.value;
+		client->prof.id = id++;
 
 		if ( level.voteClient == clientNum ) {
 			level.voteCooldown = 0;
