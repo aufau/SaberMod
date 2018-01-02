@@ -4025,30 +4025,28 @@ int WP_DoSpecificPower( gentity_t *self, usercmd_t *ucmd, forcePowers_t forcepow
 
 void FindGenericEnemyIndex(gentity_t *self)
 { //Find another client that would be considered a threat.
-	int i = 0;
+	int i;
 	float tlen;
 	gentity_t *ent;
 	gentity_t *besten = NULL;
-	float blen = 99999999;
+	float blen = FLT_MAX;
 	vec3_t a;
 
-	while (i < level.maxclients)
+	for (i = 0; i < level.maxclients; i++)
 	{
 		ent = &g_entities[i];
 
-		if (ent && ent->client && ent->s.number != self->s.number && ent->health > 0)
+		if (ent->s.number != self->s.number && G_CommonDimension(self, ent))
 		{
 			switch ( ent->client->ps.pm_type ) {
 			case PM_NORMAL:
 			case PM_FLOAT:
-			case PM_NOCLIP:
-			case PM_DEAD:
 			case PM_FREEZE:
 				if (OnSameTeam(self, ent)) {
 					break;
 				}
 				VectorSubtract(ent->client->ps.origin, self->client->ps.origin, a);
-				tlen = VectorLength(a);
+				tlen = VectorLengthSquared(a);
 
 				if (tlen < blen &&
 					InFront(ent->client->ps.origin, self->client->ps.origin, self->client->ps.viewangles, 0.8f ) &&
@@ -4061,8 +4059,6 @@ void FindGenericEnemyIndex(gentity_t *self)
 				break;
 			}
 		}
-
-		i++;
 	}
 
 	if (!besten)

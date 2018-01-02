@@ -149,3 +149,5 @@ float powf( float x, float y );
 
 #define isnan(x) ((*(unsigned *)&(x) & expmask) == expmask && (*(unsigned *)&(x) & mantissamask) != 0)
 #define isinf(x) ((*(unsigned *)&(x) == 0x7f800000u) ? 1 : (*(unsigned *)&(x) == 0xff800000u) ? -1 : 0)
+
+#define FLT_MAX 3.40282346638528859812e+38f
