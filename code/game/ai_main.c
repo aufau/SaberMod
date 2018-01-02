@@ -1689,6 +1689,11 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 		return 0;
 	}
 
+	if (!G_CommonDimension(en, &g_entities[bs->client]))
+	{
+		return 0;
+	}
+
 	if (en->health < 1)
 	{
 		return 0;
@@ -1718,7 +1723,7 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 			return 0;
 		}
 
-		if (!en->client->pers.connected)
+		if (en->client->pers.connected != CON_CONNECTED)
 		{
 			return 0;
 		}
@@ -1774,13 +1779,6 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 			return 0;
 		}
 	}
-
-	/*
-	if (en->client && en->client->pers.connected != CON_CONNECTED)
-	{
-		return 0;
-	}
-	*/
 
 	return 1;
 }
@@ -2085,7 +2083,7 @@ int ScanForEnemies(bot_state_t *bs)
 
 	while (i < MAX_CLIENTS)
 	{
-		if (i != bs->client && g_entities[i].client && !OnSameTeam(&g_entities[bs->client], &g_entities[i]) && PassStandardEnemyChecks(bs, &g_entities[i]) && trap_InPVS(g_entities[i].client->ps.origin, bs->eye) && PassLovedOneCheck(bs, &g_entities[i]))
+		if (PassStandardEnemyChecks(bs, &g_entities[i]) && trap_InPVS(g_entities[i].client->ps.origin, bs->eye) && PassLovedOneCheck(bs, &g_entities[i]))
 		{
 			VectorSubtract(g_entities[i].client->ps.origin, bs->eye, a);
 			distcheck = VectorLength(a);
@@ -2096,7 +2094,7 @@ int ScanForEnemies(bot_state_t *bs)
 				distcheck = 1;
 			}
 
-			if (distcheck < closest && ((InFieldOfVision(bs->viewangles, 90, a) && !BotMindTricked(bs->client, i)) || BotCanHear(bs, &g_entities[i], distcheck)) && OrgVisible(bs->eye, g_entities[i].client->ps.origin, ENTITYNUM_NONE))
+			if (distcheck < closest && ((InFieldOfVision(bs->viewangles, 90, a) && !BotMindTricked(bs->client, i)) || BotCanHear(bs, &g_entities[i], distcheck)) && OrgVisible(bs->eye, g_entities[i].client->ps.origin, bs->client))
 			{
 				if (BotMindTricked(bs->client, i))
 				{
@@ -6437,7 +6435,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		if (!bs->frame_Enemy_Vis)
 		{
 			//if (!bs->hitSpotted && VectorLength(a) > 256)
-			if (OrgVisible(bs->eye, bs->lastEnemySpotted, ENTITYNUM_NONE))
+			if (OrgVisible(bs->eye, bs->lastEnemySpotted, bs->client))
 			{
 				VectorCopy(bs->lastEnemySpotted, headlevel);
 				VectorSubtract(headlevel, bs->eye, a);
