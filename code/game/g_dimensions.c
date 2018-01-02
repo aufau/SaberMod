@@ -176,34 +176,65 @@ void G_StopPrivateDuel(gentity_t *ent)
 
 /*
 ================
+G_TraceStartSolid
+
+Returns dimension-correct startsolid value for trace
+================
+*/
+static qboolean G_TraceStartSolid (const vec3_t start, const vec3_t mins, const vec3_t maxs, int passEntityNum, int contentMask) {
+	trace_t	tr;
+
+	trap_Trace(&tr, start, mins, maxs, start, passEntityNum, contentMask);
+
+	if (tr.entityNum < ENTITYNUM_MAX_NORMAL) {
+		gentity_t	*passEnt = g_entities + passEntityNum;
+		gentity_t	*ent = g_entities + tr.entityNum;
+
+		if (!(ent->dimension & passEnt->dimension)) {
+			qboolean	solid;
+			int			contents;
+
+			contents = ent->r.contents;
+			ent->r.contents = 0;
+			solid = G_TraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
+			ent->r.contents = contents;
+			return solid;
+		}
+	}
+
+	return tr.startsolid;
+}
+
+/*
+================
 G_Trace
 
 Dimension-aware trace
 ================
 */
 void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask) {
-    gentity_t *ent;
-    gentity_t *passEnt;
+	trap_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
 
-    trap_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
+	if (results->entityNum < ENTITYNUM_MAX_NORMAL) {
+		gentity_t	*passEnt = g_entities + passEntityNum;
+		gentity_t	*ent = g_entities + results->entityNum;
 
-	if (results->entityNum >= ENTITYNUM_MAX_NORMAL) {
-		return;
+		if (!(ent->dimension & passEnt->dimension)) {
+			int contents;
+
+			contents = ent->r.contents;
+			ent->r.contents = 0;
+
+			G_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
+
+			ent->r.contents = contents;
+			return;
+		}
 	}
 
-    passEnt = g_entities + passEntityNum;
-    ent = g_entities + results->entityNum;
-
-    if (!(ent->dimension & passEnt->dimension)) {
-        int contents;
-
-        contents = ent->r.contents;
-        ent->r.contents = 0;
-
-        G_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
-
-        ent->r.contents = contents;
-    }
+	if (results->startsolid) {
+		results->startsolid = G_TraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
+	}
 }
 
 /*
