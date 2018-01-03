@@ -928,11 +928,6 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	}
 
 	// initialize the bot settings
-	if( !team || !*team	|| ( Q_stricmp(team, "red") && Q_stricmp(team, "blue") ) ) {
-		team = "";
-	}
-
-
 //	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
 	Info_SetValueForKey( userinfo, "team", team );

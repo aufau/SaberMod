@@ -170,6 +170,10 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 					sess->sessionTeam = ValidateTeam( -1, TEAM_BLUE ) ?
 						TEAM_BLUE : TEAM_SPECTATOR;
 				}
+				else if (value[0] == 's' || value[0] == 'S')
+				{
+					sess->sessionTeam = TEAM_SPECTATOR;
+				}
 				else
 				{
 					sess->sessionTeam = PickTeam( -1 );
