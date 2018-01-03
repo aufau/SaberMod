@@ -698,8 +698,8 @@ static void Svcmd_Players_f( void ) {
 		teamMask |= (1 << team);
 	}
 
-	G_Printf( "num client      cgame    fps  packets team name\n" );
-	G_Printf( "--- ----------- -------- ---- ------- ---- %s\n", Dashes( MAX_NAME_LEN ) );
+	G_Printf( "num client      cgame    fps  packets team R    RD  name\n" );
+	G_Printf( "--- ----------- -------- ---- ------- ---- ---- --- %s\n", Dashes( MAX_NAME_LEN ) );
 
 	for ( i = 0; i < level.maxclients; i++ ) {
 		gclient_t	*client = &level.clients[i];
@@ -752,13 +752,15 @@ static void Svcmd_Players_f( void ) {
 			}
 		}
 
-		G_Printf( "%3d %-11.11s %-8.8s %4d %7d %-4.4s %s\n",
+		G_Printf( "%3d %-11.11s %-8.8s %4d %7d %-4.4s %4d %3d %s\n",
 			i,
 			clientVersion,
 			cgame,
 			fps,
 			packets,
 			BG_TeamName( client->sess.sessionTeam, CASE_NORMAL ),
+			(int)client->prof.glicko.R,
+			(int)client->prof.glicko.RD,
 			client->info.netname );
 	}
 }
