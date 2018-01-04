@@ -126,14 +126,14 @@ cg_crosshairColor <hex>
   Force crosshair color using hexadecimal rgb color code. Fourth
   position can be used to set transparency. Eg `#00ff00ff` is green.
 
-cg_crosshairIndicators <0|1>
+cg_crosshairIndicators <bitmask>
   Draw crosshair indicators. Sum values from the following list:
 
   =====================  =====================
   1 - Movement arrows    2 - Speedometer
   =====================  =====================
 
-cg_crosshairIndicatorsSpec <0|1>
+cg_crosshairIndicatorsSpec <bitmask>
   Same as above but only when following another player.
 
 cg_damagePlums <0|1>
@@ -179,7 +179,6 @@ cg_widescreen <0|1>
   Enable HUD adjustments for widescreen monitors
 
 cg_widescreenFov <0|1>
-
   Change Field Of View calculations so that they don't disadvantage
   widescreen monitors. Instead of cropping top and bottom parts of the
   screen it's extended to the sides, compared to 4:3 display. Works
@@ -361,7 +360,7 @@ g_spawnWeapons <bitmask>
 
 g_timeoutLimit <number>
   Maximum number of times a player is allowed to call a timeout.
-  
+
 g_unlagged <0|1|2>
   Experimental "unlagged" disruptor hit detection. 2 accounts for
   doors and other movers too at some server performance penalty.
