@@ -4346,7 +4346,6 @@ static void UI_RunMenuScript(const char **args)
 			}
 #endif // USE_CD_KEY
 		} else if (Q_stricmp(name, "loadArenas") == 0) {
-			UI_LoadArenas();
 			UI_MapCountByGameType(qfalse);
 			Menu_SetFeederSelection(NULL, FEEDER_ALLMAPS, gUISelectedMap, "createserver");
 			uiForceRank = trap_Cvar_VariableValue("g_maxForceRank");
@@ -6653,6 +6652,7 @@ void _UI_Init( qboolean inGameLoad ) {
 //	UI_ParseTeamInfo("ui/jk2mp/teaminfo.txt");
 //	UI_LoadTeams();
 	UI_ParseGameInfo("ui/jk2mp/gameinfo.txt");
+	UI_LoadArenas();
 #endif
 
 
