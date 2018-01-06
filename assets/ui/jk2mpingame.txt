@@ -1,6 +1,7 @@
 // menu defs
 //
 {
+	loadMenu                { "ui/jk2mp/connect.menu" }
 	loadMenu                { "ui/jk2mp/ingame.menu" }
 	loadMenu                { "ui/jk2mp/ingame_vote.menu" }
 	loadMenu                { "ui/jk2mp/ingame_about.menu" }
