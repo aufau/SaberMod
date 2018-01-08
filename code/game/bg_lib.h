@@ -120,7 +120,7 @@ int atoi( const char *string );
 int _atoi( const char **stringPtr );
 
 int vsnprintf( char *buffer, size_t size, const char *fmt, va_list argptr );
-int sscanf( const char *buffer, const char *fmt, ... );
+int sscanf( const char *buffer, const char *fmt, ... ) __attribute__ ((format (scanf, 2, 3)));
 
 // Memory functions
 void *memmove( void *dest, const void *src, size_t count );

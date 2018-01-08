@@ -2107,6 +2107,7 @@ G_QueueServerCommand
 Queue server command to be sent in next snapshot
 =================
 */
+__attribute__ ((format (printf, 1, 2)))
 static void G_QueueServerCommand( const char *fmt, ... ) {
 	va_list	argptr;
 

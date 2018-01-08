@@ -2973,6 +2973,7 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 #endif // _DEBUG
 
 static int printfClientNum;
+__attribute__ ((format (printf, 1, 2)))
 static void G_CmdPrintf(const char *fmt, ...) {
 	va_list		argptr;
 	char		text[1024];
@@ -2983,6 +2984,7 @@ static void G_CmdPrintf(const char *fmt, ...) {
 
 	G_SendServerCommand(printfClientNum, "print \"%s\"", text);
 }
+__attribute__ ((format (printf, 2, 3)))
 static void G_CmdLogPrintf(int event, const char *fmt, ...) {
 	va_list		argptr;
 	char		text[1024];

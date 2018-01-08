@@ -969,11 +969,11 @@ void FindIntermissionPoint( void );
 void SetLeader(team_t team, int client);
 void CheckTeamLeader( team_t team );
 void G_RunThink (gentity_t *ent);
-void G_LogPrintf( int event, const char *fmt, ... );
+void G_LogPrintf( int event, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
 void SendScoreboardMessageToAllClients( void );
-void QDECL G_Printf( const char *fmt, ... );
-Q_NORETURN void QDECL G_Error( const char *fmt, ... );
-void G_SendServerCommand( int clientNum, const char *fmt, ... );
+void QDECL G_Printf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+Q_NORETURN void QDECL G_Error( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+void G_SendServerCommand( int clientNum, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
 const char *G_GetStripEdString(const char *refSection, const char *refName);
 gametype_t G_GametypeForString( const char *s );
 
@@ -1134,8 +1134,8 @@ void G_EntityCheckRep(const gentity_t *ent);
 
 // g_referee.c
 typedef struct {
-	void	(*Printf)(const char *fmt, ...);
-	void	(*LogPrintf)(int event, const char *fmt, ...);
+	void	(*Printf)(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
+	void	(*LogPrintf)(int event, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
 } refCmdContext_t;
 
 extern refCmdContext_t ref;
