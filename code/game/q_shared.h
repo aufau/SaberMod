@@ -31,6 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //================= COMPILER-SPECIFIC DEFINES ===========================
 
+#ifndef __GNUC__
+#ifndef __attribute__
+#define __attribute__(x)
+#endif
+#endif
+
 #if defined _MSC_VER							// Microsoft Visual C++
 #define Q_EXPORT __declspec(dllexport)
 #define Q_NORETURN __declscpec(noreturn)
