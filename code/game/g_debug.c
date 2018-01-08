@@ -33,7 +33,7 @@ void G_EntityCheckRep(const gentity_t *ent)
 		if (num < MAX_CLIENTS) {
 			assert(ent->classname == NULL || !strcmp(ent->classname, "disconnected"));
 		} else {
-			gentity_t zeroEnt = { 0 };
+			gentity_t zeroEnt = { { 0 } };
 
 			zeroEnt.classname = ent->classname;
 			zeroEnt.freetime = ent->freetime;

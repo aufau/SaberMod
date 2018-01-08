@@ -135,7 +135,7 @@ static void PrintStatsSeparator( const playerStat_t *columns, const char *colorS
 	const char	*e = line + sizeof(line);
 	int			i;
 
-	p += Com_sprintf(p, e - p, Dashes(MAX_NAME_LEN));
+	p += Com_sprintf(p, e - p, "%s", Dashes(MAX_NAME_LEN));
 
 	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];

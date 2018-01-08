@@ -1172,7 +1172,7 @@ static void UI_DrawGenericNum(rectDef_t *rect, float scale, vec4_t color, int te
 		i = min;
 	}
 
-	Com_sprintf(s, sizeof(s), "%i\0", val);
+	Com_sprintf(s, sizeof(s), "%i", val);
 	Text_Paint(rect->x, rect->y, scale, color, s,0, 0, textStyle, iMenuFont);
 }
 
@@ -1195,7 +1195,7 @@ static void UI_DrawForceMastery(rectDef_t *rect, float scale, vec4_t color, int 
 static void UI_DrawSkinColor(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int min, int max, font_t iMenuFont)
 {
 	int i;
-	char s[256];
+	const char *s;
 
 	i = val;
 	if (i < min || i > max)
@@ -1206,13 +1206,13 @@ static void UI_DrawSkinColor(rectDef_t *rect, float scale, vec4_t color, int tex
 	switch(val)
 	{
 	case TEAM_RED:
-		Com_sprintf(s, sizeof(s), "Red\0");
+		s = "Red";
 		break;
 	case TEAM_BLUE:
-		Com_sprintf(s, sizeof(s), "Blue\0");
+		s = "Blue";
 		break;
 	default:
-		Com_sprintf(s, sizeof(s), "Default\0");
+		s = "Default";
 		break;
 	}
 

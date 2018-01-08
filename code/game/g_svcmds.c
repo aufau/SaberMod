@@ -733,7 +733,7 @@ static void Svcmd_Players_f( void ) {
 		if ( value[0] ) {
 			Com_sprintf( clientVersion, sizeof( clientVersion ), "JK2MV %s", value );
 		} else {
-			Com_sprintf( clientVersion, sizeof( clientVersion ), "" );
+			Q_strncpyz( clientVersion, "", sizeof( clientVersion ) );
 		}
 
 		lastCmdTime = client->cmdStats[client->cmdIndex & CMD_MASK].serverTime;

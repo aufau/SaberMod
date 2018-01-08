@@ -1079,7 +1079,7 @@ int QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	va_end (argptr);
 
 	if ((size_t)len >= size) {
-		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
+		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, (int)size);
 		len = size - 1;
 	}
 
@@ -1491,11 +1491,11 @@ const char *Spaces(int n)
 	static const char spaces[] = "                                   "; // 35
 
 	if (n >= (int)sizeof(spaces)) {
-		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, (int)sizeof(spaces));
 		n = sizeof(spaces);
 	}
 	if (n < 0) {
-		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, sizeof(spaces));
+		Com_Printf (S_COLOR_YELLOW "Spaces: requested %i out of %i available\n", n, (int)sizeof(spaces));
 		n = 0;
 	}
 
@@ -1507,11 +1507,11 @@ const char *Dashes(int n)
 	static const char dashes[] = "-----------------------------------"; // 35
 
 	if (n >= (int)sizeof(dashes)) {
-		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, (int)sizeof(dashes));
 		n = sizeof(dashes);
 	}
 	if (n < 0) {
-		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, sizeof(dashes));
+		Com_Printf (S_COLOR_YELLOW "Dashes: requested %i out of %i available\n", n, (int)sizeof(dashes));
 		n = 0;
 	}
 

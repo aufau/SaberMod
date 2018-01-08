@@ -554,7 +554,7 @@ qboolean PC_String_Parse(int handle, const char **out)
 
 		if (text[0] == 0)		// Couldn't find it
 		{
-			Com_Printf(va(S_COLOR_YELLOW "Unable to locate StripEd text '%s'\n", token.string));
+			Com_Printf(S_COLOR_YELLOW "Unable to locate StripEd text '%s'\n", token.string);
 			*(out) = String_Alloc( token.string );
 		}
 		else
@@ -5609,7 +5609,7 @@ qboolean ItemParse_flag( itemDef_t *item, int handle)
 
 	if (itemFlags[i].string == NULL)
 	{
-		Com_Printf(va( S_COLOR_YELLOW "Unknown item style value '%s'\n",tempStr));
+		Com_Printf(S_COLOR_YELLOW "Unknown item style value '%s'\n", tempStr);
 	}
 
 	return qtrue;
