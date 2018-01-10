@@ -74,7 +74,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 
 //plIndex used to print pl->client->info.netname
 //teamIndex used to print team name
-static void PrintCTFMessage(int plIndex, int teamIndex, ctfMsg_t ctfMessage)
+static void PrintCTFMessage(int plIndex, int teamIndex, int time, ctfMsg_t ctfMessage)
 {
 	gentity_t *te;
 
@@ -101,6 +101,8 @@ static void PrintCTFMessage(int plIndex, int teamIndex, ctfMsg_t ctfMessage)
 		{
 			te->s.trickedentindex2 = TEAM_RED;
 		}
+
+		te->s.trickedentindex3 = time;
 	}
 	else
 	{
@@ -331,7 +333,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->pers.teamState.fragcarrier++;
 		//PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
 		//	attacker->client->info.netname, TeamName(team));
-		PrintCTFMessage(attacker->s.number, team, CTFMESSAGE_FRAGGED_FLAG_CARRIER);
+		PrintCTFMessage(attacker->s.number, team, 0, CTFMESSAGE_FRAGGED_FLAG_CARRIER);
 
 		// the target had the flag, clear the hurt carrier
 		// field on the other team
@@ -634,7 +636,7 @@ void Team_ReturnFlag( team_t team ) {
 	else { //flag should always have team in normal CTF
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %s: The %s flag has returned\n",
 			BG_TeamName(team, CASE_UPPER), BG_TeamName(team, CASE_LOWER));
-		PrintCTFMessage(-1, team, CTFMESSAGE_FLAG_RETURNED);
+		PrintCTFMessage(-1, team, 0, CTFMESSAGE_FLAG_RETURNED);
 	}
 }
 
@@ -687,6 +689,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	gentity_t	*player;
 	gclient_t	*cl = other->client;
 	int			enemy_flag;
+	int			heldTime;
 
 	if (cl->sess.sessionTeam == TEAM_RED) {
 		enemy_flag = PW_BLUEFLAG;
@@ -699,7 +702,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 		G_LogPrintf(LOG_FLAG, "FlagReturn: %i %s: %s returned the %s flag\n",
 			other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER), cl->info.netname,
 			BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
-		PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_RETURNED_FLAG);
+		PrintCTFMessage(other->s.number, team, 0, CTFMESSAGE_PLAYER_RETURNED_FLAG);
 
 		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
 		other->client->pers.teamState.flagrecovery++;
@@ -714,10 +717,12 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	if (!cl->ps.powerups[enemy_flag])
 		return 0; // We don't have the flag
 
+	heldTime = (level.time - cl->pers.teamState.flagsince) / 1000;
+
 	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag",
 		other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER),
 		cl->info.netname, BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
-	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
+	PrintCTFMessage(other->s.number, team, heldTime, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
 
 	cl->ps.powerups[enemy_flag] = 0;
 
@@ -792,7 +797,7 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	G_LogPrintf(LOG_FLAG, "FlagGrab: %i %s: %s got the %s flag\n", other->s.number,
 		BG_TeamName(BG_OtherTeam(team), CASE_UPPER), cl->info.netname,
 		BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
-	PrintCTFMessage(other->s.number, team, CTFMESSAGE_PLAYER_GOT_FLAG);
+	PrintCTFMessage(other->s.number, team, 0, CTFMESSAGE_PLAYER_GOT_FLAG);
 
 	if (team == TEAM_RED)
 		cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire

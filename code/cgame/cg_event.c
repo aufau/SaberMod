@@ -792,7 +792,7 @@ static void CG_BodyQueueCopy(centity_t *cent, int clientNum, int knownWeapon)
 	}
 }
 
-void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, ctfMsg_t ctfMessage)
+void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, int time, ctfMsg_t ctfMessage)
 {
 	char printMsg[1024];
 	const char *refName = NULL;
@@ -877,13 +877,22 @@ void CG_PrintCTFMessage(clientInfo_t *ci, const char *teamName, ctfMsg_t ctfMess
 	}
 
 doPrint:
-	Com_Printf("%s\n", printMsg);
+	if (ctfMessage == CTFMESSAGE_PLAYER_CAPTURED_FLAG && time > 0)
+	{
+		Com_Printf("%s Held for " S_COLOR_CYAN "%02d" S_COLOR_WHITE ":" S_COLOR_CYAN "%02d"
+			S_COLOR_WHITE ".\n", printMsg, time / 60, time % 60);
+	}
+	else
+	{
+		Com_Printf("%s\n", printMsg);
+	}
 }
 
 void CG_GetCTFMessageEvent(entityState_t *es)
 {
 	int clIndex = es->trickedentindex;
 	int teamIndex = es->trickedentindex2;
+	int time = es->trickedentindex3;
 	clientInfo_t *ci = NULL;
 	const char *teamName = NULL;
 
@@ -897,7 +906,7 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 		teamName = BG_TeamName((team_t)teamIndex, CASE_UPPER);
 	}
 
-	CG_PrintCTFMessage(ci, teamName, (ctfMsg_t)es->eventParm);
+	CG_PrintCTFMessage(ci, teamName, time, (ctfMsg_t)es->eventParm);
 }
 
 void DoFall(centity_t *cent, entityState_t *es, int clientNum)
