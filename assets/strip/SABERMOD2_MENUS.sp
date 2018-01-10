@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 60
+COUNT 64
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -541,4 +541,40 @@ INDEX 59
    TEXT_LANGUAGE3 "Referee"
    TEXT_LANGUAGE6 "Referee"
    TEXT_LANGUAGE8 "Referee"
+}
+INDEX 60
+{
+   REFERENCE REFEREE_DESC
+   TEXT_LANGUAGE1 "Begin vote to make this player a referee."
+   TEXT_LANGUAGE2 "Make player a referee."
+   TEXT_LANGUAGE3 "Make player a referee."
+   TEXT_LANGUAGE6 "Make player a referee."
+   TEXT_LANGUAGE8 "Make player a referee."
+}
+INDEX 61
+{
+   REFERENCE PLAYER
+   TEXT_LANGUAGE1 "Player:"
+   TEXT_LANGUAGE2 "Player:"
+   TEXT_LANGUAGE3 "Player:"
+   TEXT_LANGUAGE6 "Player:"
+   TEXT_LANGUAGE8 "Player:"
+}
+INDEX 62
+{
+   REFERENCE SELECT_PLAYER
+   TEXT_LANGUAGE1 "Select player."
+   TEXT_LANGUAGE2 "Select player."
+   TEXT_LANGUAGE3 "Select player."
+   TEXT_LANGUAGE6 "Select player."
+   TEXT_LANGUAGE8 "Select player."
+}
+INDEX 63
+{
+   REFERENCE PLAYER2_DESC
+   TEXT_LANGUAGE1 "Punish or reward player."
+   TEXT_LANGUAGE2 "Punish or reward player."
+   TEXT_LANGUAGE3 "Punish or reward player."
+   TEXT_LANGUAGE6 "Punish or reward player."
+   TEXT_LANGUAGE8 "Punish or reward player."
 }

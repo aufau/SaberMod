@@ -4534,6 +4534,10 @@ static void UI_RunMenuScript(const char **args)
 			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote remove \"%i\"\n",uiInfo.playerIndexes[uiInfo.playerIndex]) );
 			}
+		} else if (Q_stricmp(name, "voteReferee") == 0) {
+			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote referee \"%i\"\n",uiInfo.playerIndexes[uiInfo.playerIndex]) );
+			}
 		} else if (Q_stricmp(name, "voteGame") == 0) {
 			if (ui_netGameType.integer >= 0 && ui_netGameType.integer < uiInfo.numGameTypes) {
 				trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote gametype %i\n",uiInfo.gameTypes[ui_netGameType.integer].gtEnum) );
@@ -7319,7 +7323,7 @@ void UI_RegisterCvars( void ) {
 	trap_Cvar_Register( NULL, "ui_visited_callvote_mode", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "0", CVAR_ARCHIVE );
 	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_kick", "0", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "ui_visited_callvote_player", "0", CVAR_ARCHIVE );
 
 	trap_Cvar_Register( NULL, "ui_bind_ready", "", CVAR_ROM | CVAR_INTERNAL );
 }
