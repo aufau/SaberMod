@@ -1689,7 +1689,7 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 		return 0;
 	}
 
-	if (!G_CommonDimension(en, &g_entities[bs->client]))
+	if (!G_Collide(en, &g_entities[bs->client]))
 	{
 		return 0;
 	}

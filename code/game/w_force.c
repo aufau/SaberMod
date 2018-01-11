@@ -587,7 +587,7 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 		return 0;
 	}
 
-	if (!G_CommonDimension(attacker, other))
+	if (!G_Collide(attacker, other))
 	{
 		return 0;
 	}
@@ -4041,7 +4041,7 @@ void FindGenericEnemyIndex(gentity_t *self)
 	{
 		ent = &g_entities[i];
 
-		if (ent->s.number != self->s.number && G_CommonDimension(self, ent))
+		if (ent->s.number != self->s.number && G_Collide(self, ent))
 		{
 			switch ( ent->client->ps.pm_type ) {
 			case PM_NORMAL:

@@ -778,9 +778,6 @@ void G_KillBox (gentity_t *ent) {
 		if ( !hit->client ) {
 			continue;
 		}
-		if ( !G_CommonDimension(ent, hit) ) {
-			continue;
-		}
 
 		// nail it
 		G_Damage ( hit, ent, ent, NULL, NULL,

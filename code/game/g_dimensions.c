@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "g_local.h"
 
+qboolean (*G_Collide) (const gentity_t *ent1, const gentity_t *ent2);
+void (*G_Trace) (trace_t *results, const vec3_t start, const vec3_t mins,
+	const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
+int (*G_EntitiesInBox) (const vec3_t mins, const vec3_t maxs,
+	int *entityList, int maxcount, int entityNum);
+
 /*
 =================
 G_BlameForEntity
@@ -97,41 +103,6 @@ unsigned G_GetFreeDuelDimension(void)
 	return DEFAULT_DIMENSION;
 }
 
-unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2)
-{
-	unsigned common = ent1->dimension & ent2->dimension;
-#ifndef NDEBUG
-	qboolean	collision;
-	gclient_t	*client1 = ent1->client;
-	gclient_t	*client2 = ent2->client;
-
-	// cgame collision test has to follow the same logic
-	if (client1 && client1->pers.connected == CON_CONNECTED &&
-		client2 && client2->pers.connected == CON_CONNECTED)
-	{
-		if (client1 == client2) {
-			// what would happen with dimensionless client?
-			collision = qtrue;
-		} else if (client1->ps.duelInProgress) {
-			if (client1->ps.duelIndex == ent2->s.number) {
-				collision = qtrue;
-			} else {
-				collision = qfalse;
-			}
-		} else {
-			if (client2->ps.duelInProgress) {
-				collision = qfalse;
-			} else {
-				collision = qtrue;
-			}
-		}
-
-		assert(!!common == collision);
-	}
-#endif
-	return common;
-}
-
 void G_StartPrivateDuel(gentity_t *ent)
 {
 	if (mvapi) {
@@ -174,14 +145,15 @@ void G_StopPrivateDuel(gentity_t *ent)
 	}
 }
 
-/*
-================
-G_TraceStartSolid
+// Dimension - dimension-aware collisions
 
-Returns dimension-correct startsolid value for trace
-================
-*/
-static qboolean G_TraceStartSolid (const vec3_t start, const vec3_t mins, const vec3_t maxs, int passEntityNum, int contentMask) {
+static qboolean G_DimensionCollide(const gentity_t *ent1, const gentity_t *ent2)
+{
+	return (qboolean)!!(ent1->dimension & ent2->dimension);
+}
+
+static qboolean G_DimensionTraceStartSolid (const vec3_t start, const vec3_t mins, const vec3_t maxs, int passEntityNum, int contentMask)
+{
 	trace_t	tr;
 
 	trap_Trace(&tr, start, mins, maxs, start, passEntityNum, contentMask);
@@ -190,13 +162,13 @@ static qboolean G_TraceStartSolid (const vec3_t start, const vec3_t mins, const 
 		gentity_t	*passEnt = g_entities + passEntityNum;
 		gentity_t	*ent = g_entities + tr.entityNum;
 
-		if (!(ent->dimension & passEnt->dimension)) {
+		if (!G_Collide(ent, passEnt)) {
 			qboolean	solid;
 			int			contents;
 
 			contents = ent->r.contents;
 			ent->r.contents = 0;
-			solid = G_TraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
+			solid = G_DimensionTraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
 			ent->r.contents = contents;
 			return solid;
 		}
@@ -205,27 +177,21 @@ static qboolean G_TraceStartSolid (const vec3_t start, const vec3_t mins, const 
 	return tr.startsolid;
 }
 
-/*
-================
-G_Trace
-
-Dimension-aware trace
-================
-*/
-void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask) {
+static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask)
+{
 	trap_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
 
 	if (results->entityNum < ENTITYNUM_MAX_NORMAL) {
 		gentity_t	*passEnt = g_entities + passEntityNum;
 		gentity_t	*ent = g_entities + results->entityNum;
 
-		if (!(ent->dimension & passEnt->dimension)) {
+		if (!G_Collide(ent, passEnt)) {
 			int contents;
 
 			contents = ent->r.contents;
 			ent->r.contents = 0;
 
-			G_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
+			G_DimensionTrace(results, start, mins, maxs, end, passEntityNum, contentMask);
 
 			ent->r.contents = contents;
 			return;
@@ -233,20 +199,14 @@ void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins, const vec
 	}
 
 	if (results->startsolid) {
-		results->startsolid = G_TraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
+		results->startsolid = G_DimensionTraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
 	}
 }
 
-/*
-================
-G_Trace
-
-Dimension-aware trap_EntitiesInBox
-================
-*/
-int G_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
+static int G_DimensionEntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
 {
-	int dimension = g_entities[entityNum].dimension;
+	gentity_t	*passEnt = g_entities + entityNum;
+	gentity_t	*ent;
 	int	fullEntityList[MAX_GENTITIES];
 	int	fullCount;
 	int	count;
@@ -260,11 +220,54 @@ int G_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 
 	count = 0;
 	for (i = 0; i < fullCount; i++) {
-		if (dimension & g_entities[fullEntityList[i]].dimension) {
+		ent = g_entities + fullEntityList[i];
+
+		if (G_Collide(ent, passEnt)) {
 			entityList[count] = fullEntityList[i];
 			count++;
 		}
 	}
 
 	return count;
+}
+
+// Normal - standard collisions
+
+static qboolean G_NormalCollide(const gentity_t *ent1, const gentity_t *ent2)
+{
+	return qtrue;
+}
+
+static int G_NormalEntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
+{
+	return trap_EntitiesInBox(mins, maxs, entityList, maxcount);
+}
+
+/*
+================
+G_UpdateCollisionMap
+
+Update collision map functions to current server settings
+================
+*/
+void G_UpdateCollisionMap(void)
+{
+	G_Collide = G_NormalCollide;
+	G_Trace = trap_Trace;
+	G_EntitiesInBox = G_NormalEntitiesInBox;
+
+	switch (level.gametype) {
+	case GT_FFA:
+	case GT_HOLOCRON:
+	case GT_JEDIMASTER:
+	case GT_SINGLE_PLAYER:
+		if (g_privateDuel.integer) {
+			G_Trace = G_DimensionTrace;
+			G_EntitiesInBox = G_DimensionEntitiesInBox;
+			G_Collide = G_DimensionCollide;
+		}
+		break;
+	default:
+		break;
+	}
 }

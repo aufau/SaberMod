@@ -1098,21 +1098,18 @@ void G_LogStats(void);
 #define DEFAULT_DIMENSION	0x1
 #define ALL_DIMENSIONS		0xffffffff
 
-// not pretty. remove it when we're sure it works correctly.
-#ifdef NDEBUG
-#define G_CommonDimension(ent1, ent2) ((ent1)->dimension & (ent2)->dimension)
-#else
-#define G_CommonDimension(ent1, ent2) G_EntitiesCollide((ent1), (ent2))
-#endif
-
 void G_BlameForEntity( int blame, gentity_t *ent );
 unsigned G_GetFreeDuelDimension(void);
 unsigned G_EntitiesCollide(gentity_t *ent1, gentity_t *ent2);
 void G_StartPrivateDuel(gentity_t *ent);
 void G_StopPrivateDuel(gentity_t *ent);
-void G_Trace (trace_t *results, const vec3_t start, const vec3_t mins,
+void G_UpdateCollisionMap(void);
+
+extern qboolean (*G_Collide) (const gentity_t *ent1, const gentity_t *ent2);
+extern void (*G_Trace) (trace_t *results, const vec3_t start, const vec3_t mins,
 	const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
-int G_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum);
+extern int (*G_EntitiesInBox) (const vec3_t mins, const vec3_t maxs,
+	int *entityList, int maxcount, int entityNum);
 
 // g_unlagged.c
 void G_BackupWorld( void );
