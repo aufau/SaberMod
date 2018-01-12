@@ -166,6 +166,8 @@ void WP_SaberInitBladeData( gentity_t *ent )
 	//We do not want the client to have any real knowledge of the entity whatsoever. It will only
 	//ever be used on the server.
 	saberent = G_Spawn( ent->s.number );
+	// remove once all non-player entities use dimensions
+	saberent->dimension = ent->dimension;
 	ent->client->ps.saberEntityNum = saberent->s.number;
 	saberent->classname = "lightsaber";
 

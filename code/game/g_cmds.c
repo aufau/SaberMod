@@ -2631,6 +2631,13 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 		ent->dimension = dimension;
 		challenged->dimension = dimension;
 
+		if (ent->client->ps.saberEntityNum != ENTITYNUM_NONE) {
+			g_entities[ent->client->ps.saberEntityNum].dimension = dimension;
+		}
+		if (challenged->client->ps.saberEntityNum != ENTITYNUM_NONE) {
+			g_entities[challenged->client->ps.saberEntityNum].dimension = dimension;
+		}
+
 		ent->client->ps.duelInProgress = qtrue;
 		challenged->client->ps.duelInProgress = qtrue;
 
