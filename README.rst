@@ -234,6 +234,7 @@ dmflags <bitmask>
   Sum of values from the following list:
 
   =====================  =====================  =====================
+                                                4 - Go through team
   8 - No fall damage     16 - Limit FOV (97)    32 - No footsteps
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================

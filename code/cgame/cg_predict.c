@@ -116,7 +116,7 @@ CG_ClipMoveToEntities
 ====================
 */
 static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int skipNumber, int mask, trace_t *tr, qboolean duelTest ) {
+	int skipNumber, int mask, trace_t *tr, qboolean physics ) {
 	int			i;
 	trace_t		trace;
 	entityState_t	*ent;
@@ -132,17 +132,24 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 			continue;
 		}
 
-		if (duelTest && ent->number < MAX_CLIENTS && cg.snap) {
-			// keep this in sync with G_EntitiesCollide
-			// logic. Perfectly it should be part of bg_pmove
-			// or bg_misc.
-			if (cg.snap->ps.duelInProgress) {
-				if (ent->number != cg.snap->ps.duelIndex) {
-					continue;
+		if (physics) {
+			if (ent->number < MAX_CLIENTS) {
+				if (cg.snap->ps.duelInProgress) {
+					if (ent->number != cg.snap->ps.duelIndex) {
+						continue;
+					}
+				} else {
+					if (ent->bolt1) {	// ent duel in progress
+						continue;
+					}
 				}
-			} else {
-				if (ent->bolt1) {	// ent duel in progress
-					continue;
+
+				if (cgs.dmflags & DF_TEAM_PASS) {
+					clientInfo_t *ci = &cgs.clientinfo[ent->number];
+
+					if (ci->infoValid && (int)ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
+						continue;
+					}
 				}
 			}
 		}

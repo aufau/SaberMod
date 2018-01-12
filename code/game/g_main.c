@@ -615,6 +615,7 @@ void G_RegisterCvars( void ) {
 	}
 
 	level.warmupModificationCount = g_warmup.modificationCount;
+	level.dmflagsModificationCount = g_dmflags.modificationCount;
 }
 
 /*
@@ -648,6 +649,11 @@ void G_UpdateCvars( void ) {
 				}
 			}
 		}
+	}
+
+	if (level.dmflagsModificationCount != g_dmflags.modificationCount) {
+		level.dmflagsModificationCount = g_dmflags.modificationCount;;
+		G_UpdateCollisionMap();
 	}
 
 	trap_Cvar_Update( &g_mode );

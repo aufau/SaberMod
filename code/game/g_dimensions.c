@@ -44,11 +44,13 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 	}
 
 	ent->blameEntityNum = blame;
-	// For now cgame can ignore only dueling players
 	if (ent - g_entities < MAX_CLIENTS) {
-		ent->dimension = DEFAULT_DIMENSION;
+		// for team pass-through
+		ent->dimension = 1u << ent->client->sess.sessionTeam;
 	} else {
-		ent->dimension = ALL_DIMENSIONS;
+		// ent->dimension = g_entities[blame].dimension;
+		// For now cgame can ignore only dueling players
+		ent->dimension = GT_Team(level.gametype) ? 0 : ALL_DIMENSIONS;
 	}
 
 	if (mvapi) {
@@ -145,7 +147,7 @@ void G_StopPrivateDuel(gentity_t *ent)
 	}
 }
 
-// Dimension - dimension-aware collisions
+// Dimension - only players in the same dimension collide
 
 static qboolean G_DimensionCollide(const gentity_t *ent1, const gentity_t *ent2)
 {
@@ -231,6 +233,13 @@ static int G_DimensionEntitiesInBox(const vec3_t mins, const vec3_t maxs, int *e
 	return count;
 }
 
+// Anti-Dimension - players in the same dimension don't collide
+
+static qboolean G_AntiDimensionCollide(const gentity_t *ent1, const gentity_t *ent2)
+{
+	return (qboolean)!(ent1->dimension & ent2->dimension);
+}
+
 // Normal - standard collisions
 
 static qboolean G_NormalCollide(const gentity_t *ent1, const gentity_t *ent2)
@@ -262,12 +271,19 @@ void G_UpdateCollisionMap(void)
 	case GT_JEDIMASTER:
 	case GT_SINGLE_PLAYER:
 		if (g_privateDuel.integer) {
+			G_Collide = G_DimensionCollide;
 			G_Trace = G_DimensionTrace;
 			G_EntitiesInBox = G_DimensionEntitiesInBox;
-			G_Collide = G_DimensionCollide;
 		}
 		break;
-	default:
+	case GT_TOURNAMENT:
+		break;
+	default:	// Team
+		if (g_dmflags.integer & DF_TEAM_PASS) {
+			G_Collide = G_AntiDimensionCollide;
+			G_Trace = G_DimensionTrace;
+			G_EntitiesInBox = G_DimensionEntitiesInBox;
+		}
 		break;
 	}
 }
