@@ -369,10 +369,13 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 	}
 
 	// add the "ready" marker for intermission exiting
-	if ( cgs.readyClients & ( 1 << score->client ) )
+	if ( cg.warmup || cg.intermissionStarted )
 	{
-		UI_DrawScaledProportionalString(SB_RIGHT_MARKER_X, y + 2,
-			CG_GetStripEdString("INGAMETEXT", "READY"), UI_RIGHT, colorWhite, 0.7f * scale);
+		if ( cgs.readyClients & ( 1 << score->client ) )
+		{
+			UI_DrawScaledProportionalString(SB_RIGHT_MARKER_X, y + 2,
+				CG_GetStripEdString("INGAMETEXT", "READY"), UI_RIGHT, colorWhite, 0.7f * scale);
+		}
 	}
 	else if ( GT_Round(cgs.gametype) && cg.predictedPlayerState.pm_type != PM_INTERMISSION &&
 		score->dead && ci->team != TEAM_SPECTATOR )

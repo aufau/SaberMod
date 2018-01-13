@@ -1587,6 +1587,8 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
 
+	G_UpdateClientReadyFlags();
+
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we
 	// want to make sure the teleport bit is set right
