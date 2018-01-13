@@ -46,7 +46,7 @@ const vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
 	{12,	0,		-4	},	// WP_DET_PACK,
 };
 
-const weaponData_t weaponData[WP_NUM_WEAPONS] =
+weaponData_t weaponData[WP_NUM_WEAPONS] =
 {
 	{	// WP_NONE
 //		"No Weapon",			//	char	classname[32];		// Spawning name

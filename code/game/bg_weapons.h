@@ -110,7 +110,7 @@ typedef struct  ammoData_s
 } ammoData_t;
 
 
-extern const weaponData_t weaponData[WP_NUM_WEAPONS];
+extern weaponData_t weaponData[WP_NUM_WEAPONS];
 extern const ammoData_t ammoData[AMMO_MAX];
 
 

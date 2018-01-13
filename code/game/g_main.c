@@ -656,6 +656,8 @@ void G_UpdateCvars( void ) {
 		G_UpdateCollisionMap();
 	}
 
+	weaponData[WP_DISRUPTOR].fireTime = (g_dmflags.integer & DF_CJK) ? 1000 : 600;
+
 	trap_Cvar_Update( &g_mode );
 
 	if (remapped) {

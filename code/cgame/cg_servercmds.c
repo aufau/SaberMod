@@ -194,6 +194,7 @@ static void CG_ParseServerinfo( const char *info ) {
 	}
 	cgs.macroscan = (qboolean)val;
 
+	weaponData[WP_DISRUPTOR].fireTime = (cgs.dmflags & DF_CJK) ? 1000 : 600;
 
 	//rww - You must do this one here, Info_ValueForKey always uses the same memory pointer.
 	trap_Cvar_Set ( "ui_about_mapname", mapname );
