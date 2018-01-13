@@ -894,7 +894,7 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 	int teamIndex = es->trickedentindex2;
 	int time = es->trickedentindex3;
 	clientInfo_t *ci = NULL;
-	const char *teamName = NULL;
+	char teamName[64] = { 0 };
 
 	if (clIndex < MAX_CLIENTS)
 	{
@@ -903,7 +903,9 @@ void CG_GetCTFMessageEvent(entityState_t *es)
 
 	if (teamIndex < 50)
 	{
-		teamName = BG_TeamName((team_t)teamIndex, CASE_UPPER);
+		Com_sprintf(teamName, sizeof(teamName), "%s%s" S_COLOR_WHITE,
+			BG_TeamColor((team_t)teamIndex),
+			BG_TeamName((team_t)teamIndex, CASE_UPPER));
 	}
 
 	CG_PrintCTFMessage(ci, teamName, time, (ctfMsg_t)es->eventParm);
