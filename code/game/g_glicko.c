@@ -44,6 +44,18 @@ static glicko_t G_GlickoUpdate(const glicko_t *A, const glicko_t *B, float resul
 	return glicko;
 }
 
+void G_GlickoUpdateScore(gentity_t *player) {
+	if (!level.glickoLadder) {
+		return;
+	}
+
+	if (player->client->prof.glicko.RD <= g_glickoRankedRD.value) {
+		player->client->pers.persistant[PERS_SCORE] = player->client->prof.glicko.R;
+	} else {
+		player->client->pers.persistant[PERS_SCORE] = 0;
+	}
+}
+
 void RatingPlum(int clientNum, const playerState_t *ps, int rating) {
 	gentity_t	*plum;
 	vec3_t		origin;
@@ -89,8 +101,8 @@ void G_GlickoAddResult(gentity_t *winner, gentity_t *loser) {
 
 	winner->client->prof.glicko = winnerGlicko;
 	loser->client->prof.glicko = loserGlicko;
-	winner->client->pers.persistant[PERS_SCORE] = winnerGlicko.R;
-	loser->client->pers.persistant[PERS_SCORE] = loserGlicko.R;
+	G_GlickoUpdateScore(winner);
+	G_GlickoUpdateScore(loser);
 
 	CalculateRanks();
 }
@@ -112,12 +124,4 @@ void G_GlickoAddDraw(gentity_t *player1, gentity_t *player2) {
 	player2->client->pers.persistant[PERS_SCORE] = glicko2.R;
 
 	CalculateRanks();
-}
-
-void G_GlickoUpdateScore(gentity_t *player) {
-	if (!level.glickoLadder) {
-		return;
-	}
-
-	player->client->pers.persistant[PERS_SCORE] = player->client->prof.glicko.R;
 }

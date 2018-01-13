@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 19
+COUNT 21
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -173,6 +173,24 @@ INDEX 18
    TEXT_LANGUAGE3 "Match will resume in %d seconds"
    TEXT_LANGUAGE6 "Match will resume in %d seconds"
    TEXT_LANGUAGE8 "Match will resume in %d seconds"
+}
+INDEX 19
+{
+   REFERENCE RATING
+   TEXT_LANGUAGE1 "Rating"
+   TEXT_LANGUAGE2 "Rating"
+   TEXT_LANGUAGE3 "Rating"
+   TEXT_LANGUAGE6 "Rating"
+   TEXT_LANGUAGE8 "Rating"
+}
+INDEX 20
+{
+   REFERENCE PLAY_MORE_DUELS
+   TEXT_LANGUAGE1 "Play more duels to gain a rating"
+   TEXT_LANGUAGE2 "Play more duels to gain a rating"
+   TEXT_LANGUAGE3 "Play more duels to gain a rating"
+   TEXT_LANGUAGE6 "Play more duels to gain a rating"
+   TEXT_LANGUAGE8 "Play more duels to gain a rating"
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

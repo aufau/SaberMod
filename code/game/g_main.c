@@ -167,6 +167,7 @@ vmCvar_t	g_allowRefVote;
 vmCvar_t	g_glickoLadder;
 vmCvar_t	g_glickoMaxRD;
 vmCvar_t	g_glickoMinRD;
+vmCvar_t	g_glickoRankedRD;
 
 
 int gDuelist1 = -1;
@@ -194,6 +195,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_glickoLadder, "g_glickoLadder", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_glickoMaxRD, "g_glickoMaxRD", "350", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_glickoMinRD, "g_glickoMinRD", "30", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_glickoRankedRD, "g_glickoRankedRD", "200", CVAR_ARCHIVE, 0, qfalse },
 
 	// change anytime vars
 	{ &g_ff_objectives, "g_ff_objectives", "0", /*CVAR_SERVERINFO |*/  CVAR_NORESTART, 0, qtrue },
@@ -614,8 +616,8 @@ void G_RegisterCvars( void ) {
 	// initialize with g_defaultMode string. Main server config should
 	// always execute default mode cfg
 	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
-
 	trap_Cvar_Register( NULL, "g_modeDefaultMap", "", CVAR_ARCHIVE );
+	trap_Cvar_Register( NULL, "g_glicko", "0", CVAR_SERVERINFO | CVAR_ROM );
 
 	if (remapped) {
 		G_RemapTeamShaders();
@@ -720,6 +722,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if (level.gametype == GT_FFA && g_privateDuel.integer && g_glickoLadder.integer) {
 		level.glickoLadder = qtrue;
 	}
+	trap_Cvar_Set( "g_glicko", va( "%d", level.glickoLadder ) );
 
 	G_UpdateCollisionMap();
 

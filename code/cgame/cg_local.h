@@ -1382,6 +1382,7 @@ typedef struct {
 	qboolean		privateDuel;
 	qboolean		instagib;
 	qboolean		macroscan;
+	qboolean		glickoLadder;
 
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];

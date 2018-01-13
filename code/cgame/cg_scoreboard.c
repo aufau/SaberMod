@@ -123,8 +123,13 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 
 	switch (field) {
 	case SBC_SCORE:
-		label = CG_GetStripEdString("MENUS3", "SCORE");
-		CG_InitScoreboardColumn(field, label, "-999", SB_SCALE_LARGE);
+		if (cgs.glickoLadder) {
+			label = CG_GetStripEdString("SABERINGAME", "RATING");
+			CG_InitScoreboardColumn(field, label, "9999", SB_SCALE_LARGE);
+		} else {
+			label = CG_GetStripEdString("MENUS3", "SCORE");
+			CG_InitScoreboardColumn(field, label, "-999", SB_SCALE_LARGE);
+		}
 		break;
 	case SBC_CAP:
 		label = "C";
@@ -186,7 +191,11 @@ static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float sca
 	switch (field) {
 	case SBC_SCORE:
 		if (!spectator) {
-			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			if (cgs.glickoLadder && score->score <= 0) {
+				CG_Text_Paint (x, y, s, colorWhite, "-",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			} else {
+				CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			}
 		}
 		break;
 	case SBC_CAP:
@@ -533,7 +542,14 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	// current rank
 	if ( !GT_Team(cgs.gametype) || cgs.gametype == GT_REDROVER ) {
-		if (cg.snap->ps.pm_type != PM_SPECTATOR )
+		if (cgs.glickoLadder && cg.snap->ps.persistant[PERS_SCORE] <= 0)
+		{
+			x = 0.5f * cgs.screenWidth;
+			y = 60;
+			UI_DrawProportionalString(x, y, CG_GetStripEdString("SABERINGAME", "PLAY_MORE_DUELS"),
+				UI_CENTER|UI_DROPSHADOW, colorTable[CT_WHITE]);
+		}
+		else if (cg.snap->ps.pm_type != PM_SPECTATOR )
 		{
 			char sPlace[256];
 			char sOf[256];

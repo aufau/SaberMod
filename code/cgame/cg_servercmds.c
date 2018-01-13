@@ -186,6 +186,7 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.privateDuel = (qboolean)atoi( Info_ValueForKey( info, "g_privateDuel" ) );
 	cgs.instagib = (qboolean)atoi( Info_ValueForKey( info, "g_instagib" ) );
+	cgs.glickoLadder = (qboolean)atoi( Info_ValueForKey( info, "g_glicko" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 
 	val = atoi( Info_ValueForKey( info, "g_macroscan" ) );

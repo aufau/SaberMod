@@ -1298,6 +1298,7 @@ extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
 extern	vmCvar_t	g_glickoMaxRD;
 extern	vmCvar_t	g_glickoMinRD;
+extern	vmCvar_t	g_glickoRankedRD;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

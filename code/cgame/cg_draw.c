@@ -1218,6 +1218,17 @@ void CG_DrawHUD(centity_t	*cent)
 		scoreStr = va("Score: %i%s", cg.snap->ps.persistant[PERS_SCORE], scoreBiasStr);
 	}
 #endif
+	else if (cgs.glickoLadder)
+	{
+		if (cg.snap->ps.persistant[PERS_SCORE] <= 0)
+		{
+			scoreStr = "Unrated";
+		}
+		else
+		{
+			scoreStr = va("Rating: %i", cg.snap->ps.persistant[PERS_SCORE]);
+		}
+	}
 	else
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
