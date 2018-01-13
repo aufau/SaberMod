@@ -47,12 +47,11 @@ void DeathmatchScoreboardMessage( int clientMask ) {
 	int			stringlength;
 	int			i, j;
 	gclient_t	*cl;
-	int			numSorted, scoreFlags, accuracy, dead, netDamage;
+	int			numSorted, accuracy, dead, netDamage;
 
 	// send the latest information on all clients
 	string[0] = 0;
 	stringlength = 0;
-	scoreFlags = 0;
 
 	numSorted = level.numConnectedClients;
 
@@ -95,7 +94,7 @@ void DeathmatchScoreboardMessage( int clientMask ) {
 			cl->pers.persistant[PERS_SCORE],
 			ping,
 			(level.time - cl->pers.enterTime)/60000,
-			scoreFlags,
+			(int)cl->prof.glicko.RD,
 			g_entities[level.sortedClients[i]].s.powerups,
 			accuracy,
 			cl->pers.persistant[PERS_KILLED],

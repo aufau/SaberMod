@@ -441,7 +441,7 @@ typedef struct {
 	int				score;
 	int				ping;
 	int				time;
-	int				scoreFlags;
+	int				RD;
 	int				powerUps;
 	int				accuracy;
 	int				impressiveCount;

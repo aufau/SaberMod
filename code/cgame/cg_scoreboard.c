@@ -80,6 +80,8 @@ typedef enum {
 	SBC_W_L_SM,
 	SBC_K_D,
 	SBC_NET_DMG,
+	SBC_RATING,
+	SBC_RD,
 	SBC_MAX
 } sbColumn_t;
 
@@ -98,6 +100,7 @@ static const sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME
 static const sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t glickoColumns[] = { SBC_RATING, SBC_RD, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
 
 static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const char *maxValue, float scale)
 {
@@ -123,13 +126,8 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 
 	switch (field) {
 	case SBC_SCORE:
-		if (cgs.glickoLadder) {
-			label = CG_GetStripEdString("SABERINGAME", "RATING");
-			CG_InitScoreboardColumn(field, label, "9999", SB_SCALE_LARGE);
-		} else {
-			label = CG_GetStripEdString("MENUS3", "SCORE");
-			CG_InitScoreboardColumn(field, label, "-999", SB_SCALE_LARGE);
-		}
+		label = CG_GetStripEdString("MENUS3", "SCORE");
+		CG_InitScoreboardColumn(field, label, "-999", SB_SCALE_LARGE);
 		break;
 	case SBC_CAP:
 		label = "C";
@@ -173,6 +171,14 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 		label = "Net";
 		CG_InitScoreboardColumn(field, label, "-99.9k", SB_SCALE);
 		break;
+	case SBC_RATING:
+		label = CG_GetStripEdString("SABERINGAME", "RATING");
+		CG_InitScoreboardColumn(field, label, "9999", SB_SCALE_LARGE);
+		break;
+	case SBC_RD:
+		label = "RD";
+		CG_InitScoreboardColumn(field, label, "999", SB_SCALE);
+		break;
 	case SBC_MAX:
 		return;
 	}
@@ -191,11 +197,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float sca
 	switch (field) {
 	case SBC_SCORE:
 		if (!spectator) {
-			if (cgs.glickoLadder && score->score <= 0) {
-				CG_Text_Paint (x, y, s, colorWhite, "-",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-			} else {
-				CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
-			}
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
 		break;
 	case SBC_CAP:
@@ -240,6 +242,19 @@ static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float sca
 			CG_Text_Paint (x, y, s, colorWhite, " 0",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
 		break;
+	case SBC_RATING:
+		if (!spectator) {
+			if (score->score > 0) {
+				CG_Text_Paint (x, y, s, colorWhite, va("%i", score->score),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			} else {
+				CG_Text_Paint (x, y, s, colorWhite, "-",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			}
+		}
+		break;
+	case SBC_RD:
+		if (!spectator) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->RD),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
 	case SBC_MAX:
 		break;
 	}
@@ -629,6 +644,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	if ( cgs.instagib && columns == ffaColumns )
 		columns = iffaColumns;
+
+	if ( cgs.glickoLadder )
+		columns = glickoColumns;
 
 	// header
 
