@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 64
+COUNT 76
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -577,4 +577,112 @@ INDEX 63
    TEXT_LANGUAGE3 "Punish or reward player."
    TEXT_LANGUAGE6 "Punish or reward player."
    TEXT_LANGUAGE8 "Punish or reward player."
+}
+INDEX 64
+{
+   REFERENCE MORE_OPTIONS
+   TEXT_LANGUAGE1 "More Options"
+   TEXT_LANGUAGE2 "More Options"
+   TEXT_LANGUAGE3 "More Options"
+   TEXT_LANGUAGE6 "More Options"
+   TEXT_LANGUAGE8 "More Options"
+}
+INDEX 65
+{
+   REFERENCE WIDESCREEN_HUD
+   TEXT_LANGUAGE1 "Widescreen HUD"
+   TEXT_LANGUAGE2 "Widescreen HUD"
+   TEXT_LANGUAGE3 "Widescreen HUD"
+   TEXT_LANGUAGE6 "Widescreen HUD"
+   TEXT_LANGUAGE8 "Widescreen HUD"
+}
+INDEX 66
+{
+   REFERENCE WIDESCREEN_HUD_DESC
+   TEXT_LANGUAGE1 "Adjust HUD for widescreen monitors."
+   TEXT_LANGUAGE2 "Adjust HUD for widescreen monitors."
+   TEXT_LANGUAGE3 "Adjust HUD for widescreen monitors."
+   TEXT_LANGUAGE6 "Adjust HUD for widescreen monitors."
+   TEXT_LANGUAGE8 "Adjust HUD for widescreen monitors."
+}
+INDEX 67
+{
+   REFERENCE WIDESCREEN_FOV
+   TEXT_LANGUAGE1 "Widescreen FOV"
+   TEXT_LANGUAGE2 "Widescreen FOV"
+   TEXT_LANGUAGE3 "Widescreen FOV"
+   TEXT_LANGUAGE6 "Widescreen FOV"
+   TEXT_LANGUAGE8 "Widescreen FOV"
+}
+INDEX 68
+{
+   REFERENCE WIDESCREEN_FOV_DESC
+   TEXT_LANGUAGE1 "Adjust Field of View for widescreen monitors."
+   TEXT_LANGUAGE2 "Adjust Field of View for widescreen monitors."
+   TEXT_LANGUAGE3 "Adjust Field of View for widescreen monitors."
+   TEXT_LANGUAGE6 "Adjust Field of View for widescreen monitors."
+   TEXT_LANGUAGE8 "Adjust Field of View for widescreen monitors."
+}
+INDEX 69
+{
+   REFERENCE CROSSHAIR_IND
+   TEXT_LANGUAGE1 "Crosshair Indicators"
+   TEXT_LANGUAGE2 "Crosshair Indicators"
+   TEXT_LANGUAGE3 "Crosshair Indicators"
+   TEXT_LANGUAGE6 "Crosshair Indicators"
+   TEXT_LANGUAGE8 "Crosshair Indicators"
+}
+INDEX 70
+{
+   REFERENCE CROSSHAIR_IND_DESC
+   TEXT_LANGUAGE1 "Draw crosshair indicators when playing."
+   TEXT_LANGUAGE2 "Draw crosshair indicators when playing."
+   TEXT_LANGUAGE3 "Draw crosshair indicators when playing."
+   TEXT_LANGUAGE6 "Draw crosshair indicators when playing."
+   TEXT_LANGUAGE8 "Draw crosshair indicators when playing."
+}
+INDEX 71
+{
+   REFERENCE IND_1
+   TEXT_LANGUAGE1 "Movement"
+   TEXT_LANGUAGE2 "Movement"
+   TEXT_LANGUAGE3 "Movement"
+   TEXT_LANGUAGE6 "Movement"
+   TEXT_LANGUAGE8 "Movement"
+}
+INDEX 72
+{
+   REFERENCE IND_2
+   TEXT_LANGUAGE1 "Speed"
+   TEXT_LANGUAGE2 "Speed"
+   TEXT_LANGUAGE3 "Speed"
+   TEXT_LANGUAGE6 "Speed"
+   TEXT_LANGUAGE8 "Speed"
+}
+INDEX 73
+{
+   REFERENCE IND_3
+   TEXT_LANGUAGE1 "Movement, Speed"
+   TEXT_LANGUAGE2 "Movement, Speed"
+   TEXT_LANGUAGE3 "Movement, Speed"
+   TEXT_LANGUAGE6 "Movement, Speed"
+   TEXT_LANGUAGE8 "Movement, Speed"
+}
+INDEX 74
+{
+   REFERENCE CROSSHAIR_IND_SPEC
+   TEXT_LANGUAGE1 "Spectator Indicators"
+   TEXT_LANGUAGE2 "Spectator Indicators"
+   TEXT_LANGUAGE3 "Spectator Indicators"
+   TEXT_LANGUAGE6 "Spectator Indicators"
+   TEXT_LANGUAGE8 "Spectator Indicators"
+}
+INDEX 75
+{
+   REFERENCE CROSSHAIR_IND_SPEC_DESC
+   TEXT_LANGUAGE1 "Draw crosshair indicators when spectating."
+   TEXT_LANGUAGE2 "Draw crosshair indicators when spectating."
+   TEXT_LANGUAGE3 "Draw crosshair indicators when spectating."
+   TEXT_LANGUAGE6 "Draw crosshair indicators when spectating."
+   TEXT_LANGUAGE8 "Draw crosshair indicators when spectating."
 }

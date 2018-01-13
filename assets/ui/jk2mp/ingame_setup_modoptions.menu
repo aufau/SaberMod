@@ -167,7 +167,7 @@
 			name                    highlight13
 			group                   highlights
 			style                   WINDOW_STYLE_SHADER
-			rect                    165 220 120 32
+			rect                    -20 220 320 20
 			background              "gfx/menus/menu_blendbox"
 			forecolor               1 1 1 1
 			visible                 0
@@ -252,17 +252,49 @@
 			}
 		}
 
-		//
-		// EMPTY
-		//
+		itemDef
+		{
+			name                    widescreenhud
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_WIDESCREEN_HUD
+			cvar                    "cg_widescreen"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 40 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_WIDESCREEN_HUD_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight3
+			}
+			mouseexit
+			{
+				hide                    highlight3
+			}
+		}
 
 		itemDef
 		{
-			name                    darkencorpses
+			name                    widescreenfov
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_DARKEN_CORPSES
-			cvar                    "cg_darkenDeadBodies"
+			text                    @SABERMENUS_WIDESCREEN_FOV
+			cvar                    "cg_widescreenFov"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -275,7 +307,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_DARKEN_CORPSES_DESC
+			descText                @SABERMENUS_WIDESCREEN_FOV_DESC
 			visible					1
 			action
 			{
@@ -294,15 +326,17 @@
 
 		itemDef
 		{
-			name                    rewards
+			name                    crosshairind
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_REWARDS
-			cvar                    "cg_drawRewards"
+			text                    @SABERMENUS_CROSSHAIR_IND
+			cvar                    "cg_crosshairIndicators"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
-				@MENUS0_ON              1
+				@SABERMENUS_IND_1       1
+				@SABERMENUS_IND_2       2
+				@SABERMENUS_IND_3       3
 			}
 			rect                    0 80 300 20
 			textalign               ITEM_ALIGN_RIGHT
@@ -311,7 +345,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_REWARDS_DESC
+			descText                @SABERMENUS_CROSSHAIR_IND_DESC
 			visible					1
 			action
 			{
@@ -330,15 +364,17 @@
 
 		itemDef
 		{
-			name                    damageplums
+			name                    crosshairindspec
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_DAMAGE_PLUMS
-			cvar                    "cg_damagePlums"
+			text                    @SABERMENUS_CROSSHAIR_IND_SPEC
+			cvar                    "cg_crosshairIndicatorsSpec"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
-				@MENUS0_ON              1
+				@SABERMENUS_IND_1       1
+				@SABERMENUS_IND_2       2
+				@SABERMENUS_IND_3       3
 			}
 			rect                    0 100 300 20
 			textalign               ITEM_ALIGN_RIGHT
@@ -347,7 +383,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_DAMAGE_PLUMS_DESC
+			descText                @SABERMENUS_CROSSHAIR_IND_SPEC_DESC
 			visible					1
 			action
 			{
@@ -439,11 +475,11 @@
 
 		itemDef
 		{
-			name                    chatbeep
+			name                    followkiller
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_CHAT_BEEP
-			cvar                    "cg_chatBeep"
+			text                    @SABERMENUS_FOLLOW_KILLER
+			cvar                    "cg_followKiller"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -456,7 +492,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_CHAT_BEEP_DESC
+			descText                @SABERMENUS_FOLLOW_KILLER_DESC
 			visible					1
 			action
 			{
@@ -473,46 +509,6 @@
 			}
 		}
 
-		//
-		// EMPTY
-		//
-
-		itemDef
-		{
-			name                    followkiller
-			group                   sabermod
-			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_FOLLOW_KILLER
-			cvar                    "cg_followKiller"
-			cvarFloatList
-			{
-				@MENUS0_OFF             0
-				@MENUS0_ON              1
-			}
-			rect                    0 200 300 20
-			textalign               ITEM_ALIGN_RIGHT
-			textalignx              165
-			textaligny              -2
-			font                    2
-			textscale               0.8
-			forecolor               1 1 1 1
-			descText                @SABERMENUS_FOLLOW_KILLER_DESC
-			visible					1
-			action
-			{
-				play                    "sound/interface/button1.wav" ;
-			}
-
-			mouseenter
-			{
-				show                    highlight11
-			}
-			mouseexit
-			{
-				hide                    highlight11
-			}
-		}
-
 		itemDef
 		{
 			name                    followpowerup
@@ -525,7 +521,7 @@
 				@MENUS0_OFF             0
 				@MENUS0_ON              1
 			}
-			rect                    0 220 300 20
+			rect                    0 180 300 20
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              165
 			textaligny              -2
@@ -541,14 +537,45 @@
 
 			mouseenter
 			{
-				show                    highlight12
+				show                    highlight10
 			}
 			mouseexit
 			{
-				hide                    highlight12
+				hide                    highlight10
 			}
 		}
 
+		itemDef
+		{
+			name                    moreoptions
+			group                   sabermod
+			type                    ITEM_TYPE_BUTTON
+			text                    @SABERMENUS_MORE_OPTIONS
+			rect                    -20 220 320 20
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               0.65 0.65 1 1
+//			descText                @SABERMENUS_MORE_OPTIONS_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
 
+				close                   ingame_setup_modoptions ;
+				open                    ingame_setup_modoptions2 ;
+			}
+
+			mouseenter
+			{
+				show                    highlight13
+			}
+			mouseexit
+			{
+				hide                    highlight13
+			}
+		}
 	}
 }
