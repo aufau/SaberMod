@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef enum {
 	STATS_SCORE,
+	STATS_RATING,
 	STATS_KILLS,
 	STATS_CAPS,
 	STATS_DEFEND,
@@ -37,6 +38,7 @@ typedef enum {
 	STATS_RCV,		// damage received from enemies
 	STATS_TDMG,		// damage dealt to teammates
 	STATS_TRCV,		// damage received from teammates
+	STATS_RD,
 	STATS_MAX
 } playerStat_t;
 
@@ -52,6 +54,7 @@ typedef struct {
 // Keep this in the same order as playerStat_t
 static statColumn_t statCol[STATS_MAX] = {
 	{ "Score",			"S", 4 },
+	{ "Rating",			"R", 4 },
 	{ "Kills",			"K", 3 },
 	{ "Captures",		"Cap", 3 },
 	{ "Defends",		"Def", 3 },
@@ -64,13 +67,16 @@ static statColumn_t statCol[STATS_MAX] = {
 	{ "Received",		"Rcv", 5 },
 	{ "Team Damage",	"TDmg", 5 },
 	{ "Team Received",	"TRcv", 5 },
+	{ "RD",				"RD", 3 },
 };
 
 static const playerStat_t logColumns[] =
-{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_DMG, STATS_RCV, STATS_TDMG, STATS_TRCV, STATS_IMPRESSIVE, STATS_ACC };
+{ STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_DMG, STATS_RCV, STATS_TDMG, STATS_TRCV, STATS_IMPRESSIVE, STATS_ACC, STATS_RD };
 // all other columns must end with STATS_MAX
 static const playerStat_t ffaColumns[] =
 { STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_DMG, STATS_RCV, STATS_NET_DMG, STATS_ACC, STATS_MAX };
+static const playerStat_t glickoColumns[] =
+{ STATS_RATING, STATS_RD, STATS_KILLS, STATS_KILLED, STATS_DMG, STATS_RCV, STATS_NET_DMG, STATS_ACC, STATS_MAX };
 static const playerStat_t ctfColumns[] =
 { STATS_SCORE, STATS_KILLS, STATS_KILLED, STATS_CAPS, STATS_DEFEND, STATS_ASSIST, STATS_DMG, STATS_ACC, STATS_MAX };
 static const playerStat_t tffaColumns[] = // 47 characters
@@ -101,6 +107,8 @@ static void GetStats( int *stats, gclient_t *cl )
 	stats[STATS_RCV] = cl->pers.totalDamageTakenFromEnemies;
 	stats[STATS_TDMG] = cl->pers.totalDamageDealtToAllies;
 	stats[STATS_TRCV] = cl->pers.totalDamageTakenFromAllies;
+	stats[STATS_RATING] = cl->prof.glicko.R;
+	stats[STATS_RD] = cl->prof.glicko.RD;
 }
 
 static void PrintStatsHeader( const playerStat_t *columns )
@@ -278,6 +286,8 @@ void G_PrintStats(void) {
 			columns = iffaColumns;
 		} else if (level.gametype == GT_REDROVER) {
 			columns = tffaColumns;
+		} else if (level.glickoLadder) {
+			columns = glickoColumns;
 		} else {
 			columns = ffaColumns;
 		}
