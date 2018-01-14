@@ -96,11 +96,6 @@ void G_EntityCheckRep(const gentity_t *ent)
 
 	// Saga fields: End
 
-	if (ent->passThroughNum != 0) {
-		assert(ent->s.eType == ET_MISSILE);
-		assert(0 < ent->passThroughNum && ent->passThroughNum <= 32);
-	}
-
 	if (ent->aimDebounceTime != 0)
 		assert(isSentryGun);
 
