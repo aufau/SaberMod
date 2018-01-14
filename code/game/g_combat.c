@@ -3339,7 +3339,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		evEnt = G_TempEntity(vec3_origin, EV_SHIELD_HIT, targ->s.number);
 		evEnt->s.otherEntityNum = targ->s.number;
 		evEnt->s.eventParm = DirToByte(dir);
-		evEnt->s.time2 = shieldAbsorbed;
+		evEnt->s.time2 = shieldAbsorbed + irand(-15, 15);
+		if (evEnt->s.time2 < 1) {
+			evEnt->s.time2 = 1;
+		}
 /*
 		shieldAbsorbed *= 20;
 
