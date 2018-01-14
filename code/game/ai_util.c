@@ -377,6 +377,13 @@ int BotDoChat(bot_state_t *bs, const char *section, int always)
 		return 0;
 	}
 
+	trap_Cvar_Update(&bot_nochat);
+
+	if (bot_nochat.integer)
+	{
+		return 0;
+	}
+
 	bs->chatTeam = 0;
 
 	chatgroup = (char *)B_TempAlloc(MAX_CHAT_BUFFER_SIZE);

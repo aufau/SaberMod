@@ -410,6 +410,8 @@ extern vmCvar_t bot_wp_clearweight;
 extern vmCvar_t bot_wp_distconnect;
 extern vmCvar_t bot_wp_visconnect;
 
+extern vmCvar_t bot_nochat;
+
 extern wpobject_t *flagRed;
 extern wpobject_t *oFlagRed;
 extern wpobject_t *flagBlue;

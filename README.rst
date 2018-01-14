@@ -230,6 +230,12 @@ Game Cvars
 teamsize <size>
   See callvote_ teamsize.
 
+roundlimit <limit>
+  Number of rounds in a round-based match.
+
+duel_fraglimit
+  Removed. Use roundlimit instead.
+
 dmflags <bitmask>
   Sum of values from the following list:
 
@@ -239,8 +245,8 @@ dmflags <bitmask>
   64 - No kick mode      128 - league mod YDFA
   =====================  =====================  =====================
 
-duel_fraglimit
-  Removed. Use roundlimit instead.
+bot_nochat <0|1>
+  Prevent bots from sending chat messages.
 
 g_allowRefVote <0|1|bitmask>
   Control what commands are available to referees. Uses the same
@@ -375,9 +381,6 @@ g_unlaggedMaxPing <msec>
 
 g_voteCooldown <seconds>
   How long a player has to wait before he can call another vote.
-
-roundlimit <limit>
-  Number of rounds in a round-based match.
 
 Round-Based Gametypes
 .....................

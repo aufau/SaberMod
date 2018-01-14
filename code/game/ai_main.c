@@ -99,6 +99,8 @@ vmCvar_t bot_wp_distconnect;
 vmCvar_t bot_wp_visconnect;
 //end rww
 
+vmCvar_t bot_nochat;
+
 wpobject_t *flagRed;
 wpobject_t *oFlagRed;
 wpobject_t *flagBlue;
@@ -7082,6 +7084,8 @@ int BotAISetup( int restart ) {
 	trap_Cvar_Register(&bot_wp_clearweight, "bot_wp_clearweight", "1", 0);
 	trap_Cvar_Register(&bot_wp_distconnect, "bot_wp_distconnect", "1", 0);
 	trap_Cvar_Register(&bot_wp_visconnect, "bot_wp_visconnect", "1", 0);
+
+	trap_Cvar_Register(&bot_nochat, "bot_nochat", "0", CVAR_ARCHIVE);
 
 	trap_Cvar_Update(&bot_forcepowers);
 	//end rww
