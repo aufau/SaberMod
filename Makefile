@@ -135,18 +135,20 @@ assets : base/
 	$(svs_assets); popd
 clientside : cgame ui | base/
 	$(echo_cmd) "CREATE $(name).pk3"
-	$(Q)set -e; pushd base; $(RM) $(cls_pk3); zip $(cls_pk3)		\
-	vm/cgame.qvm vm/ui.qvm; popd; zip base/$(cls_pk3) $(cls_doc);	\
-	pushd assets; zip ../base/$(cls_pk3) $(cls_assets); popd
+	$(Q)set -e; pushd base; $(RM) $(cls_pk3); zip $(cls_pk3)			\
+	vm/cgame.qvm vm/cgame.map vm/ui.qvm vm/ui.map; popd; zip			\
+	base/$(cls_pk3) $(cls_doc); pushd assets; zip ../base/$(cls_pk3)	\
+	$(cls_assets); popd
 serverside : clientside game | base/
 	$(echo_cmd) "CREATE $(name).zip"
 	$(eval tmp := $(shell mktemp -d))
 	$(eval svs := $(tmp)/$(name))
-	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc; cp		\
-	$(svs_doc) $(svs)/doc; cp base/$(cls_pk3) $(svs); mkdir			\
-	$(svs)/vm; cp base/vm/jk2mpgame.qvm $(svs)/vm; pushd assets; cp	\
-	-r $(svs_assets) $(svs); popd; pushd $(tmp); zip -r $(svs_zip)	\
-	$(name); popd; cp $(tmp)/$(svs_zip) base/; $(RM) -r $(tmp)
+	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc; cp			\
+	$(svs_doc) $(svs)/doc; cp base/$(cls_pk3) $(svs); mkdir				\
+	$(svs)/vm; cp base/vm/jk2mpgame.qvm base/vm/jk2mpgame.map			\
+	$(svs)/vm; pushd assets; cp -r $(svs_assets) $(svs); popd; pushd	\
+	$(tmp); zip -r $(svs_zip) $(name); popd; cp $(tmp)/$(svs_zip)		\
+	base/; $(RM) -r $(tmp)
 
 help	:
 	@echo 'Targets:'
