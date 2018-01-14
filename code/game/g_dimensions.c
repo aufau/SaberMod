@@ -154,31 +154,6 @@ static qboolean G_DimensionCollide(const gentity_t *ent1, const gentity_t *ent2)
 	return (qboolean)!!(ent1->dimension & ent2->dimension);
 }
 
-static qboolean G_DimensionTraceStartSolid (const vec3_t start, const vec3_t mins, const vec3_t maxs, int passEntityNum, int contentMask)
-{
-	trace_t	tr;
-
-	trap_Trace(&tr, start, mins, maxs, start, passEntityNum, contentMask);
-
-	if (tr.entityNum < ENTITYNUM_MAX_NORMAL) {
-		gentity_t	*passEnt = g_entities + passEntityNum;
-		gentity_t	*ent = g_entities + tr.entityNum;
-
-		if (!G_Collide(ent, passEnt)) {
-			qboolean	solid;
-			int			contents;
-
-			contents = ent->r.contents;
-			ent->r.contents = 0;
-			solid = G_DimensionTraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
-			ent->r.contents = contents;
-			return solid;
-		}
-	}
-
-	return tr.startsolid;
-}
-
 static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask)
 {
 	trap_Trace(results, start, mins, maxs, end, passEntityNum, contentMask);
@@ -200,8 +175,11 @@ static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t
 		}
 	}
 
-	if (results->startsolid) {
-		results->startsolid = G_DimensionTraceStartSolid(start, mins, maxs, passEntityNum, contentMask);
+	if (results->startsolid && start != end) {
+		trace_t tw;
+
+		G_DimensionTrace(&tw, start, mins, maxs, start, passEntityNum, contentMask);
+		results->startsolid = tw.startsolid;
 	}
 }
 
