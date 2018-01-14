@@ -310,7 +310,7 @@
 			decoration
 			visible                 1
 			cvarTest                ui_visited_setup
-			hideCvar                { 1 }
+			hideCvar                { 1 2 }
 		}
 
 		itemDef
@@ -346,7 +346,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				setCvar                 ui_visited_setup 1 ;
+				setCvar                 ui_visited_setup 2 ;
 				open                    ingame_setup ;
 				close					ingame_setup_original ;
 			}
@@ -453,7 +453,7 @@
 			decoration
 			visible                 1
 			cvarTest                ui_visited_callvote
-			hideCvar                { 1 }
+			hideCvar                { 1 2 }
 		}
 
 		itemDef
@@ -489,7 +489,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				setCvar                 ui_visited_callvote 1 ;
+				setCvar                 ui_visited_callvote 2 ;
 				open                    ingame_callvote ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
@@ -506,7 +506,19 @@
 
 		itemDef
 		{
-			name                    callvote
+			name                    refereevoteButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    495 0 70 32
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_referee
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
+			name                    referee
 			text                    @SABERMENUS_REFEREE
 			type                    1
 			style                   WINDOW_STYLE_FILLED
@@ -525,7 +537,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				setCvar                 ui_visited_callvote 1 ;
+				setCvar                 ui_visited_referee 1 ;
 				open                    ingame_callvote ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
