@@ -1443,6 +1443,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.noFootsteps = (qboolean)((g_dmflags.integer & DF_NO_FOOTSTEPS) > 0);
 	pm.noKick = (qboolean)((g_dmflags.integer & DF_NO_KICK) > 0);
 	pm.noYDFA = (qboolean)((g_dmflags.integer & DF_NO_YDFA) > 0);
+	pm.newPmove = (qboolean)((g_dmflags.integer & DF_NEW_PMOVE) > 0);
 
 	pm.pmove_fixed = pmove_fixed.integer | client->info.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;

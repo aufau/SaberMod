@@ -682,6 +682,7 @@ void CG_PredictPlayerState( void ) {
 	cg_pmove.noFootsteps = (qboolean)((cgs.dmflags & DF_NO_FOOTSTEPS) > 0);
 	cg_pmove.noKick = (qboolean)((cgs.dmflags & DF_NO_KICK) > 0);
 	cg_pmove.noYDFA = (qboolean)((cgs.dmflags & DF_NO_YDFA) > 0);
+	cg_pmove.newPmove = (qboolean)((cgs.dmflags & DF_NEW_PMOVE) > 0);
 
 	cg_pmove.animations = bgGlobalAnimations;
 	cg_pmove.gametype = cgs.gametype;

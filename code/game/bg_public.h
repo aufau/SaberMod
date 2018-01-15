@@ -262,6 +262,7 @@ typedef struct {
 	qboolean	noFootsteps;		// if the game is setup for no footsteps by the server
 	qboolean	noKick;				// players can't kick each another
 	qboolean	noYDFA;				// disable pmove ydfa (attack and then jump)
+	qboolean	newPmove;			// new, FPS-independed pmove (not complete)
 	qboolean	gauntletHit;		// true if a gauntlet attack would actually hit something
 
 	int			framecount;
@@ -812,6 +813,7 @@ qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
 
 // g_dmflags->integer flags
+#define DF_NEW_PMOVE			1
 #define DF_CJK					2
 #define DF_TEAM_PASS			4
 #define	DF_NO_FALLING			8

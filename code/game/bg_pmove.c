@@ -4674,8 +4674,11 @@ void PmoveSingle (pmove_t *pmove) {
 	// entering / leaving water splashes
 	PM_WaterEvents();
 
-	// snap some parts of playerstate to save network bandwidth
-	trap_SnapVector( pm->ps->velocity );
+	// FPS-independent jump height
+	if (!pm->newPmove) {
+		// snap some parts of playerstate to save network bandwidth
+		trap_SnapVector( pm->ps->velocity );
+	}
 
 	if (gPMDoSlowFall)
 	{
