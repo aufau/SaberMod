@@ -1039,18 +1039,14 @@ void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, flo
 {
 	assert( anim < MAX_TOTALANIMATIONS);
 
-	if ( ( anim >= BOTH_T1_BR__R && anim <= BOTH_T1_BL_TL ) ||
-		( anim >= BOTH_T2_BR__R && anim <= BOTH_T2_BL_TL ) ||
-		( anim >= BOTH_T3_BR__R && anim <= BOTH_T3_BL_TL ) )
+	// fau - prevent esp saber style cheat from working
+	if (anim >= BOTH_T1_BR__R && anim <= BOTH_T1_BL_TL)
 	{
-		if ( saberAnimLevel == FORCE_LEVEL_1 )
-		{
-			*animSpeed *= 1.5f;
-		}
-		else if ( saberAnimLevel == FORCE_LEVEL_3 )
-		{
-			*animSpeed *= 0.75f;
-		}
+		*animSpeed *= 1.5f;
+	}
+	else if (anim >= BOTH_T3_BR__R && anim <= BOTH_T3_BL_TL)
+	{
+		*animSpeed *= 0.75f;
 	}
 }
 

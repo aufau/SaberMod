@@ -2301,7 +2301,8 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 
 	s->time2 = ps->holocronBits;
 
-	s->fireflag = ps->fd.saberAnimLevel;
+	// fau - prevent esp saber style cheat from working
+	// s->fireflag = ps->fd.saberAnimLevel;
 }
 
 /*
