@@ -1269,6 +1269,7 @@ extern  vmCvar_t	g_damagePlums;
 extern	vmCvar_t	g_mode;
 extern	vmCvar_t	g_modeIdleTime;
 extern	vmCvar_t	g_modeDefault;
+extern	vmCvar_t	g_modeDefaultMap;
 extern  vmCvar_t	g_restrictChat;
 extern  vmCvar_t	g_restrictSpectator;
 extern	vmCvar_t	g_spawnItems;

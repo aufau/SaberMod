@@ -146,6 +146,7 @@ vmCvar_t    g_damagePlums;
 vmCvar_t	g_mode;
 vmCvar_t	g_modeIdleTime;
 vmCvar_t	g_modeDefault;
+vmCvar_t	g_modeDefaultMap;
 vmCvar_t	g_restrictChat;
 vmCvar_t	g_restrictSpectator;
 vmCvar_t	g_spawnItems;
@@ -178,7 +179,6 @@ static cvarTable_t gameCvarTable[] = {
 	{ NULL, "gamename", GAME_VERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
-	{ NULL, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
@@ -319,6 +319,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_damagePlums, "g_damagePlums", "1", CVAR_ARCHIVE , 0, qtrue  },
 	{ &g_modeIdleTime, "g_modeIdleTime", "0", CVAR_ARCHIVE , 0, qfalse  },
 	{ &g_modeDefault, "g_modeDefault", "", CVAR_ARCHIVE , 0, qfalse  },
+	{ &g_modeDefaultMap, "g_modeDefaultMap", "", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_restrictChat, "g_restrictChat", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_restrictSpectator, "g_restrictSpectator", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_spawnItems, "g_spawnItems", "0", CVAR_ARCHIVE, 0, qtrue  },
@@ -607,8 +608,6 @@ void G_RegisterCvars( void ) {
 	// initialize with g_defaultMode string. Main server config should
 	// always execute default mode cfg
 	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
-
-	trap_Cvar_Register( NULL, "g_modeDefaultMap", "", CVAR_ARCHIVE );
 
 	if (remapped) {
 		G_RemapTeamShaders();

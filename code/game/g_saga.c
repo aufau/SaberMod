@@ -44,7 +44,7 @@ int GetPairedValue(char *buf, const char *key, char *outbuf);
 
 void InitSagaMode(void)
 {
-	vmCvar_t		mapname;
+	char			mapname[MAX_CVAR_VALUE_STRING];
 	char			levelname[512];
 	char			goalreq[64];
 	char			objectives[MAX_SAGA_INFO_SIZE];
@@ -61,9 +61,9 @@ void InitSagaMode(void)
 
 	saga_round_over = 0;
 
-	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 
-	Com_sprintf(levelname, sizeof(levelname), "maps/%s.saga", mapname.string);
+	Com_sprintf(levelname, sizeof(levelname), "maps/%s.saga", mapname);
 
 	if (!levelname[0])
 	{

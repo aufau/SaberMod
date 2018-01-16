@@ -220,7 +220,7 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 	int			n = 0;
 	const char		*type;
 	qboolean	loopingUp = qfalse;
-	vmCvar_t	mapname;
+	char		mapname[MAX_CVAR_VALUE_STRING];
 
 	if (!g_autoMapCycle.integer && !forced)
 	{
@@ -232,12 +232,12 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 		return NULL;
 	}
 
-	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+	trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	for( n = 0; n < g_numArenas; n++ )
 	{
 		type = Info_ValueForKey( g_arenaInfos[n], "map" );
 
-		if (Q_stricmp(mapname.string, type) == 0)
+		if (Q_stricmp(mapname, type) == 0)
 		{
 			thisLevel = n;
 			break;

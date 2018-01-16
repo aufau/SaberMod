@@ -2151,13 +2151,13 @@ int SavePathData(const char *filename)
 
 void LoadPath_ThisLevel(void)
 {
-	vmCvar_t	mapname;
+	char		mapname[MAX_CVAR_VALUE_STRING];
 	int			i = 0;
 	gentity_t	*ent = NULL;
 
-	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 
-	if (LoadPathData(mapname.string) == 2)
+	if (LoadPathData(mapname) == 2)
 	{
 		//enter "edit" mode if cheats enabled?
 	}
@@ -2280,7 +2280,7 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 	int OptionalArgument, i;
 	int FlagsFromArgument;
 	char *OptionalSArgument, *RequiredSArgument;
-	vmCvar_t mapname;
+	char mapname[MAX_CVAR_VALUE_STRING];
 
 	if (!gBotEdit)
 	{
@@ -2577,8 +2577,8 @@ int AcceptBotCommand(char *cmd, gentity_t *pl)
 	if (Q_stricmp (cmd, "bot_wp_save") == 0)
 	{
 		gDeactivated = qfalse;
-		trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
-		SavePathData(mapname.string);
+		trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
+		SavePathData(mapname);
 		return 1;
 	}
 

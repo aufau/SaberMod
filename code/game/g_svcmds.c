@@ -493,7 +493,7 @@ mode <mode|default>
 static void	Svcmd_Mode_f( void )
 {
 	const char		*mode;
-	char			map[MAX_QPATH];
+	const char		*map;
 	qboolean		setMap;
 	fileHandle_t	f;
 
@@ -519,7 +519,7 @@ static void	Svcmd_Mode_f( void )
 
 	if ( !Q_stricmp(mode, "default") ) {
 		mode = g_modeDefault.string;
-		trap_Cvar_VariableStringBuffer( "g_modeDefaultMap", map, sizeof( map ) );
+		map = g_modeDefaultMap.string;
 
 		if ( strcmp( map, "" ) != 0 && strcmp( map, "0" ) != 0 && strcmp( map, "none" ) != 0 )
 			setMap = qtrue;
