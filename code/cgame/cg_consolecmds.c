@@ -434,8 +434,9 @@ static void CG_Players_f( void ) {
 	if (!Q_stricmp(CG_Argv(1), "?")) {
 		CG_Printf(
 			"Flag legend:\n"
-			S_COLOR_CYAN "  Bot" S_COLOR_WHITE " - a bot\n"
+			S_COLOR_CYAN "  Bot" S_COLOR_WHITE " - bot\n"
 			S_COLOR_MAGENTA "  H" S_COLOR_WHITE " - player uses handicap\n"
+			S_COLOR_RED "R  " S_COLOR_WHITE " - referee\n"
 			);
 		return;
 	}
