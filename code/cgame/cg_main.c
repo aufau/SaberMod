@@ -749,7 +749,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_crosshairIndicators, "cg_crosshairIndicators", "0", CVAR_ARCHIVE},
-	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicators", "1", CVAR_ARCHIVE},
+	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicatorsSpec", "1", CVAR_ARCHIVE},
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 	{ &cg_widescreenFov, "cg_widescreenFov", "1", CVAR_ARCHIVE},
 
