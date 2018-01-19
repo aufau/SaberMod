@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "bg_version.h"
 
 level_locals_t	level;
-qboolean		mvapi;
+qboolean		g_mvapi;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -40,8 +40,6 @@ typedef struct {
 gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
 mvsharedEntity_t mv_entities[MAX_GENTITIES];
-
-qboolean gDuelExit = qfalse;
 
 vmCvar_t	g_trueJedi;
 
@@ -124,8 +122,8 @@ vmCvar_t	g_debugForward;
 vmCvar_t	g_debugRight;
 vmCvar_t	g_debugUp;
 vmCvar_t	g_smoothClients;
-vmCvar_t	pmove_fixed;
-vmCvar_t	pmove_msec;
+vmCvar_t	g_pmove_fixed;
+vmCvar_t	g_pmove_msec;
 vmCvar_t	g_listEntity;
 vmCvar_t	g_redteam;
 vmCvar_t	g_blueteam;
@@ -166,9 +164,6 @@ vmCvar_t	g_timeoutLimit;
 vmCvar_t	g_requireClientside;
 vmCvar_t	g_allowRefVote;
 
-
-int gDuelist1 = -1;
-int gDuelist2 = -1;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t gameCvarTable[] = {
@@ -300,8 +295,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_singlePlayer, "ui_singlePlayerActive", "", 0, 0, qfalse, qfalse  },
 
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
-	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
-	{ &pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
+	{ &g_pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
+	{ &g_pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
 
 	{ &g_dismember, "g_dismember", "100", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_forceDodge, "g_forceDodge", "1", 0, 0, qtrue  },
@@ -428,7 +423,7 @@ int MVAPI_Init( int apilevel )
 		return 0;
 	}
 
-	mvapi = qtrue;
+	g_mvapi = qtrue;
 
 	G_Printf("Using MVAPI level %i (%i supported).\n", MV_APILEVEL, apilevel);
 	return MV_APILEVEL;
@@ -700,6 +695,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.startTime = levelTime;
 	level.idleTime = levelTime;
 	level.snapnum = 1;
+	level.duelist1 = -1;
+	level.duelist2 = -1;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
@@ -789,8 +786,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("-1|-1") );
 	trap_SetConfigstring ( CS_CLIENT_DUELWINNER, va("-1") );
-	gDuelist1 = -1;
-	gDuelist2 = -1;
+	level.duelist1 = -1;
+	level.duelist2 = -1;
 
 	SaveRegisteredItems();
 
@@ -1510,11 +1507,11 @@ void BeginIntermission( void ) {
 		AdjustTournamentScores();
 		if (DuelLimitHit())
 		{
-			gDuelExit = qtrue;
+			level.duelExit = qtrue;
 		}
 		else
 		{
-			gDuelExit = qfalse;
+			level.duelExit = qfalse;
 		}
 	}
 
@@ -1937,8 +1934,8 @@ void CheckIntermissionExit( void ) {
 				trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
 				trap_SetConfigstring ( CS_CLIENT_DUELWINNER, "-1" );
 
-				gDuelist1 = level.sortedClients[0];
-				gDuelist2 = level.sortedClients[1];
+				level.duelist1 = level.sortedClients[0];
+				level.duelist2 = level.sortedClients[1];
 			}
 
 			return;
@@ -1971,12 +1968,12 @@ void CheckIntermissionExit( void ) {
 			trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
 			trap_SetConfigstring ( CS_CLIENT_DUELWINNER, "-1" );
 
-			gDuelist1 = level.sortedClients[0];
-			gDuelist2 = level.sortedClients[1];
+			level.duelist1 = level.sortedClients[0];
+			level.duelist2 = level.sortedClients[1];
 		}
 	}
 
-	if (level.gametype == GT_TOURNAMENT && !gDuelExit)
+	if (level.gametype == GT_TOURNAMENT && !level.duelExit)
 	{ //in duel, we have different behaviour for between-round intermissions
 		if ( level.time > level.intermissiontime + 4000 )
 		{ //automatically go to next after 4 seconds
@@ -2354,7 +2351,7 @@ void CheckExitRules( void ) {
 			if ( level.gametype == GT_TOURNAMENT && g_roundlimit.integer && cl->sess.wins >= g_roundlimit.integer )
 			{
 				LogExit( "Duel limit hit." );
-				gDuelExit = qtrue;
+				level.duelExit = qtrue;
 				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
 					cl->info.netname );
 				return;
@@ -2362,7 +2359,7 @@ void CheckExitRules( void ) {
 
 			if ( cl->pers.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
 				LogExit( "Kill limit hit." );
-				gDuelExit = qfalse;
+				level.duelExit = qfalse;
 				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " %s\n\"", cl->info.netname,
 					G_GetStripEdString( "SVINGAME", "HIT_THE_KILL_LIMIT" ) );
 				return;
@@ -2445,19 +2442,19 @@ void CheckTournament( void ) {
 			if (level.numNonSpectatorClients >= 2)
 			{
 				trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
-				gDuelist1 = level.sortedClients[0];
-				gDuelist2 = level.sortedClients[1];
+				level.duelist1 = level.sortedClients[0];
+				level.duelist2 = level.sortedClients[1];
 			}
 		}
 
 		if (level.numPlayingClients >= 2)
 		{
-			if (gDuelist1 == -1 ||
-				gDuelist2 == -1)
+			if (level.duelist1 == -1 ||
+				level.duelist2 == -1)
 			{
 				trap_SetConfigstring ( CS_CLIENT_DUELISTS, va("%i|%i", level.sortedClients[0], level.sortedClients[1] ) );
-				gDuelist1 = level.sortedClients[0];
-				gDuelist2 = level.sortedClients[1];
+				level.duelist1 = level.sortedClients[0];
+				level.duelist2 = level.sortedClients[1];
 
 				G_LogPrintf( LOG_AUSTRIAN, "Duel Initiated: %s %d/%d vs %s %d/%d, kill limit: %d\n",
 					level.clients[level.sortedClients[0]].info.netname,

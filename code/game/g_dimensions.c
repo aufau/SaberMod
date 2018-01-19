@@ -53,7 +53,7 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 		ent->dimension = GT_Team(level.gametype) ? 0 : ALL_DIMENSIONS;
 	}
 
-	if (mvapi) {
+	if (g_mvapi) {
 		uint8_t	*snapshotIgnore = mv_entities[ent->s.number].snapshotIgnore;
 		int		i;
 
@@ -107,7 +107,7 @@ unsigned G_GetFreeDuelDimension(void)
 
 void G_StartPrivateDuel(gentity_t *ent)
 {
-	if (mvapi) {
+	if (g_mvapi) {
 		int	clientNum = ent->s.number;
 		int opponentNum;
 		int	i;
@@ -137,7 +137,7 @@ void G_StartPrivateDuel(gentity_t *ent)
 
 void G_StopPrivateDuel(gentity_t *ent)
 {
-	if (mvapi) {
+	if (g_mvapi) {
 		int clientNum = ent->s.number;
 		int i;
 

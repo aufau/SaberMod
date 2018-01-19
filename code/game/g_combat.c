@@ -3440,7 +3440,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if (take == 0)
 			return;
 
-		if (g_damagePlums.integer || mvapi)
+		if (g_damagePlums.integer || g_mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
 
 		// don't log damage stats

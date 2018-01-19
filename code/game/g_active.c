@@ -1156,15 +1156,15 @@ void ClientThink_real( gentity_t *ent ) {
 		msec = 200;
 	}
 
-	if ( pmove_msec.integer < 8 ) {
+	if ( g_pmove_msec.integer < 8 ) {
 		trap_Cvar_Set("pmove_msec", "8");
 	}
-	else if (pmove_msec.integer > 33) {
+	else if (g_pmove_msec.integer > 33) {
 		trap_Cvar_Set("pmove_msec", "33");
 	}
 
-	if ( pmove_fixed.integer || client->info.pmoveFixed ) {
-		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
+	if ( g_pmove_fixed.integer || client->info.pmoveFixed ) {
+		ucmd->serverTime = ((ucmd->serverTime + g_pmove_msec.integer-1) / g_pmove_msec.integer) * g_pmove_msec.integer;
 		//if (ucmd->serverTime - client->ps.commandTime <= 0)
 		//	return;
 	}
@@ -1445,8 +1445,8 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.noYDFA = (qboolean)((g_dmflags.integer & DF_NO_YDFA) > 0);
 	pm.newPmove = (qboolean)((g_dmflags.integer & DF_NEW_PMOVE) > 0);
 
-	pm.pmove_fixed = pmove_fixed.integer | client->info.pmoveFixed;
-	pm.pmove_msec = pmove_msec.integer;
+	pm.pmove_fixed = g_pmove_fixed.integer | client->info.pmoveFixed;
+	pm.pmove_msec = g_pmove_msec.integer;
 
 	pm.animations = bgGlobalAnimations;//NULL;
 
