@@ -673,6 +673,10 @@ typedef struct {
 	int			queuedCmdSnap;
 
 	int			timeoutClient;
+
+	int			duelist1;
+	int			duelist2;
+	qboolean	duelExit;
 } level_locals_t;
 
 //
@@ -1168,7 +1172,7 @@ int BotAIStartFrame( int time );
 #include "g_team.h" // teamplay specific stuff
 
 extern	level_locals_t	level;
-extern	qboolean		mvapi;
+extern	qboolean		g_mvapi;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 extern	mvsharedEntity_t mv_entities[MAX_GENTITIES];
 
@@ -1250,8 +1254,8 @@ extern	vmCvar_t	g_debugUp;
 extern	vmCvar_t	g_redteam;
 extern	vmCvar_t	g_blueteam;
 extern	vmCvar_t	g_smoothClients;
-extern	vmCvar_t	pmove_fixed;
-extern	vmCvar_t	pmove_msec;
+extern	vmCvar_t	g_pmove_fixed;
+extern	vmCvar_t	g_pmove_msec;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_dismember;
 extern	vmCvar_t	g_forceDodge;

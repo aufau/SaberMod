@@ -1640,7 +1640,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		return;
 	}
 
-	if (cg.snap && ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
+	if (cg.snap && cg_ui_myteam.integer != cg.snap->ps.persistant[PERS_TEAM])
 	{
 		trap_Cvar_Set ( "ui_myteam", va("%i", cg.snap->ps.persistant[PERS_TEAM]) );
 	}
