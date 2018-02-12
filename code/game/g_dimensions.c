@@ -175,6 +175,14 @@ static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t
 		}
 	}
 
+	// startsolid is qtrue if a trace starts inside of a solid area
+	// and tracing continues. Remaining trace fields correspond to
+	// trace.entityNum and are correct after filtering above. Here
+	// we must only take care of a situation where startolid is qtrue
+	// when trace starts from inside of an entity in another
+	// dimension. To do so, retrace with start == end and filter
+	// resulting entities. --fau
+
 	if (results->startsolid && start != end) {
 		trace_t tw;
 
