@@ -1524,3 +1524,9 @@ qboolean	trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *m
 qboolean	trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, int sizeofmvsharedEntity_t);
 qboolean	trap_MVAPI_GetConnectionlessPacket(mvaddr_t *addr, char *buf, unsigned int bufsize);
 qboolean	trap_MVAPI_ControlFixes(int fixes);
+mvstmtHandle_t trap_MVAPI_DB_Prepare(const char *sql);
+mvdbResult_t trap_MVAPI_DB_Step(mvstmtHandle_t h);
+int			trap_MVAPI_DB_Column(mvstmtHandle_t h, mvdbValue_t *value, int valueSize, mvdbType_t type, int col);
+void		trap_MVAPI_DB_Bind(mvstmtHandle_t h, int pos, mvdbType_t type, const void *value, int valueSize);
+void		trap_MVAPI_DB_Reset(mvstmtHandle_t h);
+void		trap_MVAPI_DB_Finalize(mvstmtHandle_t h);

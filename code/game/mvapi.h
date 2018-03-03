@@ -7,6 +7,7 @@
 	typedef unsigned char uint8_t;
 	typedef unsigned short uint16_t;
 	typedef unsigned int uint32_t;
+	typedef int int32_t;
 #endif
 
 // -------------------------------------- API Version -------------------------------------- //
@@ -14,8 +15,8 @@
 // MV_MIN_VERSION is the minimum required JK2MV version which implements this API-Level.
 // All future JK2MV versions are guaranteed to implement this API-Level.
 // ----------------------------------------------------------------------------------------- //
-#define MV_APILEVEL 3
-#define MV_MIN_VERSION "1.4"
+#define MV_APILEVEL 4
+#define MV_MIN_VERSION "1.5"
 // ----------------------------------------------------------------------------------------- //
 
 // ----------------------------------------- SHARED ---------------------------------------- //
@@ -45,6 +46,13 @@ typedef enum {
 	VERSION_1_04 = 4,
 } mvversion_t;
 
+typedef enum
+{
+	FLOCK_SH,
+	FLOCK_EX,
+	FLOCK_UN
+} flockCmd_t;
+
 // ******** SYSCALLS ******** //
 
 // qboolean trap_MVAPI_ControlFixes(int fixes);
@@ -52,6 +60,12 @@ typedef enum {
 
 // mvversion_t trap_MVAPI_GetVersion(void);
 #define MVAPI_GET_VERSION 704                    /* asm: -705 */
+
+// int trap_FS_FLock(fileHandle_t h, flockCmd_t cmd, qboolean nb);
+#define MVAPI_FS_FLOCK 708                       /* asm: -709 */
+
+// void trap_MVAPI_SetVersion(mvversion_t version);
+#define MVAPI_SET_VERSION 709                    /* asm: -710 */
 
 // ******** VMCALLS ******** //
 
@@ -84,6 +98,30 @@ typedef struct {
 	uint32_t	mvFlags;
 } mvsharedEntity_t;
 
+typedef int mvstmtHandle_t;
+
+typedef enum {
+	MVDB_INTEGER,
+	MVDB_REAL,
+	MVDB_TEXT,
+	MVDB_BLOB,
+	MVDB_NULL
+} mvdbType_t;
+
+typedef enum {
+	MVDB_ROW = 0,		// another row of output is available
+	MVDB_DONE,			// step completed
+	MVDB_BUSY,			// database locked by another process, retry later
+	MVDB_CONSTRAINT,	// statement violated a constraint
+} mvdbResult_t;
+
+typedef union {
+	int32_t		integer;
+	float		real;
+	char		text[1];
+	uint8_t		blob[1];
+} mvdbValue_t;
+
 // ******** SYSCALLS ******** //
 
 // qboolean trap_MVAPI_SendConnectionlessPacket(const mvaddr_t *addr, const char *message);
@@ -97,6 +135,24 @@ typedef struct {
 
 // qboolean trap_MVAPI_DisableStructConversion(qboolean disable);
 #define G_MVAPI_DISABLE_STRUCT_CONVERSION 705		/* asm: -706 */
+
+// mvstmtHandle_t trap_MVAPI_DB_Prepare(const char *sql);
+#define G_MVAPI_DB_PREPARE 710                      /* asm: -711 */
+
+// mvdbResult_t trap_MVAPI_DB_Step(mvstmtHandle_t h);
+#define G_MVAPI_DB_STEP 711                         /* asm: -712 */
+
+// int trap_MVAPI_DB_Column(mvstmtHandle_t h, mvdbValue_t *value, int valueSize, mvdbType_t type, int col);
+#define G_MVAPI_DB_COLUMN 712                       /* asm: -713 */
+
+// void trap_MVAPI_DB_Bind(mvstmtHandle_t h, int pos, mvdbType_t type, const void *value, int valueSize);
+#define G_MVAPI_DB_BIND 713                         /* asm: -714 */
+
+// void trap_MVAPI_DB_Reset(mvstmtHandle_t h);
+#define G_MVAPI_DB_RESET 714                        /* asm: -715 */
+
+// void trap_MVAPI_DB_Finalize(mvstmtHandle_t h);
+#define G_MVAPI_DB_FINALIZE 715                     /* asm: -716 */
 
 // ******** VMCALLS ******** //
 

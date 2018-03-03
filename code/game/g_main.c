@@ -684,6 +684,35 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	char	serverinfo[MAX_INFO_STRING];
 	int		i;
 
+	mvstmtHandle_t	h;
+
+	h = trap_MVAPI_DB_Prepare("DROP TABLE test");
+	trap_MVAPI_DB_Step(h);
+	trap_MVAPI_DB_Finalize(h);
+	h = trap_MVAPI_DB_Prepare("CREATE TABLE test ( id INTEGER PRIMARY KEY, name TEXT )");
+	trap_MVAPI_DB_Step(h);
+	trap_MVAPI_DB_Finalize(h);
+
+	h = trap_MVAPI_DB_Prepare("INSERT INTO test ( name ) VALUES ( ? )");
+	trap_MVAPI_DB_Bind(h, 1, MVDB_TEXT, "fau", -1);
+	trap_MVAPI_DB_Step(h);
+	trap_MVAPI_DB_Reset(h);
+	trap_MVAPI_DB_Bind(h, 1, MVDB_TEXT, "boy", -1);
+	trap_MVAPI_DB_Step(h);
+	trap_MVAPI_DB_Finalize(h);
+	h = trap_MVAPI_DB_Prepare("SELECT * FROM test");
+
+	while (trap_MVAPI_DB_Step(h) == MVDB_ROW) {
+		char		buf[256];
+		mvdbValue_t	*value = (mvdbValue_t *)buf;
+
+		trap_MVAPI_DB_Column(h, value, sizeof(buf), MVDB_INTEGER, 0);
+		G_Printf("Id   : %d\n", value->integer);
+		trap_MVAPI_DB_Column(h, value, sizeof(buf), MVDB_TEXT, 1);
+		G_Printf("Name : %s\n", value->text);
+	}
+	trap_MVAPI_DB_Finalize(h);
+
 	G_StaticCheck();
 
 	B_InitAlloc(); //make sure everything is clean

@@ -970,3 +970,21 @@ qboolean trap_MVAPI_LocateGameData(mvsharedEntity_t *mvEnts, int numGEntities, i
 qboolean trap_MVAPI_ControlFixes(int fixes) {
 	return (qboolean)syscall(MVAPI_CONTROL_FIXES, fixes);
 }
+mvstmtHandle_t trap_MVAPI_DB_Prepare(const char *sql) {
+	return (qboolean)syscall(G_MVAPI_DB_PREPARE, sql);
+}
+mvdbResult_t trap_MVAPI_DB_Step(mvstmtHandle_t h) {
+	return (qboolean)syscall(G_MVAPI_DB_STEP, h);
+}
+int trap_MVAPI_DB_Column(mvstmtHandle_t h, mvdbValue_t *value, int valueSize, mvdbType_t type, int col) {
+	return (qboolean)syscall(G_MVAPI_DB_COLUMN, h, value, valueSize, type, col);
+}
+void trap_MVAPI_DB_Bind(mvstmtHandle_t h, int pos, mvdbType_t type, const void *value, int valueSize) {
+	syscall(G_MVAPI_DB_BIND, h, pos, type, value, valueSize);
+}
+void trap_MVAPI_DB_Reset(mvstmtHandle_t h) {
+	syscall(G_MVAPI_DB_RESET, h);
+}
+void trap_MVAPI_DB_Finalize(mvstmtHandle_t h) {
+	syscall(G_MVAPI_DB_FINALIZE, h);
+}
