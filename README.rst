@@ -267,6 +267,10 @@ g_allowVote <0|1|bitmask>
   65536 - Capturelimit   131072 - Poll          262144 - Referee
   =====================  =====================  =====================
 
+g_antiWarpTime <msec>
+  Prevent players from warping by forcing update after `msec` time of
+  inactivity.
+
 g_damagePlums <0|1>
   Allow clients with `cg_damagePlums` enabled to see damage plums.
 
