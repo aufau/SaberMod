@@ -1871,6 +1871,7 @@ void ClientThink( int clientNum ) {
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while
 	client->lastCmdTime = level.time;
+	client->warp = qfalse;
 
 	if (level.unpauseTime > level.time) {
 		client->ps.commandTime = client->pers.cmd.serverTime;
@@ -1885,11 +1886,36 @@ void ClientThink( int clientNum ) {
 
 
 void G_RunClient( gentity_t *ent ) {
-	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
-		return;
+	usercmd_t	*cmd = &ent->client->pers.cmd;
+
+	if ( (ent->r.svFlags & SVF_BOT) || g_synchronousClients.integer )
+	{
+		cmd->serverTime = level.time;
+
+		ClientThink_real( ent );
 	}
-	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink_real( ent );
+	else if ( g_antiWarpTime.integer &&
+		ent->client->lastCmdTime < level.time - g_antiWarpTime.integer &&
+		ent->client->lastCmdTime > 0 &&
+//		level.time - ent->client->lastCmdTime < 1000 &&
+		ent->client->pers.connected == CON_CONNECTED &&
+		ent->client->sess.spectatorState == SPECTATOR_NOT &&
+		ent->client->ps.pm_type != PM_DEAD)
+	{
+		// create a fake user command to make him move, causing client
+		// prediction error for a warping player
+		cmd->serverTime = level.time + (cmd->serverTime - ent->client->lastCmdTime);
+		cmd->buttons = 0;
+		cmd->generic_cmd = 0;	// let go any force power eg grip
+		cmd->forwardmove = 0;
+		cmd->rightmove = 0;
+		cmd->upmove = 0;
+
+		ent->client->lastCmdTime = level.time;
+		ent->client->warp = qtrue;
+
+		ClientThink_real( ent );
+	}
 }
 
 
@@ -2042,7 +2068,7 @@ void ClientEndFrame( gentity_t *ent ) {
 	P_DamageFeedback (ent);
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 ) {
+	if ( level.time - ent->client->lastCmdTime > 1000 || ent->client->warp ) {
 		ent->s.eFlags |= EF_CONNECTION;
 	} else {
 		ent->s.eFlags &= ~EF_CONNECTION;
