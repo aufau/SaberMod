@@ -731,10 +731,11 @@ void G_UpdateClientReadyFlags( void ) {
 	for (i = 0; i < level.maxclients; i++) {
 		gentity_t *ent = &g_entities[i];
 
-		if (ent->inuse) {
-			if (ent->r.svFlags & SVF_BOT || ent->client->pers.ready) {
-				mask |= 1 << i;
-			}
+		if (ent->inuse &&
+			ent->client->pers.connected == CON_CONNECTED &&
+			ent->client->pers.ready)
+		{
+			mask |= 1 << i;
 		}
 	}
 
