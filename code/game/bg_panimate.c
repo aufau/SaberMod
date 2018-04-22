@@ -1035,7 +1035,7 @@ void PM_SetTorsoAnimTimer( int time )
 	}
 }
 
-void BG_SaberStartTransAnim( forceLevel_t saberAnimLevel, animNumber_t anim, float *animSpeed )
+void BG_SaberStartTransAnim( animNumber_t anim, float *animSpeed )
 {
 	assert( anim < MAX_TOTALANIMATIONS);
 
@@ -1069,7 +1069,7 @@ void PM_SetAnimFinal(int setAnimParts, animNumber_t anim, int setAnimFlags, int 
 	//NOTE: Setting blendTime here breaks actual blending..
 	//blendTime = 0;
 
-	BG_SaberStartTransAnim(pm->ps->fd.saberAnimLevel, anim, &editAnimSpeed);
+	BG_SaberStartTransAnim(anim, &editAnimSpeed);
 
 	// Set torso anim
 	if (setAnimParts & SETANIM_TORSO)

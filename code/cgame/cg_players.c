@@ -1656,7 +1656,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 
 		animSpeed *= animSpeedMult;
 
-		BG_SaberStartTransAnim((forceLevel_t)cent->currentState.fireflag, (animNumber_t)newAnimation, &animSpeed);
+		BG_SaberStartTransAnim((animNumber_t)newAnimation, &animSpeed);
 
 		if (torsoOnly)
 		{

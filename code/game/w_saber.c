@@ -1251,7 +1251,7 @@ int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 	float animSpeedFactor = 1.0f;
 
 	//Be sure to scale by the proper anim speed just as if we were going to play the animation
-	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
+	BG_SaberStartTransAnim(ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
 	speedDif = attackAnimLength - (attackAnimLength * animSpeedFactor);
 	attackAnimLength += speedDif;
 	peakPoint = attackAnimLength;
@@ -1302,7 +1302,7 @@ float G_GetAnimPoint(gentity_t *self)
 	float animPercentage = 0;
 
 	//Be sure to scale by the proper anim speed just as if we were going to play the animation
-	BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
+	BG_SaberStartTransAnim(ANIM(self->client->ps.torsoAnim), &animSpeedFactor);
 	speedDif = attackAnimLength - (attackAnimLength * animSpeedFactor);
 	attackAnimLength += speedDif;
 
@@ -3337,7 +3337,7 @@ finalUpdate:
 
 		initialFrame = bgGlobalAnimations[f].firstFrame;
 
-		BG_SaberStartTransAnim(self->client->ps.fd.saberAnimLevel, f, &animSpeedScale);
+		BG_SaberStartTransAnim(f, &animSpeedScale);
 
 		animSpeed = 50.0f / bgGlobalAnimations[f].frameLerp;
 		animSpeedScale = (animSpeed *= animSpeedScale);
