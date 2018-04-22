@@ -2813,8 +2813,8 @@ static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
 		static vec4_t color = { 1, 1, 1, 1 };
 		const font_t font = FONT_SMALL;
 		const float scale = 0.5f;
-
-		float velocity = VectorLength(cg.snap->ps.velocity);
+		vec_t *vec = cg.snap->ps.velocity;
+		float velocity = sqrtf(vec[0] * vec[0] + vec[1] * vec[1]);
 		const char *s = va("%d", (int)velocity);
 		float textX = x - 0.5f * CG_Text_Width(s, scale, font);
 		float textY = y + h + 5;
