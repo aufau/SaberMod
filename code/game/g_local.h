@@ -1290,6 +1290,7 @@ extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
 extern	vmCvar_t	g_antiWarpTime;
+extern	vmCvar_t	g_spSkill;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

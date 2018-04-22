@@ -164,6 +164,7 @@ vmCvar_t	g_timeoutLimit;
 vmCvar_t	g_requireClientside;
 vmCvar_t	g_allowRefVote;
 vmCvar_t	g_antiWarpTime;
+vmCvar_t	g_spSkill;
 
 
 // bk001129 - made static to avoid aliasing
@@ -335,6 +336,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_requireClientside, "g_requireClientside", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_allowRefVote, "g_allowRefVote", "-1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_antiWarpTime, "g_antiWarpTime", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_spSkill, "g_spSkill", "2", CVAR_ARCHIVE, 0, qfalse },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
