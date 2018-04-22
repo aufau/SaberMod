@@ -295,9 +295,8 @@ clientkilled:
 			trap_SP_GetStringTextString("INGAMETEXT_KILLED_MESSAGE", sKilledStr, sizeof(sKilledStr));
 			s = va("%s %s", sKilledStr, targetName );
 		}
-		if (!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer)) {
-			CG_CenterPrint( s, SCREEN_HEIGHT * 0.30 );
-		}
+
+		CG_CenterPrint( s, SCREEN_HEIGHT * 0.30 );
 		// print the text message as well
 	}
 

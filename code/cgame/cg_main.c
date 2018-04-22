@@ -561,10 +561,8 @@ vmCvar_t 	cg_redTeamName;
 vmCvar_t 	cg_blueTeamName;
 vmCvar_t	cg_currentSelectedPlayer;
 vmCvar_t	cg_currentSelectedPlayerName;
-vmCvar_t	cg_singlePlayer;
 vmCvar_t	cg_enableDust;
 vmCvar_t	cg_enableBreath;
-vmCvar_t	cg_singlePlayerActive;
 vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
@@ -710,10 +708,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_redTeamName, "g_redteam", DEFAULT_REDTEAM_NAME, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO },
 	{ &cg_blueTeamName, "g_blueteam", DEFAULT_BLUETEAM_NAME, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO },
-	{ &cg_singlePlayer, "ui_singlePlayerActive", "0", CVAR_USERINFO},
 //	{ &cg_enableDust, "g_enableDust", "0", 0},
 //	{ &cg_enableBreath, "g_enableBreath", "0", 0},
-	{ &cg_singlePlayerActive, "ui_singlePlayerActive", "0", CVAR_USERINFO},
 	{ &cg_recordSPDemo, "ui_recordSPDemo", "0", CVAR_ARCHIVE},
 	{ &cg_recordSPDemoName, "ui_recordSPDemoName", "", CVAR_ARCHIVE},
 
@@ -723,8 +719,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
 	{ &cg_timescale, "timescale", "1", 0},
 	{ &cg_damagePlums, "cg_damagePlums", "1", CVAR_ARCHIVE},
-	{ &cg_hudFiles, "cg_hudFiles", "0", CVAR_USERINFO | CVAR_ARCHIVE},
-	{ &cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
+	{ &cg_hudFiles, "cg_hudFiles", "0", CVAR_ARCHIVE},
+	{ &cg_smoothClients, "cg_smoothClients", "0", CVAR_ARCHIVE},
 //	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
 
 	{ &cg_pmove_fixed, "pmove_fixed", "0", 0},

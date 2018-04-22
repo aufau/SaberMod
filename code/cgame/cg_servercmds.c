@@ -709,12 +709,6 @@ static void CG_MapRestart( void ) {
 		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
 		CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120 );
 	}
-	if (cg_singlePlayerActive.integer) {
-		trap_Cvar_Set("ui_matchStartTime", va("%i", cg.serverTime));
-		if (cg_recordSPDemo.integer && *cg_recordSPDemoName.string) {
-			trap_SendConsoleCommand(va("set g_synchronousclients 1 ; record %s \n", cg_recordSPDemoName.string));
-		}
-	}
 	trap_Cvar_Set("cg_thirdPerson", "0");
 }
 
