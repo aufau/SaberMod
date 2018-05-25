@@ -27,6 +27,8 @@ static const char * const illegalCvars[] = {
 	"com_maxfps",
 	"cl_maxpackets",
 	"cl_timenudge",
+	"cl_yawspeed",
+	"cl_pitchspeed"
 };
 
 static const char * const illegalCmds[] = {
