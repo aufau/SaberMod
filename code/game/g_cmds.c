@@ -915,6 +915,7 @@ void StopFollowing( gentity_t *ent ) {
 	// bots can follow too
 	// ent->r.svFlags &= ~SVF_BOT;
 	client->sess.spectatorState = SPECTATOR_FREE;
+	client->ps.commandTime = client->pers.cmd.serverTime;
 	memcpy( client->ps.persistant, client->pers.persistant, sizeof( client->ps.persistant ) );
 	client->ps.pm_type = PM_SPECTATOR;
 	client->ps.pm_flags &= ~PMF_FOLLOW;
