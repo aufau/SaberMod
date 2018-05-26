@@ -98,7 +98,8 @@ static void CG_ParseScores( void ) {
 		cg.scores[i].score = atoi( CG_Argv( i * 14 + 5 ) );
 		cg.scores[i].ping = atoi( CG_Argv( i * 14 + 6 ) );
 		cg.scores[i].time = atoi( CG_Argv( i * 14 + 7 ) );
-		cg.scores[i].scoreFlags = atoi( CG_Argv( i * 14 + 8 ) );
+		cg.scores[i].lives = atoi( CG_Argv( i * 14 + 8 ) );
+//		cg.scores[i].scoreFlags = atoi( CG_Argv( i * 14 + 8 ) );
 		powerups = atoi( CG_Argv( i * 14 + 9 ) );
 		cg.scores[i].accuracy = atoi(CG_Argv(i * 14 + 10));
 		cg.scores[i].deaths = atoi(CG_Argv(i * 14 + 11));

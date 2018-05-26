@@ -455,6 +455,7 @@ typedef struct {
 	int				kills;
 	int				deaths;
 	int				netDamage;
+	int				lives;
 } score_t;
 
 // each client has an associated clientInfo_t

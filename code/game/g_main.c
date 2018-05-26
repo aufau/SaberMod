@@ -1615,6 +1615,7 @@ static void NextRound( void )
 	char	warmup[8];
 	int		i;
 
+	level.lives = MAX(1, g_fraglimit.integer);
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
 	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
@@ -1638,10 +1639,14 @@ static void NextRound( void )
 			if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 				continue;
 
-			if ( ent->client->sess.spectatorState == SPECTATOR_NOT )
+			// used for counting lives
+			ent->client->pers.persistant[PERS_SPAWN_COUNT] = 0;
+
+			if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 				respawn( ent );
-			else
+			} else {
 				SetTeam( ent, ent->client->sess.sessionTeam );
+			}
 		}
 	}
 

@@ -1082,7 +1082,8 @@ void G_Respawn( gentity_t *ent ) {
 		if ( !level.roundQueued )
 			G_SwitchTeam(ent);
 		respawn( ent );
-	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
+	} else if ( level.round > 0 && !level.roundQueued &&
+		client->pers.persistant[PERS_SPAWN_COUNT] >= level.lives ) {
 		team_t	team = client->sess.sessionTeam;
 
 		// currently this is the only entry point for spactating while
@@ -1998,7 +1999,7 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
-				client->ps.persistant[PERS_SPAWN_COUNT] = client->pers.persistant[PERS_SPAWN_COUNT];
+				// client->ps.persistant[PERS_SPAWN_COUNT] = client->pers.persistant[PERS_SPAWN_COUNT];
 			} else if ( client->sess.spectatorClient >= 0 ) {
 				StopFollowing(ent);
 			}

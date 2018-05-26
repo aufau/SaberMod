@@ -1227,6 +1227,8 @@ void CG_DrawHUD(centity_t	*cent)
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.gametype == GT_REDROVER) {
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
+		} else if (cgs.fraglimit > 1) {
+			scoreStr = va("Lives: %i", cgs.fraglimit - cg.snap->ps.persistant[PERS_SPAWN_COUNT]);
 		} else {
 			scoreStr = va("Round Limit: %i", cgs.roundlimit);
 		}

@@ -586,6 +586,7 @@ typedef struct {
 	// store latched cvars here that we want to get at often
 	int			maxclients;
 	gametype_t	gametype;
+	int			lives;					// lives in round-based gametypes
 
 	int			framenum;
 	int			snapnum;				// snapshot currently being prepared
