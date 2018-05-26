@@ -2194,8 +2194,8 @@ void ClientSpawn(gentity_t *ent) {
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
-	client->ps.commandTime = client->pers.cmd.serverTime - 100;
 	if ( !(ent->r.svFlags & SVF_BOT) ) {
+		client->ps.commandTime = client->pers.cmd.serverTime - 100;
 		ClientThink_real( ent );
 	}
 
