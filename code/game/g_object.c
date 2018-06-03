@@ -64,7 +64,7 @@ void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 		if ( trace.fraction >= 1.0f )
 			return;
 
-		if ( VectorCompare( vec3_origin, trace.plane.normal ) )
+		if ( trace.allsolid )
 			return;
 
 		VectorCopy( trace.plane.normal, slope );
