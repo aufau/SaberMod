@@ -194,24 +194,15 @@ static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t
 static int G_DimensionEntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
 {
 	gentity_t	*passEnt = g_entities + entityNum;
-	gentity_t	*ent;
-	int	fullEntityList[MAX_GENTITIES];
 	int	fullCount;
 	int	count;
 	int	i;
 
-	if (maxcount > MAX_GENTITIES) {
-		maxcount = MAX_GENTITIES;
-	}
+	fullCount = trap_EntitiesInBox(mins, maxs, entityList, maxcount);
 
-	fullCount = trap_EntitiesInBox(mins, maxs, fullEntityList, maxcount);
-
-	count = 0;
-	for (i = 0; i < fullCount; i++) {
-		ent = g_entities + fullEntityList[i];
-
-		if (G_Collide(ent, passEnt)) {
-			entityList[count] = fullEntityList[i];
+	for (i = 0, count = 0; i < fullCount; i++) {
+		if (G_Collide(g_entities + entityList[i], passEnt)) {
+			entityList[count] = entityList[i];
 			count++;
 		}
 	}
