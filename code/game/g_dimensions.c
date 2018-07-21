@@ -58,20 +58,14 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 		int		i;
 
 		if (blame == ENTITYNUM_WORLD) {
-			for (i = 0; i < level.maxclients; i++) {
-				snapshotIgnore[i] = 0;
-			}
+			memset(snapshotIgnore, 0, sizeof(snapshotIgnore[0]) * MAX_CLIENTS);
 		} else {
 			for (i = 0; i < level.maxclients; i++) {
 				gclient_t	*client = level.clients + i;
 
-				if (client->pers.connected == CON_CONNECTED &&
+				snapshotIgnore[i] = client->pers.connected == CON_CONNECTED &&
 					client->info.privateDuel && client->ps.duelInProgress &&
-					blame != i && blame != client->ps.duelIndex) {
-					snapshotIgnore[i] = 1;
-				} else {
-					snapshotIgnore[i] = 0;
-				}
+					blame != i && blame != client->ps.duelIndex;
 			}
 		}
 	}
