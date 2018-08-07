@@ -331,6 +331,14 @@ g_kickMethod <method>
   3 - League Mod
   =====================  =====================  =====================
 
+g_pushableItems <mask>
+  What types of items should be movable with force push and pull:
+
+  =====================  =====================  =====================
+  2 - Weapon             4 - Ammo               8 - Armor
+  16 - Health            32 - Powerup           64 - Holdable
+  =====================  =====================  =====================
+
 g_requireClientside <0|1>
   Allow only players with matching clientside to join the game.
 

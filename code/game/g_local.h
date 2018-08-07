@@ -1291,6 +1291,7 @@ extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
 extern	vmCvar_t	g_antiWarpTime;
 extern	vmCvar_t	g_spSkill;
+extern	vmCvar_t	g_pushableItems;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
