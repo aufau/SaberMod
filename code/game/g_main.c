@@ -3313,7 +3313,7 @@ end = trap_Milliseconds();
 	CheckCvars();
 
 	// garbage collection
-	G_FreeUnusedEntities();
+	// G_FreeUnusedEntities();
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {
