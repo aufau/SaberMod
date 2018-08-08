@@ -728,17 +728,16 @@ level.num_entities garbage collection
 =================
 */
 void G_FreeUnusedEntities( void ) {
-	int			lastEntity = 0;
 	int			i;
 
-	for (i = 0; i < level.num_entities; i++) {
+	for (i = level.num_entities - 1; i >= MAX_CLIENTS; i--) {
 		if (g_entities[i].inuse) {
-			lastEntity = i;
+			break;
 		}
 	}
 
-	if (lastEntity + 1 < level.num_entities) {
-		level.num_entities = lastEntity + 1;
+	if (i + 1 < level.num_entities) {
+		level.num_entities = i + 1;
 		trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 			&level.clients[0].ps, sizeof( level.clients[0] ) );
 	}
