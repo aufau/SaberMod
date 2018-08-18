@@ -3336,7 +3336,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		gentity_t	*evEnt;
 
 		// Send off an event to show a shield shell on the player, pointing in the right direction.
-		evEnt = G_TempEntity(vec3_origin, EV_SHIELD_HIT, targ->s.number);
+		evEnt = G_TempEntity(targ->r.currentOrigin, EV_SHIELD_HIT, targ->s.number);
 		evEnt->s.otherEntityNum = targ->s.number;
 		evEnt->s.eventParm = DirToByte(dir);
 		evEnt->s.time2 = shieldAbsorbed + irand(-15, 15);
