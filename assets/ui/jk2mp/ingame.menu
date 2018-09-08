@@ -310,7 +310,7 @@
 			decoration
 			visible                 1
 			cvarTest                ui_visited_setup
-			hideCvar                { 1 2 }
+			hideCvar                { 2 }
 		}
 
 		itemDef
@@ -453,7 +453,7 @@
 			decoration
 			visible                 1
 			cvarTest                ui_visited_callvote
-			hideCvar                { 1 2 }
+			hideCvar                { 2 }
 		}
 
 		itemDef
@@ -512,8 +512,8 @@
 			background              "gfx/menus/menu_buttonback_new" // Frame around button
 			decoration
 			visible                 1
-			cvarTest                ui_visited_referee
-			hideCvar                { 1 }
+			cvarTest                ui_referee
+			showCvar                { 1 }
 		}
 
 		itemDef
@@ -537,7 +537,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				setCvar                 ui_visited_referee 1 ;
+				setCvar                 ui_visited_callvote 2 ;
 				open                    ingame_callvote ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
