@@ -2751,6 +2751,22 @@ static void Cmd_Timein_f(gentity_t *ent)
 	}
 }
 
+static void Cmd_Referee_f(gentity_t *ent)
+{
+	if (trap_Argc() < 2) {
+		trap_SendServerCommand(ent-g_entities, "print \"Usage: referee <password>\n\"");
+		return;
+	}
+
+	if (!strcmp(g_refereePassword.string, "") ||
+		strcmp(g_refereePassword.string, ConcatArgs(1))) {
+		trap_SendServerCommand(ent-g_entities, "print \"Incorrect password.\n\"");
+		return;
+	}
+
+	trap_SendConsoleCommand(EXEC_APPEND, va("referee %d\n", ent->s.number));
+}
+
 #ifdef _DEBUG
 void PM_SetAnim(int setAnimParts,int anim,unsigned setAnimFlags, int blendTime);
 void ScorePlum( int clientNum, vec3_t origin, int score );
@@ -3036,6 +3052,7 @@ static const clientCommand_t commands[] = {
 	{ "gc", Cmd_GameCommand_f, CMD_NOINTERMISSION },
 	{ "timeout", Cmd_Timeout_f, CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "timein", Cmd_Timein_f, CMD_ALIVE | CMD_NOINTERMISSION },
+	{ "referee", Cmd_Referee_f, 0 },
 	{ "give", Cmd_Give_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "god", Cmd_God_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "notarget", Cmd_Notarget_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },

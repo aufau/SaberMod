@@ -214,12 +214,15 @@ mode <mode|default>
 players [team]
   Print various informations about players. Optionally filter by team.
 
-spawnitems [items]
-  Enable/Disable spawning items using human readable names. Type
-  without argument to see usage instructions.
+referee <password>
+  Become a referee using password provided by server admin.
 
 remove <player|all> [time]
   Remove `player` to spectator team for at least `time` seconds.
+
+spawnitems [items]
+  Enable/Disable spawning items using human readable names. Type
+  without argument to see usage instructions.
 
 shuffle
   Randomize teams.
@@ -338,6 +341,11 @@ g_pushableItems <mask>
   2 - Weapon             4 - Ammo               8 - Armor
   16 - Health            32 - Powerup           64 - Holdable
   =====================  =====================  =====================
+
+g_refereePassword <password>
+  Allow players who know password to become referees using `referee`
+  `Console Commands`_. When this cvar is empty (default), `referee`
+  console command cannot be used to become a referee.
 
 g_requireClientside <0|1>
   Allow only players with matching clientside to join the game.

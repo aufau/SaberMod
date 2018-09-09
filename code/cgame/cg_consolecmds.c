@@ -712,6 +712,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("seek");
 	trap_AddCommand ("timeout");
 	trap_AddCommand ("timein");
+	trap_AddCommand ("referee");
 }
 
 void CG_ShutDownConsoleCommands( void ) {
