@@ -2624,7 +2624,7 @@ void Cmd_EngageDuel_f(gentity_t *ent)
 	{
 		unsigned dimension;
 
-		char *s = va("print \"%s" S_COLOR_WHITE " %s %s!\n\"", challenged->client->info.netname,
+		char *s = va("print \"%s" S_COLOR_WHITE " %s %s" S_COLOR_WHITE "!\n\"", challenged->client->info.netname,
 			G_GetStripEdString("SVINGAME", "PLDUELACCEPT"), ent->client->info.netname);
 		trap_SendServerCommand(-1, s);
 
