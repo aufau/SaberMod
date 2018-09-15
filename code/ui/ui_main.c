@@ -47,21 +47,32 @@ This is the only way control passes into the module.
 */
 
 void _UI_Init( qboolean inGameLoad );
-void _UI_MVAPI_Init( int apilevel );
+int  _UI_MVAPI_Init( int apilevel );
+void _UI_MVAPI_AfterInit( qboolean inGameLoad );
 void _UI_Shutdown( void );
 void _UI_KeyEvent( int key, qboolean down );
 void _UI_MouseEvent( int dx, int dy );
 void _UI_Refresh( int realtime );
 qboolean _UI_IsFullscreen( void );
 Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11  ) {
+	static int	initArgs[1];
+	int			requestedMVAPI;
+
   switch ( command ) {
 	  case UI_GETAPIVERSION:
 		  return UI_API_VERSION;
 
 	  case UI_INIT:
-		  _UI_Init((qboolean)arg0);
-		   // not using MVAPI, just checking level
-		  _UI_MVAPI_Init(arg11);
+		  requestedMVAPI = _UI_MVAPI_Init(arg11);
+		  if (requestedMVAPI) {
+			  initArgs[0] = (qboolean)arg0;
+		  } else {
+			  _UI_Init((qboolean)arg0);
+		  }
+		  return requestedMVAPI;
+
+	  case MVAPI_AFTER_INIT:
+		  _UI_MVAPI_AfterInit(initArgs[0]);
 		  return 0;
 
 	  case UI_SHUTDOWN:
@@ -101,8 +112,15 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 	return -1;
 }
 
-void _UI_MVAPI_Init( int apilevel )
+int _UI_MVAPI_Init( int apilevel )
 {
+	if (!(int)trap_Cvar_VariableValue("mv_apienabled")) {
+		Com_Printf("MVAPI is not supported at all or has been disabled.\n");
+		Com_Printf("You need at least JK2MV " MV_MIN_VERSION ".\n");
+		trap_Cvar_Set("ui_menulevel", "0");
+		return 0;
+	}
+
 	// ui_menulevel support happens to coincide with MVAPI 2 release
 	// AND mod options jk2mv submenu
 	// setting it to 0 just to load non-jk2mv menus for other clients
@@ -111,6 +129,15 @@ void _UI_MVAPI_Init( int apilevel )
 	} else {
 		trap_Cvar_Set("ui_menulevel", "0");
 	}
+
+	uiInfo.mvapi = MIN(MV_APILEVEL, apilevel);
+	Com_Printf("Using MVAPI level %i (%i supported).\n", uiInfo.mvapi, apilevel);
+	return uiInfo.mvapi;
+}
+
+void _UI_MVAPI_AfterInit( qboolean inGameLoad )
+{
+	_UI_Init(inGameLoad);
 }
 
 void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow);
@@ -135,6 +162,8 @@ static void UI_ParseGameInfo(const char *teamFile);
 static const char *UI_SelectedMap(int index, int *actual);
 static const char *UI_SelectedHead(int index, int *actual);
 static int UI_GetIndexFromSelection(int actual);
+static void UI_WidescreenMode(qboolean on);
+static void UI_UpdateWidescreen( void );
 
 int ProcessNewUI( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 team_t	uiSkinColor = TEAM_FREE;
@@ -297,15 +326,23 @@ qhandle_t MenuFontToHandle(font_t iMenuFont)
 int Text_Width(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
+	float width;
 
-	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	UI_WidescreenMode(qtrue);
+	width = trap_R_Font_StrLenPixels(text, iFontIndex, scale) * uiInfo.screenXFactor;
+	UI_WidescreenMode(qfalse);
+	return width;
 }
 
 int Text_Height(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
+	float height;
 
-	return trap_R_Font_HeightPixels(iFontIndex, scale);
+	UI_WidescreenMode(qtrue);
+	height = trap_R_Font_HeightPixels(iFontIndex, scale) * uiInfo.screenYFactor;
+	UI_WidescreenMode(qfalse);
+	return height;
 }
 
 void Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont)
@@ -327,6 +364,9 @@ void Text_Paint(float x, float y, float scale, const vec4_t color, const char *t
 	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow
 	}
 
+	UI_WidescreenMode(qtrue);
+	x *= uiInfo.screenXFactorInv;
+	y *= uiInfo.screenYFactorInv;
 	trap_R_Font_DrawString(	x,		// int ox
 							y,		// int oy
 							text,	// const char *text
@@ -335,6 +375,7 @@ void Text_Paint(float x, float y, float scale, const vec4_t color, const char *t
 							!limit?-1:limit,		// iCharLimit (-1 = none)
 							scale	// const float scale = 1.0f
 							);
+	UI_WidescreenMode(qfalse);
 }
 
 
@@ -356,8 +397,7 @@ static void Text_PaintWithCursor(float x, float y, float scale, const vec4_t col
 			Q_strncpyz(sTemp,text,iCopyCount + 1);
 
 			{
-				qhandle_t iFontIndex = MenuFontToHandle( iMenuFont );
-				int iNextXpos  = trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale );
+				int iNextXpos  = Text_Width(sTemp, scale, iMenuFont);
 
 				Text_Paint(x+iNextXpos, y, scale, color, va("%c",cursor), 0, limit, style|ITEM_TEXTSTYLE_BLINK, iMenuFont);
 			}
@@ -371,10 +411,8 @@ static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t 
 {
 	// this is kinda dirty, but...
 	//
-	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
-
 	//float fMax = *maxX;
-	int iPixelLen = trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	int iPixelLen = Text_Width(text, scale, iMenuFont);
 	if (x + iPixelLen > *maxX)
 	{
 		// whole text won't fit, so we need to print just the amount that does...
@@ -386,7 +424,7 @@ static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t 
 		char *psOutLastGood = psOut;
 		unsigned int uiLetter;
 
-		while (*psText && (x + trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale)<=*maxX)
+		while (*psText && (x + Text_Width(sTemp, scale, iMenuFont)<=*maxX)
 			   && psOut < &sTemp[sizeof(sTemp)-1]	// sanity
 				)
 		{
@@ -6548,6 +6586,8 @@ void _UI_Init( qboolean inGameLoad ) {
 	// cache redundant calulations
 	trap_GetGlconfig( &uiInfo.uiDC.glconfig );
 
+	UI_UpdateWidescreen();
+
 	// for 640x480 virtualized screen
 	uiInfo.uiDC.yscale = uiInfo.uiDC.glconfig.vidHeight * (1.0f / 480);
 	uiInfo.uiDC.xscale = uiInfo.uiDC.glconfig.vidWidth * (1.0f / 640);
@@ -7213,6 +7253,7 @@ vmCvar_t	ui_serverStatusTimeOut;
 vmCvar_t	ui_s_language;
 
 vmCvar_t	ui_longMapName;
+vmCvar_t	ui_widescreen;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
@@ -7296,6 +7337,7 @@ static cvarTable_t cvarTable[] = {
 	{ &ui_s_language, "s_language", "english", CVAR_ARCHIVE | CVAR_NORESTART},
 
 	{ &ui_longMapName, "ui_longMapName", "1", CVAR_ARCHIVE},
+	{ &ui_widescreen, "ui_widescreen", "1", CVAR_ARCHIVE | CVAR_LATCH},
 };
 
 /*
@@ -7328,6 +7370,49 @@ void UI_RegisterCvars( void ) {
 }
 
 /*
+===================
+UI_WidescreenMode
+===================
+*/
+static void UI_WidescreenMode(qboolean on) {
+	if (uiInfo.mvapi >= 3) {
+		if (on) {
+			trap_MVAPI_SetVirtualScreen(uiInfo.screenWidth, uiInfo.screenHeight);
+		} else {
+			trap_MVAPI_SetVirtualScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
+		}
+	}
+}
+
+/*
+===================
+UI_UpdateWidescreen
+===================
+*/
+static void UI_UpdateWidescreen( void ) {
+	if ( ui_widescreen.value > 0 ) {
+		if ( uiInfo.mvapi >= 3 ) {
+			float virtualW = SCREEN_HEIGHT *
+				uiInfo.uiDC.glconfig.vidWidth / uiInfo.uiDC.glconfig.vidHeight;
+
+			uiInfo.screenWidth = SCREEN_WIDTH + ui_widescreen.value * (virtualW - SCREEN_WIDTH);
+		} else {
+			Com_Printf( "Widescreen fix is supported only on JK2MV 1.4 or newer\n" );
+			uiInfo.screenWidth = SCREEN_WIDTH;
+		}
+	} else {
+		uiInfo.screenWidth = SCREEN_WIDTH;
+	}
+
+	uiInfo.screenXFactor = SCREEN_WIDTH / uiInfo.screenWidth;
+	uiInfo.screenXFactorInv = uiInfo.screenWidth / SCREEN_WIDTH;
+
+	uiInfo.screenHeight = SCREEN_HEIGHT;
+	uiInfo.screenYFactor = SCREEN_HEIGHT / uiInfo.screenHeight;
+	uiInfo.screenYFactorInv = uiInfo.screenHeight / SCREEN_HEIGHT;
+}
+
+/*
 =================
 UI_UpdateCvars
 =================
@@ -7338,6 +7423,15 @@ void UI_UpdateCvars( void ) {
 
 	for ( cv = cvarTable ; cv < end ; cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
+	}
+
+	{
+		static int ui_widescreenModificationCount = -1;
+
+		if (ui_widescreenModificationCount != ui_widescreen.modificationCount) {
+			ui_widescreenModificationCount = ui_widescreen.modificationCount;
+			UI_UpdateWidescreen();
+		}
 	}
 }
 

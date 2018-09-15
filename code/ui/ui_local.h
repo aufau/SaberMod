@@ -838,7 +838,14 @@ typedef struct {
 
 	qboolean inGameLoad;
 
-	qboolean httpDownloads;
+	qboolean		httpDownloads;
+	int				mvapi;
+	float			screenWidth;
+	float			screenXFactor;
+	float			screenXFactorInv;
+	float			screenHeight;
+	float			screenYFactor;
+	float			screenYFactorInv;
 }	uiInfo_t;
 
 extern uiInfo_t uiInfo;
@@ -1018,6 +1025,11 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 /*
 Ghoul2 Insert End
 */
+
+// MVAPI
+
+void trap_MVAPI_SetVirtualScreen(float w, float h);
+
 //
 // ui_addbots.c
 //
