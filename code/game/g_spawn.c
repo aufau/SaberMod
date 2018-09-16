@@ -925,6 +925,26 @@ void SP_worldspawn( void )
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );
 	}
 
+	trap_SetConfigstring( CS_SCORES1, "" );
+	trap_SetConfigstring( CS_SCORES2, "" );
+
+	trap_SetConfigstring( CS_VOTE_TIME, "" );
+	trap_SetConfigstring( CS_VOTE_STRING, "" );
+	trap_SetConfigstring( CS_VOTE_YES, "" );
+	trap_SetConfigstring( CS_VOTE_NO, "" );
+
+	for (i = 0; i < 2; i++)
+	{
+		trap_SetConfigstring( CS_TEAMVOTE_TIME + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_STRING + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_YES + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_NO + i, "" );
+	}
+
+	trap_SetConfigstring( CS_INTERMISSION, "" );
+	trap_SetConfigstring( CS_FLAGSTATUS, "" );
+	trap_SetConfigstring( CS_SHADERSTATE, "" );
+
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+0, defaultStyles[0][0]);
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+1, defaultStyles[0][1]);
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+2, defaultStyles[0][2]);
@@ -952,6 +972,9 @@ void SP_worldspawn( void )
 				i, lengthRed, lengthGreen, lengthBlue);
 		}
 	}
+
+	trap_SetConfigstring( CS_READY, "" );
+	trap_SetConfigstring( CS_UNPAUSE, "" );
 
 	// write available modes to CS_MODES
 	{
