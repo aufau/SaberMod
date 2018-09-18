@@ -500,7 +500,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote match 1" ;
+				exec                    "cmd callvote matchmode 1" ;
 				uiScript                closeingame
 			}
 		}
@@ -522,7 +522,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote match 0" ;
+				exec                    "cmd callvote matchmode 0" ;
 				uiScript                closeingame
 			}
 		}

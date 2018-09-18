@@ -51,7 +51,7 @@ seek [+|-][mm:]ss
 Callvote
 ........
 
-match <0|1>
+matchmode <0|1>
   Enable/Disable match mode - restrict spectator chat, disable damage
   plums and require matching clientside. In round-based gametypes dead
   players may only follow their teammates.
