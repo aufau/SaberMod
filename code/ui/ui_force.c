@@ -145,7 +145,7 @@ void UI_InitForceShaders(void)
 void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle, int forceindex, int val, int min, int max)
 {
 	int	i,pad = 4;
-	int	xPos,width = 16;
+	int	xPos,yPos,width = 16;
 	int starcolor;
 
 	if (val < min || val > max)
@@ -155,7 +155,10 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 	if (1)	// if (val)
 	{
-		xPos = rect->x;
+		xPos = rect->x * uiInfo.screenXFactorInv;
+		yPos = (rect->y + 6) * uiInfo.screenYFactorInv;
+
+		UI_WidescreenMode(qtrue);
 
 		for (i=FORCE_LEVEL_1;i<=max;i++)
 		{
@@ -169,11 +172,11 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 			if (val >= i)
 			{	// Draw a star.
-				UI_DrawHandlePic( xPos, rect->y+6, width, width, uiForceStarShaders[starcolor][1] );
+				UI_DrawHandlePic( xPos, yPos, width, width, uiForceStarShaders[starcolor][1] );
 			}
 			else
 			{	// Draw a circle.
-				UI_DrawHandlePic( xPos, rect->y+6, width, width, uiForceStarShaders[starcolor][0] );
+				UI_DrawHandlePic( xPos, yPos, width, width, uiForceStarShaders[starcolor][0] );
 			}
 
 			if (uiForcePowersDisabled[forceindex])
@@ -183,6 +186,8 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 			xPos += width + pad;
 		}
+
+		UI_WidescreenMode(qfalse);
 	}
 }
 
