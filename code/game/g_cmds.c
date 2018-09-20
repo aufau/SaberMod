@@ -786,7 +786,7 @@ qboolean SetTeamSpec( gentity_t *ent, team_t team, spectatorState_t specState, i
 
 	if ( team == TEAM_SPECTATOR ) {
 		// they go to the end of the line for tournaments
-		client->sess.spectatorTime = level.time;
+		AddTournamentQueue(client);
 
 		if ( client->ps.duelInProgress ) {
 			client->sess.losses++;

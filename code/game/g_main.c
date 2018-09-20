@@ -932,7 +932,7 @@ void AddTournamentPlayer( void ) {
 			continue;
 		}
 
-		if ( !nextInLine || client->sess.spectatorTime < nextInLine->sess.spectatorTime ) {
+		if ( !nextInLine || client->sess.spectatorNum > nextInLine->sess.spectatorNum ) {
 			nextInLine = client;
 		}
 	}
@@ -945,6 +945,33 @@ void AddTournamentPlayer( void ) {
 
 	// set them to free-for-all team
 	SetTeam( &g_entities[ nextInLine - level.clients ], TEAM_FREE );
+}
+
+/*
+=======================
+AddTournamentQueue
+
+Add client to end of tournament queue
+=======================
+*/
+
+void AddTournamentQueue(gclient_t *client)
+{
+	int index;
+	gclient_t *curclient;
+
+	for(index = 0; index < level.maxclients; index++)
+	{
+		curclient = &level.clients[index];
+
+		if(curclient->pers.connected != CON_DISCONNECTED)
+		{
+			if(curclient == client)
+				curclient->sess.spectatorNum = 0;
+			else if(curclient->sess.sessionTeam == TEAM_SPECTATOR)
+				curclient->sess.spectatorNum++;
+		}
+	}
 }
 
 /*
@@ -1193,10 +1220,10 @@ int QDECL SortRanks( const int *a, const int *b ) {
 		if (ta && !tb)	return 1;
 		if (!ta && tb)	return -1;
 
-		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
+		if ( ca->sess.spectatorNum > cb->sess.spectatorNum ) {
 			return -1;
 		}
-		if ( ca->sess.spectatorTime > cb->sess.spectatorTime ) {
+		if ( ca->sess.spectatorNum < cb->sess.spectatorNum ) {
 			return 1;
 		}
 		return 0;

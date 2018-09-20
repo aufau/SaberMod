@@ -410,7 +410,7 @@ typedef struct {
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
 	team_t				sessionTeam;
-	int					spectatorTime;		// for determining next-in-line to play
+	int					spectatorNum;		// for determining next-in-line to play
 	spectatorState_t	spectatorState;
 	int					spectatorClient;	// for chasecam and follow mode
 	int					wins, losses;		// tournament stats
@@ -975,6 +975,7 @@ void FindIntermissionPoint( void );
 void SetLeader(team_t team, int client);
 void CheckTeamLeader( team_t team );
 void G_RunThink (gentity_t *ent);
+void AddTournamentQueue(gclient_t *client);
 void G_LogPrintf( int event, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
