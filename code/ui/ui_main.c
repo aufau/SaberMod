@@ -162,7 +162,6 @@ static void UI_ParseGameInfo(const char *teamFile);
 static const char *UI_SelectedMap(int index, int *actual);
 static const char *UI_SelectedHead(int index, int *actual);
 static int UI_GetIndexFromSelection(int actual);
-static void UI_WidescreenMode(qboolean on);
 static void UI_UpdateWidescreen( void );
 
 int ProcessNewUI( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
@@ -7374,7 +7373,7 @@ void UI_RegisterCvars( void ) {
 UI_WidescreenMode
 ===================
 */
-static void UI_WidescreenMode(qboolean on) {
+void UI_WidescreenMode(qboolean on) {
 	if (uiInfo.mvapi >= 3) {
 		if (on) {
 			trap_MVAPI_SetVirtualScreen(uiInfo.screenWidth, uiInfo.screenHeight);
