@@ -2969,8 +2969,8 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 	}
 	else
 	{
-		x = 0.5f * (cgs.screenWidth - w) + cg_crosshairX.value;
-		y = 0.5f * (SCREEN_HEIGHT - h) + cg_crosshairY.value;
+		x = 0.5f * cgs.screenWidth + cg_crosshairX.value;
+		y = 0.5f * SCREEN_HEIGHT + cg_crosshairY.value;
 	}
 
 	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
@@ -2978,7 +2978,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 	x += cg.refdef.x;
 	y += cg.refdef.y;
 
-	CG_DrawPic( x - 0.5f * w, y - 0.5f * w, w, h, hShader );
+	CG_DrawPic( x - 0.5f * w, y - 0.5f * h, w, h, hShader );
 	CG_DrawCrosshairIndicators( x, y, w, h );
 }
 
