@@ -139,13 +139,21 @@ G_InitSessionData
 Called on a first-time connect
 ================
 */
-void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
+void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qboolean firstTime ) {
 	clientSession_t	*sess;
 	const char		*value;
 	int				clientNum;
+	qboolean		referee;
 
 	sess = &client->sess;
 	clientNum = client - level.clients;
+	referee = sess->referee;
+
+	memset(sess, 0, sizeof(*sess));
+
+	if ( !firstTime ) {
+		sess->referee = referee;
+	}
 
 	// initial team determination
 	if ( GT_Team(level.gametype) ) {
