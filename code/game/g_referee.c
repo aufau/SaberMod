@@ -244,6 +244,18 @@ static void Ref_Unpause_f( void ) {
 	ref.LogPrintf(LOG_REFEREE, "Unpause\n");
 }
 
+static void Ref_AllReady_f(void) {
+	if (level.warmupTime || level.intermissiontime) {
+		int	i;
+
+		for (i = 0; i < level.maxclients; i++) {
+			level.clients[i].pers.ready = qtrue;
+		}
+
+		G_UpdateClientReadyFlags();
+	}
+}
+
 static void Ref_Help_f(void);
 
 typedef struct {
@@ -261,6 +273,7 @@ static const refereeCommand_t refCommands[] = {
 	{ "help", Ref_Help_f },
 	{ "pause", Ref_Pause_f },
 	{ "unpause", Ref_Unpause_f },
+	{ "allready", Ref_AllReady_f },
 };
 
 static void Ref_Help_f(void) {

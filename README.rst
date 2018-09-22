@@ -82,7 +82,11 @@ teamsize <size>
 Referee Commands
 ................
 
-These commands can be used only by a registered referee.
+These commands can be used only by a registered referee or server
+console (rcon).
+
+allready
+  Make all players ready in warmup or during intermission.
 
 announce <message|motd>
   Print `message` or ingame message of the day on everyone's screen.

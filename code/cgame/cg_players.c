@@ -1030,6 +1030,7 @@ static void CG_RefereeMode(qboolean enable) {
 	UpdateCommand("help");
 	UpdateCommand("pause");
 	UpdateCommand("unpause");
+	UpdateCommand("allready");
 }
 
 /*
