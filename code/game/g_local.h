@@ -531,6 +531,7 @@ struct gclient_s {
 	int			airOutTime;			// time the players needs to breathe
 
 	int			lastKillTime;		// for multiple kill rewards
+	int			readyTime;			// last time ready command was issued
 
 	qboolean	fireHeld;			// used for hook
 	gentity_t	*hook;				// grapple hook if out

@@ -2722,10 +2722,32 @@ static void Cmd_RageQuit_f(gentity_t *ent)
 
 static void Cmd_Ready_f(gentity_t *ent)
 {
-	if (level.warmupTime) {
-		ent->client->pers.ready = (qboolean)!ent->client->pers.ready;
-		G_UpdateClientReadyFlags();
+	gclient_t	*client = ent->client;
+
+	if (!level.warmupTime) {
+		return;
 	}
+
+	if (client->readyTime + 1000 > level.time) {
+		G_SendServerCommand(ent-g_entities,
+			"print \"May not use this command more than once per second.\n\"");
+		return;
+	}
+
+	if (client->pers.ready) {
+		client->pers.ready = qfalse;
+		G_SendServerCommand(-1, "cp \"%s" S_COLOR_WHITE " is "
+			S_COLOR_RED "not ready" S_COLOR_WHITE ".\n\"",
+			client->info.netname);
+	} else {
+		client->pers.ready = qtrue;
+		G_SendServerCommand(-1, "cp \"%s" S_COLOR_WHITE " is "
+			S_COLOR_GREEN "ready" S_COLOR_WHITE ".\n\"",
+			client->info.netname);
+	}
+
+	client->readyTime = level.time;
+	G_UpdateClientReadyFlags();
 }
 
 static void Cmd_Timeout_f(gentity_t *ent)
