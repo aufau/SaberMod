@@ -188,6 +188,12 @@ cg_widescreenFov <0|1>
   screen it's extended to the sides, compared to 4:3 display. Works
   only when cg_widescreen is enabled.
 
+UI Cvars
+........
+
+ui_widescreen <0|1>
+  Enable menu adjustments for widescreen monitors
+
 Spectating
 ..........
 
