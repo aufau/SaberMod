@@ -2742,9 +2742,13 @@ CG_PrintMotd_f
 ==================
 */
 void CG_PrintMotd_f( void ) {
-	cg.centerPrintLock = qfalse;
-	CG_CenterPrint( CG_ConfigString( CS_INGAME_MOTD ), SCREEN_HEIGHT * 0.30f );
-	cg.centerPrintLock = qtrue;
+	const char *motd = CG_ConfigString( CS_INGAME_MOTD );
+
+	if (strcmp(motd, "")) {
+		cg.centerPrintLock = qfalse;
+		CG_CenterPrint( motd, SCREEN_HEIGHT * 0.30f );
+		cg.centerPrintLock = qtrue;
+	}
 }
 
 /*
