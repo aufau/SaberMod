@@ -312,6 +312,9 @@ extern	pmove_t		*pm;
 
 // if a full pmove isn't done on the client, you can just update the angles
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
+void PM_UpdateViewAngles2( vec3_t viewangles, int *delta_angles, const usercmd_t *cmd );
+void PM_SetDeltaAngles(int *delta_angles, const vec3_t angle, const usercmd_t *ucmd);
+
 void Pmove (pmove_t *pmove);
 
 //===================================================================================

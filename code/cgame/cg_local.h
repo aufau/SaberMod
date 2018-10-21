@@ -660,6 +660,19 @@ typedef struct {
 #define MAX_REWARDSTACK		10
 #define MAX_SOUNDBUFFER		20
 
+typedef enum {
+	SPECMODE_FOLLOW,		// standard following mode
+	SPECMODE_FREEANGLES,	// spectator controls absolute camera angles
+	SPECMODE_MAX
+} specMode_t;
+
+typedef struct {
+	qboolean	following;			// if we're following another player
+	specMode_t	mode;
+	int			delta_angles[3];	// delta angles for free angles mode
+	int			thirdPersonRange;	// precalculated third person range
+} specData_t;
+
 //======================================================================
 
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
@@ -757,6 +770,9 @@ typedef struct {
 
 	qboolean	hasFallVector;
 	vec3_t		fallVector;
+
+	// following spectator mode data
+	specData_t	spec;
 
 	// zoom key
 	qboolean	zoomed;

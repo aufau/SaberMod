@@ -2855,6 +2855,11 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 		return;
 	}
 
+	if (cg.spec.following && cg.spec.mode == SPECMODE_FREEANGLES)
+	{
+		return;
+	}
+
 	if ( cgs.crosshairColor[3] > 0.0f )
 	{
 		trap_R_SetColor( cgs.crosshairColor );

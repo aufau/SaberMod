@@ -31,6 +31,12 @@ follow [first|second]
 motd
   Show server Message of the Day.
 
+nextspecmode/prevspecmode
+  Cycle through spectator modes when following another
+  player. Currently available modes are:
+  1. Follow another player from his POV. (default)
+  2. You can freely control camera angles and range.
+
 players [?|team]
   List players connected to server with some additional
   info. Optionally limit to members of `team`.

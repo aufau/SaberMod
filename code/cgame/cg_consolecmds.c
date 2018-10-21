@@ -568,6 +568,46 @@ static void CG_Seek_f( void ) {
 	}
 }
 
+/*
+==================
+CG_CycleSpectatorMode
+==================
+*/
+static void CG_CycleSpectatorMode( int dir ) {
+	if (cg.spec.following) {
+		cg.spec.mode = (cg.spec.mode + SPECMODE_MAX + dir) % SPECMODE_MAX;
+
+		if (cg.spec.mode == SPECMODE_FREEANGLES) {
+			usercmd_t	cmd;
+			int			cmdNum;
+
+			cmdNum = trap_GetCurrentCmdNumber();
+			trap_GetUserCmd(cmdNum, &cmd);
+
+			PM_SetDeltaAngles(cg.spec.delta_angles, cg.snap->ps.viewangles, &cmd);
+		}
+	}
+}
+
+/*
+==================
+CG_PrevSpectatorMode_f
+==================
+*/
+static void CG_PrevSpectatorMode_f( void ) {
+	CG_CycleSpectatorMode(-1);
+}
+
+/*
+==================
+CG_NextSpectatorMode_f
+==================
+*/
+static void CG_NextSpectatorMode_f( void ) {
+	CG_CycleSpectatorMode(1);
+}
+
+
 typedef struct {
 	const char	*cmd;
 	void		(*function)(void);
@@ -628,6 +668,8 @@ static const consoleCommand_t	commands[] = {
 	{ "players", CG_Players_f },
 	{ "motd", CG_PrintMotd_f },
 	{ "seek", CG_Seek_f },
+	{ "prevspecmode", CG_PrevSpectatorMode_f },
+	{ "nextspecmode", CG_NextSpectatorMode_f },
 };
 
 
@@ -709,7 +751,6 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
 
 	trap_AddCommand ("ragequit");
-	trap_AddCommand ("seek");
 	trap_AddCommand ("timeout");
 	trap_AddCommand ("timein");
 	trap_AddCommand ("referee");
@@ -756,7 +797,6 @@ void CG_ShutDownConsoleCommands( void ) {
 	trap_RemoveCommand ("loaddefered");	// spelled wrong, but not changing for demo
 
 	trap_RemoveCommand ("ragequit");
-	trap_RemoveCommand ("seek");
 	trap_RemoveCommand ("timeout");
 	trap_RemoveCommand ("timein");
 

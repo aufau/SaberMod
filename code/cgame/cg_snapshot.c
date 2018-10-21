@@ -72,6 +72,17 @@ static void CG_TransitionEntity( centity_t *cent ) {
 	CG_CheckEvents( cent );
 }
 
+/*
+==================
+CG_UpdateSnapshotVariables
+
+Update global variables derived from current snapshot
+==================
+*/
+static void CG_UpdateSnapshotVariables( const snapshot_t *snap ) {
+	cg.spec.following = snap->ps.pm_flags & PMF_FOLLOW ||
+		(cg.demoPlayback && snap->ps.pm_type != PM_SPECTATOR);
+}
 
 /*
 ==================
@@ -102,6 +113,8 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 	CG_BuildSolidList();
 
 	CG_ExecuteNewServerCommands( snap->serverCommandSequence );
+
+	CG_UpdateSnapshotVariables( snap );
 
 	// set our local weapon selection pointer to
 	// what the server has indicated the current weapon is
@@ -172,6 +185,8 @@ static void CG_TransitionSnapshot( void ) {
 	}
 
 	cg.nextSnap = NULL;
+
+	CG_UpdateSnapshotVariables( cg.snap );
 
 	// check for playerstate transition events
 	if ( oldFrame ) {

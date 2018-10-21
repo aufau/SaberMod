@@ -316,7 +316,7 @@ CG_CalcTargetThirdPersonViewLocation
 */
 static void CG_CalcIdealThirdPersonViewLocation(void)
 {
-	float thirdPersonRange = cg_thirdPersonRange.value;
+	float thirdPersonRange = cg.spec.thirdPersonRange;
 #ifdef ATST
 	if (cg.snap && cg.snap->ps.usingATST)
 	{
@@ -1220,6 +1220,39 @@ qboolean CheckOutOfConstrict(float curAng)
 }
 #endif // UNUSED
 
+
+/*
+=================
+CG_CalcSpectatorView
+
+Calculate third person camera angles for spectator
+=================
+*/
+static void CG_CalcSpectatorView() {
+	static float	thirdPersonRangePos = 1;
+
+	if (cg.spec.following && cg.spec.mode == SPECMODE_FREEANGLES)
+	{
+		usercmd_t	cmd;
+		int			cmdNum;
+
+		cmdNum = trap_GetCurrentCmdNumber();
+		trap_GetUserCmd( cmdNum, &cmd );
+		PM_UpdateViewAngles2( cg.refdefViewAngles, cg.spec.delta_angles, &cmd );
+
+		thirdPersonRangePos -= cmd.forwardmove * cg.frametime / (1000.0f * 127.0f);
+
+		// don't allow it too close or camera damping makes it jumpy
+		if (thirdPersonRangePos < 0.3f) {
+			thirdPersonRangePos = 0.3f;
+		}
+
+		cg.spec.thirdPersonRange = 80.0f * thirdPersonRangePos * thirdPersonRangePos;
+	} else {
+		cg.spec.thirdPersonRange = cg_thirdPersonRange.value;
+	}
+}
+
 /*
 ===============
 CG_CalcViewValues
@@ -1311,6 +1344,7 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	if ( cg.renderingThirdPerson ) {
+		CG_CalcSpectatorView();
 		// back away from character
 		CG_OffsetThirdPersonView();
 	} else {

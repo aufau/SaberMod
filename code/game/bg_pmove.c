@@ -541,6 +541,12 @@ static void PM_JumpForDir( void )
 
 static void PM_SetPMViewAngle(playerState_t *ps, const vec3_t angle, usercmd_t *ucmd)
 {
+	PM_SetDeltaAngles(ps->delta_angles, angle, ucmd);
+	VectorCopy (angle, ps->viewangles);
+}
+
+void PM_SetDeltaAngles(int *delta_angles, const vec3_t angle, const usercmd_t *ucmd)
+{
 	int			i;
 
 	for (i=0 ; i<3 ; i++)
@@ -548,9 +554,8 @@ static void PM_SetPMViewAngle(playerState_t *ps, const vec3_t angle, usercmd_t *
 		int		cmdAngle;
 
 		cmdAngle = ANGLE2SHORT(angle[i]);
-		ps->delta_angles[i] = cmdAngle - ucmd->angles[i];
+		delta_angles[i] = cmdAngle - ucmd->angles[i];
 	}
-	VectorCopy (angle, ps->viewangles);
 }
 
 qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean doMove )
@@ -3915,9 +3920,6 @@ are being updated isntead of a full move
 ================
 */
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
-	short		temp;
-	int		i;
-
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION) {
 		return;		// no view changes at all
 	}
@@ -3926,22 +3928,28 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 		return;		// no view changes at all
 	}
 
+	PM_UpdateViewAngles2( ps->viewangles, ps->delta_angles, cmd );
+}
+
+void PM_UpdateViewAngles2( vec3_t viewangles, int *delta_angles, const usercmd_t *cmd ) {
+	short	temp;
+	int		i;
+
 	// circularly clamp the angles with deltas
 	for (i=0 ; i<3 ; i++) {
-		temp = cmd->angles[i] + ps->delta_angles[i];
+		temp = cmd->angles[i] + delta_angles[i];
 		if ( i == PITCH ) {
 			// don't let the player look up or down more than 90 degrees
 			if ( temp > 16000 ) {
-				ps->delta_angles[i] = 16000 - cmd->angles[i];
+				delta_angles[i] = 16000 - cmd->angles[i];
 				temp = 16000;
 			} else if ( temp < -16000 ) {
-				ps->delta_angles[i] = -16000 - cmd->angles[i];
+				delta_angles[i] = -16000 - cmd->angles[i];
 				temp = -16000;
 			}
 		}
-		ps->viewangles[i] = SHORT2ANGLE(temp);
+		viewangles[i] = SHORT2ANGLE(temp);
 	}
-
 }
 
 //-------------------------------------------
