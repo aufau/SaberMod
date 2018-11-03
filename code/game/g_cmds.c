@@ -1767,7 +1767,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	const char		*arg2;
 	const char		*errorMsg;
 	const char		*mapInfo;
-	arena_t			arena;
 	char			s[MAX_STRING_CHARS];
 	int				voteMask;
 
@@ -1923,6 +1922,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			voteName, gametypeLong[i] );
 		break;
 	case CV_MAP:
+	{
+		const char	*mapName;
+		arena_t		arena;
+
 		// special case for map changes, we want to reset the nextmap setting
 		// this allows a player to change maps, but not upset the map rotation
 		arena = G_GetArenaByMap( arg2 );
@@ -1934,18 +1937,21 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 
+		mapInfo = G_GetArenaInfo( arena );
+		mapName = Info_ValueForKey( mapInfo, "map" );
+
 		trap_Cvar_VariableStringBuffer( "nextmap", s, sizeof(s) );
 		if (*s) {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s; set nextmap \"%s\"", arg2, s );
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s; set nextmap \"%s\"", mapName, s );
 		} else {
-			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s", arg2 );
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "map %s", mapName );
 		}
 
-		mapInfo = G_GetArenaInfo( arena );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ),
 			"%s %s" S_COLOR_WHITE " (%s" S_COLOR_WHITE ")", voteName,
-			Info_ValueForKey( mapInfo, "longname" ), Info_ValueForKey( mapInfo, "map" ) );
+			Info_ValueForKey( mapInfo, "longname" ), mapName );
 		break;
+	}
 	case CV_KICK:
 		i = G_ClientNumberFromString( arg2, &errorMsg );
 
@@ -1993,7 +1999,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 				va("print \"teamsize must be greater than %d.\n\"",	g_teamsizeMin.integer - 1 ) );
 			return;
 		}
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "teamsize \"%d\"", i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %d", voteName, i );
 		break;
 	case CV_REMOVE:
@@ -2004,7 +2010,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "remove %d", i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s",
 			voteName, g_entities[i].client->info.netname );
 		break;
@@ -2067,7 +2073,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		break;
 	case CV_SHUFFLE:
 		// no argument votes
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s", arg1 );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "shuffle" );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", voteName );
 		break;
 	default:
