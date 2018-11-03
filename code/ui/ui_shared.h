@@ -76,7 +76,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef CGAME
 #define STRING_POOL_SIZE (128*1024)
 #else
-#define STRING_POOL_SIZE (384*1024)
+#define STRING_POOL_SIZE (1024*1024)
 #endif
 #define MAX_STRING_HANDLES 4096
 
