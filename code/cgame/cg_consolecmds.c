@@ -574,6 +574,11 @@ CG_CycleSpectatorMode
 ==================
 */
 static void CG_CycleSpectatorMode( int dir ) {
+	static const char *specModeNames[SPECMODE_MAX] = {
+		"Follow",
+		"Free Angles"
+	};
+
 	if (cg.spec.following) {
 		cg.spec.mode = (cg.spec.mode + SPECMODE_MAX + dir) % SPECMODE_MAX;
 
@@ -586,6 +591,10 @@ static void CG_CycleSpectatorMode( int dir ) {
 
 			PM_SetDeltaAngles(cg.spec.delta_angles, cg.snap->ps.viewangles, &cmd);
 		}
+
+		CG_Printf("Spectator Mode: %s\n", specModeNames[cg.spec.mode]);
+	} else {
+		CG_Printf("Spectator Mode: Free\n");
 	}
 }
 
