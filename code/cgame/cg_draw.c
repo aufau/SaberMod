@@ -2515,10 +2515,11 @@ static void CG_DrawLagometer( void ) {
 	// draw the graph
 	//
 	x = cgs.screenWidth - 48;
-	y = 480 - 144;
+	y = SCREEN_HEIGHT - 144;
 
 	trap_R_SetColor( NULL );
 	CG_DrawPic( x, y, 48, 48, cgs.media.lagometerShader );
+	x -= 1.0f; //lines the actual graph up with the background
 
 	ax = x;
 	ay = y;

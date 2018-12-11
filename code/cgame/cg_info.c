@@ -465,7 +465,8 @@ void CG_LoadBar(void)
 	const int capwidth = 8;
 	const float barwidth = numticks*tickwidth+tickpadx*2+capwidth*2;
 	const float barleft = 0.5f * (cgs.screenWidth - barwidth);
-	const float barheight = tickheight + tickpady*2, bartop = 480-barheight;
+	const float barheight = tickheight + tickpady*2;
+	const float bartop = SCREEN_HEIGHT-barheight;
 	const float capleft = barleft+tickpadx;
 	const float tickleft = capleft+capwidth;
 	const float ticktop = bartop+tickpady;
