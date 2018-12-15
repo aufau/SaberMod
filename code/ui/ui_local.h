@@ -544,8 +544,8 @@ typedef struct {
 typedef struct {
 	int					frametime;
 	int					realtime;
-	int					cursorx;
-	int					cursory;
+	float				cursorx;
+	float				cursory;
 	glconfig_t 	glconfig;
 	qboolean		debug;
 	qhandle_t		whiteShader;

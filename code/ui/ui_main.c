@@ -542,7 +542,12 @@ void _UI_Refresh( int realtime )
 	// draw cursor
 	UI_SetColor( NULL );
 	if (Menu_Count() > 0) {
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory, 48, 48, uiInfo.uiDC.Assets.cursor);
+		float x = uiInfo.uiDC.cursorx * uiInfo.screenXFactorInv;
+		float y = uiInfo.uiDC.cursory * uiInfo.screenYFactorInv;
+
+		UI_WidescreenMode(qtrue);
+		UI_DrawHandlePic( x, y, 48, 48, uiInfo.uiDC.Assets.cursor);
+		UI_WidescreenMode(qfalse);
 	}
 
 #ifndef NDEBUG
@@ -6782,13 +6787,13 @@ UI_MouseEvent
 void _UI_MouseEvent( int dx, int dy )
 {
 	// update mouse screen position
-	uiInfo.uiDC.cursorx += dx;
+	uiInfo.uiDC.cursorx += dx * uiInfo.screenXFactor;
 	if (uiInfo.uiDC.cursorx < 0)
 		uiInfo.uiDC.cursorx = 0;
 	else if (uiInfo.uiDC.cursorx > SCREEN_WIDTH)
 		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
 
-	uiInfo.uiDC.cursory += dy;
+	uiInfo.uiDC.cursory += dy * uiInfo.screenYFactor;
 	if (uiInfo.uiDC.cursory < 0)
 		uiInfo.uiDC.cursory = 0;
 	else if (uiInfo.uiDC.cursory > SCREEN_HEIGHT)
