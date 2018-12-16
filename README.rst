@@ -50,6 +50,9 @@ timeout
 ragequit
   Reserved for God, do not use.
 
+ready
+  Toggle ready status during warmup.
+
 seek [+|-][mm:]ss
   During demo playback seeks to `mm:ss` server time. With `+` or `-`
   prefix seeks `mm` minutes and `ss` seconds forwards or backwards.
@@ -414,6 +417,11 @@ g_unlaggedMaxPing <msec>
   behind an obstacle. This cvar's value limits time period in which
   this can happen, adding extra hit detection delay for players with
   pings higher than `msec`.
+
+g_warmup <0|1>
+  SaberMod has a new warmup system. All players must ready up with
+  `ready` command before a match can start. Old `g_warmupTime` Cvar is
+  no longer used. Setting this cvar to 0 disables warmup alltogether.
 
 g_voteCooldown <seconds>
   How long a player has to wait before he can call another vote.
