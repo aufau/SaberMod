@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 76
+COUNT 79
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -685,4 +685,34 @@ INDEX 75
    TEXT_LANGUAGE3 "Draw crosshair indicators when spectating."
    TEXT_LANGUAGE6 "Draw crosshair indicators when spectating."
    TEXT_LANGUAGE8 "Draw crosshair indicators when spectating."
+}
+INDEX 76
+{
+   REFERENCE READY
+   NOTES "Menu button to ready up/down"
+   TEXT_LANGUAGE1 "Ready"
+   TEXT_LANGUAGE2 "Ready"
+   TEXT_LANGUAGE3 "Ready"
+   TEXT_LANGUAGE6 "Ready"
+   TEXT_LANGUAGE8 "Ready"
+}
+INDEX 77
+{
+   REFERENCE TIMEOUT
+   NOTES "Menu button to timeout"
+   TEXT_LANGUAGE1 "Timeout"
+   TEXT_LANGUAGE2 "Timeout"
+   TEXT_LANGUAGE3 "Timeout"
+   TEXT_LANGUAGE6 "Timeout"
+   TEXT_LANGUAGE8 "Timeout"
+}
+INDEX 78
+{
+   REFERENCE TIMEIN
+   NOTES "Menu button to timein"
+   TEXT_LANGUAGE1 "Timein"
+   TEXT_LANGUAGE2 "Timein"
+   TEXT_LANGUAGE3 "Timein"
+   TEXT_LANGUAGE6 "Timein"
+   TEXT_LANGUAGE8 "Timein"
 }

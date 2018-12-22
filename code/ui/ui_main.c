@@ -163,6 +163,7 @@ static const char *UI_SelectedMap(int index, int *actual);
 static const char *UI_SelectedHead(int index, int *actual);
 static int UI_GetIndexFromSelection(int actual);
 static void UI_UpdateWidescreen( void );
+static void UI_UpdateConfigStrings( void );
 
 int ProcessNewUI( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 team_t	uiSkinColor = TEAM_FREE;
@@ -527,6 +528,7 @@ void _UI_Refresh( int realtime )
 
 
 	UI_UpdateCvars();
+	UI_UpdateConfigStrings();
 
 	if (Menu_Count() > 0) {
 		// paint all the menus
@@ -7439,6 +7441,36 @@ void UI_UpdateCvars( void ) {
 	}
 }
 
+/*
+=================
+UI_UpdateConfigStrings
+
+Update information derived from config strings
+=================
+*/
+static void UI_UpdateConfigStrings( void )
+{
+	char		str[MAX_INFO_STRING];
+	int			warmup, unpause;
+	const char	*actionButton;
+
+	// activate appropriate ingame action button (old addBot button)
+	trap_GetConfigString(CS_WARMUP, str, sizeof(str));
+	warmup = atoi(str);
+
+	trap_GetConfigString(CS_UNPAUSE, str, sizeof(str));
+	unpause = atoi(str);
+
+	if (unpause) {
+		actionButton = "timein";
+	} else if (warmup) {
+		actionButton = "ready";
+	} else {
+		actionButton = "timeout";
+	}
+
+	trap_Cvar_Set("ui_action_button", actionButton);
+}
 
 /*
 =================
