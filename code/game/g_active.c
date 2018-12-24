@@ -1823,6 +1823,23 @@ void ClientThink_real( gentity_t *ent ) {
 	G_UpdateClientBroadcasts ( ent );
 }
 
+void ClientThink_paused( gentity_t *ent ) {
+	gclient_t	*client = ent->client;
+	usercmd_t	*cmd = &client->pers.cmd;
+
+	// Pmove substitute, should be Pmove_paused
+	client->ps.commandTime = cmd->serverTime;
+	if ( cmd->buttons & BUTTON_TALK ) {
+		ent->s.eFlags |= EF_TALK;
+		client->ps.eFlags |= EF_TALK;
+	} else {
+		ent->s.eFlags &= ~EF_TALK;
+		client->ps.eFlags &= ~EF_TALK;
+	}
+	// force the same view angles as before
+	SetClientViewAngle(ent, client->ps.viewangles);
+}
+
 /*
 ==================
 G_CheckClientTimeouts
@@ -1875,12 +1892,8 @@ void ClientThink( int clientNum ) {
 	client->warp = qfalse;
 
 	if (level.unpauseTime > level.time) {
-		client->ps.commandTime = client->pers.cmd.serverTime;
-		SetClientViewAngle(ent, client->ps.viewangles);
-		return;
-	}
-
-	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
+		ClientThink_paused( ent );
+	} else if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
 		ClientThink_real( ent );
 	}
 }
