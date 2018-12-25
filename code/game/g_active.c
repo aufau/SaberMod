@@ -756,11 +756,13 @@ void ClientIntermissionThink( gclient_t *client ) {
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
 	client->buttons = client->pers.cmd.buttons;
-	if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
-		// this used to be an ^1 but once a player says ready, it should stick
-		if (!client->pers.ready) {
-			client->pers.ready = qtrue;
-			G_UpdateClientReadyFlags();
+	if ( level.gametype != GT_TOURNAMENT || level.duelExit ) {
+		if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
+			// this used to be an ^1 but once a player says ready, it should stick
+			if (!client->pers.ready) {
+				client->pers.ready = qtrue;
+				G_UpdateClientReadyFlags();
+			}
 		}
 	}
 }
