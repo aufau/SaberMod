@@ -289,9 +289,20 @@ g_allowVote <0|1|bitmask>
   65536 - Capturelimit   131072 - Poll          262144 - Referee
   =====================  =====================  =====================
 
+g_antiWarp <0|1|2>
+  Prevention system against players who are warping or using lag scripts.
+  | 1: Draw icon above warping player's head.
+  | 2: Forcefully prevent players from warping for others. This
+       setting makes game almost unplayable for a warping player and
+       may hurt legitimate players who have bad connection.
+  Refer to `g_antiWarpTime` cvar description for more details.
+
 g_antiWarpTime <msec>
-  Prevent players from warping by forcing update after `msec` time of
-  inactivity.
+  Tune when player is considered as warping and g_antiWarp preventive
+  actions are taken against him. Default setting is 1000 and it only
+  marks players with interrupted connection. To prevent warping and
+  lag scripts it should be set as low as possible so that legitimate
+  players are not affected.
 
 g_damagePlums <0|1>
   Allow clients with `cg_damagePlums` enabled to see damage plums.

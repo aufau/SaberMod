@@ -1891,7 +1891,6 @@ void ClientThink( int clientNum ) {
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while
 	client->lastCmdTime = level.time;
-	client->warp = qfalse;
 
 	if (level.unpauseTime > level.time) {
 		ClientThink_paused( ent );
@@ -1902,7 +1901,8 @@ void ClientThink( int clientNum ) {
 
 
 void G_RunClient( gentity_t *ent ) {
-	usercmd_t	*cmd = &ent->client->pers.cmd;
+	gclient_t	*client = ent->client;
+	usercmd_t	*cmd = &client->pers.cmd;
 
 	if ( (ent->r.svFlags & SVF_BOT) || g_synchronousClients.integer )
 	{
@@ -1910,25 +1910,22 @@ void G_RunClient( gentity_t *ent ) {
 
 		ClientThink_real( ent );
 	}
-	else if ( g_antiWarpTime.integer &&
-		ent->client->lastCmdTime < level.time - g_antiWarpTime.integer &&
-		ent->client->lastCmdTime > 0 &&
-//		level.time - ent->client->lastCmdTime < 1000 &&
-		ent->client->pers.connected == CON_CONNECTED &&
-		ent->client->sess.spectatorState == SPECTATOR_NOT &&
-		ent->client->ps.pm_type != PM_DEAD)
+	else if ( g_antiWarp.integer > 1 &&
+		client->lastCmdTime < level.time - g_antiWarpTime.integer &&
+//		client->lastCmdTime > level.time - 1000 && //
+		client->lastCmdTime > 0 &&
+		client->pers.connected == CON_CONNECTED &&
+		client->sess.spectatorState == SPECTATOR_NOT &&
+		client->ps.pm_type != PM_DEAD)
 	{
 		// create a fake user command to make him move, causing client
 		// prediction error for a warping player
-		cmd->serverTime = level.time + (cmd->serverTime - ent->client->lastCmdTime);
+		cmd->serverTime = level.time + (cmd->serverTime - client->lastCmdTime);
 		cmd->buttons = 0;
 		cmd->generic_cmd = 0;	// let go any force power eg grip
 		cmd->forwardmove = 0;
 		cmd->rightmove = 0;
 		cmd->upmove = 0;
-
-		ent->client->lastCmdTime = level.time;
-		ent->client->warp = qtrue;
 
 		ClientThink_real( ent );
 	}
@@ -2084,10 +2081,10 @@ void ClientEndFrame( gentity_t *ent ) {
 	P_DamageFeedback (ent);
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 || ent->client->warp ) {
-		ent->s.eFlags |= EF_CONNECTION;
+	if ( g_antiWarp.integer && client->lastCmdTime < level.time - g_antiWarpTime.integer ) {
+		client->ps.eFlags |= EF_CONNECTION;
 	} else {
-		ent->s.eFlags &= ~EF_CONNECTION;
+		client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...

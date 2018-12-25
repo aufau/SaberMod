@@ -496,7 +496,6 @@ struct gclient_s {
 	int			lastCmdTime;		// level.time of last usercmd_t, for EF_CONNECTION
 									// we can't just use pers.lastCommand.time, because
 									// of the g_sycronousclients case
-	qboolean	warp;				// if anti-warp is active for EF_CONNECTION
 	int			buttons;
 	int			oldbuttons;
 	int			latched_buttons;
@@ -1291,6 +1290,7 @@ extern	vmCvar_t	g_unlaggedMaxPing;
 extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
+extern	vmCvar_t	g_antiWarp;
 extern	vmCvar_t	g_antiWarpTime;
 extern	vmCvar_t	g_spSkill;
 extern	vmCvar_t	g_pushableItems;

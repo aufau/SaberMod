@@ -163,6 +163,7 @@ vmCvar_t	g_macroscan;
 vmCvar_t	g_timeoutLimit;
 vmCvar_t	g_requireClientside;
 vmCvar_t	g_allowRefVote;
+vmCvar_t	g_antiWarp;
 vmCvar_t	g_antiWarpTime;
 vmCvar_t	g_spSkill;
 vmCvar_t	g_pushableItems;
@@ -337,7 +338,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_timeoutLimit, "g_timeoutLimit", "2", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_requireClientside, "g_requireClientside", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_allowRefVote, "g_allowRefVote", "-1", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_antiWarpTime, "g_antiWarpTime", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_antiWarpTime, "g_antiWarpTime", "1000", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_spSkill, "g_spSkill", "2", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_pushableItems, "g_pushableItems", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_refereePassword, "g_refereePassword", "", CVAR_ARCHIVE, 0, qfalse },
