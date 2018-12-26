@@ -294,7 +294,7 @@
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
 			text                    @SABERMENUS_WIDESCREEN_FOV
-			cvar                    "cg_widescreenFov"
+			cvar                    "cg_fovAspectAdjust"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
