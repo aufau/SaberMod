@@ -478,29 +478,29 @@ void Cmd_Give_f (gentity_t *ent)
 	}
 	if (Q_stricmp(name, "denied") == 0) {
 		ent->client->pers.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
-		ent->s.eFlags &= ~EF_AWARDS;
-		ent->s.eFlags |= EF_AWARD_DENIED;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_DENIED;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "capture") == 0) {
 		ent->client->pers.persistant[PERS_CAPTURES]++;
-		ent->s.eFlags &= ~EF_AWARDS;
-		ent->s.eFlags |= EF_AWARD_CAP;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_CAP;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "defend") == 0) {
 		ent->client->pers.persistant[PERS_DEFEND_COUNT]++;
-		ent->s.eFlags &= ~EF_AWARDS;
-		ent->s.eFlags |= EF_AWARD_DEFEND;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_DEFEND;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
 	if (Q_stricmp(name, "assist") == 0) {
 		ent->client->pers.persistant[PERS_ASSIST_COUNT]++;
-		ent->s.eFlags &= ~EF_AWARDS;
-		ent->s.eFlags |= EF_AWARD_ASSIST;
+		ent->client->ps.eFlags &= ~EF_AWARDS;
+		ent->client->ps.eFlags |= EF_AWARD_ASSIST;
 		ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 		return;
 	}
