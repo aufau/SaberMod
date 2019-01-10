@@ -377,7 +377,7 @@ void UI_LoadModes( const char *directory ) {
 	}
 
 	uiInfo.modeCount = nummodes;
-	uiInfo.modeIndex = 0;
+	Menu_SetFeederSelection(NULL, FEEDER_MODES, 0, NULL);
 	Q_strncpyz(uiInfo.modeDir, dir, sizeof(uiInfo.modeDir));
 }
 
