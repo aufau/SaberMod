@@ -783,7 +783,9 @@ void CG_RegisterCvars( void ) {
 	forceModelModificationCount = cg_forceModel.modificationCount;
 	widescreenModificationCount = cg_widescreen.modificationCount;
 
-	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
+	trap_Cvar_Register(NULL, GAMEVERSION, "", CVAR_USERINFO | CVAR_ROM );
+	// workaround for userinfo not being resent when registering an
+	// userinfo cvar in retail engine
 	trap_Cvar_Set( GAMEVERSION, GIT_VERSION );
 
 	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
