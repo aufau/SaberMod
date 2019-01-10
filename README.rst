@@ -125,12 +125,8 @@ handicap <x>
   Lower your max health to x and damage to x%.
 
 cg_camerafps <fps>
-  Enable FPS-independent third person camera that behaves exactly like
-  original camera running at <fps> frames per second and in perfect
-  conditions. Setting this to your `com_maxfps` value seamlessly fixes
-  camera warping in many scenarios: unstable fps, unstable connection,
-  overloaded server, local server, high velocity movement, demo
-  playback. 0 restores original behaviour.
+  Emulate specific fps with `cg_smoothCamera`. When this is 0, current
+  com_maxfps is used instead. Useful for demo rendering.
 
 cg_chatBeep <0|1>
   Turn on/off chat beep.
@@ -184,6 +180,12 @@ cg_drawSpectatorHints <0|1>
 cg_privateDuel <0|1>
   Hide all other players and entities when duelling. Available only
   on server running JK2MV 1.2 or newer.
+
+cg_smoothCamera <0|1>
+  Fix camera warping while maintaining original feel in following
+  scenarios: unstable fps, unstable connection, overloaded server,
+  local server, high velocity movement, demo playback. See also
+  `cg_camerafps`.
 
 cg_fixServerTime <0|1>
   Fix various engine issues on servers running for a few days.

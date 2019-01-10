@@ -568,6 +568,7 @@ vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	cg_chatBeep;
 vmCvar_t	cg_camerafps;
+vmCvar_t	cg_smoothCamera;
 vmCvar_t	cg_crosshairColor;
 vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_drawClock;
@@ -583,6 +584,7 @@ vmCvar_t	cg_widescreen;
 vmCvar_t	cg_fovAspectAdjust;
 
 vmCvar_t	cg_ui_myteam;
+vmCvar_t	cg_com_maxfps;
 
 vmCvar_t	cg_param1;
 vmCvar_t	cg_param2;
@@ -733,6 +735,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE},
 	{ &cg_camerafps, "cg_camerafps", "0", CVAR_ARCHIVE},
+	{ &cg_smoothCamera, "cg_smoothCamera", "1", CVAR_ARCHIVE},
 	{ &cg_crosshairColor, "cg_crosshairColor", "0", CVAR_ARCHIVE},
 	{ &cg_darkenDeadBodies, "cg_darkenDeadBodies", "0", CVAR_ARCHIVE},
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
@@ -748,6 +751,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_fovAspectAdjust, "cg_fovAspectAdjust", "0", CVAR_ARCHIVE},
 
 	{ &cg_ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
+	{ &cg_com_maxfps, "com_maxfps", "", 0},
 
 /*
 Ghoul2 Insert Start

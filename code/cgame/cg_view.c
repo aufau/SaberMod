@@ -253,6 +253,8 @@ static struct {
 	float		lastYaw;
 	int			lastTime;
 	float		lastTimeFrac;
+	qboolean	smooth;			// Use new, smooth camera damping
+	int			fps;			// FPS to emulate with smooth camera damping
 } cam;
 
 /*
@@ -374,7 +376,7 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 	// freeze when player is lagging
 	VectorCopy(pos->ideal, pos->prevIdeal);
 
-	if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
+	if ( cam.smooth )
 	{
 		// FPS-independent solution thanks to semigroup property:
 		// If t1, t2 are positive time periods, dampfactor and
@@ -389,7 +391,7 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 		float	codampfactor;
 
 		// dtime is relative: physics time / emulated time
-		dtime *= cg_camerafps.value / 1000.0f;
+		dtime *= cam.fps / 1000.0f;
 		invdtime = 1.0f / dtime;
 		timeadjfactor = powf(dampfactor, dtime);
 		// shift = (idealDelta / dtime) * (dampfactor / (1 - dampfactor))
@@ -545,6 +547,15 @@ static void CG_OffsetThirdPersonView( void )
 	vec3_t	focusAngles;
 	float	dtime;
 
+	// Establish camera damping parameters
+	if (cg_camerafps.integer) {
+		cam.fps = cg_camerafps.integer;
+	} else if (cg_com_maxfps.integer) {
+		cam.fps = MIN(cg_com_maxfps.integer, 1000);
+	}
+
+	cam.smooth = cg_smoothCamera.integer && (cam.fps >= CAMERA_MIN_FPS);
+
 	// Set camera viewing direction.
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
@@ -592,7 +603,7 @@ static void CG_OffsetThirdPersonView( void )
 		{ // Normalize this angle so that it is between 0 and 180.
 			deltayaw = fabsf(deltayaw - 360.0f);
 		}
-		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
+		if (cam.smooth) {
 			if ( dtime > 0.0f ) {
 				stiffFactor = deltayaw / dtime;
 			} else {
