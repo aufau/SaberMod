@@ -1604,21 +1604,27 @@ Screen Effect stuff ends here
 /*
 =================
 CG_SeekFrame
+
+Returns if rendering current frame should be skipped
 =================
 */
 static qboolean CG_SeekFrame( void ) {
+	qboolean skipFrame = qfalse;
+
 	if (!cg.seekTime) {
-		return qfalse;
+		return skipFrame;
 	}
 
 	if (cg.seekTime > cg.serverTime) {
+		// engine evaluates fixedtime ms of game time in next
+		// frame. 200 is a limit imposed by the engine.
 		trap_Cvar_Set( "fixedtime", va( "%d", cg.seekTime - cg.serverTime ) );
-		if (cg_fastSeek.integer) {
+		if (cg.fastSeek) {
 			if ( cg.savedmaxfps[0] == '\0' ) {
 				trap_Cvar_VariableStringBuffer( "com_maxfps", cg.savedmaxfps, sizeof( cg.savedmaxfps ) );
 				trap_Cvar_Set( "com_maxfps", "0" );
 			}
-			return qtrue;
+			skipFrame = cg_fastSeek.integer;
 		}
 	} else {
 		trap_Cvar_Set( "fixedtime", "0" );
@@ -1628,7 +1634,7 @@ static qboolean CG_SeekFrame( void ) {
 		cg.seekTime = 0;
 	}
 
-	return qfalse;
+	return skipFrame;
 }
 
 /*

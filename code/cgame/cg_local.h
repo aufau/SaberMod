@@ -724,6 +724,7 @@ typedef struct {
 	qboolean	renderingThirdPerson;		// during deaths, chasecams, etc
 
 	int			seekTime;			// seek to given serverTime
+	qboolean	fastSeek;			// don't draw any intermediate frames
 	char		savedmaxfps[16];	// save com_maxfps value
 
 	// prediction state

@@ -521,6 +521,10 @@ static void CG_Seek_f( void ) {
 		return;
 	}
 
+	if (cg.seekTime) {
+		return;
+	}
+
 	arg = CG_Argv(1);
 
 	if (arg[0] == '+') {
@@ -547,6 +551,7 @@ static void CG_Seek_f( void ) {
 	switch (type) {
 	case SEEK_FORWARD:
 		cg.seekTime = cg.serverTime + msec;
+		cg.fastSeek = qfalse;
 		break;
 	case SEEK_BACKWARD:
 		msec = cg.serverTime - msec - cgs.levelStartTime;
@@ -558,6 +563,7 @@ static void CG_Seek_f( void ) {
 	case SEEK_TIME:
 		if (cgs.levelStartTime + msec >= cg.serverTime) {
 			cg.seekTime = cgs.levelStartTime + msec;
+			cg.fastSeek = qtrue;
 		} else {
 			if (msec < 0) {
 				msec = 0;	// prevent looping infinitely

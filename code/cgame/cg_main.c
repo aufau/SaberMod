@@ -741,7 +741,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
 	{ &cg_drawSpectatorHints, "cg_drawSpectatorHints", "1", CVAR_ARCHIVE },
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
-	{ &cg_fastSeek, "cg_fastSeek", "0", CVAR_ARCHIVE},
+	{ &cg_fastSeek, "cg_fastSeek", "1", CVAR_ARCHIVE},
 	{ &cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE},
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
