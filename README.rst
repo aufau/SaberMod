@@ -168,11 +168,20 @@ cg_duelGlow <0|1>
 cg_fastSeek <0|1>
   Use experimental fast seeking method (see `seek` console command).
 
+cg_fixServerTime <0|1>
+  Fix various engine issues on servers running for a few days.
+
 cg_followKiller <0|1>
   When player you are following dies, switch to his killer.
 
 cg_followPowerup <0|1>
   Automatically follow flag and powerup carriers.
+
+cg_fovAspectAdjust <0|1>
+  Change Field Of View calculations so that they don't disadvantage
+  widescreen monitors. Instead of cropping top and bottom parts of the
+  screen it's extended to the sides, compared to 4:3 display. Works
+  only when `cg_widescreen` is enabled.
 
 cg_drawSpectatorHints <0|1>
   Draw extra hints on new spectator features.
@@ -187,17 +196,8 @@ cg_smoothCamera <0|1>
   local server, high velocity movement, demo playback. See also
   `cg_camerafps`.
 
-cg_fixServerTime <0|1>
-  Fix various engine issues on servers running for a few days.
-
 cg_widescreen <0|1>
   Enable HUD adjustments for widescreen monitors
-
-cg_fovAspectAdjust <0|1>
-  Change Field Of View calculations so that they don't disadvantage
-  widescreen monitors. Instead of cropping top and bottom parts of the
-  screen it's extended to the sides, compared to 4:3 display. Works
-  only when cg_widescreen is enabled.
 
 UI Cvars
 ........
@@ -322,6 +322,14 @@ g_ingameMotd <message|none>
 g_instagib <0|1>
   Enable simple instagib mode for all weapons. Splash does no damage.
 
+g_kickMethod <method>
+  Choose one of following force kick methods:
+
+  =====================  =====================  =====================
+  0 - No effect          1 - Basejk             2 - No damage
+  3 - League Mod
+  =====================  =====================  =====================
+
 g_log[1-4] <filename>
   You can use 4 separate log files now.
 
@@ -358,14 +366,6 @@ g_modeDefaultMap <map>
 g_modeIdleTime <minutes>
   Reset to default mode if server has been idle for this many minutes.
 
-g_kickMethod <method>
-  Choose one of following force kick methods:
-
-  =====================  =====================  =====================
-  0 - No effect          1 - Basejk             2 - No damage
-  3 - League Mod
-  =====================  =====================  =====================
-
 g_pushableItems <mask>
   What types of items should be movable with force push and pull:
 
@@ -393,16 +393,6 @@ g_roundWarmup <seconds>
   How many seconds players get to reposition themselves at the start
   of a round.
 
-g_spawnShield <ammount>
-  Ammount of shield player gets on spawn.
-
-g_teamForceBalance <number>
-  Prevents players from joining the weaker team if difference
-  is greater than `number`.
-
-g_teamsizeMin <size>
-  Minimum votable teamsize.
-
 g_spawnItems <bitmask>
   What items will be given to players on spawn. Use following bitmask:
 
@@ -411,11 +401,21 @@ g_spawnItems <bitmask>
   32 - Binoculars        64 - Sentry
   =====================  =====================  =====================
 
+g_spawnShield <ammount>
+  Ammount of shield player gets on spawn.
+
 g_spawnWeapons <bitmask>
   Controls weapons given to players on spawn using the same bitmask
   as `g_weaponDisable`. The later cvar affects only weapons and ammo
   spawned on a map. Setting this cvar to 0 restores original behaviour
   of `g_weaponDisable`.
+
+g_teamForceBalance <number>
+  Prevents players from joining the weaker team if difference
+  is greater than `number`.
+
+g_teamsizeMin <size>
+  Minimum votable teamsize.
 
 g_timeoutLimit <number>
   Maximum number of times a player is allowed to call a timeout.
