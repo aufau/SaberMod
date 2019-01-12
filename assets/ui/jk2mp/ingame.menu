@@ -354,6 +354,18 @@
 
 		itemDef
 		{
+			name                    controlsButtonNew
+			style                   WINDOW_STYLE_SHADER
+			rect                    285 0 70 32
+			background              "gfx/menus/menu_buttonback_new" // Frame around button
+			decoration
+			visible                 1
+			cvarTest                ui_visited_controls
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    controlsButton
 			group                   none
 			style                   WINDOW_STYLE_SHADER
@@ -383,6 +395,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_controls 1 ;
 				open                    ingame_controls ;
 				close					ingame_setup ;
 				close					ingame_setup_original ;
