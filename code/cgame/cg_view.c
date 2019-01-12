@@ -548,8 +548,8 @@ static void CG_OffsetThirdPersonView( void )
 	float	dtime;
 
 	// Establish camera damping parameters
-	if (cg_camerafps.integer) {
-		cam.fps = cg_camerafps.integer;
+	if (cg_smoothCameraFPS.integer) {
+		cam.fps = cg_smoothCameraFPS.integer;
 	} else if (cg_com_maxfps.integer) {
 		cam.fps = MIN(cg_com_maxfps.integer, 1000);
 	}

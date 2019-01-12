@@ -124,10 +124,6 @@ CGame Cvars
 handicap <x>
   Lower your max health to x and damage to x%.
 
-cg_camerafps <fps>
-  Emulate specific fps with `cg_smoothCamera`. When this is 0, current
-  com_maxfps is used instead. Useful for demo rendering.
-
 cg_chatBeep <0|1>
   Turn on/off chat beep.
 
@@ -196,8 +192,11 @@ cg_privateDuel <0|1>
 cg_smoothCamera <0|1>
   Fix camera warping while maintaining original feel in following
   scenarios: unstable fps, unstable connection, overloaded server,
-  local server, high velocity movement, demo playback. See also
-  `cg_camerafps`.
+  local server, high velocity movement, demo playback.
+
+cg_smoothCameraFPS <fps>
+  Emulate specific fps with `cg_smoothCamera`. When this is 0, current
+  com_maxfps is used instead. Useful for demo rendering.
 
 cg_widescreen <0|1>
   Enable HUD adjustments for widescreen monitors

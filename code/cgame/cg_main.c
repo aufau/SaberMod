@@ -567,8 +567,8 @@ vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	cg_chatBeep;
-vmCvar_t	cg_camerafps;
 vmCvar_t	cg_smoothCamera;
+vmCvar_t	cg_smoothCameraFPS;
 vmCvar_t	cg_crosshairColor;
 vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_drawClock;
@@ -735,8 +735,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 //	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 
 	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE},
-	{ &cg_camerafps, "cg_camerafps", "0", CVAR_ARCHIVE},
 	{ &cg_smoothCamera, "cg_smoothCamera", "1", CVAR_ARCHIVE},
+	{ &cg_smoothCameraFPS, "cg_smoothCameraFPS", "0", CVAR_ARCHIVE},
 	{ &cg_crosshairColor, "cg_crosshairColor", "0", CVAR_ARCHIVE},
 	{ &cg_darkenDeadBodies, "cg_darkenDeadBodies", "0", CVAR_ARCHIVE},
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
