@@ -254,11 +254,11 @@
 
 		itemDef
 		{
-			name                    widescreenhud
+			name                    smoothcamera
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_WIDESCREEN_HUD
-			cvar                    "cg_widescreen"
+			text                    @SABERMENUS_SMOOTH_CAMERA
+			cvar                    "cg_smoothCamera"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -271,7 +271,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_WIDESCREEN_HUD_DESC
+			descText                @SABERMENUS_SMOOTH_CAMERA_DESC
 			visible					1
 			action
 			{

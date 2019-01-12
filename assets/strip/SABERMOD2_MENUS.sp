@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 89
+COUNT 91
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -815,4 +815,22 @@ INDEX 88
    TEXT_LANGUAGE3 "Seek backward during demo playback."
    TEXT_LANGUAGE6 "Seek backward during demo playback."
    TEXT_LANGUAGE8 "Seek backward during demo playback."
+}
+INDEX 89
+{
+   REFERENCE SMOOTH_CAMERA
+   TEXT_LANGUAGE1 "Smooth Camera:"
+   TEXT_LANGUAGE2 "Smooth Camera:"
+   TEXT_LANGUAGE3 "Smooth Camera:"
+   TEXT_LANGUAGE6 "Smooth Camera:"
+   TEXT_LANGUAGE8 "Smooth Camera:"
+}
+INDEX 90
+{
+   REFERENCE SMOOTH_CAMERA_DESC
+   TEXT_LANGUAGE1 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE2 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE3 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE6 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE8 "Fix 3rd person camera warping while maintaining original feel."
 }
