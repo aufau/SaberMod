@@ -257,11 +257,11 @@ INDEX 27
 INDEX 28
 {
    REFERENCE REWARDS_DESC
-   TEXT_LANGUAGE1 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE2 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE3 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE6 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE8 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE1 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE2 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE3 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE6 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE8 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
 }
 INDEX 29
 {
