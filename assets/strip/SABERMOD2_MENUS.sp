@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 79
+COUNT 81
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -715,4 +715,24 @@ INDEX 78
    TEXT_LANGUAGE3 "Timein"
    TEXT_LANGUAGE6 "Timein"
    TEXT_LANGUAGE8 "Timein"
+}
+INDEX 79
+{
+   REFERENCE SPECTATOR
+   NOTES "Controls / Spectator button"
+   TEXT_LANGUAGE1 "SPECTATOR"
+   TEXT_LANGUAGE2 "SPECTATOR"
+   TEXT_LANGUAGE3 "SPECTATOR"
+   TEXT_LANGUAGE6 "SPECTATOR"
+   TEXT_LANGUAGE8 "SPECTATOR"
+}
+INDEX 80
+{
+   REFERENCE SPECTATOR_DESC
+   NOTES "Controls / Spectator button description"
+   TEXT_LANGUAGE1 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE2 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE3 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE6 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE8 "Configure spectator and demo playback keys"
 }

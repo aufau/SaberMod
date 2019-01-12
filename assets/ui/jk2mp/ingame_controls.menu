@@ -8,12 +8,12 @@
 		visible                 0
 		fullscreen              0
 		outOfBoundsClick        // this closes the window if it gets a click out of the rectangle
-		rect                    45 40 550 335
+		rect                    45 40 550 365
 		focusColor              1 1 1 1                 // Focus color for text and items
 		style                   1
 		border                  1
 		descX                   305
-		descY                   335
+		descY                   365
 		descScale               0.7
 		descColor               .235 .882 .847 1        // Focus color for text and items
 		descAlignment           ITEM_ALIGN_CENTER
@@ -63,7 +63,7 @@
 			name                    background_pic
 			group                   none
 			style                   WINDOW_STYLE_SHADER
-			rect                    0 0 550 335
+			rect                    0 0 550 365
 			background              "gfx/menus/menu_box_ingame"
 			forecolor               1 1 1 1
 			visible                 1
@@ -141,6 +141,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 1 1 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -150,6 +151,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -205,6 +207,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 1 1 1 1 ;
@@ -214,6 +217,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -268,6 +272,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -277,6 +282,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -332,6 +338,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -341,6 +348,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -396,6 +404,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -405,6 +414,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -460,6 +470,7 @@
 				show                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -469,6 +480,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 1 1 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -524,6 +536,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				show                    joycontrols ;
+				hide                    spectatorcontrols ;
 				hide                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -533,6 +546,73 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 1 1 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
+			}
+		}
+
+		// spectator button
+		itemDef
+		{
+			name                    spectatorcontrolbutton_glow
+			group                   mods
+			style                   WINDOW_STYLE_SHADER
+			rect                    20 253 170 30
+			background              "gfx/menus/menu_blendbox2" // Frame around button
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    spectatorcontrolbutton
+			group                   none
+			text                    @SABERMENUS_SPECTATOR
+			type                    ITEM_TYPE_BUTTON
+			style                   WINDOW_STYLE_EMPTY
+			rect                    20 253 170 30
+			font                    3
+			textscale               0.8
+			textalignx              170
+			textaligny              5
+			textalign               ITEM_ALIGN_RIGHT
+			textstyle               3
+			forecolor               0.65 0.65 1 1
+			visible                 1
+			descText                @SABERMENUS_SPECTATOR_DESC
+
+			mouseEnter
+			{
+				show                    spectatorcontrolbutton_glow
+			}
+			mouseExit
+			{
+				hide                    spectatorcontrolbutton_glow
+			}
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				show                    setup_background ;
+				hide                    weaponcontrols ;
+				hide                    forcecontrols ;
+				hide                    forcecontrols2 ;
+				hide                    attackcontrols ;
+				hide                    movecontrols ;
+				hide                    invcontrols ;
+				hide                    quickcontrols ;
+				hide                    joycontrols ;
+				show                    spectatorcontrols ;
+				hide                    othercontrols ;
+				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            forcecontrolbutton2 forecolor 0.64 0.65 1 1 ;
+				setitemcolor            attackcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            movementcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 1 1 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 0.64 0.65 1 1 ;
 			}
 		}
@@ -543,7 +623,7 @@
 			name                    othercontrolbutton_glow
 			group                   mods
 			style                   WINDOW_STYLE_SHADER
-			rect                    20 253 170 30
+			rect                    20 283 170 30
 			background              "gfx/menus/menu_blendbox2" // Frame around button
 			forecolor               1 1 1 1
 			visible                 0
@@ -557,7 +637,7 @@
 			text                    @MENUS1_OTHER
 			type                    ITEM_TYPE_BUTTON
 			style                   WINDOW_STYLE_EMPTY
-			rect                    20 253 170 30
+			rect                    20 283 170 30
 			font                    3
 			textscale               0.8
 			textalignx              170
@@ -588,6 +668,7 @@
 				hide                    invcontrols ;
 				hide                    quickcontrols ;
 				hide                    joycontrols ;
+				hide                    spectatorcontrols ;
 				show                    othercontrols ;
 				setitemcolor            weaponscontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            forcecontrolbutton forecolor 0.64 0.65 1 1 ;
@@ -597,6 +678,7 @@
 				setitemcolor            inventorycontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            quickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
+				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 1 1 1 1 ;
 			}
 		}
@@ -605,7 +687,7 @@
 		{
 			name                    setup_background
 			style                   WINDOW_STYLE_SHADER
-			rect                    200 41 300 250
+			rect                    200 41 300 280
 			background              "gfx/menus/menu_box1"   // Frame
 			forecolor               1 1 1 1
 			visible                 0
@@ -755,6 +837,18 @@
 			group                   highlights
 			style                   WINDOW_STYLE_SHADER
 			rect                    180 261 300 20
+			background              "gfx/menus/menu_blendbox"
+			forecolor               1 1 1 1
+			visible                 0
+			decoration
+		}
+
+		itemDef
+		{
+			name                    highlight13
+			group                   highlights
+			style                   WINDOW_STYLE_SHADER
+			rect                    180 291 300 20
 			background              "gfx/menus/menu_blendbox"
 			forecolor               1 1 1 1
 			visible                 0
@@ -2898,6 +2992,12 @@
 
 	//----------------------------------------------------------------------------------------------
 	//
+	// SPECTATOR
+	//
+	//----------------------------------------------------------------------------------------------
+
+	//----------------------------------------------------------------------------------------------
+	//
 	// OTHER
 	//
 	//----------------------------------------------------------------------------------------------
@@ -3147,7 +3247,7 @@
 		group                   none
 		ownerdraw               250                     // UI_KEYBINDSTATUS
 		text                    ""
-		rect                    275 310 0 0
+		rect                    275 340 0 0
 		textStyle               0
 		font                    2
 		textscale               .7
@@ -3162,7 +3262,7 @@
 		name                    slider_message
 		group                   none
 		text                    @MENUS0_MOVE_THE_SLIDER_TO_INCREASE
-		rect                    275 310 0 0
+		rect                    275 340 0 0
 		textStyle               0
 		font                    2
 		textscale               .7
@@ -3176,7 +3276,7 @@
 		name                    yesno_message
 		group                   none
 		text                    @MENUS0_CLICK_ON_FIELD_TO_TOGGLE
-		rect                    275 310 0 0
+		rect                    275 340 0 0
 		textStyle               0
 		font                    2
 		textscale               .7
@@ -3190,7 +3290,7 @@
 		name                    multi_message
 		group                   none
 		text                    @MENUS0_CLICK_ON_FIELD_TO_CHANGE
-		rect                    275 310 0 0
+		rect                    275 340 0 0
 		textStyle               0
 		font                    2
 		textscale               .7
