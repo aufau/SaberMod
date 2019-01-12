@@ -3855,24 +3855,25 @@ static qboolean CG_DrawFollow( void )
 	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 2.0f, FONT_MEDIUM));
 	CG_Text_Paint (x, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
-	if ( !cg_drawSpectatorHints.integer ) {
-		return qtrue;
+	return qtrue;
+}
+
+static void CG_DrawScoreboardHints( void )
+{
+	const char	*s;
+	float		x;
+
+	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
+		return;
 	}
 
-	if ( !cg.showScores ) {
-		return qtrue;
+	if ( !cg_drawSpectatorHints.integer ) {
+		return;
 	}
 
 	if ( cg.demoPlayback ) {
-		return qtrue;
+		return;
 	}
-
-	// don't draw over item/force/weapon select bar
-	/*
-	if ( cg.iconHUDActive ) {
-		return qtrue;
-	}
-	*/
 
 	x = 0.5f * cgs.screenWidth;
 
@@ -3908,8 +3909,6 @@ static qboolean CG_DrawFollow( void )
 		s = CG_GetStripEdString("SABERINGAME", "FFA_FOLLOW_HINT");
 		UI_DrawProportionalString(x, 440, s, UI_CENTER, colorWhite);
 	}
-
-	return qtrue;
 }
 
 #ifdef UNUSED
@@ -4826,12 +4825,14 @@ static void CG_Draw2D( void ) {
 		CG_DrawUpperRight();
 	}
 
-	CG_DrawFollow();
 	CG_DrawWarmup();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreBoardShowing = CG_DrawScoreboard();
-	if ( !cg.scoreBoardShowing) {
+	if ( cg.scoreBoardShowing) {
+		CG_DrawScoreboardHints();
+	} else {
+		CG_DrawFollow();
 		CG_DrawCenterString();
 		CG_DrawCountdown();
 	}
