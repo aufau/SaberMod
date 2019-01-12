@@ -3994,6 +3994,8 @@ static bind_t g_bindings[] =
 	// SaberMod
 	{"follow first",	-1,					-1,		-1,	-1},
 	{"nextspecmode",	-1,					-1,		-1,	-1},
+	{"seek +5s",		-1,					-1,		-1,	-1},
+	{"seek -15s",		-1,					-1,		-1,	-1},
 };
 
 

@@ -3146,6 +3146,76 @@
 		}
 	}
 
+	itemDef
+	{
+		name                    demoseekforward
+		group                   spectatorcontrols
+		type                    ITEM_TYPE_BIND
+		text                    @SABERMENUS_DEMO_SEEK_FORWARD
+		cvar                    "seek +5s"
+		rect                    220 181 300 20
+		textalign               ITEM_ALIGN_RIGHT
+		textalignx              151
+		textaligny              -2
+		font                    2
+		textscale               0.8
+		forecolor               1 1 1 1
+		visible                 0
+		// appearance_slot 1
+		descText                @SABERMENUS_DEMO_SEEK_FORWARD_DESC
+		action
+		{
+			play                    "sound/interface/button1.wav" ;
+		}
+
+		mouseenter
+		{
+			show                    highlight8
+			show                    keybindstatus
+		}
+
+		mouseexit
+		{
+			hide                    highlight8
+			hide                    keybindstatus
+		}
+	}
+
+	itemDef
+	{
+		name                    demoseekbackward
+		group                   spectatorcontrols
+		type                    ITEM_TYPE_BIND
+		text                    @SABERMENUS_DEMO_SEEK_BACKWARD
+		cvar                    "seek -15s"
+		rect                    220 201 300 20
+		textalign               ITEM_ALIGN_RIGHT
+		textalignx              151
+		textaligny              -2
+		font                    2
+		textscale               0.8
+		forecolor               1 1 1 1
+		visible                 0
+		// appearance_slot 1
+		descText                @SABERMENUS_DEMO_SEEK_BACKWARD_DESC
+		action
+		{
+			play                    "sound/interface/button1.wav" ;
+		}
+
+		mouseenter
+		{
+			show                    highlight9
+			show                    keybindstatus
+		}
+
+		mouseexit
+		{
+			hide                    highlight9
+			hide                    keybindstatus
+		}
+	}
+
 	//----------------------------------------------------------------------------------------------
 	//
 	// OTHER

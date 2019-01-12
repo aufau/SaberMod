@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 85
+COUNT 89
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -750,11 +750,11 @@ INDEX 82
 {
    REFERENCE FOLLOW_FIRST_DESC
    NOTES "Bind follow first player command description"
-   TEXT_LANGUAGE1 "Follow scoreboard leader and step out of duel queue."
-   TEXT_LANGUAGE2 "Follow scoreboard leader and step out of duel queue."
-   TEXT_LANGUAGE3 "Follow scoreboard leader and step out of duel queue."
-   TEXT_LANGUAGE6 "Follow scoreboard leader and step out of duel queue."
-   TEXT_LANGUAGE8 "Follow scoreboard leader and step out of duel queue."
+   TEXT_LANGUAGE1 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE2 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE3 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE6 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE8 "Follow scoreboard leader and step out of a duel queue."
 }
 INDEX 83
 {
@@ -775,4 +775,44 @@ INDEX 84
    TEXT_LANGUAGE3 "Cycle through spectator modes."
    TEXT_LANGUAGE6 "Cycle through spectator modes."
    TEXT_LANGUAGE8 "Cycle through spectator modes."
+}
+INDEX 85
+{
+   REFERENCE DEMO_SEEK_FORWARD
+   NOTES "Bind demo seek forward"
+   TEXT_LANGUAGE1 "Seek Forward:"
+   TEXT_LANGUAGE2 "Seek Forward:"
+   TEXT_LANGUAGE3 "Seek Forward:"
+   TEXT_LANGUAGE6 "Seek Forward:"
+   TEXT_LANGUAGE8 "Seek Forward:"
+}
+INDEX 86
+{
+   REFERENCE DEMO_SEEK_FORWARD_DESC
+   NOTES "Bind demo seek forward description"
+   TEXT_LANGUAGE1 "Seek forward during demo playback."
+   TEXT_LANGUAGE2 "Seek forward during demo playback."
+   TEXT_LANGUAGE3 "Seek forward during demo playback."
+   TEXT_LANGUAGE6 "Seek forward during demo playback."
+   TEXT_LANGUAGE8 "Seek forward during demo playback."
+}
+INDEX 87
+{
+   REFERENCE DEMO_SEEK_BACKWARD
+   NOTES "Bind demo seek backward"
+   TEXT_LANGUAGE1 "Seek Backward:"
+   TEXT_LANGUAGE2 "Seek Backward:"
+   TEXT_LANGUAGE3 "Seek Backward:"
+   TEXT_LANGUAGE6 "Seek Backward:"
+   TEXT_LANGUAGE8 "Seek Backward:"
+}
+INDEX 88
+{
+   REFERENCE DEMO_SEEK_BACKWARD_DESC
+   NOTES "Bind demo seek backward description"
+   TEXT_LANGUAGE1 "Seek backward during demo playback."
+   TEXT_LANGUAGE2 "Seek backward during demo playback."
+   TEXT_LANGUAGE3 "Seek backward during demo playback."
+   TEXT_LANGUAGE6 "Seek backward during demo playback."
+   TEXT_LANGUAGE8 "Seek backward during demo playback."
 }
