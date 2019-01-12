@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 81
+COUNT 85
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -735,4 +735,44 @@ INDEX 80
    TEXT_LANGUAGE3 "Configure spectator and demo playback keys"
    TEXT_LANGUAGE6 "Configure spectator and demo playback keys"
    TEXT_LANGUAGE8 "Configure spectator and demo playback keys"
+}
+INDEX 81
+{
+   REFERENCE FOLLOW_FIRST
+   NOTES "Bind follow first player command"
+   TEXT_LANGUAGE1 "Follow First:"
+   TEXT_LANGUAGE2 "Follow First:"
+   TEXT_LANGUAGE3 "Follow First:"
+   TEXT_LANGUAGE6 "Follow First:"
+   TEXT_LANGUAGE8 "Follow First:"
+}
+INDEX 82
+{
+   REFERENCE FOLLOW_FIRST_DESC
+   NOTES "Bind follow first player command description"
+   TEXT_LANGUAGE1 "Follow scoreboard leader and step out of duel queue."
+   TEXT_LANGUAGE2 "Follow scoreboard leader and step out of duel queue."
+   TEXT_LANGUAGE3 "Follow scoreboard leader and step out of duel queue."
+   TEXT_LANGUAGE6 "Follow scoreboard leader and step out of duel queue."
+   TEXT_LANGUAGE8 "Follow scoreboard leader and step out of duel queue."
+}
+INDEX 83
+{
+   REFERENCE NEXT_SPEC_MODE
+   NOTES "Bind nextspecmode command"
+   TEXT_LANGUAGE1 "Next Spectator Mode:"
+   TEXT_LANGUAGE2 "Next Spectator Mode:"
+   TEXT_LANGUAGE3 "Next Spectator Mode:"
+   TEXT_LANGUAGE6 "Next Spectator Mode:"
+   TEXT_LANGUAGE8 "Next Spectator Mode:"
+}
+INDEX 84
+{
+   REFERENCE NEXT_SPEC_MODE_DESC
+   NOTES "Bind nextspecmode command description"
+   TEXT_LANGUAGE1 "Cycle through spectator modes."
+   TEXT_LANGUAGE2 "Cycle through spectator modes."
+   TEXT_LANGUAGE3 "Cycle through spectator modes."
+   TEXT_LANGUAGE6 "Cycle through spectator modes."
+   TEXT_LANGUAGE8 "Cycle through spectator modes."
 }

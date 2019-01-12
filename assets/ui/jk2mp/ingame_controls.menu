@@ -3076,6 +3076,76 @@
 		}
 	}
 
+	itemDef
+	{
+		name                    followfirst
+		group                   spectatorcontrols
+		type                    ITEM_TYPE_BIND
+		text                    @SABERMENUS_FOLLOW_FIRST
+		cvar                    "follow first"
+		rect                    220 121 300 20
+		textalign               ITEM_ALIGN_RIGHT
+		textalignx              151
+		textaligny              -2
+		font                    2
+		textscale               0.8
+		forecolor               1 1 1 1
+		visible                 0
+		// appearance_slot 1
+		descText                @SABERMENUS_FOLLOW_FIRST_DESC
+		action
+		{
+			play                    "sound/interface/button1.wav" ;
+		}
+
+		mouseenter
+		{
+			show                    highlight5
+			show                    keybindstatus
+		}
+
+		mouseexit
+		{
+			hide                    highlight5
+			hide                    keybindstatus
+		}
+	}
+
+	itemDef
+	{
+		name                    nextspecmode
+		group                   spectatorcontrols
+		type                    ITEM_TYPE_BIND
+		text                    @SABERMENUS_NEXT_SPEC_MODE
+		cvar                    "nextspecmode"
+		rect                    220 141 300 20
+		textalign               ITEM_ALIGN_RIGHT
+		textalignx              151
+		textaligny              -2
+		font                    2
+		textscale               0.8
+		forecolor               1 1 1 1
+		visible                 0
+		// appearance_slot 1
+		descText                @SABERMENUS_NEXT_SPEC_MODE_DESC
+		action
+		{
+			play                    "sound/interface/button1.wav" ;
+		}
+
+		mouseenter
+		{
+			show                    highlight6
+			show                    keybindstatus
+		}
+
+		mouseexit
+		{
+			hide                    highlight6
+			hide                    keybindstatus
+		}
+	}
+
 	//----------------------------------------------------------------------------------------------
 	//
 	// OTHER
