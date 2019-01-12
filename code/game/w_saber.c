@@ -2342,6 +2342,8 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 
 	VectorSet( mins, -dist, -dist, -dist );
 	VectorSet( maxs,  dist,  dist,  dist );
+	VectorAdd( mins, saberent->r.currentOrigin, mins );
+	VectorAdd( maxs, saberent->r.currentOrigin, maxs );
 
 	num = G_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES, saberent->s.number );
 
