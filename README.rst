@@ -563,7 +563,7 @@ Thanks
 * Xycaleth - Creating League mod that was a great inspiration to
   SaberMod and sharing its source code.
 * ouned - Engine and modding expertise.
-* Bucky, God, Kameleon, michl, Tr!force - Providing valuable
+* Bucky, God, Kameleon, michl, PowTech, Tr!force - Providing valuable
   programming input, review, ideas and patches.
 * Developers of jk2mv, mvsdk, Jedi Academy, OpenJK, ioq3, jomme, JA++
   (japp), League Mod and other open source id tech 3 mods for various
