@@ -152,12 +152,15 @@ cg_damagePlums <0|1>
 cg_darkenDeadBodies <0|1>
   Darken dead bodies outside of duel too.
 
+cg_drawClock <0|1>
+  Draw clock showing your local time.
+
+cg_drawFollow <0|1>
+  Draw large "Following <playername>" message.
+
 cg_drawRewards <0|1>
   Draw rewards for outstanding moves. Requires ent's "Jedi Knight
   Rewards 2" assets.
-
-cg_drawClock <0|1>
-  Draw clock showing your local time.
 
 cg_drawTimer <0|1|2>
   Draw game timer. 1 - count up, 2 - count down.

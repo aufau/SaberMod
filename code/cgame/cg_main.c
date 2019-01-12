@@ -572,6 +572,7 @@ vmCvar_t	cg_smoothCamera;
 vmCvar_t	cg_crosshairColor;
 vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_drawClock;
+vmCvar_t	cg_drawFollow;
 vmCvar_t	cg_drawSpectatorHints;
 vmCvar_t	cg_duelGlow;
 vmCvar_t	cg_fastSeek;
@@ -739,6 +740,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_crosshairColor, "cg_crosshairColor", "0", CVAR_ARCHIVE},
 	{ &cg_darkenDeadBodies, "cg_darkenDeadBodies", "0", CVAR_ARCHIVE},
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
+	{ &cg_drawFollow, "cg_drawFollow", "1", CVAR_ARCHIVE },
 	{ &cg_drawSpectatorHints, "cg_drawSpectatorHints", "1", CVAR_ARCHIVE },
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
 	{ &cg_fastSeek, "cg_fastSeek", "1", CVAR_ARCHIVE},

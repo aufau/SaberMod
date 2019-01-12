@@ -1635,6 +1635,7 @@ extern	vmCvar_t		cg_smoothCamera;
 extern	vmCvar_t		cg_crosshairColor;
 extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
+extern	vmCvar_t		cg_drawFollow;
 extern	vmCvar_t		cg_drawSpectatorHints;
 extern	vmCvar_t		cg_duelGlow;
 extern	vmCvar_t		cg_fastSeek;
