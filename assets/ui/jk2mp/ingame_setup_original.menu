@@ -341,7 +341,7 @@
 			visible                 1
 			decoration
 			cvarTest                ui_visited_setup_modoptions
-			hideCvar                { 1 2 }
+			hideCvar                { 2 }
 		}
 
 		itemDef
