@@ -590,11 +590,11 @@ INDEX 64
 INDEX 65
 {
    REFERENCE WIDESCREEN_HUD
-   TEXT_LANGUAGE1 "Widescreen HUD"
-   TEXT_LANGUAGE2 "Widescreen HUD"
-   TEXT_LANGUAGE3 "Widescreen HUD"
-   TEXT_LANGUAGE6 "Widescreen HUD"
-   TEXT_LANGUAGE8 "Widescreen HUD"
+   TEXT_LANGUAGE1 "Widescreen HUD:"
+   TEXT_LANGUAGE2 "Widescreen HUD:"
+   TEXT_LANGUAGE3 "Widescreen HUD:"
+   TEXT_LANGUAGE6 "Widescreen HUD:"
+   TEXT_LANGUAGE8 "Widescreen HUD:"
 }
 INDEX 66
 {
@@ -608,11 +608,11 @@ INDEX 66
 INDEX 67
 {
    REFERENCE WIDESCREEN_FOV
-   TEXT_LANGUAGE1 "Widescreen FOV"
-   TEXT_LANGUAGE2 "Widescreen FOV"
-   TEXT_LANGUAGE3 "Widescreen FOV"
-   TEXT_LANGUAGE6 "Widescreen FOV"
-   TEXT_LANGUAGE8 "Widescreen FOV"
+   TEXT_LANGUAGE1 "Widescreen FOV:"
+   TEXT_LANGUAGE2 "Widescreen FOV:"
+   TEXT_LANGUAGE3 "Widescreen FOV:"
+   TEXT_LANGUAGE6 "Widescreen FOV:"
+   TEXT_LANGUAGE8 "Widescreen FOV:"
 }
 INDEX 68
 {
@@ -626,11 +626,11 @@ INDEX 68
 INDEX 69
 {
    REFERENCE CROSSHAIR_IND
-   TEXT_LANGUAGE1 "Crosshair Indicators"
-   TEXT_LANGUAGE2 "Crosshair Indicators"
-   TEXT_LANGUAGE3 "Crosshair Indicators"
-   TEXT_LANGUAGE6 "Crosshair Indicators"
-   TEXT_LANGUAGE8 "Crosshair Indicators"
+   TEXT_LANGUAGE1 "Crosshair Indicators:"
+   TEXT_LANGUAGE2 "Crosshair Indicators:"
+   TEXT_LANGUAGE3 "Crosshair Indicators:"
+   TEXT_LANGUAGE6 "Crosshair Indicators:"
+   TEXT_LANGUAGE8 "Crosshair Indicators:"
 }
 INDEX 70
 {
@@ -671,11 +671,11 @@ INDEX 73
 INDEX 74
 {
    REFERENCE CROSSHAIR_IND_SPEC
-   TEXT_LANGUAGE1 "Spectator Indicators"
-   TEXT_LANGUAGE2 "Spectator Indicators"
-   TEXT_LANGUAGE3 "Spectator Indicators"
-   TEXT_LANGUAGE6 "Spectator Indicators"
-   TEXT_LANGUAGE8 "Spectator Indicators"
+   TEXT_LANGUAGE1 "Spectator Indicators:"
+   TEXT_LANGUAGE2 "Spectator Indicators:"
+   TEXT_LANGUAGE3 "Spectator Indicators:"
+   TEXT_LANGUAGE6 "Spectator Indicators:"
+   TEXT_LANGUAGE8 "Spectator Indicators:"
 }
 INDEX 75
 {
