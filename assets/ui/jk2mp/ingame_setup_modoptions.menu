@@ -192,42 +192,6 @@
 				@MENUS0_OFF             0
 				@MENUS0_ON              1
 			}
-			rect                    0 0 300 20
-			textalign               ITEM_ALIGN_RIGHT
-			textalignx              165
-			textaligny              -2
-			font                    2
-			textscale               0.8
-			forecolor               1 1 1 1
-			descText                @SABERMENUS_PRIVATE_DUEL_DESC
-			visible					1
-			action
-			{
-				play                    "sound/interface/button1.wav" ;
-			}
-
-			mouseenter
-			{
-				show                    highlight1
-			}
-			mouseexit
-			{
-				hide                    highlight1
-			}
-		}
-
-		itemDef
-		{
-			name                    duelglow
-			group                   sabermod
-			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_DUEL_GLOW
-			cvar                    "cg_duelGlow"
-			cvarFloatList
-			{
-				@MENUS0_OFF             0
-				@MENUS0_ON              1
-			}
 			rect                    0 20 300 20
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              165
@@ -235,7 +199,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_DUEL_GLOW_DESC
+			descText                @SABERMENUS_PRIVATE_DUEL_DESC
 			visible					1
 			action
 			{
@@ -254,11 +218,11 @@
 
 		itemDef
 		{
-			name                    smoothcamera
+			name                    duelglow
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_SMOOTH_CAMERA
-			cvar                    "cg_smoothCamera"
+			text                    @SABERMENUS_DUEL_GLOW
+			cvar                    "cg_duelGlow"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -271,7 +235,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_SMOOTH_CAMERA_DESC
+			descText                @SABERMENUS_DUEL_GLOW_DESC
 			visible					1
 			action
 			{
@@ -290,11 +254,11 @@
 
 		itemDef
 		{
-			name                    widescreenfov
+			name                    smoothcamera
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_WIDESCREEN_FOV
-			cvar                    "cg_fovAspectAdjust"
+			text                    @SABERMENUS_SMOOTH_CAMERA
+			cvar                    "cg_smoothCamera"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -307,7 +271,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_WIDESCREEN_FOV_DESC
+			descText                @SABERMENUS_SMOOTH_CAMERA_DESC
 			visible					1
 			action
 			{
@@ -326,17 +290,15 @@
 
 		itemDef
 		{
-			name                    crosshairind
+			name                    widescreenfov
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_CROSSHAIR_IND
-			cvar                    "cg_crosshairIndicators"
+			text                    @SABERMENUS_WIDESCREEN_FOV
+			cvar                    "cg_fovAspectAdjust"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
-				@SABERMENUS_IND_1       1
-				@SABERMENUS_IND_2       2
-				@SABERMENUS_IND_3       3
+				@MENUS0_ON              1
 			}
 			rect                    0 80 300 20
 			textalign               ITEM_ALIGN_RIGHT
@@ -345,7 +307,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_CROSSHAIR_IND_DESC
+			descText                @SABERMENUS_WIDESCREEN_FOV_DESC
 			visible					1
 			action
 			{
@@ -364,11 +326,11 @@
 
 		itemDef
 		{
-			name                    crosshairindspec
+			name                    crosshairind
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_CROSSHAIR_IND_SPEC
-			cvar                    "cg_crosshairIndicatorsSpec"
+			text                    @SABERMENUS_CROSSHAIR_IND
+			cvar                    "cg_crosshairIndicators"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
@@ -383,7 +345,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_CROSSHAIR_IND_SPEC_DESC
+			descText                @SABERMENUS_CROSSHAIR_IND_DESC
 			visible					1
 			action
 			{
@@ -402,16 +364,17 @@
 
 		itemDef
 		{
-			name                    timer
+			name                    crosshairindspec
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
-			text                    @SABERMENUS_TIMER
-			cvar                    "cg_drawTimer"
+			text                    @SABERMENUS_CROSSHAIR_IND_SPEC
+			cvar                    "cg_crosshairIndicatorsSpec"
 			cvarFloatList
 			{
 				@MENUS0_OFF             0
-				@SABERMENUS_COUNT_UP    1
-				@SABERMENUS_COUNT_DOWN  2
+				@SABERMENUS_IND_1       1
+				@SABERMENUS_IND_2       2
+				@SABERMENUS_IND_3       3
 			}
 			rect                    0 120 300 20
 			textalign               ITEM_ALIGN_RIGHT
@@ -420,7 +383,7 @@
 			font                    2
 			textscale               0.8
 			forecolor               1 1 1 1
-			descText                @SABERMENUS_TIMER_DESC
+			descText                @SABERMENUS_CROSSHAIR_IND_SPEC_DESC
 			visible					1
 			action
 			{
@@ -439,6 +402,43 @@
 
 		itemDef
 		{
+			name                    timer
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_TIMER
+			cvar                    "cg_drawTimer"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@SABERMENUS_COUNT_UP    1
+				@SABERMENUS_COUNT_DOWN  2
+			}
+			rect                    0 140 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_TIMER_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight8
+			}
+			mouseexit
+			{
+				hide                    highlight8
+			}
+		}
+
+		itemDef
+		{
 			name                    clock
 			group                   sabermod
 			type                    ITEM_TYPE_MULTI
@@ -449,7 +449,7 @@
 				@MENUS0_OFF             0
 				@MENUS0_ON              1
 			}
-			rect                    0 140 300 20
+			rect                    0 160 300 20
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              165
 			textaligny              -2
@@ -465,11 +465,47 @@
 
 			mouseenter
 			{
-				show                    highlight8
+				show                    highlight9
 			}
 			mouseexit
 			{
-				hide                    highlight8
+				hide                    highlight9
+			}
+		}
+
+		itemDef
+		{
+			name                    damageplums
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_DAMAGE_PLUMS
+			cvar                    "cg_damagePlums"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@MENUS0_ON              1
+			}
+			rect                    0 180 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_DAMAGE_PLUMS_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight10
+			}
+			mouseexit
+			{
+				hide                    highlight10
 			}
 		}
 
