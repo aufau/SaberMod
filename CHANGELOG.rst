@@ -1,3 +1,30 @@
+3.0
+---
+
+* Widescreen UI, HUD and FOV modes.
+* New warmup system - wait for all players to ready up.
+* Match referees promoted by admin or a popular vote.
+* Match pause and timeouts.
+* Unlagged CJK Instagib mode mimicking CJK mod mechanics.
+* Speed and movement crosshair indicators.
+* Smooth camera enabled by default.
+* Macro scan preventing kick script and other unfair binds.
+* Anti-warp system detecting or preventing warping.
+* More cheats blocked serverside.
+* Spectator mode unlocking camera angles when following a player.
+* Fast demo seeking with handy bindings.
+* Lower CPU load on both server and client.
+* Increased map and model limit in menus.
+* Game modes organized in directories.
+* A setting to make players pass through their teammates.
+* A setting to allow pushing and pulling pickup items.
+* A setting to make jump height independent of FPS.
+* Fix for player connecting to a team gametype server causing lag.
+* Fix for UI model selector going out of sync.
+* Fix for the infamous player ghosting bug aka skin bug.
+* Fixes for multiple bugs when playing on a server with high uptime.
+* Fixes many more issues.
+
 2.0
 ---
 
