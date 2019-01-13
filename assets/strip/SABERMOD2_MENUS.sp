@@ -167,11 +167,11 @@ INDEX 17
 INDEX 18
 {
    REFERENCE SELECT_MODE
-   TEXT_LANGUAGE1 "Select desired mode."
-   TEXT_LANGUAGE2 "Select desired mode."
-   TEXT_LANGUAGE3 "Select desired mode."
-   TEXT_LANGUAGE6 "Select desired mode."
-   TEXT_LANGUAGE8 "Select desired mode."
+   TEXT_LANGUAGE1 "Double click to enter a directory."
+   TEXT_LANGUAGE2 "Double click to enter a directory."
+   TEXT_LANGUAGE3 "Double click to enter a directory."
+   TEXT_LANGUAGE6 "Double click to enter a directory."
+   TEXT_LANGUAGE8 "Double click to enter a directory."
 }
 INDEX 19
 {
