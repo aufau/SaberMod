@@ -635,6 +635,20 @@
 		// other button
 		itemDef
 		{
+			name                    othercontrolbutton_new
+			group                   mods
+			style                   WINDOW_STYLE_SHADER
+			rect                    20 283 170 30
+			background              "gfx/menus/menu_blendbox2_new" // Frame around button
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+			cvarTest                ui_visited_controls_other
+			hideCvar                { 1 }
+		}
+
+		itemDef
+		{
 			name                    othercontrolbutton_glow
 			group                   mods
 			style                   WINDOW_STYLE_SHADER
@@ -695,6 +709,7 @@
 				setitemcolor            mousejoystickcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            spectatorcontrolbutton forecolor 0.64 0.65 1 1 ;
 				setitemcolor            othercontrolbutton forecolor 1 1 1 1 ;
+				setCvar                 ui_visited_controls_other 1 ;
 			}
 		}
 
@@ -3428,9 +3443,41 @@
 	{
 		group                   othercontrols
 		type                    ITEM_TYPE_BIND
+		text                    @SABERMENUS_READY_UP
+		cvar                    "ready"
+		rect                    220 221 300 20
+		textalign               ITEM_ALIGN_RIGHT
+		textalignx              151
+		textaligny              -2
+		font                    2
+		textscale               0.8
+		forecolor               1 1 1 1
+		visible                 0
+		descText                @SABERMENUS_READY_UP_DESC
+		action
+		{
+			play                    "sound/interface/button1.wav" ;
+		}
+
+		mouseenter
+		{
+			show                    highlight10
+			show                    keybindstatus
+		}
+		mouseexit
+		{
+			hide                    highlight10
+			hide                    keybindstatus
+		}
+	}
+
+	itemDef
+	{
+		group                   othercontrols
+		type                    ITEM_TYPE_BIND
 		text                    @MENUS3_SABER_CHALLENGE
 		cvar                    "engage_duel"
-		rect                    220 241 300 20
+		rect                    220 261 300 20
 		textalign               ITEM_ALIGN_RIGHT
 		textalignx              151
 		textaligny              -2
@@ -3446,12 +3493,12 @@
 
 		mouseenter
 		{
-			show                    highlight11
+			show                    highlight12
 			show                    keybindstatus
 		}
 		mouseexit
 		{
-			hide                    highlight11
+			hide                    highlight12
 			hide                    keybindstatus
 		}
 	}

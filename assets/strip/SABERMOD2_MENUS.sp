@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 91
+COUNT 93
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -833,4 +833,24 @@ INDEX 90
    TEXT_LANGUAGE3 "Fix 3rd person camera warping while maintaining original feel."
    TEXT_LANGUAGE6 "Fix 3rd person camera warping while maintaining original feel."
    TEXT_LANGUAGE8 "Fix 3rd person camera warping while maintaining original feel."
+}
+INDEX 91
+{
+   REFERENCE READY_UP
+   NOTES "Bind ready up"
+   TEXT_LANGUAGE1 "Ready Up:"
+   TEXT_LANGUAGE2 "Ready Up:"
+   TEXT_LANGUAGE3 "Ready Up:"
+   TEXT_LANGUAGE6 "Ready Up:"
+   TEXT_LANGUAGE8 "Ready Up:"
+}
+INDEX 92
+{
+   REFERENCE READY_UP_DESC
+   NOTES "Bind ready up description"
+   TEXT_LANGUAGE1 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE2 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE3 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE6 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE8 "Ready up during warmup to start a match."
 }

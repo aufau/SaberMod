@@ -3996,6 +3996,7 @@ static bind_t g_bindings[] =
 	{"nextspecmode",	-1,					-1,		-1,	-1},
 	{"seek +5s",		-1,					-1,		-1,	-1},
 	{"seek -15s",		-1,					-1,		-1,	-1},
+	{"ready",			A_F8,				-1,		-1,	-1},
 };
 
 
