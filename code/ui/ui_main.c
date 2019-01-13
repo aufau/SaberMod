@@ -7359,21 +7359,31 @@ void UI_RegisterCvars( void ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
 
-	trap_Cvar_Register( NULL, "ui_visited_about", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_about_motd", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_join", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_setup", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_setup_modoptions", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_misc", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_rules", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_mode", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_map", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_map_display", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_callvote_player", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_controls", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_controls_spectator", "0", CVAR_ARCHIVE );
-	trap_Cvar_Register( NULL, "ui_visited_controls_other", "0", CVAR_ARCHIVE );
+	// register cvars for marking new menu items
+	{
+		static const char *visited[] = {
+			"ui_visited_about",
+			"ui_visited_about_motd",
+			"ui_visited_join",
+			"ui_visited_setup",
+			"ui_visited_setup_modoptions",
+			"ui_visited_callvote",
+			"ui_visited_callvote_misc",
+			"ui_visited_callvote_rules",
+			"ui_visited_callvote_mode",
+			"ui_visited_callvote_map",
+			"ui_visited_callvote_map_display",
+			"ui_visited_callvote_player",
+			"ui_visited_controls",
+			"ui_visited_controls_spectator",
+			"ui_visited_controls_other",
+		};
+		int i;
+
+		for (i = 0; i < (int)ARRAY_LEN(visited); i++) {
+			trap_Cvar_Register( NULL, visited[i], "0", CVAR_ARCHIVE | CVAR_INTERNAL );
+		}
+	}
 
 	trap_Cvar_Register( NULL, "ui_bind_ready", "", CVAR_ROM | CVAR_INTERNAL );
 }
