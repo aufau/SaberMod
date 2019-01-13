@@ -1102,8 +1102,8 @@ void G_PrintStats(void);
 void G_LogStats(void);
 
 // g_dimensions.c
-#define DEFAULT_DIMENSION	0x1
-#define ALL_DIMENSIONS		0xffffffff
+#define DEFAULT_DIMENSION	(1u << TEAM_FREE)
+#define ALL_DIMENSIONS		0xffffffffu
 
 void G_BlameForEntity( int blame, gentity_t *ent );
 unsigned G_GetFreeDuelDimension(void);
