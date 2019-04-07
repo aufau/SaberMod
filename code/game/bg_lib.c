@@ -1231,6 +1231,8 @@ static void AddInt( char **buf_p, char * const buf_end, int val, int width, int 
 
 	if ( sign < 0 ) {
 		text[digits++] = '-';
+	} else if ( flags & SIGN ) {
+		text[digits++] = '+';
 	}
 
 	buf = *buf_p;
