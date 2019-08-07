@@ -1098,6 +1098,10 @@ void G_Respawn( gentity_t *ent ) {
 static void G_FinishDuel ( gentity_t *ent )
 {
 	ent->dimension = DEFAULT_DIMENSION;
+	// remove once all non-player entities use dimensions
+	if (ent->client->ps.saberEntityNum != ENTITYNUM_NONE) {
+		g_entities[ent->client->ps.saberEntityNum].dimension = DEFAULT_DIMENSION;
+	}
 	ent->client->ps.duelInProgress = qfalse;
 	ent->client->duelStarted = qfalse;
 	G_AddEvent(ent, EV_PRIVATE_DUEL, 0);
