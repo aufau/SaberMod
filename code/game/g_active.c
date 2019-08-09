@@ -1914,24 +1914,33 @@ void G_RunClient( gentity_t *ent ) {
 
 		ClientThink_real( ent );
 	}
-	else if ( g_antiWarp.integer > 1 &&
+	else if (g_antiWarp.integer &&
+		client->lastCmdTime > 0 &&
 		client->lastCmdTime < level.time - g_antiWarpTime.integer &&
 //		client->lastCmdTime > level.time - 1000 && //
-		client->lastCmdTime > 0 &&
 		client->pers.connected == CON_CONNECTED &&
 		client->sess.spectatorState == SPECTATOR_NOT &&
 		client->ps.pm_type != PM_DEAD)
 	{
-		// create a fake user command to make him move, causing client
-		// prediction error for a warping player
-		cmd->serverTime = level.time + (cmd->serverTime - client->lastCmdTime);
-		cmd->buttons = 0;
-		cmd->generic_cmd = 0;	// let go any force power eg grip
-		cmd->forwardmove = 0;
-		cmd->rightmove = 0;
-		cmd->upmove = 0;
+		client->ps.eFlags |= EF_CONNECTION;
 
-		ClientThink_real( ent );
+		if (g_antiWarpTime.integer == 2)
+		{
+			// create a fake user command to make him move, causing client
+			// prediction error for a warping player
+			cmd->serverTime = level.time + (cmd->serverTime - client->lastCmdTime);
+			cmd->buttons = 0;
+			cmd->generic_cmd = 0;	// let go any force power eg grip
+			cmd->forwardmove = 0;
+			cmd->rightmove = 0;
+			cmd->upmove = 0;
+
+			ClientThink_real( ent );
+		}
+	}
+	else
+	{
+		client->ps.eFlags &= ~EF_CONNECTION;
 	}
 }
 
@@ -2083,13 +2092,6 @@ void ClientEndFrame( gentity_t *ent ) {
 
 	// apply all the damage taken this frame
 	P_DamageFeedback (ent);
-
-	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( g_antiWarp.integer && client->lastCmdTime < level.time - g_antiWarpTime.integer ) {
-		client->ps.eFlags |= EF_CONNECTION;
-	} else {
-		client->ps.eFlags &= ~EF_CONNECTION;
-	}
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...
 
