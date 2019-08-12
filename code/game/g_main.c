@@ -2898,9 +2898,14 @@ void CheckCvars( void ) {
 	if ( g_ingameMotd.modificationCount != motdMod ) {
 		if ( g_ingameMotd.string[0] && Q_stricmp( g_ingameMotd.string, "none" ) ) {
 			char	motd[MAX_INFO_STRING];
+			int		i;
 
 			Q_strncpyz( motd, g_ingameMotd.string, sizeof( motd ) );
 			trap_SetConfigstring( CS_INGAME_MOTD, Q_SanitizeStr( motd ) );
+
+			for (i = 0; i < level.maxclients; i++) {
+				level.clients[i].sess.motdSeen = qfalse;
+			}
 		} else {
 			trap_SetConfigstring( CS_INGAME_MOTD, "" );
 		}
