@@ -1965,7 +1965,11 @@ static float CG_DrawTimer( float y ) {
 			}
 		}
 	} else {
-		msec = MAX(0, cg.serverTime - cgs.levelStartTime);
+		if (cg.warmup) {
+			msec = 0;
+		} else {
+			msec = MAX(0, cg.serverTime - cgs.levelStartTime);
+		}
 	}
 
 	seconds = msec / 1000;
