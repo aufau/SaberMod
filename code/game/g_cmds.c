@@ -2734,6 +2734,10 @@ static void Cmd_Ready_f(gentity_t *ent)
 		return;
 	}
 
+	if (client->sess.sessionTeam == TEAM_SPECTATOR) {
+		return;
+	}
+
 	if (client->readyTime + 1000 > level.time) {
 		G_SendServerCommand(ent-g_entities,
 			"print \"May not use this command more than once per second.\n\"");
