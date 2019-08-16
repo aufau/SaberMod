@@ -1958,7 +1958,7 @@ static float CG_DrawTimer( float y ) {
 
 		msec = cgs.timelimit * 60 * 1000;
 		if (!cg.warmup) {
-			msec -= cg.serverTime - cgs.levelStartTime;
+			msec -= cg.gameTime - cgs.levelStartTime;
 			// intermission or overtime
 			if (msec < 0) {
 				msec = -msec;
@@ -1968,7 +1968,7 @@ static float CG_DrawTimer( float y ) {
 		if (cg.warmup) {
 			msec = 0;
 		} else {
-			msec = MAX(0, cg.serverTime - cgs.levelStartTime);
+			msec = MAX(0, cg.gameTime - cgs.levelStartTime);
 		}
 	}
 
