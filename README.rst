@@ -419,6 +419,9 @@ g_teamForceBalance <number>
 g_teamsizeMin <size>
   Minimum votable teamsize.
 
+g_timeoutDuration <seconds>
+  Duration of a player timeout.
+
 g_timeoutLimit <number>
   Maximum number of times a player is allowed to call a timeout.
 

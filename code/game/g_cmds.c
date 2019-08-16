@@ -2770,7 +2770,7 @@ static void Cmd_Timeout_f(gentity_t *ent)
 	if (level.unpauseTime < level.time) {
 		ent->client->pers.timeouts++;
 		level.timeoutClient = ent->s.number;
-		level.unpauseTime = level.time + 30000;
+		level.unpauseTime = level.time + g_timeoutDuration.integer * 1000;
 		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " called a timeout.\n\"", ent->client->info.netname));
 	}
 }

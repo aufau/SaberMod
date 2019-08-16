@@ -1287,6 +1287,7 @@ extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
+extern	vmCvar_t	g_timeoutDuration;
 extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
