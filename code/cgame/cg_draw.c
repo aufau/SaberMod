@@ -2007,7 +2007,7 @@ static void CG_DrawCountdown( void )
 	}
 
 	msec = cgs.timelimit * 60 * 1000;
-	msec -= cg.serverTime - cgs.levelStartTime;
+	msec -= cg.gameTime - cgs.levelStartTime;
 
 	if (msec < 0 || 16000 <= msec) {
 		return;
