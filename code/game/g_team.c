@@ -1041,6 +1041,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	int			cnt;
 	int			clients[TEAM_MAXOVERLAY];
 	gclient_t	*client = ent->client;
+	team_t		team = client->ps.persistant[PERS_TEAM];
 
 	if ( !client->info.teamInfo )
 		return;
@@ -1053,7 +1054,8 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 
 		if (cl != client &&
 			cl->pers.connected == CON_CONNECTED &&
-			cl->sess.sessionTeam ==	client->sess.sessionTeam ) {
+			cl->sess.spectatorState == SPECTATOR_NOT &&
+			cl->sess.sessionTeam ==	team) {
 			clients[cnt++] = level.sortedClients[i];
 		}
 	}
@@ -1110,13 +1112,14 @@ void CheckTeamStatus(void) {
 		}
 
 		for (i = 0; i < level.maxclients; i++) {
-			ent = g_entities + i;
+			gentity_t	*ent = g_entities + i;
+			team_t		team = ent->client->ps.persistant[PERS_TEAM];
 
 			if ( ent->client->pers.connected != CON_CONNECTED ) {
 				continue;
 			}
 
-			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+			if (team == TEAM_RED ||	team == TEAM_BLUE) {
 				TeamplayInfoMessage( ent );
 			}
 		}
