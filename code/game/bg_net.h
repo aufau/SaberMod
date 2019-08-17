@@ -37,7 +37,8 @@ typedef enum {
 	PM_FREEZE,		// stuck in place with no control
 	PM_INTERMISSION,	// no movement or status bar
 	PM_SPINTERMISSION,	// no movement or status bar
-	PM_HARMLESS		// can't use weapons, items, force powers
+	PM_HARMLESS,	// can't use weapons, items, force powers
+	PM_PAUSED		// can't move during pause
 } pmtype_t;
 
 typedef enum {

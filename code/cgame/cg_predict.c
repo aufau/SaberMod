@@ -652,7 +652,7 @@ void CG_PredictPlayerState( void ) {
 		cg.predictedPlayerState = cg.snap->ps;
 	}
 
-	if (cgs.unpauseTime > cg.serverTime) {
+	if (cg.snap->ps.pm_flags & PM_PAUSED) {
 		cg.predictedPlayerState = cg.nextSnap ? cg.nextSnap->ps : cg.snap->ps;
 		return;
 	}

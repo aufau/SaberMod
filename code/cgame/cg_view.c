@@ -588,7 +588,7 @@ static void CG_OffsetThirdPersonView( void )
 	dtime += cg.predictedTimeFrac - cam.lastTimeFrac;
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport || cgs.unpauseTime > cg.serverTime)
+	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport || cg.snap->ps.pm_flags & PM_PAUSED)
 	{
 		CG_ResetThirdPersonViewDamp();
 	}

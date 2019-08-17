@@ -767,6 +767,29 @@ void ClientIntermissionThink( gclient_t *client ) {
 	}
 }
 
+/*
+====================
+ClientPauseThink
+====================
+*/
+static void ClientPauseThink( gentity_t *ent ) {
+	gclient_t	*client = ent->client;
+	usercmd_t	*cmd = &client->pers.cmd;
+
+	// Pmove substitute, should be Pmove_paused
+	client->ps.commandTime = cmd->serverTime;
+	if ( cmd->buttons & BUTTON_TALK ) {
+		ent->s.eFlags |= EF_TALK;
+		client->ps.eFlags |= EF_TALK;
+	} else {
+		ent->s.eFlags &= ~EF_TALK;
+		client->ps.eFlags &= ~EF_TALK;
+	}
+	// can't move, stop prediction
+	client->ps.pm_flags |= PM_PAUSED;
+	// force the same view angles as before
+	SetClientViewAngle(ent, client->ps.viewangles);
+}
 
 /*
 ================
@@ -1192,6 +1215,11 @@ void ClientThink_real( gentity_t *ent ) {
 			return;
 
 		SpectatorThink( ent, ucmd );
+		return;
+	}
+
+	if (level.unpauseTime > level.time) {
+		ClientPauseThink( ent );
 		return;
 	}
 
@@ -1829,23 +1857,6 @@ void ClientThink_real( gentity_t *ent ) {
 	G_UpdateClientBroadcasts ( ent );
 }
 
-void ClientThink_paused( gentity_t *ent ) {
-	gclient_t	*client = ent->client;
-	usercmd_t	*cmd = &client->pers.cmd;
-
-	// Pmove substitute, should be Pmove_paused
-	client->ps.commandTime = cmd->serverTime;
-	if ( cmd->buttons & BUTTON_TALK ) {
-		ent->s.eFlags |= EF_TALK;
-		client->ps.eFlags |= EF_TALK;
-	} else {
-		ent->s.eFlags &= ~EF_TALK;
-		client->ps.eFlags &= ~EF_TALK;
-	}
-	// force the same view angles as before
-	SetClientViewAngle(ent, client->ps.viewangles);
-}
-
 /*
 ==================
 G_CheckClientTimeouts
@@ -1896,9 +1907,7 @@ void ClientThink( int clientNum ) {
 	// phone jack if they don't get any for a while
 	client->lastCmdTime = level.time;
 
-	if (level.unpauseTime > level.time) {
-		ClientThink_paused( ent );
-	} else if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
+	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
 		ClientThink_real( ent );
 	}
 }

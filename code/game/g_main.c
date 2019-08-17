@@ -3179,7 +3179,21 @@ qboolean G_CheckPausedFrame( int levelTime ) {
 G_RunPausedFrame
 ================
 */
+void SpectatorClientEndFrame( gentity_t *ent );
 void G_RunPausedFrame( void ) {
+	int			i;
+
+	for (i=0; i < level.maxclients; i++) {
+		gclient_t	*client = &level.clients[i];
+
+		if (client->pers.connected == CON_CONNECTED &&
+			client->sess.spectatorState != SPECTATOR_NOT)
+		{
+				SpectatorClientEndFrame( &g_entities[i] );
+				return;
+		}
+	}
+
 	// get any cvar changes
 	G_UpdateCvars();
 
