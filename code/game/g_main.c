@@ -2995,21 +2995,161 @@ void SlowMoDuelTimescale(void) {
 	}
 }
 
+void G_RewindTime( int msec ) {
+	int		i, j;
+
+#define ADJUST(x) if ((x) > 0) (x) += msec
+
+	ADJUST(level.startTime);
+	ADJUST(level.warmupTime);
+	ADJUST(level.intermissiontime);
+	ADJUST(level.roundQueued);
+	ADJUST(level.intermissionQueued);
+	ADJUST(level.exitTime);
+
+	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+	trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
+
+	for (i = 0; i < level.maxclients; i++) {
+		if (level.clients[i].pers.connected != CON_DISCONNECTED) {
+			gentity_t		*ent = &g_entities[i];
+			gclient_t		*client = ent->client;
+			playerState_t	*ps = &client->ps;
+
+			ADJUST(ent->s.constantLight);
+			ADJUST(ent->s.emplacedOwner);
+
+			ADJUST(ps->weaponChargeTime);
+			ADJUST(ps->weaponChargeSubtractTime);
+			ADJUST(ps->externalEventTime);
+			ADJUST(ps->painTime);
+			ADJUST(ps->lastOnGround);
+			ADJUST(ps->saberLockTime);
+			ADJUST(ps->saberDidThrowTime);
+			ADJUST(ps->saberHitWallSoundDebounceTime);
+			ADJUST(ps->rocketLastValidTime);
+			ADJUST(ps->rocketLockTime);
+			ADJUST(ps->rocketTargetTime);
+			ADJUST(ps->emplacedTime);
+			ADJUST(ps->droneFireTime);
+			ADJUST(ps->droneExistTime);
+			ADJUST(ps->holocronCantTouchTime);
+			ADJUST(ps->electrifyTime);
+			ADJUST(ps->saberBlockTime);
+			ADJUST(ps->otherKillerTime);
+			ADJUST(ps->otherKillerDebounceTime);
+			ADJUST(ps->forceHandExtendTime);
+			ADJUST(ps->forceRageDrainTime);
+			ADJUST(ps->forceGripMoveInterval);
+			ADJUST(ps->footstepTime);
+			ADJUST(ps->otherSoundTime);
+			ADJUST(ps->duelTime);
+			ADJUST(ps->holdMoveTime);
+			ADJUST(ps->forceAllowDeactivateTime);
+			ADJUST(ps->zoomTime);
+			ADJUST(ps->zoomLockTime);
+			ADJUST(ps->useDelay);
+			ADJUST(ps->fallingToDeath);
+			ADJUST(ps->saberIdleWound);
+			ADJUST(ps->saberAttackWound);
+			ADJUST(ps->saberThrowDelay);
+
+			for (j = 0; j < MAX_POWERUPS; j++) {
+				ADJUST(ps->powerups[j]);
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->holocronsCarried[j]);
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->fd.forcePowerDebounce[j]);
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->fd.forcePowerDuration[j]);
+			}
+
+			ADJUST(ps->fd.forcePowerRegenDebounceTime);
+			ADJUST(ps->fd.forceJumpAddTime);
+			ADJUST(ps->fd.forceGripDamageDebounceTime);
+			ADJUST(ps->fd.forceGripStarted);
+			ADJUST(ps->fd.forceGripBeingGripped);
+			ADJUST(ps->fd.forceGripUseTime);
+			ADJUST(ps->fd.forceGripSoundTime);
+			ADJUST(ps->fd.forceHealTime);
+			ADJUST(ps->fd.forceRageRecoveryTime);
+			ADJUST(ps->fd.forceDrainTime);
+
+			ADJUST(client->invulnerableTimer);
+			ADJUST(client->respawnTime);
+			ADJUST(client->inactivityTime);
+			ADJUST(client->rewardTime);
+			ADJUST(client->airOutTime);
+			ADJUST(client->lastKillTime);
+			ADJUST(client->lastSaberStorageTime);
+			ADJUST(client->dangerTime);
+			ADJUST(client->forcePowerSoundDebounce);
+
+			ADJUST(client->pers.teamState.lastfraggedcarrier);
+			ADJUST(client->pers.teamState.lasthurtcarrier);
+			ADJUST(client->pers.teamState.lastreturnedflag);
+			ADJUST(client->pers.teamState.flagsince);
+		}
+	}
+
+	for (i = 0; i < level.num_entities; i++) {
+		if (g_entities[i].inuse) {
+			gentity_t	*ent = &g_entities[i];
+
+			if (ent->s.pos.trType != TR_STATIONARY) {
+				ent->s.pos.trTime += msec;
+			}
+			if (ent->s.apos.trType != TR_STATIONARY) {
+				ent->s.apos.trTime += msec;
+			}
+			// ADJUST(ent->s.time);
+			// ADJUST(ent->s.time2);
+
+			ADJUST(ent->nextthink);
+
+			ADJUST(ent->aimDebounceTime);
+			ADJUST(ent->painDebounceTime);
+			ADJUST(ent->attackDebounceTime);
+			ADJUST(ent->freetime);
+			ADJUST(ent->eventTime);
+			ADJUST(ent->timestamp);
+			ADJUST(ent->setTime);
+			ADJUST(ent->pain_debounce_time);
+			ADJUST(ent->fly_sound_debounce_time);
+			ADJUST(ent->last_move_time);
+			ADJUST(ent->time1);
+			ADJUST(ent->time2);
+
+			// ent->s.genericenemyindex
+			// ent->s.powerups
+			// ent->bolt_RArm
+			// ent->bolt_LArm
+			// ent->bolt_LLeg
+			// ent->bolt_Head
+
+		}
+	}
+}
+
 /*
 ================
-G_RunPausedFrame
+G_CheckPausedFrame
 ================
 */
-qboolean G_RunPausedFrame( int levelTime ) {
+qboolean G_CheckPausedFrame( int levelTime ) {
 	static int		pauseTime = 0;
 	static int		unpauseTime = 0;
-	static qboolean paused = qfalse;
 
 	if (level.unpauseTime > levelTime)
 	{
-		if (!paused)
+		if (!pauseTime)
 		{
-			paused = qtrue;
 			pauseTime = levelTime;
 			G_Printf("Game paused\n");
 		}
@@ -3019,160 +3159,27 @@ qboolean G_RunPausedFrame( int levelTime ) {
 			unpauseTime = level.unpauseTime;
 			trap_SetConfigstring(CS_UNPAUSE, va("%d", unpauseTime));
 		}
+
+		return qtrue;
 	}
-	else
+	else if (pauseTime)
 	{
-		if (paused)
-		{
-			int		time = levelTime - pauseTime;
-			int		i, j;
-
-			paused = qfalse;
-			trap_SetConfigstring(CS_UNPAUSE, "");
-			G_Printf("Game unpaused\n");
-
-#define ADJUST(x) if ((x) > 0) (x) += time;
-
-			ADJUST(level.startTime)
-			ADJUST(level.warmupTime)
-			ADJUST(level.intermissiontime)
-			ADJUST(level.roundQueued)
-			ADJUST(level.intermissionQueued)
-			ADJUST(level.exitTime)
-
-			trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
-			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
-
-			for (i = 0; i < level.maxclients; i++) {
-				if (level.clients[i].pers.connected != CON_DISCONNECTED) {
-					gentity_t		*ent = &g_entities[i];
-					gclient_t		*client = ent->client;
-					playerState_t	*ps = &client->ps;
-
-					ADJUST(ent->s.constantLight)
-					ADJUST(ent->s.emplacedOwner)
-
-					ADJUST(ps->weaponChargeTime)
-					ADJUST(ps->weaponChargeSubtractTime)
-					ADJUST(ps->externalEventTime)
-					ADJUST(ps->painTime)
-					ADJUST(ps->lastOnGround)
-					ADJUST(ps->saberLockTime)
-					ADJUST(ps->saberDidThrowTime)
-					ADJUST(ps->saberHitWallSoundDebounceTime)
-					ADJUST(ps->rocketLastValidTime)
-					ADJUST(ps->rocketLockTime)
-					ADJUST(ps->rocketTargetTime)
-					ADJUST(ps->emplacedTime)
-					ADJUST(ps->droneFireTime)
-					ADJUST(ps->droneExistTime)
-					ADJUST(ps->holocronCantTouchTime)
-					ADJUST(ps->electrifyTime)
-					ADJUST(ps->saberBlockTime)
-					ADJUST(ps->otherKillerTime)
-					ADJUST(ps->otherKillerDebounceTime)
-					ADJUST(ps->forceHandExtendTime)
-					ADJUST(ps->forceRageDrainTime)
-					ADJUST(ps->forceGripMoveInterval)
-					ADJUST(ps->footstepTime)
-					ADJUST(ps->otherSoundTime)
-					ADJUST(ps->duelTime)
-					ADJUST(ps->holdMoveTime)
-					ADJUST(ps->forceAllowDeactivateTime)
-					ADJUST(ps->zoomTime)
-					ADJUST(ps->zoomLockTime)
-					ADJUST(ps->useDelay)
-					ADJUST(ps->fallingToDeath)
-					ADJUST(ps->saberIdleWound)
-					ADJUST(ps->saberAttackWound)
-					ADJUST(ps->saberThrowDelay)
-
-					for (j = 0; j < MAX_POWERUPS; j++) {
-						ADJUST(ps->powerups[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->holocronsCarried[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->fd.forcePowerDebounce[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->fd.forcePowerDuration[j])
-					}
-
-					ADJUST(ps->fd.forcePowerRegenDebounceTime)
-					ADJUST(ps->fd.forceJumpAddTime)
-					ADJUST(ps->fd.forceGripDamageDebounceTime)
-					ADJUST(ps->fd.forceGripStarted)
-					ADJUST(ps->fd.forceGripBeingGripped)
-					ADJUST(ps->fd.forceGripUseTime)
-					ADJUST(ps->fd.forceGripSoundTime)
-					ADJUST(ps->fd.forceHealTime)
-					ADJUST(ps->fd.forceRageRecoveryTime)
-					ADJUST(ps->fd.forceDrainTime)
-
-					ADJUST(client->invulnerableTimer)
-					ADJUST(client->respawnTime)
-					ADJUST(client->inactivityTime)
-					ADJUST(client->rewardTime)
-					ADJUST(client->airOutTime)
-					ADJUST(client->lastKillTime)
-					ADJUST(client->lastSaberStorageTime)
-					ADJUST(client->dangerTime)
-					ADJUST(client->forcePowerSoundDebounce)
-
-					ADJUST(client->pers.teamState.lastfraggedcarrier)
-					ADJUST(client->pers.teamState.lasthurtcarrier)
-					ADJUST(client->pers.teamState.lastreturnedflag)
-					ADJUST(client->pers.teamState.flagsince)
-				}
-			}
-
-			for (i = 0; i < level.num_entities; i++) {
-				if (g_entities[i].inuse) {
-					gentity_t	*ent = &g_entities[i];
-
-					if (ent->s.pos.trType != TR_STATIONARY) {
-						ent->s.pos.trTime += time;
-					}
-					if (ent->s.apos.trType != TR_STATIONARY) {
-						ent->s.apos.trTime += time;
-					}
-					// ADJUST(ent->s.time)
-					// ADJUST(ent->s.time2)
-
-					ADJUST(ent->nextthink)
-
-					ADJUST(ent->aimDebounceTime)
-					ADJUST(ent->painDebounceTime)
-					ADJUST(ent->attackDebounceTime)
-					ADJUST(ent->freetime)
-					ADJUST(ent->eventTime)
-					ADJUST(ent->timestamp)
-					ADJUST(ent->setTime)
-					ADJUST(ent->pain_debounce_time)
-					ADJUST(ent->fly_sound_debounce_time)
-					ADJUST(ent->last_move_time)
-					ADJUST(ent->time1)
-					ADJUST(ent->time2)
-
-					// ent->s.genericenemyindex
-					// ent->s.powerups
-					// ent->bolt_RArm
-					// ent->bolt_LArm
-					// ent->bolt_LLeg
-					// ent->bolt_Head
-
-				}
-			}
-		}
-
-		return qfalse;
+		G_RewindTime(levelTime - pauseTime);
+		pauseTime = 0;
+		unpauseTime = 0;
+		trap_SetConfigstring(CS_UNPAUSE, "");
+		G_Printf("Game unpaused\n");
 	}
 
+	return qfalse;
+}
+
+/*
+================
+G_RunPausedFrame
+================
+*/
+void G_RunPausedFrame( void ) {
 	// get any cvar changes
 	G_UpdateCvars();
 
@@ -3185,8 +3192,6 @@ qboolean G_RunPausedFrame( int levelTime ) {
 
 	// for tracking changes
 	CheckCvars();
-
-	return qtrue;
 }
 
 /*
@@ -3223,7 +3228,8 @@ void G_RunFrame( int levelTime ) {
 	level.time = levelTime;
 	msec = level.time - level.previousTime;
 
-	if (G_RunPausedFrame(levelTime)) {
+	if (G_CheckPausedFrame(levelTime)) {
+		G_RunPausedFrame();
 		return;
 	}
 
