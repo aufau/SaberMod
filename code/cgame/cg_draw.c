@@ -3998,9 +3998,8 @@ static void CG_DrawWarmup( void ) {
 
 	if (cgs.unpauseTime > cg.serverTime)
 	{
-		sec = (cgs.unpauseTime - cg.serverTime) / 1000;
-
-		if (sec < 60) {
+		if (cgs.unpauseTime != UNPAUSE_TIME_NEVER) {
+			sec = (cgs.unpauseTime - cg.serverTime) / 1000 + 1;
 			s = va(CG_GetStripEdString("SABERINGAME", "MATCH_WILL_RESUME"), sec); // "Game will resume in %d seconds"
 		} else {
 			s = CG_GetStripEdString("SABERINGAME", "MATCH_PAUSED");

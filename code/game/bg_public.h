@@ -964,4 +964,6 @@ extern const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS];
 #define DEBRIS_SPECIALCASE_GLASS		0xfffc // -4
 #define DEBRIS_SPECIALCASE_MIN			0xfffc
 
+#define UNPAUSE_TIME_NEVER		INT_MAX
+
 #endif //__BG_PUBLIC_H__

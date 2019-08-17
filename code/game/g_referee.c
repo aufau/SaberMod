@@ -228,7 +228,7 @@ static void Ref_Pause_f( void ) {
 	char	arg[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() == 1) {
-		level.unpauseTime = INT_MAX;
+		level.unpauseTime = UNPAUSE_TIME_NEVER;
 	} else {
 		trap_Argv(1, arg, sizeof(arg));
 		level.unpauseTime = level.time + 1000 * atoi(arg);
