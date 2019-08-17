@@ -1951,28 +1951,35 @@ static float CG_DrawTimer( float y ) {
 	int			mins, seconds, tens;
 	int			msec;
 
+	// msec is always growing
+	// positive - timer counting up
+	// negative - timer counting down
+
 	if (cg_drawTimer.integer >= 2) {
 		if (!cgs.timelimit) {
 			return y;
 		}
 
-		msec = cgs.timelimit * 60 * 1000;
+		msec = - cgs.timelimit * 60 * 1000;
 		if (!cg.warmup) {
-			msec -= cg.gameTime - cgs.levelStartTime;
-			// intermission or overtime
-			if (msec < 0) {
-				msec = -msec;
-			}
+			msec += cg.gameTime - cgs.levelStartTime;
 		}
+
 	} else {
 		if (cg.warmup) {
 			msec = 0;
 		} else {
-			msec = MAX(0, cg.gameTime - cgs.levelStartTime);
+			msec = cg.gameTime - cgs.levelStartTime;
 		}
 	}
 
-	seconds = msec / 1000;
+	// seconds = abs(floor(msec / 1000.0))
+	if (msec < 0) {
+		seconds = (- msec + 999) / 1000;
+	} else {
+		seconds = msec / 1000;
+	}
+
 	mins = seconds / 60;
 	seconds -= mins * 60;
 	tens = seconds / 10;
