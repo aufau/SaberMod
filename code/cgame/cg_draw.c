@@ -1960,11 +1960,13 @@ static float CG_DrawTimer( float y ) {
 			return y;
 		}
 
-		msec = - cgs.timelimit * 60 * 1000;
-		if (!cg.warmup) {
-			msec += cg.gameTime - cgs.levelStartTime;
+		if (cg.intermissionStarted) {
+			msec = 0;
+		} else if (cg.warmup) {
+			msec = - cgs.timelimit * 60 * 1000;
+		} else {
+			msec = - cgs.timelimit * 60 * 1000 + cg.gameTime - cgs.levelStartTime;
 		}
-
 	} else {
 		if (cg.warmup) {
 			msec = 0;

@@ -1658,6 +1658,7 @@ static void NextRound( void )
 	if ( warmup[0] == '\0' ) {
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
 	}
+	trap_SetConfigstring(CS_INTERMISSION, "");
 
 	if ( level.gametype == GT_REDROVER ) {
 		Shuffle(); // calls CheckExitRules
@@ -1875,6 +1876,8 @@ static void LogRoundExit( team_t winner, const char *string )
 	const char *param1;
 
 	level.intermissionQueued = level.time;
+	trap_SetConfigstring( CS_INTERMISSION, "1" );
+
 	// update CS_SCORES1 and CS_SCORES2
 	CalculateRanks(); // calls CheckExitRules!
 
