@@ -240,8 +240,10 @@ static void Ref_Pause_f( void ) {
 }
 
 static void Ref_Unpause_f( void ) {
-	level.unpauseTime = level.time + 5000;
-	ref.LogPrintf(LOG_REFEREE, "Unpause\n");
+	if (level.unpauseTime > level.time + 5000) {
+		level.unpauseTime = level.time + 5000;
+		ref.LogPrintf(LOG_REFEREE, "Unpause\n");
+	}
 }
 
 static void Ref_AllReady_f(void) {
