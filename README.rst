@@ -94,6 +94,9 @@ Referee Commands
 These commands can be used only by a registered referee or server
 console (rcon).
 
+abort
+  Abort the match.
+
 allready
   Make all players ready in warmup or during intermission.
 
@@ -291,6 +294,7 @@ g_allowVote <0|1|bitmask>
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
   65536 - Capturelimit   131072 - Poll          262144 - Referee
+  524288 - Abort
   =====================  =====================  =====================
 
 g_antiWarp <0|1|2>

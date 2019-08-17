@@ -258,6 +258,23 @@ static void Ref_AllReady_f(void) {
 	}
 }
 
+static void Ref_Abort_f(void) {
+	if (level.warmupTime) {
+		ref.Printf("There is no ongoing match\n");
+		return;
+	}
+
+	if (!g_doWarmup.integer || level.gametype == GT_TOURNAMENT ) {
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 5\n" );
+	} else {
+		level.warmupTime = -1;
+		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+	}
+
+	G_SendServerCommand(-1, "print \"Match aborted.\n\"");
+	ref.LogPrintf( LOG_REFEREE, "Abort:\n" );
+}
+
 static void Ref_Help_f(void);
 
 typedef struct {
@@ -276,6 +293,7 @@ static const refereeCommand_t refCommands[] = {
 	{ "pause", Ref_Pause_f },
 	{ "unpause", Ref_Unpause_f },
 	{ "allready", Ref_AllReady_f },
+	{ "abort", Ref_Abort_f },
 };
 
 static void Ref_Help_f(void) {
