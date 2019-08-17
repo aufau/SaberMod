@@ -122,11 +122,11 @@ assets/SOURCE.txt
 all	: vm shared
 vm	: game cgame ui
 shared	: gameshared cgameshared uishared
-game	: base/vm/jk2mpgame.qvm version
-cgame	: base/vm/cgame.qvm version
+game	: base/vm/jk2mpgame.qvm
+cgame	: base/vm/cgame.qvm
 ui	: base/vm/ui.qvm
-gameshared	: base/jk2mpgame_$(ARCH).so version
-cgameshared	: base/cgame_$(ARCH).so version
+gameshared	: base/jk2mpgame_$(ARCH).so
+cgameshared	: base/cgame_$(ARCH).so
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
 assets : base/
@@ -169,11 +169,14 @@ help	:
 	@echo '  toolsclean     - Remove q3asm and q3lcc'
 	@echo '  depclean       - Remove generated dependency files'
 	@echo '  distclean      - Remove all generated files'
-version : FORCE
-	@touch code/game/bg_version.h
+
+out/version	: FORCE
+	@echo $(VERSION) | cmp -s - $@ || echo '$(VERSION)' > $@
+code/game/bg_version.h : out/version
+	@touch $@
 
 FORCE	:
-.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
+.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools FORCE
 
 # QVM Targets
 
