@@ -4083,9 +4083,7 @@ static void CG_DrawWarmup( void ) {
 
 	sec = ( sec - cg.gameTime );
 	if ( sec < 0 ) {
-		cg.warmup = 0;
 		sec = 0;
-		return;
 	}
 	sec /= 1000;
 //	s = va( "Starts in: %i", sec + 1 );
