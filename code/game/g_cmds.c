@@ -145,6 +145,8 @@ char	*ConcatArgs( int start ) {
 	int			c = trap_Argc();
 	int			i;
 
+	line[0] = '\0';
+
 	// need at least 3 bytes for space, one character and '\0'
 	for ( i = start ; i < c && remaining >= 3 ; i++ ) {
 		if ( i > start ) {
