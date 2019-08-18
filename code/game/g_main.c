@@ -2840,12 +2840,13 @@ CheckTeamVote
 static void CheckTeamVote( team_t team ) {
 	int cs_offset;
 
-	if ( team == TEAM_RED )
+	if ( team == TEAM_RED ) {
 		cs_offset = 0;
-	else if ( team == TEAM_BLUE )
+	} else if ( team == TEAM_BLUE ) {
 		cs_offset = 1;
-	else
+	} else {
 		return;
+	}
 
 	if ( !level.teamVoteTime[cs_offset] ) {
 		return;
@@ -2855,19 +2856,19 @@ static void CheckTeamVote( team_t team ) {
 	} else {
 		if ( level.teamVoteYes[cs_offset] > level.numteamVotingClients[cs_offset]/2 ) {
 			// execute the command, then remove the vote
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED")) );
+			G_SendServerCommand( -1, "print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED") );
 			//
-			if ( !strncmp( "leader", level.teamVoteString[cs_offset], 6) ) {
-				int clientNum = atoi(level.teamVoteString[cs_offset] + 7);
+			switch ( level.teamVoteCmd[cs_offset] ) {
+			case CTV_LEADER:
 				//set the team leader
-				SetLeader(team, clientNum);
-				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s is the new %s team leader\n",
-					BG_TeamName(team, CASE_UPPER), clientNum,
+				SetLeader(team, level.teamVoteArg[cs_offset]);
+				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s\n",
+					BG_TeamName(team, CASE_UPPER), level.teamVoteCmd[cs_offset],
 					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
-					level.clients[clientNum].info.netname, BG_TeamName(team, CASE_LOWER) );
-			}
-			else {
-				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );
+					level.teamVoteString[cs_offset]);
+				break;
+			default:
+				G_Error("CheckTeamVote: bad vote");
 			}
 		} else if ( level.teamVoteYes[cs_offset] == 0 ||
 			level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {

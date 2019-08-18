@@ -2158,7 +2158,6 @@ Cmd_CallTeamVote_f
 */
 void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	teamVoteCmd_t	voteCmd;
-	const char		*voteName;
 	int				i;
 	int				cs_offset;
 	int				voteMask;
@@ -2174,8 +2173,8 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	} teamVoteCmdInfo_t;
 
 	static const teamVoteCmdInfo_t voteCmds[CTV_MAX] = {
-		{ "invalid",		"Invalid",		"" },				// CTV_INVALID
-		{ "leader",			"Leader",		" <name|num>" },	// CTV_LEADER
+		{ "invalid",		"Invalid",			"" },				// CTV_INVALID
+		{ "leader",			"Leader",			" <name|num>" },	// CTV_LEADER
 	};
 
 	if ( team == TEAM_RED ) {
@@ -2254,8 +2253,6 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	voteName = voteCmds[voteCmd].longName;
-
 	switch ( voteCmd ) {
 	case CTV_LEADER:
 	{
@@ -2274,21 +2271,19 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 				level.clients[i].info.netname );
 		}
 
-		Com_sprintf( level.teamVoteString[cs_offset],
-			sizeof( level.teamVoteString[0] ),
-			"leader %d", i );
-		Com_sprintf( level.teamVoteDisplayString[cs_offset],
-			sizeof( level.teamVoteDisplayString[0] ),
-			"%s %s", voteName, level.clients[i].info.netname );
+		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
+			"%s %s", voteCmds[voteCmd].longName, level.clients[i].info.netname );
 		break;
 	}
 	default:
-		G_Error( "Cmd_CallTeamVote_f: bad vote" );
+		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
+			"%s %s", voteCmds[voteCmd].longName, arg2 );
+		break;
 	}
 
 	{
 		const char *msg = va("print \"%s" S_COLOR_WHITE " called a team vote: %s\n\"",
-			ent->client->info.netname, level.voteDisplayString );
+			ent->client->info.netname, level.teamVoteString[cs_offset] );
 		for ( i = 0 ; i < level.maxclients ; i++ ) {
 			if ( level.clients[i].pers.connected != CON_DISCONNECTED &&
 				level.clients[i].sess.sessionTeam == team )
@@ -2299,6 +2294,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	}
 
 	// start the voting, the caller autoamtically votes yes
+	level.teamVoteCmd[cs_offset] = voteCmd;
 	level.teamVoteTime[cs_offset] = level.time;
 	level.teamVoteYes[cs_offset] = 1;
 	level.teamVoteNo[cs_offset] = 0;
@@ -2313,7 +2309,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	ent->client->pers.teamVote = VOTE_YES;
 
 	trap_SetConfigstring( CS_TEAMVOTE_TIME + cs_offset, va("%i", level.teamVoteTime[cs_offset] ) );
-	trap_SetConfigstring( CS_TEAMVOTE_STRING + cs_offset, level.teamVoteDisplayString[cs_offset] );
+	trap_SetConfigstring( CS_TEAMVOTE_STRING + cs_offset, level.teamVoteString[cs_offset] );
 	trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, "1" );
 	trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, "0" );
 }
