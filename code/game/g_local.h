@@ -109,6 +109,15 @@ typedef enum {
 
 q_static_assert(CV_MAX <= 32);
 
+typedef enum {
+	CTV_INVALID,
+	CTV_FIRST,
+	CTV_LEADER = CTV_FIRST,
+	CTV_MAX
+} teamVoteCmd_t;
+
+q_static_assert(CTV_MAX <= 32);
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
@@ -632,6 +641,7 @@ typedef struct {
 
 	// team voting state
 	char		teamVoteString[2][MAX_STRING_CHARS];
+	char		teamVoteDisplayString[2][MAX_STRING_CHARS];
 	int			teamVoteTime[2];		// level.time vote was called
 	int			teamVoteYes[2];
 	int			teamVoteNo[2];
@@ -1297,6 +1307,7 @@ extern	vmCvar_t	g_antiWarpTime;
 extern	vmCvar_t	g_spSkill;
 extern	vmCvar_t	g_pushableItems;
 extern	vmCvar_t	g_refereePassword;
+extern	vmCvar_t	g_allowTeamVote;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );
