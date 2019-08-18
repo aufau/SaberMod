@@ -113,6 +113,7 @@ typedef enum {
 	CTV_INVALID,
 	CTV_FIRST,
 	CTV_LEADER = CTV_FIRST,
+	CTV_FORFEIT,
 	CTV_MAX
 } teamVoteCmd_t;
 
@@ -670,6 +671,7 @@ typedef struct {
 
 	int			roundQueued;			// new round was qualified, but we're
 										// doing a g_roundWarmup sec countdown
+	team_t		forfeitTeam;			// Team wants to forfeit the match
 
 	qboolean	locationLinked;			// target_locations get linked
 	gentity_t	*locationHead;			// head of the location list

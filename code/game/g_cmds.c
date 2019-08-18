@@ -2175,6 +2175,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	static const teamVoteCmdInfo_t voteCmds[CTV_MAX] = {
 		{ "invalid",		"Invalid",			"" },				// CTV_INVALID
 		{ "leader",			"Leader",			" <name|num>" },	// CTV_LEADER
+		{ "forfeit",		"Forfeit Match",	"" },				// CTV_FORFEIT
 	};
 
 	if ( team == TEAM_RED ) {

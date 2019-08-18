@@ -711,6 +711,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.snapnum = 1;
 	level.duelist1 = -1;
 	level.duelist2 = -1;
+	level.forfeitTeam = TEAM_SPECTATOR;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
@@ -2307,6 +2308,28 @@ void CheckExitRules( void ) {
 		return;
 	}
 
+	// engine runs few frames after map restart before adding clients
+	if (g_doWarmup.integer && GT_Team(level.gametype) && level.time - level.startTime > 5000) {
+		team_t	forfeitTeam = TEAM_SPECTATOR;
+
+		if (TeamCount(-1, TEAM_RED, qtrue) == 0 || level.forfeitTeam == TEAM_RED) {
+			forfeitTeam = TEAM_RED;
+		}
+		if (TeamCount( -1, TEAM_BLUE, qtrue ) == 0 || level.forfeitTeam == TEAM_BLUE) {
+			forfeitTeam = TEAM_BLUE;
+		}
+
+		if (forfeitTeam != TEAM_SPECTATOR) {
+			G_QueueServerCommand( "print \"%s%s" S_COLOR_WHITE " forfeited.\n\"",
+				BG_TeamColor(forfeitTeam),
+				BG_TeamName(forfeitTeam, CASE_NORMAL) );
+			LogExit( "Team forfeited." );
+			return;
+		}
+
+		level.forfeitTeam = TEAM_SPECTATOR;
+	}
+
 	// check for sudden death
 	if ( level.gametype != GT_TOURNAMENT || !g_timelimit.integer ) {
 		// always wait for sudden death
@@ -2866,6 +2889,9 @@ static void CheckTeamVote( team_t team ) {
 					BG_TeamName(team, CASE_UPPER), level.teamVoteCmd[cs_offset],
 					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
 					level.teamVoteString[cs_offset]);
+				break;
+			case CTV_FORFEIT:
+				level.forfeitTeam = team;
 				break;
 			default:
 				G_Error("CheckTeamVote: bad vote");

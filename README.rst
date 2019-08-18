@@ -281,6 +281,14 @@ g_allowRefVote <0|1|bitmask>
   Control what commands are available to referees. Uses the same
   bitmask as g_allowVote below.
 
+g_allowTeamVote <bitmask>
+  What team votes should be allowed. Team votes are called with
+  `callteamvote` command.
+
+  =====================  =====================  =====================
+  1 - Team Leader        2 - Forfeit Match
+  =====================  =====================  =====================
+
 g_allowVote <0|1|bitmask>
   0 / 1 - disable / enable all votes.
 
