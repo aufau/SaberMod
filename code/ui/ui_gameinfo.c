@@ -477,7 +477,7 @@ void UI_LoadServerMaps( void ) {
 	}
 
 	uiInfo.serverMapCount = i;
-	uiInfo.serverMapIndex = 0;
+	Menu_SetFeederSelection(NULL, FEEDER_SERVER_MAPS, 0, NULL);
 
 	if ( ui_longMapName.integer ) {
 		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsName );
