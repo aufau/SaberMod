@@ -2346,16 +2346,16 @@ void CheckExitRules( void ) {
 
 				AddTeamScore( level.intermission_origin, winner, 1 );
 				if ( level.gametype == GT_REDROVER ) {
-					trap_SendServerCommand( -1, va( "print \"%s.\n\"",
-							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
+					G_QueueServerCommand( "print \"%s.\n\"",
+						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) );
 				} else {
-					trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
-							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation ) );
+					G_QueueServerCommand( "print \"%s. %s.\n\"",
+						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation );
 				}
 				LogRoundExit( winner, "Timelimit hit." );
 			} else {
-				trap_SendServerCommand( -1, va( "print \"%s.\n\"",
-						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
+				G_QueueServerCommand( "print \"%s.\n\"",
+					G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) );
 				LogExit( "Timelimit hit." );
 			}
 
