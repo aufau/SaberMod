@@ -655,7 +655,6 @@ static void	Svcmd_Shuffle_f( void )
 	CheckTeamLeader( TEAM_RED );
 	CheckTeamLeader( TEAM_BLUE );
 
-	team = first;
 	for ( i = 0; i < level.maxclients; i++ ) {
 		gclient_t	*client = &level.clients[i];
 
