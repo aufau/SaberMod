@@ -7260,6 +7260,7 @@ vmCvar_t	ui_s_language;
 
 vmCvar_t	ui_longMapName;
 vmCvar_t	ui_widescreen;
+vmCvar_t	ui_action_button;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
@@ -7344,6 +7345,7 @@ static cvarTable_t cvarTable[] = {
 
 	{ &ui_longMapName, "ui_longMapName", "1", CVAR_ARCHIVE},
 	{ &ui_widescreen, "ui_widescreen", "1", CVAR_ARCHIVE | CVAR_LATCH},
+	{ &ui_action_button, "ui_action_button", "", CVAR_INTERNAL },
 };
 
 /*
@@ -7482,7 +7484,9 @@ static void UI_UpdateConfigStrings( void )
 		actionButton = "timeout";
 	}
 
-	trap_Cvar_Set("ui_action_button", actionButton);
+	if (strcmp(ui_action_button.string, actionButton)) {
+		trap_Cvar_Set("ui_action_button", actionButton);
+	}
 }
 
 /*
