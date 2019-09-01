@@ -7261,6 +7261,7 @@ vmCvar_t	ui_s_language;
 vmCvar_t	ui_longMapName;
 vmCvar_t	ui_widescreen;
 vmCvar_t	ui_action_button;
+vmCvar_t	ui_info_match;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
@@ -7346,6 +7347,7 @@ static cvarTable_t cvarTable[] = {
 	{ &ui_longMapName, "ui_longMapName", "1", CVAR_ARCHIVE},
 	{ &ui_widescreen, "ui_widescreen", "1", CVAR_ARCHIVE | CVAR_LATCH},
 	{ &ui_action_button, "ui_action_button", "", CVAR_INTERNAL },
+	{ &ui_info_match, "ui_info_match", "1", CVAR_INTERNAL },
 };
 
 /*
@@ -7466,7 +7468,7 @@ Update information derived from config strings
 static void UI_UpdateConfigStrings( void )
 {
 	char		str[MAX_INFO_STRING];
-	int			warmup, unpause;
+	int			warmup, unpause, match;
 	const char	*actionButton;
 
 	// activate appropriate ingame action button (old addBot button)
@@ -7482,6 +7484,12 @@ static void UI_UpdateConfigStrings( void )
 		actionButton = "ready";
 	} else {
 		actionButton = "timeout";
+	}
+
+	match = !warmup;
+
+	if (ui_info_match.integer != match) {
+		trap_Cvar_Set("ui_info_match", va("%d", match));
 	}
 
 	if (strcmp(ui_action_button.string, actionButton)) {

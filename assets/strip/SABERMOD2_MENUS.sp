@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 93
+COUNT 95
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -853,4 +853,24 @@ INDEX 92
    TEXT_LANGUAGE3 "Ready up during warmup to start a match."
    TEXT_LANGUAGE6 "Ready up during warmup to start a match."
    TEXT_LANGUAGE8 "Ready up during warmup to start a match."
+}
+INDEX 93
+{
+   REFERENCE ABORT
+   NOTES "Abort match callvote button"
+   TEXT_LANGUAGE1 "Abort Match"
+   TEXT_LANGUAGE2 "Abort Match"
+   TEXT_LANGUAGE3 "Abort Match"
+   TEXT_LANGUAGE6 "Abort Match"
+   TEXT_LANGUAGE8 "Abort Match"
+}
+INDEX 94
+{
+   REFERENCE ABORT_DESC
+   NOTES "Abort match callvote button description"
+   TEXT_LANGUAGE1 "Begin Vote to abort match."
+   TEXT_LANGUAGE2 "Begin Vote to abort match."
+   TEXT_LANGUAGE3 "Begin Vote to abort match."
+   TEXT_LANGUAGE6 "Begin Vote to abort match."
+   TEXT_LANGUAGE8 "Begin Vote to abort match."
 }
