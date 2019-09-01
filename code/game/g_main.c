@@ -616,7 +616,7 @@ void G_RegisterCvars( void ) {
 
 	// initialize with g_defaultMode string. Main server config should
 	// always execute default mode cfg
-	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
+	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM | CVAR_SERVERINFO );
 
 	trap_Cvar_Set( "gamename", GAME_VERSION );
 	trap_Cvar_Set( "gamedate", __DATE__ );
