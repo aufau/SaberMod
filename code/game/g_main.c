@@ -184,7 +184,7 @@ static cvarTable_t gameCvarTable[] = {
 
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
-	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
+	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", /* CVAR_SERVERINFO | */ CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
 	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_teamsize, "teamsize", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue  },
@@ -193,7 +193,7 @@ static cvarTable_t gameCvarTable[] = {
 	// change anytime vars
 	{ &g_ff_objectives, "g_ff_objectives", "0", /*CVAR_SERVERINFO |*/  CVAR_NORESTART, 0, qtrue },
 
-	{ &g_trueJedi, "g_jediVmerc", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qtrue },
+	{ &g_trueJedi, "g_jediVmerc", "0", /* CVAR_SERVERINFO | */ CVAR_LATCH | CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_autoMapCycle, "g_autoMapCycle", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_dmflags, "dmflags", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
@@ -201,7 +201,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_maxForceRank, "g_maxForceRank", "6", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 	{ &g_forceBasedTeams, "g_forceBasedTeams", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 	{ &g_privateDuel, "g_privateDuel", "1", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
-	{ &g_saberLocking, "g_saberLocking", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_saberLocking, "g_saberLocking", "1", /* CVAR_SERVERINFO | */ CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_saberLockFactor, "g_saberLockFactor", "6", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_saberTraceSaberFirst, "g_saberTraceSaberFirst", "1", CVAR_ARCHIVE, 0, qtrue  },
 
@@ -297,8 +297,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_debugUp, "g_debugUp", "0", 0, 0, qfalse },
 #endif
 
-	{ &g_redteam, "g_redteam", "Empire", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue },
-	{ &g_blueteam, "g_blueteam", "Rebellion", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue  },
+	{ &g_redteam, "g_redteam", "Empire", CVAR_ARCHIVE /* | CVAR_SERVERINFO */ | CVAR_USERINFO , 0, qtrue, qtrue },
+	{ &g_blueteam, "g_blueteam", "Rebellion", CVAR_ARCHIVE /* | CVAR_SERVERINFO */ | CVAR_USERINFO , 0, qtrue, qtrue  },
 	{ &g_singlePlayer, "ui_singlePlayerActive", "", 0, 0, qfalse, qfalse  },
 
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
@@ -329,7 +329,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_kickMethod, "g_kickMethod", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_kickMethod, "g_kickMethod", "1", /* CVAR_SERVERINFO | */ CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
