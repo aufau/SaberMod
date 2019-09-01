@@ -1798,7 +1798,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "capturelimit",	"Capturelimit",	" <caps>" },		// CV_CAPTURELIMIT
 		{ "poll",			"Poll",			" <question>" },	// CV_POLL
 		{ "referee",		"Referee",		" <name|num>" },	// CV_REFEREE
-		{ "abort",			"Abort",		"" },				// CV_ABORT
+		{ "abort",			"Abort Match",	"" },				// CV_ABORT
 	};
 
 	if ( ent->client->sess.referee ) {
