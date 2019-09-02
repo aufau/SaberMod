@@ -381,8 +381,8 @@
 			textscale               .9
 			forecolor               0.65 0.65 1 1
 			visible                 0
-			cvarTest                ui_info_match
-			showCvar                { 0 }
+			cvarTest                ui_gameStatus
+			hideCvar                { match }
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
@@ -406,8 +406,8 @@
 			textscale               .9
 			forecolor               0.65 0.65 1 1
 			visible                 0
-			cvarTest                ui_info_match
-			hideCvar                { 0 }
+			cvarTest                ui_gameStatus
+			showCvar                { match }
 			action
 			{
 				play                    "sound/interface/button1.wav" ;

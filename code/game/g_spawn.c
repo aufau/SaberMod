@@ -919,8 +919,15 @@ void SP_worldspawn( void )
 	if ( g_restarted.integer ) {
 		trap_Cvar_Set( "g_restarted", "0" );
 		level.warmupTime = 0;
+
+		if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) {
+			trap_Cvar_Set( "g_status", GAMESTATUS_MATCH );
+		} else {
+			trap_Cvar_Set( "g_status", GAMESTATUS_DEFAULT );
+		}
 	} else if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) { // Turn it on
 		level.warmupTime = -1;
+		trap_Cvar_Set( "g_status", GAMESTATUS_WARMUP );
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );
 	}

@@ -618,6 +618,8 @@ void G_RegisterCvars( void ) {
 	// always execute default mode cfg
 	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM | CVAR_SERVERINFO );
 
+	trap_Cvar_Register( NULL, "g_status", GAMESTATUS_DEFAULT, CVAR_ROM | CVAR_SERVERINFO );
+
 	trap_Cvar_Set( "gamename", GAME_VERSION );
 	trap_Cvar_Set( "gamedate", __DATE__ );
 

@@ -966,4 +966,8 @@ extern const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS];
 
 #define UNPAUSE_TIME_NEVER		INT_MAX
 
+#define GAMESTATUS_DEFAULT	""
+#define GAMESTATUS_WARMUP	"warmup"
+#define GAMESTATUS_MATCH	"match"
+
 #endif //__BG_PUBLIC_H__

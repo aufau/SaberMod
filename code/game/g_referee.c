@@ -268,6 +268,7 @@ static void Ref_Abort_f(void) {
 		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 5\n" );
 	} else {
 		level.warmupTime = -1;
+		trap_Cvar_Set( "g_status", GAMESTATUS_WARMUP );
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 	}
 
