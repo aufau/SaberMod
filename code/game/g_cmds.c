@@ -2273,9 +2273,13 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		}
 
 		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
-			"%s %s", voteCmds[voteCmd].longName, level.clients[i].info.netname );
+			"Make %s" S_COLOR_WHITE " the new team leader", level.clients[i].info.netname );
 		break;
 	}
+	case CTV_FORFEIT:
+		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
+			"%s", voteCmds[voteCmd].longName );
+		break;
 	default:
 		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
 			"%s %s", voteCmds[voteCmd].longName, arg2 );

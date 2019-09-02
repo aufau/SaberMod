@@ -2882,15 +2882,15 @@ static void CheckTeamVote( team_t team ) {
 		if ( level.teamVoteYes[cs_offset] > level.numteamVotingClients[cs_offset]/2 ) {
 			// execute the command, then remove the vote
 			G_SendServerCommand( -1, "print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED") );
+			G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s\n",
+				BG_TeamName(team, CASE_UPPER), level.teamVoteCmd[cs_offset],
+				level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
+				level.teamVoteString[cs_offset]);
 			//
 			switch ( level.teamVoteCmd[cs_offset] ) {
 			case CTV_LEADER:
 				//set the team leader
 				SetLeader(team, level.teamVoteArg[cs_offset]);
-				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s\n",
-					BG_TeamName(team, CASE_UPPER), level.teamVoteCmd[cs_offset],
-					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
-					level.teamVoteString[cs_offset]);
 				break;
 			case CTV_FORFEIT:
 				level.forfeitTeam = team;

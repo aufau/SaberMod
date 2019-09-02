@@ -3717,46 +3717,10 @@ static void CG_DrawTeamVote(void) {
 	if ( sec < 0 ) {
 		sec = 0;
 	}
-	if (strstr(cgs.teamVoteString[cs_offset], "leader"))
-	{
-		int i = 0;
 
-		while (cgs.teamVoteString[cs_offset][i] && cgs.teamVoteString[cs_offset][i] != ' ')
-		{
-			i++;
-		}
-
-		if (cgs.teamVoteString[cs_offset][i] == ' ')
-		{
-			int voteIndex = 0;
-			char voteIndexStr[256];
-
-			i++;
-
-			while (cgs.teamVoteString[cs_offset][i])
-			{
-				voteIndexStr[voteIndex] = cgs.teamVoteString[cs_offset][i];
-				voteIndex++;
-				i++;
-			}
-			voteIndexStr[voteIndex] = 0;
-
-			voteIndex = atoi(voteIndexStr);
-
-			s = va("TEAMVOTE(%i):(Make %s" S_COLOR_WHITE " the new team leader) yes:%i no:%i", sec, cgs.clientinfo[voteIndex].name,
-									cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-		}
-		else
-		{
-			s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
-									cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-		}
-	}
-	else
-	{
-		s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
+	s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
 								cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-	}
+
 	CG_DrawSmallString( 4, 90, s, 1.0F );
 }
 
