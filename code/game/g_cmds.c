@@ -2277,6 +2277,11 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		break;
 	}
 	case CTV_FORFEIT:
+		if ( level.warmupTime == -1 ) {
+			G_SendServerCommand( ent-g_entities, "No match in progress." );
+			return;
+		}
+
 		Com_sprintf( level.teamVoteString[cs_offset], sizeof( level.teamVoteString[0] ),
 			"%s", voteCmds[voteCmd].longName );
 		break;
