@@ -1876,7 +1876,7 @@ void LogExit( const char *string ) {
 	}
 }
 
-static void LogRoundExit( team_t winner, const char *string )
+static void LogRoundExit( team_t team, const char *string )
 {
 	const char *param1;
 
@@ -1886,10 +1886,10 @@ static void LogRoundExit( team_t winner, const char *string )
 	// update CS_SCORES1 and CS_SCORES2
 	CalculateRanks(); // calls CheckExitRules!
 
-	if ( winner == TEAM_SPECTATOR ) {
+	if ( team == TEAM_SPECTATOR ) {
 		param1 = "DRAW";
 	} else {
-		param1 = BG_TeamName( winner, CASE_UPPER );
+		param1 = BG_TeamName( team, CASE_UPPER );
 	}
 
 	G_LogPrintf( LOG_GAME, "RoundExit: %s: %s\n", param1, string );
@@ -2287,6 +2287,11 @@ void CheckExitRules( void ) {
 					G_PrintStats();
 					BeginIntermission();
 					return;
+				} else if ( level.forfeitTeam == TEAM_BLUE || level.forfeitTeam == TEAM_RED ) {
+					LogExit("Team forfeited.");
+					G_PrintStats();
+					BeginIntermission();
+					return;
 				} else if ( roundlimitHit ) {
 					LogExit("Roundlimit hit.");
 					G_PrintStats();
@@ -2325,11 +2330,14 @@ void CheckExitRules( void ) {
 			G_QueueServerCommand( "print \"%s%s" S_COLOR_WHITE " forfeited.\n\"",
 				BG_TeamColor(forfeitTeam),
 				BG_TeamName(forfeitTeam, CASE_NORMAL) );
-			LogExit( "Team forfeited." );
+
+			if ( GT_Round(level.gametype) ) {
+				LogRoundExit( forfeitTeam, "Team forfeited." );
+			} else {
+				LogExit( "Team forfeited." );
+			}
 			return;
 		}
-
-		level.forfeitTeam = TEAM_SPECTATOR;
 	}
 
 	// check for sudden death
