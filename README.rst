@@ -286,7 +286,7 @@ g_allowTeamVote <bitmask>
   `callteamvote` command.
 
   =====================  =====================  =====================
-  1 - Team Leader        2 - Forfeit Match
+  2 - Team Leader        4 - Forfeit Match
   =====================  =====================  =====================
 
 g_allowVote <0|1|bitmask>

@@ -2202,7 +2202,11 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	}
 	*/
 
-	voteMask = g_allowTeamVote.integer;
+	if (g_allowTeamVote.integer == 1) {
+		voteMask = -1;
+	} else {
+		voteMask = g_allowTeamVote.integer;
+	}
 
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
