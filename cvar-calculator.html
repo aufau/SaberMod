@@ -12,7 +12,7 @@
        flex-wrap: wrap;
        max-width: 600px;
      }
-     .bitbox {
+     .bitboxes > div {
        min-width: 200px;
      }
      .cvar {
@@ -26,199 +26,216 @@
   <body>
     <h1>SaberMod 2.0 Cvar Calculator</h1>
 
-    <p>
-      <span class="cvar">g_forcePowerDisable:</span>
-      <input type="number" id="forcedisable" class="value" value="0" />
-      <input type="button" name="forcedisable" class="select-all" value="All" />
-      <input type="button" name="forcedisable" class="select-none" value="None" />
-    </p>
-
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="0" /> Heal</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="1" /> Jump</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="2" /> Speed</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="3" /> Push</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="4" /> Pull</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="5" /> Mind Trick</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="6" /> Grip</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="7" /> Lightning</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="8" /> Rage</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="9" /> Protect</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="10" /> Absorb</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="11" /> Team Heal</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="12" /> Team Energize</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="13" /> Drain</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="14" /> Seeing</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="15" /> Saber Attack</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="16" /> Saber Defend</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="forcedisable" num="17" /> Saber Throw</div>
+    <div id="forcedisable">
+      <p>
+        <span class="cvar">g_forcePowerDisable:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="0" /> Heal</div>
+        <div><input type="checkbox" num="1" /> Jump</div>
+        <div><input type="checkbox" num="2" /> Speed</div>
+        <div><input type="checkbox" num="3" /> Push</div>
+        <div><input type="checkbox" num="4" /> Pull</div>
+        <div><input type="checkbox" num="5" /> Mind Trick</div>
+        <div><input type="checkbox" num="6" /> Grip</div>
+        <div><input type="checkbox" num="7" /> Lightning</div>
+        <div><input type="checkbox" num="8" /> Rage</div>
+        <div><input type="checkbox" num="9" /> Protect</div>
+        <div><input type="checkbox" num="10" /> Absorb</div>
+        <div><input type="checkbox" num="11" /> Team Heal</div>
+        <div><input type="checkbox" num="12" /> Team Energize</div>
+        <div><input type="checkbox" num="13" /> Drain</div>
+        <div><input type="checkbox" num="14" /> Seeing</div>
+        <div><input type="checkbox" num="15" /> Saber Attack</div>
+        <div><input type="checkbox" num="16" /> Saber Defend</div>
+        <div><input type="checkbox" num="17" /> Saber Throw</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_weaponDisable:</span>
-      <input type="number" id="weapondisable" class="value" value="0" />
-      <input type="button" name="weapondisable" class="select-all" value="All" />
-      <input type="button" name="weapondisable" class="select-none" value="None" />
-    </p>
-
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="1" /> Stun Baton</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="2" /> Lightsaber</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="3" /> Blaster Pistol</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="4" /> Blaster Rifle</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="5" /> Disruptor Rifle</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="6" /> Bowcaster</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="7" /> Heavy Repeater</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="8" /> DEMP 2</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="9" /> Flechette</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="10" /> Merr Sonn</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="11" /> Thermal Detonators</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="12" /> Trip Mines</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="weapondisable" num="13" /> Detonation Packs</div>
+    <div id="weapondisable">
+      <p>
+        <span class="cvar">g_weaponDisable:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="1" /> Stun Baton</div>
+        <div><input type="checkbox" num="2" /> Lightsaber</div>
+        <div><input type="checkbox" num="3" /> Blaster Pistol</div>
+        <div><input type="checkbox" num="4" /> Blaster Rifle</div>
+        <div><input type="checkbox" num="5" /> Disruptor Rifle</div>
+        <div><input type="checkbox" num="6" /> Bowcaster</div>
+        <div><input type="checkbox" num="7" /> Heavy Repeater</div>
+        <div><input type="checkbox" num="8" /> DEMP 2</div>
+        <div><input type="checkbox" num="9" /> Flechette</div>
+        <div><input type="checkbox" num="10" /> Merr Sonn</div>
+        <div><input type="checkbox" num="11" /> Thermal Detonators</div>
+        <div><input type="checkbox" num="12" /> Trip Mines</div>
+        <div><input type="checkbox" num="13" /> Detonation Packs</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_spawnWeapons:</span>
-      <input type="number" id="spawnweapons" class="value" value="0" />
-      <input type="button" name="spawnweapons" class="select-all" value="All" />
-      <input type="button" name="spawnweapons" class="select-none" value="None" />
-    </p>
-
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="1" /> Stun Baton</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="2" /> Lightsaber</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="3" /> Blaster Pistol</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="4" /> Blaster Rifle</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="5" /> Disruptor Rifle</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="6" /> Bowcaster</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="7" /> Heavy Repeater</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="8" /> DEMP 2</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="9" /> Flechette</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="10" /> Merr Sonn</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="11" /> Thermal Detonators</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="12" /> Trip Mines</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnweapons" num="13" /> Detonation Packs</div>
+    <div id="spawnweapons">
+      <p>
+        <span class="cvar">g_spawnWeapons:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="1" /> Stun Baton</div>
+        <div><input type="checkbox" num="2" /> Lightsaber</div>
+        <div><input type="checkbox" num="3" /> Blaster Pistol</div>
+        <div><input type="checkbox" num="4" /> Blaster Rifle</div>
+        <div><input type="checkbox" num="5" /> Disruptor Rifle</div>
+        <div><input type="checkbox" num="6" /> Bowcaster</div>
+        <div><input type="checkbox" num="7" /> Heavy Repeater</div>
+        <div><input type="checkbox" num="8" /> DEMP 2</div>
+        <div><input type="checkbox" num="9" /> Flechette</div>
+        <div><input type="checkbox" num="10" /> Merr Sonn</div>
+        <div><input type="checkbox" num="11" /> Thermal Detonators</div>
+        <div><input type="checkbox" num="12" /> Trip Mines</div>
+        <div><input type="checkbox" num="13" /> Detonation Packs</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_spawnItems:</span>
-      <input type="number" id="spawnitems" class="value" value="0" />
-      <input type="button" name="spawnitems" class="select-all" value="All" />
-      <input type="button" name="spawnitems" class="select-none" value="None" />
-    </p>
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnitems" num="1" /> Seeker Drone</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnitems" num="2" /> Forcefield</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnitems" num="3" /> Bacta</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnitems" num="5" /> Binoculars</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="spawnitems" num="6" /> Sentry</div>
+    <div id="spawnitems">
+      <p>
+        <span class="cvar">g_spawnItems:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="1" /> Seeker Drone</div>
+        <div><input type="checkbox" num="2" /> Forcefield</div>
+        <div><input type="checkbox" num="3" /> Bacta</div>
+        <div><input type="checkbox" num="5" /> Binoculars</div>
+        <div><input type="checkbox" num="6" /> Sentry</div>
+      </div>
     </div>
 
-	<p>
-      <span class="cvar">g_pushableItems:</span>
-      <input type="number" id="pushableitems" class="value" value="0" />
-      <input type="button" name="pushableitems" class="select-all" value="All" />
-      <input type="button" name="pushableitems" class="select-none" value="None" />
-	</p>
-	<div class="bitboxes">
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="1" /> Weapon</div>
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="2" /> Ammo</div>
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="3" /> Armor</div>
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="4" /> Health</div>
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="5" /> Powerup</div>
-	  <div class="bitbox"><input type="checkbox" class="box" name="pushableitems" num="6" /> Holdable</div>
+    <div id="pushableitems">
+	  <p>
+        <span class="cvar">g_pushableItems:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+	  </p>
+	  <div class="bitboxes">
+	    <div><input type="checkbox" num="1" /> Weapon</div>
+	    <div><input type="checkbox" num="2" /> Ammo</div>
+	    <div><input type="checkbox" num="3" /> Armor</div>
+	    <div><input type="checkbox" num="4" /> Health</div>
+	    <div><input type="checkbox" num="5" /> Powerup</div>
+	    <div><input type="checkbox" num="6" /> Holdable</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_allowTeamVote:</span>
-      <input type="number" id="allowteamvote" class="value" value="-1" />
-      <input type="button" name="allowteamvote" class="select-all" value="All" />
-      <input type="button" name="allowteamvote" class="select-none" value="None" />
-    </p>
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="allowteamvote" num="0" /> Team Leader</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowteamvote" num="1" /> Forfeit Match</div>
+    <div id="allowteamvote">
+      <p>
+        <span class="cvar">g_allowTeamVote:</span>
+        <input type="number" class="value" value="-1" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="0" /> Team Leader</div>
+        <div><input type="checkbox" num="1" /> Forfeit Match</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_allowVote / g_allowRefVote:</span>
-      <input type="number" id="allowvote" class="value" value="-1" />
-      <input type="button" name="allowvote" class="select-all" value="All" />
-      <input type="button" name="allowvote" class="select-none" value="None" />
-    </p>
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="1" /> Map Restart</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="2" /> Next Map</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="3" /> Map</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="4" /> Gametype</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="5" /> Kick</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="6" /> Shuffle</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="7" /> Do Warmup</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="8" /> Timelimit</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="9" /> Fraglimit</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="10" /> Roundlimit</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="11" /> Teamsize</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="12" /> Remove</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="13" /> WK/NK</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="14" /> Mode</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="15" /> Match Mode</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="16" /> Capturelimit</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="17" /> Poll</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="18" /> Referee</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="allowvote" num="19" /> Abort</div>
+    <div id="allowvote">
+      <p>
+        <span class="cvar">g_allowVote / g_allowRefVote:</span>
+        <input type="number" class="value" value="-1" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="1" /> Map Restart</div>
+        <div><input type="checkbox" num="2" /> Next Map</div>
+        <div><input type="checkbox" num="3" /> Map</div>
+        <div><input type="checkbox" num="4" /> Gametype</div>
+        <div><input type="checkbox" num="5" /> Kick</div>
+        <div><input type="checkbox" num="6" /> Shuffle</div>
+        <div><input type="checkbox" num="7" /> Do Warmup</div>
+        <div><input type="checkbox" num="8" /> Timelimit</div>
+        <div><input type="checkbox" num="9" /> Fraglimit</div>
+        <div><input type="checkbox" num="10" /> Roundlimit</div>
+        <div><input type="checkbox" num="11" /> Teamsize</div>
+        <div><input type="checkbox" num="12" /> Remove</div>
+        <div><input type="checkbox" num="13" /> WK/NK</div>
+        <div><input type="checkbox" num="14" /> Mode</div>
+        <div><input type="checkbox" num="15" /> Match Mode</div>
+        <div><input type="checkbox" num="16" /> Capturelimit</div>
+        <div><input type="checkbox" num="17" /> Poll</div>
+        <div><input type="checkbox" num="18" /> Referee</div>
+        <div><input type="checkbox" num="19" /> Abort</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">dmflags:</span>
-      <input type="number" id="dmflags" class="value" value="0" />
-      <input type="button" name="dmflags" class="select-all" value="All" />
-      <input type="button" name="dmflags" class="select-none" value="None" />
-      <input type="button" name="dmflags" class="default" value="Default" defval="0" />
-    </p>
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="1" /> Fix jump height</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="1" /> CJK disruptor</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="2" /> Go through team</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="3" /> No Fall Damage</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="4" /> Limit FOV (97)</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="5" /> No Footsteps</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="6" /> No Kicks</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="dmflags" num="7" /> League Mod YDFA</div>
+    <div id="dmflags">
+      <p>
+        <span class="cvar">dmflags:</span>
+        <input type="number" class="value" value="0" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+        <input type="button" class="default" value="Default" defval="0" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="1" /> Fix jump height</div>
+        <div><input type="checkbox" num="1" /> CJK disruptor</div>
+        <div><input type="checkbox" num="2" /> Go through team</div>
+        <div><input type="checkbox" num="3" /> No Fall Damage</div>
+        <div><input type="checkbox" num="4" /> Limit FOV (97)</div>
+        <div><input type="checkbox" num="5" /> No Footsteps</div>
+        <div><input type="checkbox" num="6" /> No Kicks</div>
+        <div><input type="checkbox" num="7" /> League Mod YDFA</div>
+      </div>
     </div>
 
-    <p>
-      <span class="cvar">g_logFilter:</span>
-      <input type="number" id="logfilter" class="value" value="41943" />
-      <input type="button" name="logfilter" class="select-all" value="All" />
-      <input type="button" name="logfilter" class="select-none" value="None" />
-      <input type="button" name="logfilter" class="default" value="Default" defval="41943" />
-    </p>
-    <div class="bitboxes">
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="0" /> Game Status</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="1" /> Client Connect</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="2" /> Client Begin</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="3" /> Userinfo Change</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="4" /> Client Rename</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="5" /> Client Spawn</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="6" /> Private Duel</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="7" /> Obituary</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="8" /> Say</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="9" /> Say Team</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="10" /> Tell</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="11" /> Voice Tell</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="12" /> Item Pickup</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="13" /> Flag</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="14" /> Weapon Stats</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="15" /> Game Stats</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="16" /> Duel Stats</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="17" /> Vote</div>
-      <div class="bitbox"><input type="checkbox" class="box" name="logfilter" num="18" /> Referee Commands</div>
+    <div id="logfilter">
+      <p>
+        <span class="cvar">g_logFilter:</span>
+        <input type="number" class="value" value="41943" />
+        <input type="button" class="select-all" value="All" />
+        <input type="button" class="select-none" value="None" />
+        <input type="button" class="default" value="Default" defval="41943" />
+      </p>
+      <div class="bitboxes">
+        <div><input type="checkbox" num="0" /> Game Status</div>
+        <div><input type="checkbox" num="1" /> Client Connect</div>
+        <div><input type="checkbox" num="2" /> Client Begin</div>
+        <div><input type="checkbox" num="3" /> Userinfo Change</div>
+        <div><input type="checkbox" num="4" /> Client Rename</div>
+        <div><input type="checkbox" num="5" /> Client Spawn</div>
+        <div><input type="checkbox" num="6" /> Private Duel</div>
+        <div><input type="checkbox" num="7" /> Obituary</div>
+        <div><input type="checkbox" num="8" /> Say</div>
+        <div><input type="checkbox" num="9" /> Say Team</div>
+        <div><input type="checkbox" num="10" /> Tell</div>
+        <div><input type="checkbox" num="11" /> Voice Tell</div>
+        <div><input type="checkbox" num="12" /> Item Pickup</div>
+        <div><input type="checkbox" num="13" /> Flag</div>
+        <div><input type="checkbox" num="14" /> Weapon Stats</div>
+        <div><input type="checkbox" num="15" /> Game Stats</div>
+        <div><input type="checkbox" num="16" /> Duel Stats</div>
+        <div><input type="checkbox" num="17" /> Vote</div>
+        <div><input type="checkbox" num="18" /> Referee Commands</div>
+      </div>
     </div>
 
     <script>
      function updateValue (field) {
          var value = Number(field.value);
-         var boxes = document.getElementsByName(field.id);
+         var cvarDiv = field.parentNode.parentNode;
+         var bitboxes = cvarDiv.getElementsByClassName("bitboxes")[0]
+         var boxes = bitboxes.getElementsByTagName("input");
          var i;
 
          field.checkValidity();
@@ -234,9 +251,11 @@
      }
 
      function updateCheckbox (box) {
-         var field = document.getElementById(box.name);
+         var cvarDiv = box.parentNode.parentNode.parentNode;
+         var field = cvarDiv.getElementsByClassName("value")[0];
+         var bitboxes = cvarDiv.getElementsByClassName("bitboxes")[0];
+         var boxes = bitboxes.getElementsByTagName("input");
          var num = box.getAttribute("num");
-         var boxes = document.getElementsByName(box.name);
          var value = 0;
          var i;
 
@@ -251,7 +270,7 @@
      }
 
      function setOwnerValue (button, value) {
-         var field = document.getElementById(button.name);
+         var field = button.parentNode.getElementsByClassName("value")[0];
 
          field.value = value;
          field.onchange();
@@ -261,9 +280,14 @@
          var elements;
          var i;
 
-         elements = document.getElementsByClassName("box");
+         elements = document.getElementsByClassName("bitboxes");
          for (i = 0; i < elements.length; i++) {
-             elements[i].onchange = function () { updateCheckbox(this); };
+             var boxes = elements[i].getElementsByTagName("input");
+             var j;
+
+             for (j = 0; j < boxes.length; j++) {
+                 boxes[j].onchange = function () { updateCheckbox(this); };
+             }
          }
 
          elements = document.getElementsByClassName("value");
