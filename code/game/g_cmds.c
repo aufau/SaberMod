@@ -2060,11 +2060,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 		if ( i == 0 ) {
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"g_restrictChat 0; g_restrictSpectator 0; g_requireClientside 0; g_damagePlums 1" );
+				"g_restrictChat 0; g_restrictSpectator 0; g_requireClientside 0" );
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Practice Mode" );
 		} else {
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"g_restrictChat 1; g_restrictSpectator 1; g_requireClientside 1; g_damagePlums 0" );
+				"g_restrictChat 1; g_restrictSpectator 1; g_requireClientside 1" );
 			Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Match Mode" );
 		}
 		break;

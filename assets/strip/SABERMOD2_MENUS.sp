@@ -365,11 +365,11 @@ INDEX 39
 INDEX 40
 {
    REFERENCE MATCH_DESC
-   TEXT_LANGUAGE1 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE2 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE3 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE6 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE8 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE1 "Prevent spectators from interfering."
+   TEXT_LANGUAGE2 "Prevent spectators from interfering."
+   TEXT_LANGUAGE3 "Prevent spectators from interfering."
+   TEXT_LANGUAGE6 "Prevent spectators from interfering."
+   TEXT_LANGUAGE8 "Prevent spectators from interfering."
 }
 INDEX 41
 {
@@ -383,11 +383,11 @@ INDEX 41
 INDEX 42
 {
    REFERENCE PRACTICE_DESC
-   TEXT_LANGUAGE1 "Disable match mode restrictions."
-   TEXT_LANGUAGE2 "Disable match mode restrictions."
-   TEXT_LANGUAGE3 "Disable match mode restrictions."
-   TEXT_LANGUAGE6 "Disable match mode restrictions."
-   TEXT_LANGUAGE8 "Disable match mode restrictions."
+   TEXT_LANGUAGE1 "Disable spectator restrictions."
+   TEXT_LANGUAGE2 "Disable spectator restrictions."
+   TEXT_LANGUAGE3 "Disable spectator restrictions."
+   TEXT_LANGUAGE6 "Disable spectator restrictions."
+   TEXT_LANGUAGE8 "Disable spectator restrictions."
 }
 INDEX 43
 {
