@@ -1171,6 +1171,9 @@ typedef struct {
 	sfxHandle_t deploySeeker;
 	sfxHandle_t medkitSound;
 
+	sfxHandle_t pauseSound;
+	sfxHandle_t unpauseSound;
+
 	// teamplay sounds
 	sfxHandle_t redScoredSound;
 	sfxHandle_t blueScoredSound;
@@ -2047,6 +2050,7 @@ void CG_VoiceChatLocal( int mode, qboolean voiceOnly, int clientNum, int color, 
 void CG_PlayBufferedVoiceChats( void );
 #endif
 void CG_UpdateConfigString( int num, qboolean init );
+void CG_PlayGameStateSounds( void );
 
 //
 // cg_playerstate.c

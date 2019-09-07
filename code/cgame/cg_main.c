@@ -1401,6 +1401,9 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.winnerSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM006" );
 	cgs.media.loserSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM010" );
+
+	cgs.media.pauseSound = trap_S_RegisterSound( "sound/effects/hologram_on" );
+	cgs.media.unpauseSound = trap_S_RegisterSound( "sound/effects/hologram_off" );
 }
 
 

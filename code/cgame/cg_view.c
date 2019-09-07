@@ -1791,6 +1791,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		trap_FX_AddScheduledEffects();
 	}
 
+	CG_PlayGameStateSounds();
+
 	// add buffered sounds
 	CG_PlayBufferedSounds();
 #ifdef MISSIONPACK

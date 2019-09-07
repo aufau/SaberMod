@@ -523,7 +523,6 @@ void CG_UpdateConfigString( int num, qboolean init )
 	}
 }
 
-
 /*
 =======================
 CG_AddToTeamChat
@@ -1491,4 +1490,26 @@ void CG_ExecuteNewServerCommands( int latestSequence ) {
 			CG_ServerCommand();
 		}
 	}
+}
+
+/*
+====================
+CG_PlayGameStateSounds
+====================
+*/
+void CG_PlayGameStateSounds( void ) {
+	static int unpauseTime;
+
+	if (cgs.unpauseTime > cg.serverTime &&
+		cgs.unpauseTime > unpauseTime)
+	{
+		trap_S_StartLocalSound( cgs.media.pauseSound, CHAN_LOCAL_SOUND );
+	}
+
+	if (unpauseTime != 0 && cgs.unpauseTime == 0)
+	{
+		trap_S_StartLocalSound( cgs.media.unpauseSound, CHAN_LOCAL_SOUND );
+	}
+
+	unpauseTime = cgs.unpauseTime;
 }
