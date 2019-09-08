@@ -45,7 +45,7 @@ timein
   Resume paused game.
 
 timeout
-  Pause game for 30 seconds.
+  Pause game for 60 seconds.
 
 ragequit
   Reserved for God, do not use.
