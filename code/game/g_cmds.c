@@ -3134,7 +3134,7 @@ static const clientCommand_t commands[] = {
 	{ "ragequit", Cmd_RageQuit_f, 0 },
 	{ "gc", Cmd_GameCommand_f, CMD_NOINTERMISSION },
 	{ "timeout", Cmd_Timeout_f, CMD_ALIVE | CMD_NOINTERMISSION },
-	{ "timein", Cmd_Timein_f, CMD_ALIVE | CMD_NOINTERMISSION },
+	{ "timein", Cmd_Timein_f, 0 },
 	{ "referee", Cmd_Referee_f, 0 },
 	{ "give", Cmd_Give_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "god", Cmd_God_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
