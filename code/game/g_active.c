@@ -786,7 +786,7 @@ static void ClientPauseThink( gentity_t *ent ) {
 		client->ps.eFlags &= ~EF_TALK;
 	}
 	// can't move, stop prediction
-	client->ps.pm_flags |= PM_PAUSED;
+	client->ps.pm_type = PM_PAUSED;
 	// force the same view angles as before
 	SetClientViewAngle(ent, client->ps.viewangles);
 }
