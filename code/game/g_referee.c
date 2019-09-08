@@ -227,6 +227,10 @@ static void Ref_Announce_f(void) {
 static void Ref_Pause_f( void ) {
 	char	arg[MAX_TOKEN_CHARS];
 
+	if (level.intermissionQueued || level.intermissiontime) {
+		return;
+	}
+
 	if (trap_Argc() == 1) {
 		level.unpauseTime = UNPAUSE_TIME_NEVER;
 	} else {
