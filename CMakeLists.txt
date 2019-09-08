@@ -9,21 +9,19 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Project & Versioning
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(MVSDK "JK2MV SDK")
-set(MVSDKURL "https://jk2mv.org")
 if(NOT InMV)
-	set(ProjectName ${MVSDK} CACHE STRING "Project Name")
+	set(ProjectName "SaberMod" CACHE STRING "Project Name")
 	project(${ProjectName})
 endif()
 
-include(GetGitRevisionDescription)
-git_describe(MVSDK_VERSION --tags)
+execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
+  OUTPUT_VARIABLE MVSDK_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT MVSDK_VERSION OR MVSDK_VERSION STREQUAL "GIT-NOTFOUND" OR MVSDK_VERSION STREQUAL "HEAD-HASH-NOTFOUND")
 	set(MVSDK_VERSION "UNKNOWN")
 	message(WARNING "Could not find git or git repository. Install git and make sure you actually cloned the repository (Directory named .git must exist) for correct versioning.")
 endif()
 
-message(STATUS "${MVSDK} Version: ${MVSDK_VERSION}")
+message(STATUS "${ProjectName} Version: ${MVSDK_VERSION}")
 
 # Languages
 enable_language(C)
@@ -125,12 +123,9 @@ else()
 endif()
 
 # Compiler defines / settings
-set(GlobalDefines ${GlobalDefines} "MISSIONPACK")
-set(GlobalDefines ${GlobalDefines} "GAME_EXPORTS")
+set(GlobalDefines ${GlobalDefines} "GIT_VERSION=\"${MVSDK_VERSION}\"")
 
 if (NOT InMV)
-	set(GlobalDefines ${GlobalDefines} "_JK2")
-
 	set(DebugDefines ${DebugDefines} "DEBUG")
 	set(ReleaseDefines "FINAL_BUILD" "NDEBUG")
 endif()
@@ -179,7 +174,8 @@ if (NOT InMV)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
 
 		# Warnings
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unknown-pragmas")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas -Wno-missing-field-initializers -Wno-unused-parameter")
 
 		if(${CMAKE_C_COMPILER_ID} STREQUAL GNU)
 			if(ARCH_X86)
@@ -195,7 +191,7 @@ if (NOT InMV)
 endif()
 
 if(BuildQVMs)
-	add_subdirectory("tools")
+	# add_subdirectory("tools")
 endif()
 
 add_subdirectory(${SRCDir})

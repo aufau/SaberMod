@@ -1,23 +1,22 @@
-﻿# Make sure the user is not executing this script directly
+# Make sure the user is not executing this script directly
 if(NOT InMVSDK)
 	message(FATAL_ERROR "Use the top-level cmake script!")
 endif(NOT InMVSDK)
 
 set(MVUIHEADERS
-	"${SRCDir}/api/mvapi.h"
-	"${SRCDir}/api/mvmenu.h"
+	"${SRCDir}/game/mvapi.h"
 
 	"${SRCDir}/ui/keycodes.h"
 	"${SRCDir}/ui/ui_force.h"
 	"${SRCDir}/ui/ui_local.h"
 	"${SRCDir}/ui/ui_public.h"
 	"${SRCDir}/ui/ui_shared.h"
-	"${SRCDir}/ui/ui_multiversion.h"
-	"${SRCDir}/ui/ui_multiversion_syscalls.h"
-	
+
+	"${SRCDir}/game/bg_public.h"
 	"${SRCDir}/game/bg_weapons.h"
+	"${SRCDir}/game/bg_net.h"
+	"${SRCDir}/game/anims.h"
 	"${SRCDir}/game/q_shared.h"
-	"${SRCDir}/game/bg_multiversion.h"
 )
 
 set(MVUISOURCES
@@ -25,15 +24,13 @@ set(MVUISOURCES
 	"${SRCDir}/ui/ui_atoms.c"
 	"${SRCDir}/ui/ui_force.c"
 	"${SRCDir}/ui/ui_gameinfo.c"
+	"${SRCDir}/ui/ui_macroscan.c"
 	"${SRCDir}/ui/ui_shared.c"
-	"${SRCDir}/ui/ui_multiversion.c"
 
 	"${SRCDir}/game/bg_misc.c"
 	"${SRCDir}/game/bg_weapons.c"
 	"${SRCDir}/game/q_math.c"
 	"${SRCDir}/game/q_shared.c"
-	"${SRCDir}/ui/ui_multiversion_syscalls.c"
-	"${SRCDir}/game/bg_multiversion.c"
 )
 
 set(MVUIASM
@@ -55,7 +52,6 @@ set(MVUIVMSOURCES ${MVUISOURCES}
 add_library(${MVUI} SHARED ${MVUIFILES})
 
 # Defines
-set(MVUIDefines ${MVUIDefines} "JK2_UI")
 set(MVUIIncludeDirs ${MVGLOBALIncludeDirs})
 
 set_target_properties(${MVUI} PROPERTIES PREFIX "") # remove "lib" prefix for .so/.dylib files

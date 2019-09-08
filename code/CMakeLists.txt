@@ -5,7 +5,6 @@ endif(NOT InMVSDK)
 
 # mv_setup.h preparation
 set(MVGLOBALIncludeDirs ${MVGLOBALIncludeDirs} ${CMAKE_BINARY_DIR})
-configure_file("mvsdk_setup.h.in" "${CMAKE_BINARY_DIR}/mvsdk_setup.h" @ONLY)
 
 add_subdirectory("game")
 add_subdirectory("cgame")
@@ -54,19 +53,19 @@ if(BuildQVMs)
 	
 	add_custom_target(qvms
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-DJK2_GAME" "-DMISSIONPACK" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVGAMEVMSOURCES_NATIVE}
+			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVGAMEVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/jk2mpgame.qvm" ${MVGAMEASMFILES} ${MVGAMEASM}
 
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-DJK2_CGAME" "-DMISSIONPACK" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_CGAME_PATH}" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVCGAMEVMSOURCES_NATIVE}
+			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_CGAME_PATH}" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVCGAMEVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/cgame.qvm" ${MVCGAMEASMFILES} ${MVCGAMEASM}
 
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-DJK2_UI" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${SRCDir}/cgame" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVUIVMSOURCES_NATIVE}
+			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${SRCDir}/cgame" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVUIVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/ui.qvm" ${MVUIASMFILES} ${MVUIASM}
@@ -84,7 +83,7 @@ if(BuildQVMs)
 	endif()
 
 	if(InMV)
-		configure_file("mv.info" "mv.info" COPYONLY)
+		# configure_file("mv.info" "mv.info" COPYONLY)
 		set(AssetsFiles
 			"vm/jk2mpgame.qvm"
             "vm/jk2mpgame.map"
@@ -92,34 +91,34 @@ if(BuildQVMs)
             "vm/cgame.map"
 			"vm/ui.qvm"
             "vm/ui.map"
-			"mv.info"
+			# "mv.info"
 		)
 
-		source_group("assetsmv2" FILES ${AssetsFiles})
+		source_group("assets" FILES ${AssetsFiles})
 
 		# generate assetsmv2.pk3
 		if(MultiConfigGenerator)
-			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/base/assetsmv2.pk3)
+			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/base/assets.pk3)
 		else()
-			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/base/assetsmv2.pk3)
+			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/base/assets.pk3)
 		endif()
 
 		include(InstallZIP)
-		add_zip_command(${CMAKE_CURRENT_BINARY_DIR}/assetsmv2.pk3 ${OUTFILE}
+		add_zip_command(${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 ${OUTFILE}
 			DIR "${CMAKE_CURRENT_BINARY_DIR}"
 			FILES "${AssetsFiles}"
 			DEPENDS qvms
 		)
 
-		add_custom_target(assetsmv2 DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/assetsmv2.pk3")
-		set_property(TARGET assetsmv2 PROPERTY FOLDER "Modules")
+		add_custom_target(assets DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/assets.pk3")
+		set_property(TARGET assets PROPERTY FOLDER "Modules")
 
 		if(WIN32 OR BuildPortableVersion)
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assetsmv2.pk3 DESTINATION "base")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "base")
 		elseif(APPLE)
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assetsmv2.pk3 DESTINATION "jk2mvmp.app/Contents/MacOS/base")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "jk2mvmp.app/Contents/MacOS/base")
 		else()
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assetsmv2.pk3 DESTINATION "share/jk2mv/base")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "share/jk2mv/base")
 		endif()
 	endif()
 endif()

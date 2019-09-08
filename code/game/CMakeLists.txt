@@ -1,4 +1,4 @@
-﻿# Make sure the user is not executing this script directly
+# Make sure the user is not executing this script directly
 if(NOT InMVSDK)
 	message(FATAL_ERROR "Use the top-level cmake script!")
 endif(NOT InMVSDK)
@@ -14,35 +14,31 @@ set(MVGAMEHEADERS
 	"${SRCDir}/game/be_ai_move.h"
 	"${SRCDir}/game/be_ai_weap.h"
 	"${SRCDir}/game/be_ea.h"
+	"${SRCDir}/game/bg_lib.h"
 	"${SRCDir}/game/bg_local.h"
+	"${SRCDir}/game/bg_net.h"
 	"${SRCDir}/game/bg_public.h"
 	"${SRCDir}/game/bg_saga.h"
 	"${SRCDir}/game/bg_weapons.h"
+	"${SRCDir}/game/bg_version.h"
 	"${SRCDir}/game/botlib.h"
 	"${SRCDir}/game/chars.h"
 	"${SRCDir}/game/g_local.h"
 	"${SRCDir}/game/g_public.h"
 	"${SRCDir}/game/g_team.h"
 	"${SRCDir}/game/inv.h"
-	"${SRCDir}/game/match.h"
 	"${SRCDir}/game/q_shared.h"
 	"${SRCDir}/game/surfaceflags.h"
 	"${SRCDir}/game/syn.h"
 	"${SRCDir}/game/w_saber.h"
-	"${SRCDir}/game/g_multiversion.h"
-	"${SRCDir}/game/g_multiversion_syscalls.h"
-	"${SRCDir}/game/bg_multiversion.h"
 
 	"${SRCDir}/cgame/animtable.h"
-	"${SRCDir}/cgame/cg_local.h"
-	"${SRCDir}/cgame/cg_public.h"
-	"${SRCDir}/cgame/tr_types.h"
 
 	"${SRCDir}/qcommon/tags.h"
 
 	"${SRCDir}/ghoul2/g2.h"
 
-	"${SRCDir}/api/mvapi.h"
+	"${SRCDir}/game/mvapi.h"
 )
 
 set(MVGAMESOURCES
@@ -62,6 +58,8 @@ set(MVGAMESOURCES
 	"${SRCDir}/game/g_client.c"
 	"${SRCDir}/game/g_cmds.c"
 	"${SRCDir}/game/g_combat.c"
+	"${SRCDir}/game/g_debug.c"
+	"${SRCDir}/game/g_dimensions.c"
 	"${SRCDir}/game/g_items.c"
 	"${SRCDir}/game/g_log.c"
 	"${SRCDir}/game/g_mem.c"
@@ -69,23 +67,22 @@ set(MVGAMESOURCES
 	"${SRCDir}/game/g_missile.c"
 	"${SRCDir}/game/g_mover.c"
 	"${SRCDir}/game/g_object.c"
+	"${SRCDir}/game/g_referee.c"
 	"${SRCDir}/game/g_saga.c"
 	"${SRCDir}/game/g_session.c"
 	"${SRCDir}/game/g_spawn.c"
+	"${SRCDir}/game/g_stats.c"
 	"${SRCDir}/game/g_svcmds.c"
 	"${SRCDir}/game/g_target.c"
 	"${SRCDir}/game/g_team.c"
 	"${SRCDir}/game/g_trigger.c"
+	"${SRCDir}/game/g_unlagged.c"
 	"${SRCDir}/game/g_utils.c"
 	"${SRCDir}/game/g_weapon.c"
 	"${SRCDir}/game/q_math.c"
 	"${SRCDir}/game/q_shared.c"
 	"${SRCDir}/game/w_force.c"
 	"${SRCDir}/game/w_saber.c"
-	"${SRCDir}/game/g_multiversion.c"
-	"${SRCDir}/game/g_multiversion_syscalls.c"
-	"${SRCDir}/game/bg_multiversion.c"
-	"${SRCDir}/game/animMappingTable.c"
 )
 
 set(MVGAMEASM
@@ -107,8 +104,6 @@ set(MVGAMEVMSOURCES ${MVGAMESOURCES}
 add_library(${MVGAME} SHARED ${MVGAMEFILES})
 
 # Defines
-set(MVGAMEDefines ${MVGAMEDefines} "QAGAME")
-set(MVGAMEDefines ${MVGAMEDefines} "JK2_GAME")
 set(MVGAMEIncludeDirs ${MVGLOBALIncludeDirs})
 
 set_target_properties(${MVGAME} PROPERTIES PREFIX "") # remove "lib" prefix for .so/.dylib files
