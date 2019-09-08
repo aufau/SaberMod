@@ -57,13 +57,16 @@ seek [+|-][mm:]ss
   During demo playback seeks to `mm:ss` server time. With `+` or `-`
   prefix seeks `mm` minutes and `ss` seconds forwards or backwards.
 
-Callvote
-........
+Call Vote
+.........
+
+abort
+  Abort the match and go back to warmup.
 
 matchmode <0|1>
-  Enable/Disable match mode - restrict spectator chat, disable damage
-  plums and require matching clientside. In round-based gametypes dead
-  players may only follow their teammates.
+  Enable/Disable match mode - restrict spectator chat and require
+  matching clientside. In round-based gametypes dead players may only
+  follow their teammates.
 
 mode [mode]
   Switch to one of admin-defined game modes.
@@ -88,6 +91,12 @@ teamsize <size>
   Set maximum team size to `size`. 0 means unlimited. No players will
   be removed.
 
+Call Team Vote
+..............
+
+forfeit
+  Forfeit the game.
+
 Referee Commands
 ................
 
@@ -95,7 +104,7 @@ These commands can be used only by a registered referee or server
 console (rcon).
 
 abort
-  Abort the match.
+  Abort the match and go back to warmup.
 
 allready
   Make all players ready in warmup or during intermission.
