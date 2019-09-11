@@ -526,6 +526,13 @@ they will not be loaded from outside of a pk3.
 
 Type ``make help`` to learn about remaining targets.
 
+CMake
+-----
+
+Install CMake for your operating system (Linux, Windows, MacOS and
+others) and use CMakelists.txt script from the main SaberMod
+directory.
+
 Batch Scripts
 -------------
 
