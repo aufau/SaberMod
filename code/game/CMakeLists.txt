@@ -53,7 +53,6 @@ set(MVGAMESOURCES
 	"${SRCDir}/game/bg_slidemove.c"
 	"${SRCDir}/game/bg_weapons.c"
 	"${SRCDir}/game/g_active.c"
-	"${SRCDir}/game/g_arenas.c"
 	"${SRCDir}/game/g_bot.c"
 	"${SRCDir}/game/g_client.c"
 	"${SRCDir}/game/g_cmds.c"

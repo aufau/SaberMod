@@ -11,6 +11,8 @@ add_subdirectory("cgame")
 add_subdirectory("ui")
 
 if(BuildQVMs)
+	add_subdirectory("tools")
+
 	# Custom target for building qvm's
 	file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/vm_build")
 	file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/vm")

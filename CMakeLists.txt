@@ -14,6 +14,7 @@ if(NOT InMV)
 	project(${ProjectName})
 endif()
 
+find_package(Git)
 execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
   OUTPUT_VARIABLE MVSDK_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT MVSDK_VERSION OR MVSDK_VERSION STREQUAL "GIT-NOTFOUND" OR MVSDK_VERSION STREQUAL "HEAD-HASH-NOTFOUND")
@@ -100,6 +101,7 @@ set(LCC "q3lcc")
 set(CPP "q3cpp")
 set(RCC "q3rcc")
 set(ASM "q3asm")
+set(LBURG "lburg")
 
 # Directories
 set(SRCDir "${CMAKE_CURRENT_SOURCE_DIR}/code")
@@ -188,10 +190,6 @@ if (NOT InMV)
 	else()
 		message(FATAL_ERROR "Unsupported compiler")
 	endif()
-endif()
-
-if(BuildQVMs)
-	# add_subdirectory("tools")
 endif()
 
 add_subdirectory(${SRCDir})
