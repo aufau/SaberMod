@@ -512,36 +512,42 @@ resemble following template::
 
 Where `mymode` is the default mode.
 
-Build
-=====
+Building SaberMod
+=================
 
-Linux
+SaberMod has several build scripts, but only GNU Make script is
+complete and used for official releases. other scripts produce
+different QVM files from the same source code.
+
+GNU Make
+--------
+
+Only requirements are GNU Make and GCC or Clang compiler. Makefile has
+several targets, type ``make <target>`` to build selected target. Most
+useful are:
+
+- **shared** build shared module libraries that should be used for
+  debugging and development.
+- **assets** create assets.pk3 - an amalgamation of all SaberMod
+clientside and serverside assets which is useful for development, as
+they will not be loaded from outside of a pk3.
+- **serverside** create a full release zip package.
+
+Type ``make help`` to learn about remaining targets.
+
+CMake
 -----
 
-You will need GNU Make and GCC or Clang compiler. Type ``make`` to
-build .so files in base/ and .qvm files in base/vm/ You can add
-``-jN`` option to speed up the build process by running N jobs
-simultaneously. Type ``make help`` to learn about other targets.
+Install CMake for your operating system (Linux, Windows, MacOS and
+others) and use CMakelists.txt script from the main SaberMod
+directory.
 
-Assume your mod is called "mymod" and your main JK2 directory is
-~/.jkii In order to test the mod, put .qvm files in ~/.jkii/mymod/vm/
-and launch the game with ``+set fs_game mymod`` commandline parameter.
+Batch Scripts
+-------------
 
-To debug your mod use generated .so files. Put them in ~/.jkii/mymod/
-and launch the game with ``+set vm_game 0 +set vm_cgame 0 +set vm_ui
-0`` commandline parameters. Set them back to 2 when you want to use
-.qvm version again.
-
-Windows
--------
-
-Currently there is no support for building shared libraries on
-Windows. Old ``code/buildvms.bat`` batch file should work for QVMs if
-you can get lcc and q3asm tools (eg from *JK2 Editing Tools 2.0*) and
-put them into bin/ directory.
-
-I'll be glad to include Windows build scripts, project files etc. if
-you can create and test them.
+Copy lcc.exe and q3asm.exe tools from *JK2 Editing Tools 2.0* into
+bin/ directory. Run ``code/buildvms.bat`` batch script to generate
+.qvm files.
 
 License
 =======
