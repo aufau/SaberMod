@@ -25,10 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // active (after loading) gameplay
 
 #include "cg_local.h"
-
-#include "../ui/ui_shared.h"
+#include "../../assets/ui/jk2mp/menudef.h"
 
 #ifdef MISSIONPACK
+#include "../ui/ui_shared.h"
+
 // used for scoreboard
 extern displayContextDef_t cgDC;
 menuDef_t *menuScoreboard = NULL;

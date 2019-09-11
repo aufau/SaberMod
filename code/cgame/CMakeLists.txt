@@ -23,8 +23,6 @@ set(MVCGAMEHEADERS
 	"${SRCDir}/game/q_shared.h"
 	"${SRCDir}/game/surfaceflags.h"
 
-	"${SRCDir}/ui/ui_shared.h"
-
 	"${SRCDir}/qcommon/qfiles.h"
 	"${SRCDir}/qcommon/tags.h"
 

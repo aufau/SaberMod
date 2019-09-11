@@ -1862,26 +1862,6 @@ float CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
 
-// cg_newDraw.c
-void CG_SelectPrevPlayer(void);
-void CG_SelectNextPlayer(void);
-float CG_GetValue(int ownerDraw);
-qboolean CG_OwnerDrawVisible(int flags);
-void CG_RunMenuScript(const char **args);
-qboolean CG_DeferMenuScript(const char **args);
-void CG_ShowResponseHead(void);
-void CG_SetPrintString(int type, const char *p);
-void CG_InitTeamChat(void);
-void CG_GetTeamColor(vec4_t *color);
-const char *CG_GetGameStatusText(void);
-const char *CG_GetKillerText(void);
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles );
-void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
-void CG_CheckOrderPending(void);
-qhandle_t CG_StatusHandle(int task);
-
-
-
 //
 // cg_player.c
 //

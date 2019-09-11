@@ -23,15 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // cg_drawtools.c -- helper functions called by cg_draw, cg_scoreboard, cg_info, etc
 
-/*
-// this line must stay at top so the whole PCH thing works...
-#include "cg_headers.h"
-
-//#include "cg_local.h"
-#include "cg_media.h"
-#include "cg_text.h"
-*/
-
 #include "cg_local.h"
 #include "../game/q_shared.h"
 
@@ -620,7 +611,6 @@ void CG_DrawNumField (float x, float y, int width, int value,int charWidth,int c
 
 }
 
-// #include "../ui/ui_shared.h"	// for some text style junk
 void UI_DrawProportionalString( float x, float y, const char* str, int style, const vec4_t color )
 {
 	// having all these different style defines (1 for UI, one for CG, and now one for the re->font stuff)
