@@ -272,9 +272,7 @@ $(eval $(call obj_template,ui))
 
 TOOLSDIR = code/tools
 
-TOOLS_DEFS := -DARCH_STRING=\"$(ARCH)\"
 TOOLS_CFLAGS = -O2 -Wno-unused-result
-TOOLS_CFLAGS += $(TOOLS_DEFS)
 
 srcs_asm = q3asm cmdlib
 srcs_lcc = lcc bytecode
