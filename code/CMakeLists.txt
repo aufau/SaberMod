@@ -55,19 +55,19 @@ if(BuildQVMs)
 	
 	add_custom_target(qvms
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVGAMEVMSOURCES_NATIVE}
+			"-DQ3_VM" "-DNDEBUG" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVGAMEVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/jk2mpgame.qvm" ${MVGAMEASMFILES} ${MVGAMEASM}
 
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_CGAME_PATH}" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVCGAMEVMSOURCES_NATIVE}
+			"-DQ3_VM" "-DNDEBUG" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${MVSDK_CGAME_PATH}" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVCGAMEVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/cgame.qvm" ${MVCGAMEASMFILES} ${MVCGAMEASM}
 
 		COMMAND $<TARGET_FILE:${LCC}>
-			"-DQ3_VM" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${SRCDir}/cgame" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVUIVMSOURCES_NATIVE}
+			"-DQ3_VM" "-DNDEBUG" "-S" "-Wf-target=bytecode" "-Wf-g" "-I${SRCDir}/cgame" "-I${MVSDK_GAME_PATH}" "-I${MVSDK_UI_PATH}" "-I${MVSDK_BIN_PATH}" ${MVUIVMSOURCES_NATIVE}
 
 		COMMAND $<TARGET_FILE:${ASM}>
 			"-vq3" "-m" "-v" "-o" "${CMAKE_CURRENT_BINARY_DIR}/vm/ui.qvm" ${MVUIASMFILES} ${MVUIASM}
