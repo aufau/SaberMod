@@ -193,3 +193,4 @@ if (NOT InMV)
 endif()
 
 add_subdirectory(${SRCDir})
+add_subdirectory("assets")
