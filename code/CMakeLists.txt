@@ -83,44 +83,4 @@ if(BuildQVMs)
 	if(InMV)
 		set_property(TARGET qvms PROPERTY FOLDER "Modules")
 	endif()
-
-	if(InMV)
-		# configure_file("mv.info" "mv.info" COPYONLY)
-		set(AssetsFiles
-			"vm/jk2mpgame.qvm"
-            "vm/jk2mpgame.map"
-			"vm/cgame.qvm"
-            "vm/cgame.map"
-			"vm/ui.qvm"
-            "vm/ui.map"
-			# "mv.info"
-		)
-
-		source_group("assets" FILES ${AssetsFiles})
-
-		# generate assetsmv2.pk3
-		if(MultiConfigGenerator)
-			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/base/assets.pk3)
-		else()
-			set(OUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/base/assets.pk3)
-		endif()
-
-		include(InstallZIP)
-		add_zip_command(${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 ${OUTFILE}
-			DIR "${CMAKE_CURRENT_BINARY_DIR}"
-			FILES "${AssetsFiles}"
-			DEPENDS qvms
-		)
-
-		add_custom_target(assets DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/assets.pk3")
-		set_property(TARGET assets PROPERTY FOLDER "Modules")
-
-		if(WIN32 OR BuildPortableVersion)
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "base")
-		elseif(APPLE)
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "jk2mvmp.app/Contents/MacOS/base")
-		else()
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.pk3 DESTINATION "share/jk2mv/base")
-		endif()
-	endif()
 endif()
