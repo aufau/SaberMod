@@ -465,6 +465,40 @@ static void CG_CheckLocalSounds( const playerState_t *ps, const playerState_t *o
 
 /*
 ===============
+CG_GameMediaDescription
+===============
+*/
+const char *CG_AutoSaveFilename( void ) {
+	static char	filename[MAX_QPATH];
+	char		timestamp[20];
+	char		description[MAX_QPATH];
+	qtime_t		t;
+
+	trap_RealTime(&t);
+
+	Com_sprintf(timestamp, sizeof(timestamp), "%04i-%02i-%02i_%02i-%02i",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min );
+
+	Com_sprintf(description, sizeof(description), "%s", gametypeLong[cgs.gametype]);
+
+	Com_sprintf(filename, sizeof(filename), "%s %s", timestamp, description);
+
+	return filename;
+}
+
+/*
+===============
+CG_StartIntermission
+===============
+*/
+static void CG_StartIntermission( void ) {
+	if (cg_autoSave.integer == 1) {
+		trap_SendConsoleCommand(va("screenshot \"%s\"\n", CG_AutoSaveFilename()));
+	}
+}
+
+/*
+===============
 CG_TransitionPlayerState
 
 ===============
@@ -490,6 +524,11 @@ void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops ) {
 	// damage events (player is getting wounded)
 	if ( ps->damageEvent != ops->damageEvent && ps->damageCount ) {
 		CG_DamageFeedback( ps->damageYaw, ps->damagePitch, ps->damageCount );
+	}
+
+	if ( ps->pm_type == PM_INTERMISSION &&
+		ops->pm_type != PM_INTERMISSION ) {
+		CG_StartIntermission();
 	}
 
 	if ( ps->pm_type != PM_INTERMISSION &&

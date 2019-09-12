@@ -1649,6 +1649,7 @@ extern	vmCvar_t		cg_crosshairIndicators;
 extern	vmCvar_t		cg_crosshairIndicatorsSpec;
 extern	vmCvar_t		cg_widescreen;
 extern	vmCvar_t		cg_fovAspectAdjust;
+extern	vmCvar_t		cg_autoSave;
 
 extern	vmCvar_t		cg_ui_myteam;
 extern	vmCvar_t		cg_com_maxfps;

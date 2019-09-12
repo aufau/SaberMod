@@ -583,6 +583,7 @@ vmCvar_t	cg_crosshairIndicators;
 vmCvar_t	cg_crosshairIndicatorsSpec;
 vmCvar_t	cg_widescreen;
 vmCvar_t	cg_fovAspectAdjust;
+vmCvar_t	cg_autoSave;
 
 vmCvar_t	cg_ui_myteam;
 vmCvar_t	cg_com_maxfps;
@@ -751,6 +752,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicatorsSpec", "1", CVAR_ARCHIVE},
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 	{ &cg_fovAspectAdjust, "cg_fovAspectAdjust", "0", CVAR_ARCHIVE},
+	{ &cg_autoSave, "cg_autoSave", "0", CVAR_ARCHIVE},
 
 	{ &cg_ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 	{ &cg_com_maxfps, "com_maxfps", "", 0},
