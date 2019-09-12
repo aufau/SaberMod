@@ -266,7 +266,7 @@ Game Cvars
 ..........
 
 teamsize <size>
-  See callvote_ teamsize.
+  See `Call Vote`_ teamsize.
 
 roundlimit <limit>
   Number of rounds in a round-based match.
@@ -316,10 +316,12 @@ g_allowVote <0|1|bitmask>
 
 g_antiWarp <0|1|2>
   Prevention system against players who are warping or using lag scripts.
+
   | 1: Draw icon above warping player's head.
   | 2: Forcefully prevent players from warping for others. This
        setting makes game almost unplayable for a warping player and
        may hurt legitimate players who have bad connection.
+
   Refer to `g_antiWarpTime` cvar description for more details.
 
 g_antiWarpTime <msec>
@@ -399,7 +401,7 @@ g_pushableItems <mask>
 
 g_refereePassword <password>
   Allow players who know password to become referees using `referee`
-  `Console Commands`_. When this cvar is empty (default), `referee`
+  console command. When this cvar is empty (default), `referee`
   console command cannot be used to become a referee.
 
 g_requireClientside <0|1>
@@ -529,8 +531,8 @@ build selected target. Most useful are:
 - **shared** build shared module libraries that should be used for
   debugging and development.
 - **assets** create assets.pk3 - an amalgamation of all SaberMod
-clientside and serverside assets which is useful for development, as
-they will not be loaded from outside of a pk3.
+  clientside and serverside assets which is usef!ul for development, as
+  they will not be loaded from outside of a pk3.
 - **serverside** create a full release zip package.
 
 Type ``make help`` to learn about remaining targets.
