@@ -779,8 +779,9 @@ void WP_DisruptorAltFire( gentity_t *ent )
 			int preHealth = traceEnt->health;
 			int preLegs = 0;
 			int preTorso = 0;
+			qboolean isClient = (qboolean)!!traceEnt->client;
 
-			if (traceEnt->client)
+			if (isClient)
 			{
 				preLegs = traceEnt->client->ps.legsAnim;
 				preTorso = traceEnt->client->ps.torsoAnim;
@@ -789,7 +790,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 			G_Damage( traceEnt, ent, ent, forward, tr->endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
 
-			if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
+			if (isClient && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
 			{ //was killed by a fully charged sniper shot, so disintegrate
 				VectorCopy(preAng, traceEnt->client->ps.viewangles);
 

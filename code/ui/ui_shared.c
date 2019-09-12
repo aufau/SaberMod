@@ -228,7 +228,7 @@ const char *String_Alloc(const char *p) {
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
 		size_t ph = strPoolIndex;
-		strncpy(&strPool[strPoolIndex], p, len + 1);
+		strcpy(&strPool[strPoolIndex], p);
 		strPoolIndex += len + 1;
 
 		str = strHandle[hash];

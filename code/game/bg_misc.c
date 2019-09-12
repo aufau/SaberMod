@@ -2396,7 +2396,7 @@ char *BG_StringAlloc ( const char *source )
 	size_t len = strlen ( source ) + 1;
 
 	dest = (char *)BG_AllocUnaligned ( len );
-	strncpy ( dest, source, len );
+	strcpy ( dest, source );
 	return dest;
 }
 

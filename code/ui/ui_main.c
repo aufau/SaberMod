@@ -5879,7 +5879,7 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 				case SORT_GAME :
 					game = atoi(Info_ValueForKey(info, "gametype"));
 					if (GT_Valid(game)) {
-						strncpy(needPass,gametypeShort[game],sizeof(needPass));
+						strcpy(needPass,gametypeShort[game]);
 					} else {
 						if (ping <= 0)
 						{
