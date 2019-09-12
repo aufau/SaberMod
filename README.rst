@@ -39,7 +39,7 @@ nextspecmode/prevspecmode
 
 players [?|team]
   List players connected to server with some additional
-  info. Optionally limit to members of `team`.
+  info. Optionally limit to members of *team*.
 
 timein
   Resume paused game.
@@ -54,8 +54,8 @@ ready
   Toggle ready status during warmup.
 
 seek [+|-][mm:]ss
-  During demo playback seeks to `mm:ss` server time. With `+` or `-`
-  prefix seeks `mm` minutes and `ss` seconds forwards or backwards.
+  During demo playback seeks to *mm:ss* server time. With *+* or *-*
+  prefix seeks *mm* minutes and *ss* seconds forwards or backwards.
 
 Call Vote
 .........
@@ -75,20 +75,20 @@ nk
   No Kick. Disables kicking completely and turns on friendly fire.
 
 wk
-  With Kick. Kicking mechanics depends on `g_kickMethod` value. Also
+  With Kick. Kicking mechanics depends on *g_kickMethod* value. Also
   turns off friendly fire.
 
 poll <question>
   Ask an arbitrary question to players.
 
 remove <player>
-  Remove `player` to spectator team.
+  Remove *player* to spectator team.
 
 shuffle
   Randomize teams.
 
 teamsize <size>
-  Set maximum team size to `size`. 0 means unlimited. No players will
+  Set maximum team size to *size*. 0 means unlimited. No players will
   be removed.
 
 Call Team Vote
@@ -110,7 +110,7 @@ allready
   Make all players ready in warmup or during intermission.
 
 announce <message|motd>
-  Print `message` or ingame message of the day on everyone's screen.
+  Print *message* or ingame message of the day on everyone's screen.
 
 forceteam <player|all> <team>
   Move players between teams.
@@ -119,7 +119,7 @@ help
   List referee commands
 
 (un)lockteam <teams>
-  Prevent players from joining `teams`.
+  Prevent players from joining *teams*.
 
 (un)pause [seconds]
   Pause match for a specified number of seconds or until unpaused.
@@ -141,7 +141,7 @@ cg_chatBeep <0|1>
 
 cg_crosshairColor <hex>
   Force crosshair color using hexadecimal rgb color code. Fourth
-  position can be used to set transparency. Eg `#00ff00ff` is green.
+  position can be used to set transparency. Eg ``#00ff00ff`` is green.
 
 cg_crosshairIndicators <bitmask>
   Draw crosshair indicators. Sum values from the following list:
@@ -155,7 +155,7 @@ cg_crosshairIndicatorsSpec <bitmask>
 
 cg_damagePlums <0|1>
   When you hit an enemy, draw a small damage plum coming out of his
-  torso. Works only if server has `g_damagePlums` enabled.
+  torso. Works only if server has *g_damagePlums* enabled.
 
 cg_darkenDeadBodies <0|1>
   Darken dead bodies outside of duel too.
@@ -177,7 +177,7 @@ cg_duelGlow <0|1>
   Turn on/off duel glow.
 
 cg_fastSeek <0|1>
-  Use experimental fast seeking method (see `seek` console command).
+  Use experimental fast seeking method (see *seek* console command).
 
 cg_fixServerTime <0|1>
   Fix various engine issues on servers running for a few days.
@@ -192,7 +192,7 @@ cg_fovAspectAdjust <0|1>
   Change Field Of View calculations so that they don't disadvantage
   widescreen monitors. Instead of cropping top and bottom parts of the
   screen it's extended to the sides, compared to 4:3 display. Works
-  only when `cg_widescreen` is enabled.
+  only when *cg_widescreen* is enabled.
 
 cg_drawSpectatorHints <0|1>
   Draw extra hints on new spectator features.
@@ -207,7 +207,7 @@ cg_smoothCamera <0|1>
   local server, high velocity movement, demo playback.
 
 cg_smoothCameraFPS <fps>
-  Emulate specific fps with `cg_smoothCamera`. When this is 0, current
+  Emulate specific fps with *cg_smoothCamera*. When this is 0, current
   com_maxfps is used instead. Useful for demo rendering.
 
 cg_widescreen <0|1>
@@ -222,13 +222,13 @@ ui_widescreen <0|1>
 Spectating
 ..........
 
-As a spectator, `+use` button makes you change followed player using
+As a spectator, *+use* button makes you change followed player using
 "smart cycle" mode. It will switch between duelling players, search
 for a next powerup player or cycle through current team in a
 scoreboard order.
 
 As a free floating spectator you can target a player with your
-crosshair and press `+attack` button to start following him.
+crosshair and press *+attack* button to start following him.
 
 Server-Side
 -----------
@@ -243,7 +243,7 @@ items [items]
   argument to see usage instructions.
 
 mode <mode|default>
-  Change to `mode` or list all available modes when passed without
+  Change to *mode* or list all available modes when passed without
   arguments.
 
 players [team]
@@ -253,7 +253,7 @@ referee <password>
   Become a referee using password provided by server admin.
 
 remove <player|all> [time]
-  Remove `player` to spectator team for at least `time` seconds.
+  Remove *player* to spectator team for at least *time* seconds.
 
 spawnitems [items]
   Enable/Disable spawning items using human readable names. Type
@@ -292,7 +292,7 @@ g_allowRefVote <0|1|bitmask>
 
 g_allowTeamVote <bitmask>
   What team votes should be allowed. Team votes are called with
-  `callteamvote` command.
+  *callteamvote* command.
 
   =====================  =====================  =====================
   2 - Team Leader        4 - Forfeit Match
@@ -322,7 +322,7 @@ g_antiWarp <0|1|2>
        setting makes game almost unplayable for a warping player and
        may hurt legitimate players who have bad connection.
 
-  Refer to `g_antiWarpTime` cvar description for more details.
+  Refer to *g_antiWarpTime* cvar description for more details.
 
 g_antiWarpTime <msec>
   Tune when player is considered as warping and g_antiWarp preventive
@@ -332,7 +332,7 @@ g_antiWarpTime <msec>
   players are not affected.
 
 g_damagePlums <0|1>
-  Allow clients with `cg_damagePlums` enabled to see damage plums.
+  Allow clients with *cg_damagePlums* enabled to see damage plums.
 
 g_dismember <percentage>
   Chance to dismemeber player killed with a lightsaber.
@@ -341,8 +341,8 @@ g_infiniteAmmo <0|1>
   Players spawn with infinite ammo for all weapons.
 
 g_ingameMotd <message|none>
-  Ingame message of the day shown to all players. May contain `\n` for
-  newline and `\\` for backslash.
+  Ingame message of the day shown to all players. May contain ``\n``
+  for newline and ``\\`` for backslash.
 
 g_instagib <0|1>
   Enable simple instagib mode for all weapons. Splash does no damage.
@@ -400,8 +400,8 @@ g_pushableItems <mask>
   =====================  =====================  =====================
 
 g_refereePassword <password>
-  Allow players who know password to become referees using `referee`
-  console command. When this cvar is empty (default), `referee`
+  Allow players who know password to become referees using *referee*
+  console command. When this cvar is empty (default), *referee*
   console command cannot be used to become a referee.
 
 g_requireClientside <0|1>
@@ -431,13 +431,13 @@ g_spawnShield <ammount>
 
 g_spawnWeapons <bitmask>
   Controls weapons given to players on spawn using the same bitmask
-  as `g_weaponDisable`. The later cvar affects only weapons and ammo
+  as *g_weaponDisable*. The later cvar affects only weapons and ammo
   spawned on a map. Setting this cvar to 0 restores original behaviour
-  of `g_weaponDisable`.
+  of *g_weaponDisable*.
 
 g_teamForceBalance <number>
   Prevents players from joining the weaker team if difference
-  is greater than `number`.
+  is greater than *number*.
 
 g_teamsizeMin <size>
   Minimum votable teamsize.
@@ -457,11 +457,11 @@ g_unlaggedMaxPing <msec>
   side effects. For example a player can be hit some time after he hid
   behind an obstacle. This cvar's value limits time period in which
   this can happen, adding extra hit detection delay for players with
-  pings higher than `msec`.
+  pings higher than *msec*.
 
 g_warmup <0|1>
   SaberMod has a new warmup system. All players must ready up with
-  `ready` command before a match can start. Old `g_warmupTime` Cvar is
+  *ready* command before a match can start. Old *g_warmupTime* Cvar is
   no longer used. Setting this cvar to 0 disables warmup alltogether.
 
 g_voteCooldown <seconds>
@@ -471,7 +471,7 @@ Round-Based Gametypes
 .....................
 
 In round-based gametypes players spawn with all available weapons and
-items (controlled by `g_spawnWeapons` and `g_spawnItems` cvars),
+items (controlled by *g_spawnWeapons8 and *g_spawnItems* cvars),
 however there are no pickups on the map. Players gain one point for
 killing an enemy and one point for each 50 damage dealt to the enemy
 team. A round lasts until either one team is eliminated or a timelimit
@@ -493,7 +493,7 @@ Server Modes
 
 Server administrator can configure a number of custom game "modes",
 players will be able to choose from. A mode is technically a config
-file in `modes/` directory that will be executed when players
+file in ``modes/`` directory that will be executed when players
 sucessfuly vote to use it. It can contain any commands altering server
 behaviour, but please take following guides into consideration.
 
@@ -501,7 +501,7 @@ Switching to a mode from any other should always result in the same
 server state. To achieve this it's best to use a "reset" config,
 executed at the start of each mode config. It should contain a default
 value for every possible cvar your modes are changing. Examine
-included modes and `reset.cfg` as an example.
+included modes and ``reset.cfg`` as an example.
 
 Server can be configured to go back to a default mode after a period
 of inactivity. To do so last lines of the main server config should
@@ -512,7 +512,7 @@ resemble following template::
   exec "modes/mymode"
   map ffa_bespin
 
-Where `mymode` is the default mode.
+Where *mymode* is the default mode.
 
 Building SaberMod
 =================
@@ -550,7 +550,7 @@ CMake
 -----
 
 Install CMake for your operating system (Linux, Windows, MacOS and
-others) and use CMakelists.txt script from the main SaberMod
+others) and use ``CMakelists.txt`` script from the main SaberMod
 directory.
 
 Batch Scripts
@@ -565,11 +565,11 @@ License
 
 LCC 4.1 is Copyright (c) 1991-1998 by AT&T, Christopher W. Fraser and
 David R. Hanson, and available under a non-copyleft license. You can
-find it in code/tools/lcc/COPYRIGHT. LCC version bundled with this SDK
-comes from ioquake3 and it has been slightly modified by its
+find it in ``code/tools/lcc/COPYRIGHT``. LCC version bundled with this
+SDK comes from ioquake3 and it has been slightly modified by its
 developers.
 
-Some files in `assets` directory are modified assets from the
+Some files in ``assets`` directory are modified assets from the
 original, non-free JK2 1.04 release and licensed under *JK2 Editing
 Tools 2.0* EULA.
 
