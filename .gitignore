@@ -3,7 +3,7 @@ Doxyfile
 out/
 bin/
 base/
-build/
+build/*/
 local/
 code/game/vm/
 code/cgame/vm/
