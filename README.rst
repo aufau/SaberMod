@@ -522,9 +522,9 @@ different QVM files from the same source code.
 GNU Make
 --------
 
-Only requirements are GNU Make and GCC or Clang compiler. Makefile has
-several targets, type ``make <target>`` to build selected target. Most
-useful are:
+Only requirements are GNU Make, Git and GCC or Clang
+compiler. Makefile has several targets, type ``make <target>`` to
+build selected target. Most useful are:
 
 - **shared** build shared module libraries that should be used for
   debugging and development.
