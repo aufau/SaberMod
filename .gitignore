@@ -1,4 +1,21 @@
+Doxyfile
+
 out/
 bin/
 base/
+build/
+local/
+code/game/vm/
+code/cgame/vm/
+code/ui/vm/
 code/tools/lcc/src/dagcheck.c
+
+############
+## Windows
+############
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
