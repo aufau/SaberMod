@@ -179,7 +179,6 @@ static cvarTable_t gameCvarTable[] = {
 
 	// noset vars
 	{ NULL, "gamename", GAME_VERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
-	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 
 	// latched vars
@@ -621,7 +620,6 @@ void G_RegisterCvars( void ) {
 	trap_Cvar_Register( NULL, "g_status", GAMESTATUS_DEFAULT, CVAR_ROM | CVAR_SERVERINFO );
 
 	trap_Cvar_Set( "gamename", GAME_VERSION );
-	trap_Cvar_Set( "gamedate", __DATE__ );
 
 	if (remapped) {
 		G_RemapTeamShaders();
@@ -694,7 +692,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_Printf ("------- Game Initialization -------\n");
 	G_Printf ("gamename: %s\n", GAMEVERSION);
-	G_Printf ("gamedate: %s\n", __DATE__);
 
 	id_srand( randomSeed );
 	srand( randomSeed );
