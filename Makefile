@@ -140,16 +140,16 @@ clientside : cgame ui | base/
 	vm/cgame.qvm vm/cgame.map vm/ui.qvm vm/ui.map; popd; zip			\
 	base/$(cls_pk3) $(cls_doc); pushd assets; zip ../base/$(cls_pk3)	\
 	$(cls_assets); popd
-serverside : clientside game | base/
+serverside : clientside game base/description.txt | base/
 	$(echo_cmd) "CREATE $(name).zip"
 	$(eval tmp := $(shell mktemp -d))
 	$(eval svs := $(tmp)/$(name))
-	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc; cp			\
-	$(svs_doc) $(svs)/doc; cp base/$(cls_pk3) $(svs); mkdir				\
-	$(svs)/vm; cp base/vm/jk2mpgame.qvm base/vm/jk2mpgame.map			\
-	$(svs)/vm; pushd assets; cp -r $(svs_assets) $(svs); popd; pushd	\
-	$(tmp); zip -r $(svs_zip) $(name); popd; cp $(tmp)/$(svs_zip)		\
-	base/; $(RM) -r $(tmp)
+	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc $(svs)/vm;	\
+	cp $(svs_doc) $(svs)/doc; pushd base; cp $(cls_pk3) $(svs); cp		\
+	vm/jk2mpgame.qvm vm/jk2mpgame.map $(svs)/vm; cp description.txt		\
+	$(svs); popd; pushd assets; cp -r $(svs_assets) $(svs); popd;		\
+	pushd $(tmp); zip -r $(svs_zip) $(name); popd; cp					\
+	$(tmp)/$(svs_zip) base/; $(RM) -r $(tmp)
 
 help	:
 	@echo 'Targets:'
@@ -174,6 +174,9 @@ out/version	: FORCE
 	@echo $(VERSION) | cmp -s - $@ || echo '$(VERSION)' > $@
 code/game/bg_version.h : out/version
 	@touch $@
+base/description.txt : out/version
+	$(echo_cmd) "CREATE $@"
+	$(file > $@,^2S^7aber^2M^7od-$(VERSION))
 
 FORCE	:
 .PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools FORCE
