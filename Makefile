@@ -175,7 +175,7 @@ out/version	: FORCE
 code/game/bg_version.h : out/version
 	@touch $@
 base/description.txt : out/version
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,^2S^7aber^2M^7od-$(VERSION))
 
 FORCE	:
@@ -198,13 +198,13 @@ base/vm/ui.qvm : $(asm_ui) $(AS) code/ui/ui.q3asm | base/vm/
 # BAT Script Helpers
 
 code/game/game.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "jk2mpgame.qvm" $(srcs_game))
 code/cgame/cgame.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "cgame.qvm" $(srcs_cgame))
 code/ui/ui.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "ui.qvm" $(srcs_ui))
 
 # Shared Object Targets
