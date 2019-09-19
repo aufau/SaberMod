@@ -2940,6 +2940,7 @@ void CheckCvars( void ) {
 	}
 
 	if ( g_ingameMotd.modificationCount != motdMod ) {
+		motdMod = g_ingameMotd.modificationCount;
 		if ( g_ingameMotd.string[0] && Q_stricmp( g_ingameMotd.string, "none" ) ) {
 			char	motd[MAX_INFO_STRING];
 			int		i;
