@@ -535,6 +535,15 @@ they will not be loaded from outside of a pk3.
 
 Type ``make help`` to learn about remaining targets.
 
+Microsoft Visual Studio
+-----------------------
+
+Install Git command line program on your system. It can be done from
+Visual Studio Team Explorer tab. Use *Clone Git Repository* and
+provide address of your SaberMod repo. *Build All* action compiles
+.dll modules. Other targets can be compiled from *CMake Targets View*
+in *Project Explorer*.
+
 CMake
 -----
 
