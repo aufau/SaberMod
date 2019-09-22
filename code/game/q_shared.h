@@ -40,18 +40,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #if defined _MSC_VER							// Microsoft Visual C++
 #define Q_EXPORT __declspec(dllexport)
 #define Q_NORETURN __declspec(noreturn)
+#define Q_PTR_NORETURN // MSVC doesn't support noreturn function pointers
 #define q_unreachable() abort()
 #elif (defined __GNUC__ || defined __clang__)	// GCC & Clang
 #define Q_EXPORT __attribute__((visibility("default")))
 #define Q_NORETURN __attribute__((noreturn))
+#define Q_PTR_NORETURN Q_NORETURN
 #define q_unreachable() __builtin_unreachable()
 #elif (defined __SUNPRO_C)						// Sun Pro C Compiler
 #define Q_EXPORT __global
 #define Q_NORETURN
+#define Q_PTR_NORETURN
 #define q_unreachable() abort()
 #else											// Any ANSI C compiler
 #define Q_EXPORT
 #define Q_NORETURN
+#define Q_PTR_NORETURN
 #define q_unreachable() abort()
 #endif
 
