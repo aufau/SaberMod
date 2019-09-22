@@ -14,6 +14,10 @@ code/tools/lcc/src/dagcheck.c
 ## Windows
 ############
 
+# Visual Studio
+.vs/
+CMakeSettings.json
+
 # Windows image file caches
 Thumbs.db
 
