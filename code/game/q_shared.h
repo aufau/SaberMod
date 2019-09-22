@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #if defined _MSC_VER							// Microsoft Visual C++
 #define Q_EXPORT __declspec(dllexport)
-#define Q_NORETURN __declscpec(noreturn)
+#define Q_NORETURN __declspec(noreturn)
 #define q_unreachable() abort()
 #elif (defined __GNUC__ || defined __clang__)	// GCC & Clang
 #define Q_EXPORT __attribute__((visibility("default")))
