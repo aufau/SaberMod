@@ -4587,21 +4587,23 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
 			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
+				float width = MIN(size + 1, listPtr->elementWidth);
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
 				if (image) {
-					DC->drawHandlePic(x+1, y+1, listPtr->elementWidth - 2, listPtr->elementHeight - 2, image);
+					float s1 = width / listPtr->elementWidth;
+					DC->drawStretchPic(x+1, y+1, width - 2, listPtr->elementHeight - 2, 0, 0, s1, 1, image);
 				}
 
 				if (i == item->cursorPos) {
-					DC->drawRect(x, y, listPtr->elementWidth-1, listPtr->elementHeight-1, item->window.borderSize, item->window.borderColor);
+					DC->drawRect(x, y, width-1, listPtr->elementHeight-1, item->window.borderSize, item->window.borderColor);
 				}
 
 				size -= listPtr->elementWidth;
 				x += listPtr->elementWidth;
 
-				if (size < listPtr->elementWidth) {
+				if (size <= 1) {
 					break;
 				}
 			}
