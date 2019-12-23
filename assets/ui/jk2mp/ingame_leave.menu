@@ -8,6 +8,7 @@
 		outOfBoundsClick        // this closes the window if it gets a click out of the rectangle
 		rect                    490 40 140 100
 		focusColor              1 1 1 1
+		aspectAlign             1
 		onOpen
 		{
 			show                    grpMenu ;

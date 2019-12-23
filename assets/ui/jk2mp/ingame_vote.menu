@@ -6,10 +6,11 @@
 		visible                 0
 		fullscreen              0
 		outOfBoundsClick        // this closes the window if it gets a click out of the rectangle
-		rect                    430 40 80 68
+		rect                    422 40 80 68
 		focusColor              1 1 1 1
 		style                   1
 		border                  1
+		aspectAlign             0.5
 
 		// Overall window backdrop
 		itemDef
