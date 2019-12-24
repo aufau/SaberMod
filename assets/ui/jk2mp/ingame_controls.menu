@@ -17,6 +17,7 @@
 		descScale               0.7
 		descColor               .235 .882 .847 1        // Focus color for text and items
 		descAlignment           ITEM_ALIGN_CENTER
+		aspectAlign             0.5
 
 		onClose
 		{

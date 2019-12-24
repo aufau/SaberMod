@@ -275,6 +275,10 @@ typedef struct itemDef_s {
 	const char	*descText;					//	Description text
 	int			appearanceSlot;				// order of appearance
 	font_t		iMenuFont;					// FONT_SMALL,FONT_MEDIUM,FONT_LARGE	// changed from 'font' so I could see what didn't compile, and differentiate between font handles returned from RegisterFont -ste
+
+	// SaberMod
+	float		aspectAlign;				// Around what point on X axis item should be shrunk in
+											// widescreen mode. 0 = left 0.5 = center 1 = right
 } itemDef_t;
 
 struct menuDef_s {
@@ -303,6 +307,10 @@ struct menuDef_s {
 	int			appearanceTime;				//	when next item should appear
 	int			appearanceCnt;				//	current item displayed
 	int			appearanceIncrement;		//
+
+	// SaberMod
+	float		aspectAlign;				// Around what point on X axis menu should be shrunk in
+											// widescreen mode. 0 = left 0.5 = center 1 = right
 };
 
 typedef struct {
@@ -418,14 +426,13 @@ typedef struct {
 	qboolean (*isDown)(int keynum);
 	void (*getClipBoardData)(char *buf, int bufsize);
 
-  float			yscale;
-  float			xscale;
-  float			bias;
   int				realTime;
   int				frameTime;
 	int				clientTime;
 	int				cursorx;
 	int				cursory;
+	float			screenWidth;
+	float			screenHeight;
 	qboolean	debug;
 
   cachedAssets_t Assets;

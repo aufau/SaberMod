@@ -16,6 +16,8 @@
 		descColor               .235 .882 .847 1        // Focus color for text and items
 		descAlignment           ITEM_ALIGN_LEFT
 		disableColor            .7 .7 .7 1
+		aspectAlign             1
+
 		onopen
 		{
 			hide                    grpcallVote ;
