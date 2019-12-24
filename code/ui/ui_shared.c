@@ -6807,6 +6807,10 @@ qboolean MenuParse_name( itemDef_t *item, int handle ) {
 		// default main as having focus
 		//menu->window.flags |= WINDOW_HASFOCUS;
 	}
+	// hack for JK2MV ingame setup menu
+	if (!strcmp(menu->window.name, "ingame_setup")) {
+		menu->aspectAlign = 0.5f;
+	}
 	return qtrue;
 }
 
