@@ -897,11 +897,20 @@ void Menu_UpdatePosition(menuDef_t *menu) {
 }
 
 static void Menu_AspectCorrect(menuDef_t *menu) {
-	float	scale = DC->screenWidth / SCREEN_WIDTH;
+	if (menu->aspectAlign >= 0) {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+		float	align = menu->aspectAlign * (scale - 1) * menu->window.rect.w;
+		float	descXOffset = menu->descX - menu->window.rect.x;
 
-	menu->window.rect.x *= scale;
-	menu->window.rect.w *= scale;
-	menu->descX *= scale;
+		menu->window.rect.x = menu->window.rect.x * scale + align;
+		menu->descX = menu->window.rect.x + descXOffset;
+	} else {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+
+		menu->window.rect.x *= scale;
+		menu->window.rect.w *= scale;
+		menu->descX *= scale;
+	}
 }
 
 void Menu_PostParse(menuDef_t *menu) {
@@ -5061,6 +5070,7 @@ void Menu_Init(menuDef_t *menu) {
 	menu->fadeAmount = DC->Assets.fadeAmount;
 	menu->fadeClamp = DC->Assets.fadeClamp;
 	menu->fadeCycle = DC->Assets.fadeCycle;
+	menu->aspectAlign = -1;
 	Window_Init(&menu->window);
 }
 
@@ -5162,6 +5172,7 @@ menuDef_t *Menus_ActivateByName(const char *p) {
 void Item_Init(itemDef_t *item) {
 	memset(item, 0, sizeof(itemDef_t));
 	item->textscale = 0.55f;
+	item->aspectAlign = -1;
 	Window_Init(&item->window);
 }
 
@@ -6150,6 +6161,10 @@ qboolean ItemParse_lineHeight( itemDef_t *item, int handle )
 	return qtrue;
 }
 
+qboolean ItemParse_aspectAlign( itemDef_t *item, int handle ) {
+	return PC_Float_Parse(handle, &item->aspectAlign);
+}
+
 qboolean ItemParse_cvarFloat( itemDef_t *item, int handle ) {
 	editFieldDef_t *editPtr;
 
@@ -6438,6 +6453,9 @@ static keywordHash_t itemParseKeywords[] = {
 	{"maxLineChars",	ItemParse_maxLineChars,		NULL	},
 	{"lineHeight",		ItemParse_lineHeight,		NULL	},
 
+	// SaberMod
+	{"aspectAlign",		ItemParse_aspectAlign,		NULL	},
+
 	{0,					0,							0		}
 };
 
@@ -6497,25 +6515,33 @@ qboolean Item_Parse(int handle, itemDef_t *item) {
 
 
 static void Item_AspectCorrect(itemDef_t *item) {
-	int		i;
-	float	scale = DC->screenWidth / SCREEN_WIDTH;
+	if (item->parent->aspectAlign >= 0) {
+	} else if (item->aspectAlign >= 0) {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+		float	align = item->aspectAlign * (scale - 1) * item->window.rectClient.w;
 
-	item->window.rectClient.x *= scale;
-	item->window.rectClient.w *= scale;
-	item->textalignx *= scale;
-	item->text2alignx *= scale;
+		item->window.rectClient.x = item->window.rectClient.x * scale + align;
+	} else {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
 
-	switch (item->type) {
-	case ITEM_TYPE_LISTBOX:
-	{
-		listBoxDef_t *listPtr = (listBoxDef_t *)item->typeData;
+		item->window.rectClient.x *= scale;
+		item->window.rectClient.w *= scale;
+		item->textalignx *= scale;
+		item->text2alignx *= scale;
 
-		for (i = 0; i < listPtr->numColumns; i++) {
-			listPtr->columnInfo[i].pos *= scale;
-			listPtr->columnInfo[i].width *= scale;
+		switch (item->type) {
+		case ITEM_TYPE_LISTBOX:
+		{
+			listBoxDef_t	*listPtr = (listBoxDef_t *)item->typeData;
+			int				i;
+
+			for (i = 0; i < listPtr->numColumns; i++) {
+				listPtr->columnInfo[i].pos *= scale;
+				listPtr->columnInfo[i].width *= scale;
+			}
+			break;
 		}
-		break;
-	}
+		}
 	}
 }
 
@@ -7166,6 +7192,13 @@ qboolean MenuParse_appearanceIncrement( itemDef_t *item, int handle )
 	return qtrue;
 }
 
+qboolean MenuParse_aspectAlign( itemDef_t *item, int handle )
+{
+	menuDef_t *menu = (menuDef_t*)item;
+
+	return PC_Float_Parse(handle, &menu->aspectAlign);
+}
+
 static keywordHash_t menuParseKeywords[] = {
 	{"appearanceIncrement",	MenuParse_appearanceIncrement,	NULL	},
 	{"backcolor",			MenuParse_backcolor,	NULL	},
@@ -7201,6 +7234,9 @@ static keywordHash_t menuParseKeywords[] = {
 	{"soundLoop",			MenuParse_soundLoop,	NULL	},
 	{"style",				MenuParse_style,		NULL	},
 	{"visible",				MenuParse_visible,		NULL	},
+
+	// SaberMod
+	{"aspectAlign",			MenuParse_aspectAlign,	NULL	},
 	{0,						0,						0		}
 };
 
