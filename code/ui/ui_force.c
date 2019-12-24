@@ -155,10 +155,8 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 	if (1)	// if (val)
 	{
-		xPos = rect->x * uiInfo.screenXFactorInv;
-		yPos = (rect->y + 6) * uiInfo.screenYFactorInv;
-
-		UI_WidescreenMode(qtrue);
+		xPos = rect->x;
+		yPos = (rect->y + 6);
 
 		for (i=FORCE_LEVEL_1;i<=max;i++)
 		{
@@ -186,8 +184,6 @@ void UI_DrawForceStars(rectDef_t *rect, float scale, vec4_t color, int textStyle
 
 			xPos += width + pad;
 		}
-
-		UI_WidescreenMode(qfalse);
 	}
 }
 

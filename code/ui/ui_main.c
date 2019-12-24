@@ -326,23 +326,15 @@ qhandle_t MenuFontToHandle(font_t iMenuFont)
 int Text_Width(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
-	float width;
 
-	UI_WidescreenMode(qtrue);
-	width = trap_R_Font_StrLenPixels(text, iFontIndex, scale) * uiInfo.screenXFactor;
-	UI_WidescreenMode(qfalse);
-	return width;
+	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
 }
 
 int Text_Height(const char *text, float scale, font_t iMenuFont)
 {
 	qhandle_t iFontIndex = MenuFontToHandle(iMenuFont);
-	float height;
 
-	UI_WidescreenMode(qtrue);
-	height = trap_R_Font_HeightPixels(iFontIndex, scale) * uiInfo.screenYFactor;
-	UI_WidescreenMode(qfalse);
-	return height;
+	return trap_R_Font_HeightPixels(iFontIndex, scale);
 }
 
 void Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style, font_t iMenuFont)
@@ -364,9 +356,6 @@ void Text_Paint(float x, float y, float scale, const vec4_t color, const char *t
 	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow
 	}
 
-	UI_WidescreenMode(qtrue);
-	x *= uiInfo.screenXFactorInv;
-	y *= uiInfo.screenYFactorInv;
 	trap_R_Font_DrawString(	x,		// int ox
 							y,		// int oy
 							text,	// const char *text
@@ -375,7 +364,6 @@ void Text_Paint(float x, float y, float scale, const vec4_t color, const char *t
 							!limit?-1:limit,		// iCharLimit (-1 = none)
 							scale	// const float scale = 1.0f
 							);
-	UI_WidescreenMode(qfalse);
 }
 
 
@@ -544,12 +532,10 @@ void _UI_Refresh( int realtime )
 	// draw cursor
 	UI_SetColor( NULL );
 	if (Menu_Count() > 0) {
-		float x = uiInfo.uiDC.cursorx * uiInfo.screenXFactorInv;
-		float y = uiInfo.uiDC.cursory * uiInfo.screenYFactorInv;
+		float x = uiInfo.uiDC.cursorx;
+		float y = uiInfo.uiDC.cursory;
 
-		UI_WidescreenMode(qtrue);
-		UI_DrawHandlePic( x, y, 48, 48, uiInfo.uiDC.Assets.cursor);
-		UI_WidescreenMode(qfalse);
+		UI_DrawHandlePic(x, y, 48, 48, uiInfo.uiDC.Assets.cursor);
 	}
 
 #ifndef NDEBUG
@@ -6594,19 +6580,6 @@ void _UI_Init( qboolean inGameLoad ) {
 
 	UI_UpdateWidescreen();
 
-	// for 640x480 virtualized screen
-	uiInfo.uiDC.yscale = uiInfo.uiDC.glconfig.vidHeight * (1.0f / 480);
-	uiInfo.uiDC.xscale = uiInfo.uiDC.glconfig.vidWidth * (1.0f / 640);
-	if ( uiInfo.uiDC.glconfig.vidWidth * 480 > uiInfo.uiDC.glconfig.vidHeight * 640 ) {
-		// wide screen
-		uiInfo.uiDC.bias = 0.5f * ( uiInfo.uiDC.glconfig.vidWidth - ( uiInfo.uiDC.glconfig.vidHeight * (640.0f / 480.0f) ) );
-	}
-	else {
-		// no wide screen
-		uiInfo.uiDC.bias = 0;
-	}
-
-
   //UI_Load();
 	uiInfo.uiDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	uiInfo.uiDC.setColor = &UI_SetColor;
@@ -6792,14 +6765,14 @@ void _UI_MouseEvent( int dx, int dy )
 	uiInfo.uiDC.cursorx += dx * uiInfo.screenXFactor;
 	if (uiInfo.uiDC.cursorx < 0)
 		uiInfo.uiDC.cursorx = 0;
-	else if (uiInfo.uiDC.cursorx > SCREEN_WIDTH)
-		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
+	else if (uiInfo.uiDC.cursorx > uiInfo.screenWidth)
+		uiInfo.uiDC.cursorx = uiInfo.screenWidth;
 
 	uiInfo.uiDC.cursory += dy * uiInfo.screenYFactor;
 	if (uiInfo.uiDC.cursory < 0)
 		uiInfo.uiDC.cursory = 0;
-	else if (uiInfo.uiDC.cursory > SCREEN_HEIGHT)
-		uiInfo.uiDC.cursory = SCREEN_HEIGHT;
+	else if (uiInfo.uiDC.cursory > uiInfo.screenHeight)
+		uiInfo.uiDC.cursory = uiInfo.screenHeight;
 
   if (Menu_Count() > 0) {
     //menuDef_t *menu = Menu_GetFocused();
@@ -6981,7 +6954,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint,
 
 	static const vec4_t colorLtGreyAlpha = {0, 0, 0, .5};
 
-	UI_FillRect( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, colorLtGreyAlpha );
+	UI_FillRect( 0, 0, uiInfo.screenWidth, uiInfo.screenHeight, colorLtGreyAlpha );
 
 	s = GetCRDelineatedString("MENUS3","DOWNLOAD_STUFF", 0);	// "Downloading:"
 	strcpy(sDownLoading,s?s:"");
@@ -7000,7 +6973,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint,
 	downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 
-	leftWidth = 320;
+	leftWidth = 0.5f * uiInfo.screenWidth;
 
 	UI_SetColor(colorWhite);
 
@@ -7078,16 +7051,13 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 		Menu_Paint(menu, qtrue);
 	}
 
-	if (!overlay) {
-		centerPoint = 320;
-		yStart = 130;
-		scale = 1.0f;	// -ste
-	} else {
-		centerPoint = 320;
-		yStart = 32;
-		scale = 1.0f;	// -ste
+	if (overlay) {
 		return;
 	}
+
+	centerPoint = 0.5f * uiInfo.screenWidth;
+	yStart = 130;
+	scale = 1.0f;	// -ste
 
 	// see what information we should display
 	trap_GetClientState( &cstate );
@@ -7433,6 +7403,11 @@ static void UI_UpdateWidescreen( void ) {
 	uiInfo.screenHeight = SCREEN_HEIGHT;
 	uiInfo.screenYFactor = SCREEN_HEIGHT / uiInfo.screenHeight;
 	uiInfo.screenYFactorInv = uiInfo.screenHeight / SCREEN_HEIGHT;
+
+	uiInfo.uiDC.screenWidth = uiInfo.screenWidth;
+	uiInfo.uiDC.screenHeight = uiInfo.screenHeight;
+
+	UI_WidescreenMode(qtrue);
 }
 
 /*

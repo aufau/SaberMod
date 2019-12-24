@@ -896,6 +896,14 @@ void Menu_UpdatePosition(menuDef_t *menu) {
   }
 }
 
+static void Menu_AspectCorrect(menuDef_t *menu) {
+	float	scale = DC->screenWidth / SCREEN_WIDTH;
+
+	menu->window.rect.x *= scale;
+	menu->window.rect.w *= scale;
+	menu->descX *= scale;
+}
+
 void Menu_PostParse(menuDef_t *menu) {
 	if (menu == NULL) {
 		return;
@@ -903,9 +911,11 @@ void Menu_PostParse(menuDef_t *menu) {
 	if (menu->fullScreen) {
 		menu->window.rect.x = 0;
 		menu->window.rect.y = 0;
-		menu->window.rect.w = 640;
-		menu->window.rect.h = 480;
+		menu->window.rect.w = DC->screenWidth;
+		menu->window.rect.h = DC->screenHeight;
 	}
+
+	Menu_AspectCorrect(menu);
 	Menu_UpdatePosition(menu);
 }
 
@@ -4231,7 +4241,7 @@ void Item_Bind_Paint(itemDef_t *item)
 		textWidth = DC->textWidth(g_nameBind1,(float) textScale, item->iMenuFont);
 		startingXPos = (item->textRect.x + item->textRect.w + 8);
 
-		while ((startingXPos + textWidth) >= SCREEN_WIDTH)
+		while ((startingXPos + textWidth) >= DC->screenWidth)
 		{
 			textScale -= .05f;
 			textWidth = DC->textWidth(g_nameBind1,(float) textScale, item->iMenuFont);
@@ -4377,6 +4387,7 @@ void Item_Model_Paint(itemDef_t *item)
 {
 	float x, y, w, h;
 	refdef_t refdef;
+	float			xscale, yscale;
 	refEntity_t		ent;
 	vec3_t			mins, maxs, origin;
 	vec3_t			angles;
@@ -4396,10 +4407,13 @@ void Item_Model_Paint(itemDef_t *item)
 	w = item->window.rect.w-2;
 	h = item->window.rect.h-2;
 
-	refdef.x = x * DC->xscale;
-	refdef.y = y * DC->yscale;
-	refdef.width = w * DC->xscale;
-	refdef.height = h * DC->yscale;
+	xscale = (float) DC->glconfig.vidWidth / DC->screenWidth;
+	yscale = (float) DC->glconfig.vidHeight / DC->screenHeight;
+
+	refdef.x = x * xscale;
+	refdef.y = y * yscale;
+	refdef.width = w * xscale;
+	refdef.height = h * yscale;
 
 	DC->modelBounds( item->asset, mins, maxs );
 
@@ -4958,7 +4972,7 @@ void Item_Paint(itemDef_t *item)
 						{
 							// only this one will auto-shrink the scale until we eventually fit...
 							//
-							if (xPos + textWidth > (SCREEN_WIDTH-4)) {
+							if (xPos + textWidth > (DC->screenWidth-4)) {
 								fDescScale -= 0.001f;
 								continue;
 							}
@@ -5247,7 +5261,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 	if (menu->fullScreen) {
 		// implies a background shader
 		// FIXME: make sure we have a default shader if fullscreen is set with no background
-		DC->drawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, menu->window.background );
+		DC->drawHandlePic( 0, 0, DC->screenWidth, DC->screenHeight, menu->window.background );
 	} else if (menu->window.background) {
 		// this allows a background shader without being full screen
 		//UI_DrawHandlePic(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, menu->backgroundShader);
@@ -6481,6 +6495,34 @@ qboolean Item_Parse(int handle, itemDef_t *item) {
 	return qfalse; 	// bk001205 - LCC missing return value
 }
 
+
+static void Item_AspectCorrect(itemDef_t *item) {
+	int		i;
+	float	scale = DC->screenWidth / SCREEN_WIDTH;
+
+	item->window.rectClient.x *= scale;
+	item->window.rectClient.w *= scale;
+	item->textalignx *= scale;
+	item->text2alignx *= scale;
+
+	switch (item->type) {
+	case ITEM_TYPE_LISTBOX:
+	{
+		listBoxDef_t *listPtr = (listBoxDef_t *)item->typeData;
+
+		for (i = 0; i < listPtr->numColumns; i++) {
+			listPtr->columnInfo[i].pos *= scale;
+			listPtr->columnInfo[i].width *= scale;
+		}
+		break;
+	}
+	}
+}
+
+static void Item_PostParse(itemDef_t *item) {
+	Item_AspectCorrect(item);
+}
+
 static void Item_TextScroll_BuildLines ( itemDef_t* item )
 {
 #if 1
@@ -7099,7 +7141,9 @@ qboolean MenuParse_itemDef( itemDef_t *item, int handle ) {
 			return qfalse;
 		}
 		Item_InitControls(menu->items[menu->itemCount]);
-		menu->items[menu->itemCount++]->parent = menu;
+		menu->items[menu->itemCount]->parent = menu;
+		Item_PostParse(menu->items[menu->itemCount]);
+		menu->itemCount++;
 	}
 	return qtrue;
 }

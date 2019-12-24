@@ -418,14 +418,13 @@ typedef struct {
 	qboolean (*isDown)(int keynum);
 	void (*getClipBoardData)(char *buf, int bufsize);
 
-  float			yscale;
-  float			xscale;
-  float			bias;
   int				realTime;
   int				frameTime;
 	int				clientTime;
 	int				cursorx;
 	int				cursory;
+	float			screenWidth;
+	float			screenHeight;
 	qboolean	debug;
 
   cachedAssets_t Assets;
