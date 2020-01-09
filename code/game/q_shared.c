@@ -146,10 +146,10 @@ void COM_StripExtension(const char *in, char *out, size_t destsize) {
 	length = (int)strlen(out) - 1;
 	while (length > 0 && out[length] != '.') {
 		length--;
-		if (out[length] == '/')
+		if (length > 0 && out[length] == '/')
 			return;   // no extension
 	}
-	if (length)
+	if (length > 0)
 		out[length] = 0;
 }
 
