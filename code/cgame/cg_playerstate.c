@@ -465,7 +465,7 @@ static void CG_CheckLocalSounds( const playerState_t *ps, const playerState_t *o
 
 /*
 ===============
-CG_GameMediaDescription
+CG_AutoSaveFilename
 ===============
 */
 const char *CG_AutoSaveFilename( void ) {
@@ -486,13 +486,27 @@ const char *CG_AutoSaveFilename( void ) {
 	return filename;
 }
 
+void CG_StartAutoDemo( void ) {
+	if ((cg_autoSave.integer | 2) && cgs.status == GAMESTATUS_MATCH) {
+		trap_SendConsoleCommand(va("record \"%s\"\n", CG_AutoSaveFilename()));
+		cg.demorecording = qtrue;
+	}
+}
+
+void CG_StopAutoDemo( void ) {
+	if (cg.demorecording) {
+		trap_SendConsoleCommand("stoprecord\n");
+		cg.demorecording = qfalse;
+	}
+}
+
 /*
 ===============
 CG_StartIntermission
 ===============
 */
 static void CG_StartIntermission( void ) {
-	if (cg_autoSave.integer == 1) {
+	if (cg_autoSave.integer | 1) {
 		trap_SendConsoleCommand(va("screenshot \"%s\"\n", CG_AutoSaveFilename()));
 	}
 }
@@ -511,6 +525,7 @@ void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops ) {
 
 	if ( cg.mapRestart ) {
 		CG_Respawn( ps );
+		CG_StartAutoDemo();
 		cg.mapRestart = qfalse;
 	}
 

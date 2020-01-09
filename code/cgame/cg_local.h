@@ -908,6 +908,7 @@ typedef struct {
 	vec3_t			saberFlashPos;
 
 	qboolean		queueMacroscan;
+	qboolean		demorecording;
 /*
 Ghoul2 Insert Start
 */
@@ -1401,6 +1402,7 @@ typedef struct {
 	int				fDisable;
 	qboolean		privateDuel;
 	qboolean		instagib;
+	gameStatus_t	status;
 	qboolean		macroscan;
 
 	char			mapname[MAX_QPATH];
@@ -2040,6 +2042,8 @@ int CG_IsMindTricked(int trickIndex1, int trickIndex2, int trickIndex3, int tric
 void CG_Respawn( const playerState_t *ps );
 void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
+void CG_StartAutoDemo( void );
+void CG_StopAutoDemo( void );
 
 
 //

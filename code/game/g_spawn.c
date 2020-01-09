@@ -921,13 +921,13 @@ void SP_worldspawn( void )
 		level.warmupTime = 0;
 
 		if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) {
-			trap_Cvar_Set( "g_status", GAMESTATUS_MATCH );
+			trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_MATCH) );
 		} else {
-			trap_Cvar_Set( "g_status", GAMESTATUS_DEFAULT );
+			trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_DEFAULT) );
 		}
 	} else if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) { // Turn it on
 		level.warmupTime = -1;
-		trap_Cvar_Set( "g_status", GAMESTATUS_WARMUP );
+		trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_WARMUP) );
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );
 	}

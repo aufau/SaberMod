@@ -377,6 +377,8 @@ void CG_ProcessSnapshots( void ) {
 			return;
 		}
 
+		CG_StartAutoDemo();
+
 		// set our weapon selection to what
 		// the playerstate is currently using
 		if ( !( snap->snapFlags & SNAPFLAG_NOT_ACTIVE ) ) {

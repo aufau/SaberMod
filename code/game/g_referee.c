@@ -273,7 +273,7 @@ static void Ref_Abort_f(void) {
 	} else {
 		level.warmupTime = -1;
 		level.round = 0;
-		trap_Cvar_Set( "g_status", GAMESTATUS_WARMUP );
+		trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_WARMUP) );
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 	}
 

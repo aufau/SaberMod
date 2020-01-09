@@ -149,6 +149,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
 void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
+void CG_MapChange( void );
 
 void CG_CalcEntityLerpPositions( centity_t *cent );
 void CG_ROFF_NotetrackCallback( centity_t *cent, const char *notetrack);
@@ -278,6 +279,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		// this trap map be called more than once for a given map change, as the
 		// server is going to attempt to send out multiple broadcasts in hopes that
 		// the client will receive one of them
+		CG_StopAutoDemo();
 		cg.mMapChange = qtrue;
 		return 0;
 

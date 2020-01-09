@@ -186,7 +186,13 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.privateDuel = (qboolean)atoi( Info_ValueForKey( info, "g_privateDuel" ) );
 	cgs.instagib = (qboolean)atoi( Info_ValueForKey( info, "g_instagib" ) );
+	cgs.status = (gameStatus_t)atoi( Info_ValueForKey( info, "g_status" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
+
+	if (cgs.status == GAMESTATUS_WARMUP) {
+		// match aborted?
+		CG_StopAutoDemo();
+	}
 
 	val = atoi( Info_ValueForKey( info, "g_macroscan" ) );
 	if (val && !cgs.macroscan) {
@@ -681,6 +687,7 @@ static void CG_MapRestart( void ) {
 		CG_Printf( "CG_MapRestart\n" );
 	}
 
+	CG_StopAutoDemo();
 	CG_InitLocalEntities();
 	CG_InitMarkPolys();
 	// CG_ClearParticles ();

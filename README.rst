@@ -136,10 +136,11 @@ CGame Cvars
 handicap <x>
   Lower your max health to x and damage to x%.
 
-cg_autoSave <0|1>
+cg_autoSave <bitmask>
   Automatically save game record.
 
   | 1: Save screenshot of the final scoreboard
+  | 2: Save demo of the match
 
 cg_chatBeep <0|1>
   Turn on/off chat beep.
