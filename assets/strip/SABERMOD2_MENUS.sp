@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 95
+COUNT 100
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -873,4 +873,54 @@ INDEX 94
    TEXT_LANGUAGE3 "Begin Vote to abort match."
    TEXT_LANGUAGE6 "Begin Vote to abort match."
    TEXT_LANGUAGE8 "Begin Vote to abort match."
+}
+INDEX 95
+{
+   REFERENCE AUTOSAVE
+   NOTES "Options / Auto Save button"
+   TEXT_LANGUAGE1 "Auto Save:"
+   TEXT_LANGUAGE2 "Auto Save:"
+   TEXT_LANGUAGE3 "Auto Save:"
+   TEXT_LANGUAGE6 "Auto Save:"
+   TEXT_LANGUAGE8 "Auto Save:"
+}
+INDEX 96
+{
+   REFERENCE AUTOSAVE_DESC
+   NOTES "Options / Auto Save button description"
+   TEXT_LANGUAGE1 "Automatically save match record."
+   TEXT_LANGUAGE2 "Automatically save match record."
+   TEXT_LANGUAGE3 "Automatically save match record."
+   TEXT_LANGUAGE6 "Automatically save match record."
+   TEXT_LANGUAGE8 "Automatically save match record."
+}
+INDEX 97
+{
+   REFERENCE SAVE_SCREEN
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Screenshot"
+   TEXT_LANGUAGE2 "Screenshot"
+   TEXT_LANGUAGE3 "Screenshot"
+   TEXT_LANGUAGE6 "Screenshot"
+   TEXT_LANGUAGE8 "Screenshot"
+}
+INDEX 98
+{
+   REFERENCE SAVE_DEMO
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Demo"
+   TEXT_LANGUAGE2 "Demo"
+   TEXT_LANGUAGE3 "Demo"
+   TEXT_LANGUAGE6 "Demo"
+   TEXT_LANGUAGE8 "Demo"
+}
+INDEX 99
+{
+   REFERENCE SAVE_BOTH
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Demo & Screenshot"
+   TEXT_LANGUAGE2 "Demo & Screenshot"
+   TEXT_LANGUAGE3 "Demo & Screenshot"
+   TEXT_LANGUAGE6 "Demo & Screenshot"
+   TEXT_LANGUAGE8 "Demo & Screenshot"
 }

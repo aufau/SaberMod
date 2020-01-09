@@ -289,5 +289,43 @@
 				hide                    highlight5
 			}
 		}
+
+		itemDef
+		{
+			name                    rewards
+			group                   sabermod
+			type                    ITEM_TYPE_MULTI
+			text                    @SABERMENUS_AUTOSAVE
+			cvar                    "cg_autoSave"
+			cvarFloatList
+			{
+				@MENUS0_OFF             0
+				@SABERMENUS_SAVE_SCREEN 1
+				@SABERMENUS_SAVE_DEMO   2
+				@SABERMENUS_SAVE_BOTH   3
+			}
+			rect                    0 120 300 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              165
+			textaligny              -2
+			font                    2
+			textscale               0.8
+			forecolor               1 1 1 1
+			descText                @SABERMENUS_AUTOSAVE_DESC
+			visible					1
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+			}
+
+			mouseenter
+			{
+				show                    highlight7
+			}
+			mouseexit
+			{
+				hide                    highlight7
+			}
+		}
 	}
 }

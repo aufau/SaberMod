@@ -2855,3 +2855,35 @@ void CG_PrevInventory_f(void)
 		cg.invenSelectTime = cg.time;
 	}
 }
+
+const char *CG_AutoSaveFilename( void ) {
+	static char	filename[MAX_QPATH];
+	char		timestamp[20];
+	char		description[MAX_QPATH];
+	qtime_t		t;
+
+	trap_RealTime(&t);
+
+	Com_sprintf(timestamp, sizeof(timestamp), "%04i-%02i-%02i_%02i-%02i",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min );
+
+	Com_sprintf(description, sizeof(description), "%s", gametypeLong[cgs.gametype]);
+
+	Com_sprintf(filename, sizeof(filename), "%s %s", timestamp, description);
+
+	return filename;
+}
+
+void CG_StartAutoDemo( void ) {
+	if ((cg_autoSave.integer | 2) && cgs.status == GAMESTATUS_MATCH) {
+		trap_SendConsoleCommand(va("record \"%s\"\n", CG_AutoSaveFilename()));
+		cg.demorecording = qtrue;
+	}
+}
+
+void CG_StopAutoDemo( void ) {
+	if (cg.demorecording) {
+		trap_SendConsoleCommand("stoprecord\n");
+		cg.demorecording = qfalse;
+	}
+}

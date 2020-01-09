@@ -1781,6 +1781,9 @@ void CG_PrevInventory_f(void);
 void CG_NextForcePower_f(void);
 void CG_PrevForcePower_f(void);
 void CG_WideScreenMode(qboolean on);
+const char *CG_AutoSaveFilename( void );
+void CG_StartAutoDemo( void );
+void CG_StopAutoDemo( void );
 
 //
 // cg_view.c
@@ -2042,8 +2045,6 @@ int CG_IsMindTricked(int trickIndex1, int trickIndex2, int trickIndex3, int tric
 void CG_Respawn( const playerState_t *ps );
 void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
-void CG_StartAutoDemo( void );
-void CG_StopAutoDemo( void );
 
 
 //
