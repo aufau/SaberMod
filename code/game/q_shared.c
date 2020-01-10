@@ -811,6 +811,62 @@ void Parse3DMatrix (const char **buf_p, int z, int y, int x, float *m) {
 	COM_MatchToken( buf_p, ")" );
 }
 
+/*
+=================
+Com_ReplaceTokens
+
+Replace predefined tokens with their substitutes in a string. Tokens
+in must be enclosed with [] in the format string. For example when
+tokens = {"date", "time", "name"}
+substs = {"10.01.2020", "01:24", "fau"}
+format = "Written by [name] on [date] at [time]"
+dest string will contain:
+"Written by fau on 10.01.2020 at 01:24"
+=================
+*/
+void Com_ReplaceTokens(char *dest, int destSize, const char *format, const char *tokens[], const char *substs[], int numTokens) {
+	char		fmt[MAX_STRING_CHARS];
+	qboolean	parseToken;
+	char		*ch;
+	int			i;
+
+	dest[0] = '\0';
+	Q_strncpyz(fmt, format, sizeof(fmt));
+	parseToken = qfalse;
+	ch = fmt;
+
+	while(ch) {
+		char *old = ch;
+
+		if (!parseToken) {
+			ch = strchr(ch, '[');
+
+			if (ch) {
+				*ch = '\0';
+				ch++;
+			}
+
+			Q_strcat(dest, destSize, old);
+			parseToken = qtrue;
+		} else {
+			ch = strchr(ch, ']');
+
+			if (ch) {
+				*ch = '\0';
+				ch++;
+
+				for (i = 0; i < numTokens; i++) {
+					if (!strcmp(old, tokens[i])) {
+						Q_strcat(dest, destSize, substs[i]);
+						break;
+					}
+				}
+			}
+
+			parseToken = qfalse;
+		}
+	}
+}
 
 /*
 ============================================================================

@@ -586,6 +586,7 @@ vmCvar_t	cg_crosshairIndicatorsSpec;
 vmCvar_t	cg_widescreen;
 vmCvar_t	cg_fovAspectAdjust;
 vmCvar_t	cg_autoSave;
+vmCvar_t	cg_autoSaveFormat;
 
 vmCvar_t	cg_ui_myteam;
 vmCvar_t	cg_com_maxfps;
@@ -755,6 +756,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 	{ &cg_fovAspectAdjust, "cg_fovAspectAdjust", "0", CVAR_ARCHIVE},
 	{ &cg_autoSave, "cg_autoSave", "0", CVAR_ARCHIVE},
+	{ &cg_autoSaveFormat, "cg_autoSaveFormat", "[date]_[time] [gametype]", CVAR_ARCHIVE},
 
 	{ &cg_ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 	{ &cg_com_maxfps, "com_maxfps", "", 0},
@@ -2858,18 +2860,33 @@ void CG_PrevInventory_f(void)
 
 const char *CG_AutoSaveFilename( void ) {
 	static char	filename[MAX_QPATH];
-	char		timestamp[20];
-	char		description[MAX_QPATH];
+	char		date[11];
+	char		time[6];
+	const char	*tokens[20];
+	const char	*substs[20];
+	int			numTokens = 0;
 	qtime_t		t;
 
 	trap_RealTime(&t);
 
-	Com_sprintf(timestamp, sizeof(timestamp), "%04i-%02i-%02i_%02i-%02i",
-		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min );
+	Com_sprintf(date, sizeof(date), "%04i-%02i-%02i",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday);
+	tokens[numTokens] = "date";
+	substs[numTokens] = date;
+	numTokens++;
 
-	Com_sprintf(description, sizeof(description), "%s", gametypeLong[cgs.gametype]);
+	Com_sprintf(time, sizeof(time), "%02i-%02i",
+		t.tm_hour, t.tm_min );
+	tokens[numTokens] = "time";
+	substs[numTokens] = time;
+	numTokens++;
 
-	Com_sprintf(filename, sizeof(filename), "%s %s", timestamp, description);
+	tokens[numTokens] = "gametype";
+	substs[numTokens] = gametypeShort[cgs.gametype];
+	numTokens++;
+
+	Com_ReplaceTokens(filename, sizeof(filename), cg_autoSaveFormat.string,
+		tokens, substs, numTokens);
 
 	return filename;
 }

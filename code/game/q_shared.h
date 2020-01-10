@@ -993,6 +993,8 @@ void Parse1DMatrix (const char **buf_p, int x, float *m);
 void Parse2DMatrix (const char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (const char **buf_p, int z, int y, int x, float *m);
 
+void Com_ReplaceTokens(char *dest, int destSize, const char *format, const char *tokens[], const char *substs[], int numTokens);
+
 int		QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 

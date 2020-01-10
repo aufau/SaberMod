@@ -142,6 +142,14 @@ cg_autoSave <bitmask>
   | 1: Save screenshot of the final scoreboard
   | 2: Save demo of the match
 
+cg_autoSaveFormat <format>
+  Format is a template for auto demo/screenshot file name, where
+  following tokens will be replaced with current values:
+
+  | [date] - Date in yyyy-mm-dd format
+  | [time] - Time in hh-mm format
+  | [gametype] - Server gametype
+
 cg_chatBeep <0|1>
   Turn on/off chat beep.
 
