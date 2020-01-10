@@ -1405,6 +1405,7 @@ typedef struct {
 	gameStatus_t	status;
 	qboolean		macroscan;
 
+	char			mappath[MAX_QPATH];
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
 	char			blueTeam[MAX_QPATH];

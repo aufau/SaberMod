@@ -149,6 +149,9 @@ cg_autoSaveFormat <format>
   | [date] - Date in yyyy-mm-dd format
   | [time] - Time in hh-mm format
   | [gametype] - Server gametype
+  | [name] - Player name
+  | [server] - Server name
+  | [map] - Map name
 
 cg_chatBeep <0|1>
   Turn on/off chat beep.

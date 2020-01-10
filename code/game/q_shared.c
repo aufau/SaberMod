@@ -1066,6 +1066,36 @@ char *Q_CleanStr( char *string ) {
 	return string;
 }
 
+char *Q_FS_CleanStr( char *string )
+{
+	char*	d = string;
+	char*	s = string;
+	int		c;
+
+	while ((c = *s) != '\0' ) {
+		if (c >= 0x20 && c <= 0x7E) {
+			switch (c) {
+			case '/':
+			case '\\':
+			case '<':
+			case '>':
+			case ':':
+			case '"':
+			case '|':
+			case '?':
+			case '*':
+				break;
+			default:
+				*d++ = c;
+			}
+		}
+		s++;
+	}
+	*d = '\0';
+
+	return string;
+}
+
 char *Q_SanitizeStr( char *string )
 {
 	const char	*s = string;

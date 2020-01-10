@@ -227,7 +227,7 @@ void CG_InitSagaMode(void)
 		goto failure;
 	}
 
-	Q_strncpyz(mapname, cgs.mapname, sizeof(mapname));
+	Q_strncpyz(mapname, cgs.mappath, sizeof(mapname));
 
 	i = strlen(mapname)-1;
 

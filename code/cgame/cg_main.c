@@ -756,7 +756,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
 	{ &cg_fovAspectAdjust, "cg_fovAspectAdjust", "0", CVAR_ARCHIVE},
 	{ &cg_autoSave, "cg_autoSave", "0", CVAR_ARCHIVE},
-	{ &cg_autoSaveFormat, "cg_autoSaveFormat", "[date]_[time] [gametype]", CVAR_ARCHIVE},
+	{ &cg_autoSaveFormat, "cg_autoSaveFormat", "[date]_[time] [gametype] [map] [name]", CVAR_ARCHIVE},
 
 	{ &cg_ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
 	{ &cg_com_maxfps, "com_maxfps", "", 0},
@@ -1492,9 +1492,9 @@ static void CG_RegisterGraphics( void ) {
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
 	trap_R_ClearScene();
 
-	CG_LoadingString( cgs.mapname );
+	CG_LoadingString( cgs.mappath );
 
-	trap_R_LoadWorldMap( cgs.mapname );
+	trap_R_LoadWorldMap( cgs.mappath );
 
 	// precache status bar pics
 	CG_LoadingString( "game media" );
@@ -2668,7 +2668,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	// load the new map
 	CG_LoadingString( "collision map" );
 
-	trap_CM_LoadMap( cgs.mapname );
+	trap_CM_LoadMap( cgs.mappath );
 #ifdef MISSIONPACK
 	String_Init();
 #endif
@@ -2860,14 +2860,19 @@ void CG_PrevInventory_f(void)
 
 const char *CG_AutoSaveFilename( void ) {
 	static char	filename[MAX_QPATH];
+	const char	*info;
 	char		date[11];
 	char		time[6];
+	char		name[MAX_NETNAME];
+	char		map[MAX_NETNAME];
+	char		hostname[MAX_NAME_LENGTH];
 	const char	*tokens[20];
 	const char	*substs[20];
 	int			numTokens = 0;
 	qtime_t		t;
 
 	trap_RealTime(&t);
+	info = CG_ConfigString( CS_SERVERINFO );
 
 	Com_sprintf(date, sizeof(date), "%04i-%02i-%02i",
 		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday);
@@ -2883,6 +2888,21 @@ const char *CG_AutoSaveFilename( void ) {
 
 	tokens[numTokens] = "gametype";
 	substs[numTokens] = gametypeShort[cgs.gametype];
+	numTokens++;
+
+	Q_strncpyz(name, cgs.clientinfo[cg.clientNum].name, sizeof(name));
+	tokens[numTokens] = "name";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(name));
+	numTokens++;
+
+	Q_strncpyz(hostname, Info_ValueForKey(info, "sv_hostname"), sizeof(hostname));
+	tokens[numTokens] = "server";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(hostname));
+	numTokens++;
+
+	Q_strncpyz(map, cgs.mapname, sizeof(map));
+	tokens[numTokens] = "map";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(map));
 	numTokens++;
 
 	Com_ReplaceTokens(filename, sizeof(filename), cg_autoSaveFormat.string,

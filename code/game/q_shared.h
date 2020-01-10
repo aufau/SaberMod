@@ -1034,6 +1034,8 @@ void	Q_strcat( char *dest, size_t size, const char *src );
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
 char *Q_CleanStr( char *string );
+// removes characters not suitable for file name
+char *Q_FS_CleanStr( char *string );
 /* removes non-printable characters, expands \n and \\ */
 char *Q_SanitizeStr( char *string );
 // returns true if string is a decimal integer
