@@ -856,6 +856,7 @@ void SP_worldspawn( void )
 	char		*text, temp[32];
 	int			i;
 	int			lengthRed, lengthBlue, lengthGreen;
+	gameStatus_t	gameStatus;
 
 	G_SpawnString( "classname", "", &text );
 	if ( Q_stricmp( text, "worldspawn" ) ) {
@@ -915,21 +916,28 @@ void SP_worldspawn( void )
 	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 
 	// see if we want a warmup time
-	trap_SetConfigstring( CS_WARMUP, "" );
-	if ( g_restarted.integer ) {
-		trap_Cvar_Set( "g_restarted", "0" );
-		level.warmupTime = 0;
-
-		if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) {
-			trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_MATCH) );
-		} else {
-			trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_DEFAULT) );
-		}
-	} else if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) { // Turn it on
+	if (g_doWarmup.integer && level.gametype != GT_TOURNAMENT && !g_restarted.integer) {
 		level.warmupTime = -1;
-		trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_WARMUP) );
-		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );
+	} else {
+		level.warmupTime = 0;
+	}
+
+	trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+
+	// determine match status
+	if (level.warmupTime) {
+		gameStatus = GAMESTATUS_WARMUP;
+	} else if (g_doWarmup.integer && level.gametype != GT_TOURNAMENT) {
+		gameStatus = GAMESTATUS_MATCH;
+	} else {
+		gameStatus = GAMESTATUS_DEFAULT;
+	}
+
+	trap_Cvar_Set( "g_status", va("%d", gameStatus) );
+
+	if (g_restarted.integer) {
+		trap_Cvar_Set( "g_restarted", "0" );
 	}
 
 	trap_SetConfigstring( CS_SCORES1, "" );
