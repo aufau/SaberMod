@@ -1052,7 +1052,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	for (i = 0, cnt = 0; i < level.maxclients && cnt < TEAM_MAXOVERLAY; i++) {
 		gclient_t *cl = level.clients + level.sortedClients[i];
 
-		if (cl != client &&
+		if (cl->ps.clientNum != client->ps.clientNum &&
 			cl->pers.connected == CON_CONNECTED &&
 			cl->sess.spectatorState == SPECTATOR_NOT &&
 			cl->sess.sessionTeam ==	team) {
