@@ -2661,7 +2661,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	}
 
 	// new config strings
-	for ( i = 0; i < CS_MAPS; i++ ) {
+	for ( i = CS_NEW; i < CS_MAPS; i++ ) {
 		CG_UpdateConfigString( i, qtrue );
 	}
 
