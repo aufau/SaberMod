@@ -1,6 +1,6 @@
 # This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
-# Copyright (C) 2015-2019 Witold Pilat <witold.pilat@gmail.com>
+# Copyright (C) 2015-2020 Witold Pilat <witold.pilat@gmail.com>
 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
