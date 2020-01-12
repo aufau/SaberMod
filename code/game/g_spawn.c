@@ -340,9 +340,15 @@ returning qfalse if not found
 qboolean G_CallSpawn( gentity_t *ent ) {
 	const spawn_t	*s;
 	gitem_t			*item;
+	char			disable[128];
 
 	if ( !ent->classname ) {
 		G_Printf ("G_CallSpawn: NULL classname\n");
+		return qfalse;
+	}
+
+	Com_sprintf( disable, sizeof(disable), "disable_%s", ent->classname );
+	if ( trap_Cvar_VariableIntegerValue( disable ) ) {
 		return qfalse;
 	}
 

@@ -2033,19 +2033,6 @@ void SaveRegisteredItems( void ) {
 
 /*
 ============
-G_ItemDisabled
-============
-*/
-int G_ItemDisabled( gitem_t *item ) {
-
-	char name[128];
-
-	Com_sprintf(name, sizeof(name), "disable_%s", item->classname);
-	return trap_Cvar_VariableIntegerValue( name );
-}
-
-/*
-============
 G_SpawnItem
 
 Sets the clipping size and plants the object on the floor.
@@ -2081,8 +2068,6 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 
 	RegisterItem( item );
-	if ( G_ItemDisabled(item) )
-		return;
 
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item
