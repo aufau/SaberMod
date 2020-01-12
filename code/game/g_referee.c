@@ -275,6 +275,7 @@ static void Ref_Abort_f(void) {
 		level.round = 0;
 		trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_WARMUP) );
 		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+		trap_SetConfigstring( CS_ROUND, va("%i", level.round) );
 	}
 
 	G_SendServerCommand(-1, "print \"Match aborted.\n\"");
