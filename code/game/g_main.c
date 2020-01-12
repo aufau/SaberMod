@@ -1651,17 +1651,13 @@ static void Shuffle( void )
 
 static void NextRound( void )
 {
-	char	warmup[8];
 	int		i;
 
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
 	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
 	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
-	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
-	if ( warmup[0] == '\0' ) {
-		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
-	}
+	trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
 	trap_SetConfigstring(CS_INTERMISSION, "");
 
 	if ( level.gametype == GT_REDROVER ) {
