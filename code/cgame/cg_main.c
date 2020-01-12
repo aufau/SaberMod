@@ -1428,9 +1428,6 @@ static void CG_RegisterEffects( void )
 	{
 		CG_UpdateConfigString( CS_EFFECTS + i, qtrue );
 	}
-
-	// Set up the glass effects mini-system.
-	CG_InitGlass();
 }
 
 //===================================================================================

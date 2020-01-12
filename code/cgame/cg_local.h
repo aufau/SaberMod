@@ -2000,8 +2000,6 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 #endif
 void CG_TestLine( const vec3_t start, const vec3_t end, int time, unsigned int color, int radius);
 
-void CG_InitGlass( void );
-
 //
 // cg_snapshot.c
 //
