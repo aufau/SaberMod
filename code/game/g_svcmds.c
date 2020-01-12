@@ -820,6 +820,7 @@ static void Svcmd_Items_f( void ) {
 		{ "medpak", "item_medpak_instant" },
 		{ "shield_sm", "item_shield_sm_instant" },
 		{ "shield_lrg", "item_shield_lrg_instant" },
+		{ "shield_floor", "misc_shield_floor_unit" }
 	};
 
 
