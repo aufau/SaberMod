@@ -7443,13 +7443,9 @@ Update information derived from config strings
 static void UI_UpdateConfigStrings( void )
 {
 	char		str[MAX_INFO_STRING];
-	int			warmup, unpause;
+	int			unpause;
 	const char	*status;
 	const char	*actionButton;
-
-	// activate appropriate ingame action button (old addBot button)
-	trap_GetConfigString(CS_WARMUP, str, sizeof(str));
-	warmup = atoi(str);
 
 	trap_GetConfigString(CS_UNPAUSE, str, sizeof(str));
 	unpause = atoi(str);
@@ -7459,7 +7455,7 @@ static void UI_UpdateConfigStrings( void )
 
 	if (unpause) {
 		actionButton = "timein";
-	} else if (warmup) {
+	} else if (atoi(status) == GAMESTATUS_WARMUP) {
 		actionButton = "ready";
 	} else {
 		actionButton = "timeout";
