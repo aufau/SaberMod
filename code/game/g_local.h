@@ -1311,6 +1311,7 @@ extern	vmCvar_t	g_spSkill;
 extern	vmCvar_t	g_pushableItems;
 extern	vmCvar_t	g_refereePassword;
 extern	vmCvar_t	g_allowTeamVote;
+extern	vmCvar_t	g_vampiricDamage;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

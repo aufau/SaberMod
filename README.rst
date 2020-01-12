@@ -481,6 +481,11 @@ g_warmup <0|1>
   *ready* command before a match can start. Old *g_warmupTime* Cvar is
   no longer used. Setting this cvar to 0 disables warmup alltogether.
 
+g_vampiricDamage <ratio>
+  Players become vampires and they drain health when damaging
+  enemy. *ratio* value determines how much health is drained for 1
+  point of damage. It may be set to a negative value.
+
 g_voteCooldown <seconds>
   How long a player has to wait before he can call another vote.
 

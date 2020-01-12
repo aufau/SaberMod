@@ -2871,6 +2871,23 @@ qboolean G_ThereIsAMaster(void)
 	return qfalse;
 }
 
+static void G_VampiricDamage(gentity_t *predator, int damage) {
+	int drain, health, maxHealth;
+
+	if (predator->health <= 0) {
+		return;
+	}
+
+	drain = g_vampiricDamage.value * damage;
+	maxHealth = predator->client->ps.stats[STAT_MAX_HEALTH] * 2;
+
+	health = predator->health + drain;
+	predator->health = CLAMP(1, maxHealth, health);
+
+	health = predator->client->ps.stats[STAT_HEALTH] + drain;
+	predator->client->ps.stats[STAT_HEALTH] = CLAMP(1, maxHealth, health);
+}
+
 /*
 ============
 T_Damage
@@ -2901,6 +2918,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	const vec3_t direction, const vec3_t point, int damage, int dflags, meansOfDeath_t mod )
 {
 	gclient_t	*client;
+	int			takeHealth;
 	int			take;
 	int			asave;
 	int			knockback;
@@ -3431,17 +3449,19 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( oldHealth <= 0 )
 			return; // we were dead to begin with
 		else if ( targ->health <= 0 )
-			take = oldHealth;
+			takeHealth = oldHealth;
 		else
-			take = oldHealth - targ->health;
+			takeHealth = oldHealth - targ->health;
 
-		take += oldArmor - client->ps.stats[STAT_ARMOR];
+		take = takeHealth + oldArmor - client->ps.stats[STAT_ARMOR];
 
 		if (take == 0)
 			return;
 
 		if (g_damagePlums.integer || g_mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
+
+		G_VampiricDamage(attacker, takeHealth);
 
 		// don't log damage stats
 		if (level.warmupTime || level.intermissiontime || level.roundQueued )
