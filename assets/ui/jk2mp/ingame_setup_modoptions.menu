@@ -12,7 +12,7 @@
 		descScale               0.7
 		descColor               .235 .882 .847 1
 		descAlignment           ITEM_ALIGN_CENTER
-		aspectAlign             0
+		aspectAlign             0.25
 
 		//----------------------------------------------------------------------------------------------
 		//
