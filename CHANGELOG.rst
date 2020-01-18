@@ -16,6 +16,8 @@
 * Lower CPU load on both server and client.
 * Increased map and model limit in menus.
 * Game modes organized in directories.
+* Vampiric damage game modes
+* Automatically record demo and screenshot from a match.
 * A setting to make players pass through their teammates.
 * A setting to allow pushing and pulling pickup items.
 * A setting to make jump height independent of FPS.
