@@ -2909,7 +2909,7 @@ const char *CG_AutoSaveFilename( void ) {
 }
 
 void CG_StartAutoDemo( void ) {
-	if ((cg_autoSave.integer | 2) && cgs.status != GAMESTATUS_WARMUP) {
+	if ((cg_autoSave.integer & 2) && cgs.status != GAMESTATUS_WARMUP) {
 		trap_SendConsoleCommand(va("record \"%s\"\n", CG_AutoSaveFilename()));
 		cg.demorecording = qtrue;
 	}

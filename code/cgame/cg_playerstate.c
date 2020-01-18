@@ -469,7 +469,7 @@ CG_StartIntermission
 ===============
 */
 static void CG_StartIntermission( void ) {
-	if (cg_autoSave.integer | 1) {
+	if (cg_autoSave.integer & 1) {
 		trap_SendConsoleCommand(va("screenshot \"%s\"\n", CG_AutoSaveFilename()));
 	}
 }
