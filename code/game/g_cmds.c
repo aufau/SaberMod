@@ -2033,13 +2033,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if ( i == 0 )
 		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"dmflags %d; g_friendlyFire 1", g_dmflags.integer | DF_NO_KICK );
+				"dmflags %d", g_dmflags.integer | DF_NO_KICK );
 			Q_strncpyz( level.voteDisplayString, "No Kick", sizeof( level.voteDisplayString ) );
 		}
 		else
 		{
 			Com_sprintf( level.voteString, sizeof( level.voteString ),
-				"dmflags %d; g_friendlyFire 0", g_dmflags.integer & ~DF_NO_KICK );
+				"dmflags %d", g_dmflags.integer & ~DF_NO_KICK );
 			Q_strncpyz( level.voteDisplayString, "With Kick", sizeof( level.voteDisplayString ) );
 		}
 		break;
