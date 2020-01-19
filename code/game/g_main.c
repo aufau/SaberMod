@@ -2664,17 +2664,10 @@ void CheckTournament( void ) {
 }
 
 static void G_AnnouncePollResults( void ) {
-	int	withdrew = level.numVotingClients - level.voteYes - level.voteNo;
-
-	trap_SendServerCommand( -1, va( "cp \"%s\n\n"
-			S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
-			S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\n"
-			S_COLOR_WHITE "Withdrew: " S_COLOR_CYAN "%d\"",
-			level.voteDisplayString, level.voteYes, level.voteNo, withdrew ) );
-	G_LogPrintf( LOG_VOTE, "Poll: %d %d %d: %s\n", level.voteYes, level.voteNo,
-		withdrew, level.voteString );
-	trap_SendServerCommand( -1, va("print \"Poll finished. Yes: %d, No: %d, Withdrew: %d\n\"",
-			level.voteYes, level.voteNo, withdrew ) );
+	G_SendServerCommand( -1, "cp \"%s\n\n"
+		S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
+		S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\"",
+		level.voteDisplayString, level.voteYes, level.voteNo );
 }
 
 /*
@@ -2738,47 +2731,43 @@ void CheckVote( void ) {
 	}
 	else if ( level.time - level.voteTime >= VOTE_TIME )
 	{
-		if ( level.voteCmd == CV_POLL ) {
-			G_AnnouncePollResults();
-		} else {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		}
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 	}
-	else if ( level.voteCmd == CV_POLL )
+	else if ( level.voteReferee == VOTE_YES )
 	{
-		// assume question is formulated in such a way that owner votes "yes"
-		if ( level.voteYes == 0 ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		} else if ( level.voteYes + level.voteNo == level.numVotingClients ) {
-			G_AnnouncePollResults();
-		} else {
-			return;
-		}
+		trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
+		level.voteExecuteTime = level.time + 3000;
+		G_LogPrintf( LOG_VOTE | LOG_REFEREE, "Referee: %d VotePassed: %d %d %d: %s\n",
+			level.voteClient, level.voteCmd, level.voteYes, level.voteNo,
+			level.voteDisplayString );
+	}
+	else if ( level.voteReferee == VOTE_NO )
+	{
+		trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
+	}
+	else if ( level.voteYes > level.numVotingClients/2 )
+	{
+		// execute the command, then remove the vote
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
+		level.voteExecuteTime = level.time + 3000;
+		G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
+			level.voteYes, level.voteNo, level.voteDisplayString );
+	}
+	else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 )
+	{
+		// same behavior as a timeout
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 	}
 	else
 	{
-		if ( level.voteReferee == VOTE_YES ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
-			level.voteExecuteTime = level.time + 3000;
-			G_LogPrintf( LOG_VOTE | LOG_REFEREE, "Referee: %d VotePassed: %d %d %d: %s\n",
-				level.voteClient, level.voteCmd, level.voteYes, level.voteNo,
-				level.voteDisplayString );
-		} else if ( level.voteReferee == VOTE_NO ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
-		} else if ( level.voteYes > level.numVotingClients/2 ) {
-			// execute the command, then remove the vote
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
-			level.voteExecuteTime = level.time + 3000;
-			G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
-				level.voteYes, level.voteNo, level.voteDisplayString );
-		} else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 ) {
-			// same behavior as a timeout
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		} else {
-			// still waiting for a majority
-			return;
-		}
+		// still waiting for a majority
+		return;
 	}
+
+	if ( level.voteCmd == CV_POLL ) {
+		G_AnnouncePollResults();
+	}
+
 	level.voteTime = 0;
 	trap_SetConfigstring( CS_VOTE_TIME, "" );
 
