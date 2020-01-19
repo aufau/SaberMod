@@ -2676,6 +2676,8 @@ CheckVote
 ==================
 */
 void CheckVote( void ) {
+	int		majority;
+
 	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
 		level.voteExecuteTime = 0;
 		level.voteCooldown = level.time + g_voteCooldown.integer * 1000;
@@ -2725,6 +2727,8 @@ void CheckVote( void ) {
 		return;
 	}
 
+	majority = level.numVotingClients / 2 + 1;
+
 	if (level.voteCmd == CV_KICK && level.clients[level.voteArg].pers.connected == CON_DISCONNECTED )
 	{
 		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
@@ -2745,7 +2749,7 @@ void CheckVote( void ) {
 	{
 		trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
 	}
-	else if ( level.voteYes > level.numVotingClients/2 )
+	else if ( level.voteYes >= majority )
 	{
 		// execute the command, then remove the vote
 		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
@@ -2753,7 +2757,7 @@ void CheckVote( void ) {
 		G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
 			level.voteYes, level.voteNo, level.voteDisplayString );
 	}
-	else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 )
+	else if ( level.numVotingClients - level.voteNo < majority || level.voteYes == 0 )
 	{
 		// same behavior as a timeout
 		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
