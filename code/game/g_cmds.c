@@ -2072,7 +2072,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if (arg2[0] == '\0') {
 			trap_SendServerCommand( ent-g_entities, "print \"Usage: callvote poll <question>\n\"" );
 		}
-		Q_strncpyz( level.voteDisplayString, arg2, sizeof( level.voteDisplayString ) );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Poll: %s", arg2 );
 		break;
 	case CV_MAP_RESTART:
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "map_restart 0" );
