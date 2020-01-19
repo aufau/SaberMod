@@ -1786,6 +1786,7 @@ void CG_WideScreenMode(qboolean on);
 const char *CG_AutoSaveFilename( void );
 void CG_StartAutoDemo( void );
 void CG_StopAutoDemo( void );
+void CG_UpdateAutoSave( void );
 
 //
 // cg_view.c

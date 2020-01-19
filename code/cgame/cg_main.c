@@ -144,6 +144,7 @@ static int forceModelModificationCount = -1;
 static int drawTeamOverlayModificationCount = -1;
 static int crosshairColorModificationCount = -1;
 static int widescreenModificationCount = -1;
+static int autoSaveModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
@@ -794,6 +795,7 @@ void CG_RegisterCvars( void ) {
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 	widescreenModificationCount = cg_widescreen.modificationCount;
+	autoSaveModificationCount = cg_autoSave.modificationCount;
 
 	trap_Cvar_Register(NULL, GAMEVERSION, "", CVAR_USERINFO | CVAR_ROM );
 	// workaround for userinfo not being resent when registering an
@@ -973,6 +975,11 @@ void CG_UpdateCvars( void ) {
 	if ( widescreenModificationCount != cg_widescreen.modificationCount ) {
 		widescreenModificationCount = cg_widescreen.modificationCount;
 		CG_UpdateWidescreen();
+	}
+
+	if ( autoSaveModificationCount != cg_autoSave.modificationCount ) {
+		autoSaveModificationCount = cg_autoSave.modificationCount;
+		CG_UpdateAutoSave();
 	}
 }
 
@@ -2919,5 +2926,13 @@ void CG_StopAutoDemo( void ) {
 	if (cg.demorecording) {
 		trap_SendConsoleCommand("stoprecord\n");
 		cg.demorecording = qfalse;
+	}
+}
+
+void CG_UpdateAutoSave( void ) {
+	if (cg_autoSave.integer & 2) {
+		CG_StartAutoDemo();
+	} else {
+		CG_StopAutoDemo();
 	}
 }
