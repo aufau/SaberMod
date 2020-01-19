@@ -719,7 +719,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 
 	heldTime = (level.time - cl->pers.teamState.flagsince) / 1000;
 
-	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag",
+	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag\n",
 		other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER),
 		cl->info.netname, BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, heldTime, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
