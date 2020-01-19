@@ -1802,6 +1802,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	};
 
 	if ( ent->client->sess.referee ) {
+		if ( level.voteExecuteTime ) {
+			G_SendServerCommand( ent-g_entities, "print \"%s\n\"",
+				G_GetStripEdString("SVINGAME", "VOTEINPROGRESS") );
+			return;
+		}
+
 		if (g_allowRefVote.integer == 1) {
 			voteMask = -1;
 		} else {
@@ -2096,6 +2102,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	// start the voting, the caller autoamtically votes yes
 	level.voteCmd = voteCmd;
 	level.voteTime = level.time;
+	level.voteExecuteTime = 0;
 	level.voteYes = 1;
 	level.voteNo = 0;
 	level.voteClient = ent->s.number;
