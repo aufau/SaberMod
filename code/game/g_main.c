@@ -3093,7 +3093,9 @@ void G_RewindTime( int msec ) {
 			ADJUST(ps->saberThrowDelay);
 
 			for (j = 0; j < MAX_POWERUPS; j++) {
-				ADJUST(ps->powerups[j]);
+				if (ps->powerups[j] < INT_MAX) {
+					ADJUST(ps->powerups[j]);
+				}
 			}
 
 			for (j = 0; j < NUM_FORCE_POWERS; j++) {
