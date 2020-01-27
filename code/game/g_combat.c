@@ -3461,7 +3461,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if (g_damagePlums.integer || g_mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
 
-		G_VampiricDamage(attacker, takeHealth);
+		if (!OnSameTeam(targ, attacker)) {
+			G_VampiricDamage(attacker, takeHealth);
+		}
 
 		// don't log damage stats
 		if (level.warmupTime || level.intermissiontime || level.roundQueued )
