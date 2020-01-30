@@ -863,7 +863,9 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	int		count = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if (level.clients[i].pers.connected != CON_CONNECTED ||
+		// this is used for game rules and after map restart so
+		// count CON_CONNECTING clients too.
+		if (level.clients[i].pers.connected == CON_DISCONNECTED ||
 			level.clients[i].sess.sessionTeam != team ||
 			i == ignoreClientNum ) {
 			continue;
