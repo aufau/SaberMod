@@ -827,4 +827,5 @@ void CG_ShutDownConsoleCommands( void ) {
 	trap_RemoveCommand ("pause");
 	trap_RemoveCommand ("unpause");
 	trap_RemoveCommand ("allready");
+	trap_RemoveCommand ("abort");
 }

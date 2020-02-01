@@ -1031,6 +1031,7 @@ static void CG_RefereeMode(qboolean enable) {
 	UpdateCommand("pause");
 	UpdateCommand("unpause");
 	UpdateCommand("allready");
+	UpdateCommand("abort");
 }
 
 /*
