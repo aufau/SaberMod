@@ -2083,6 +2083,15 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 }
 
+static void G_FreeItem( gentity_t *ent )
+{
+	if (ent->item && ent->item->giType == IT_TEAM) {
+		Team_FreeEntity(ent);
+	} else if (ent->think != RespawnItem) {
+		// don't free pushed items
+		G_FreeEntity( ent );
+	}
+}
 
 /*
 ================
@@ -2119,6 +2128,13 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 		SnapVector( trace->endpos );
 		G_SetOrigin( ent, trace->endpos );
 		ent->s.groundEntityNum = trace->entityNum;
+
+		if (g_removeInaccessibleItems.integer) {
+			int	contents = G_PointEntityContents(trace->endpos, ent->s.number);
+			if (contents & CONTENTS_NODROP) {
+				G_FreeItem( ent );
+			}
+		}
 		return;
 	}
 
@@ -2193,12 +2209,7 @@ void G_RunItem( gentity_t *ent ) {
 	// if it is in a nodrop volume, remove it
 	contents = trap_PointContents( ent->r.currentOrigin, -1 );
 	if ( contents & CONTENTS_NODROP ) {
-		if (ent->item && ent->item->giType == IT_TEAM) {
-			Team_FreeEntity(ent);
-		} else if (ent->think != RespawnItem) {
-			// don't free pushed items
-			G_FreeEntity( ent );
-		}
+		G_FreeItem(ent);
 		return;
 	}
 

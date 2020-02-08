@@ -789,6 +789,8 @@ void	G_FreeUnusedEntities( void );
 
 void	G_TouchTriggers (gentity_t *ent);
 void	G_TouchSolids (gentity_t *ent);
+int		G_PointEntityContents(const vec3_t point, int passEntityNum);
+
 
 //
 // g_object.c
@@ -1312,6 +1314,7 @@ extern	vmCvar_t	g_pushableItems;
 extern	vmCvar_t	g_refereePassword;
 extern	vmCvar_t	g_allowTeamVote;
 extern	vmCvar_t	g_vampiricDamage;
+extern	vmCvar_t	g_removeInaccessibleItems;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

@@ -421,6 +421,11 @@ g_refereePassword <password>
   console command. When this cvar is empty (default), *referee*
   console command cannot be used to become a referee.
 
+g_removeInaccessibleItems <0|1>
+  Remove items, bodies and flags that land in map areas inaccessible
+  to players. This is a workaround for retail maps not doing a very
+  good job at it. On a correctly made map it should not be needed.
+
 g_requireClientside <0|1>
   Allow only players with matching clientside to join the game.
 

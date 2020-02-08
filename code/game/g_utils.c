@@ -1217,3 +1217,15 @@ void G_ROFF_NotetrackCallback( gentity_t *cent, const char *notetrack)
 	}
 }
 
+int G_PointEntityContents(const vec3_t point, int passEntityNum)
+{
+	int	touch[MAX_GENTITIES];
+	int	contents, num, i;
+
+	num = G_EntitiesInBox(point, point, touch, MAX_GENTITIES, passEntityNum);
+	contents = 0;
+	for (i = 0; i < num; i++) {
+		contents |= g_entities[touch[i]].r.contents;
+	}
+	return contents;
+}

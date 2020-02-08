@@ -171,6 +171,7 @@ vmCvar_t	g_pushableItems;
 vmCvar_t	g_refereePassword;
 vmCvar_t	g_allowTeamVote;
 vmCvar_t	g_vampiricDamage;
+vmCvar_t	g_removeInaccessibleItems;
 
 
 // bk001129 - made static to avoid aliasing
@@ -348,6 +349,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_refereePassword, "g_refereePassword", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_allowTeamVote, "g_allowTeamVote", "-1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_vampiricDamage, "g_vampiricDamage", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_removeInaccessibleItems, "g_removeInaccessibleItems", "1", CVAR_ARCHIVE, 0, qfalse },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
