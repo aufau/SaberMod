@@ -3084,6 +3084,14 @@ static void Cmd_DebugKnockMeDown_f(gentity_t *ent)
 		ent->client->ps.quickerGetup = qtrue;
 	}
 }
+
+static void Cmd_DropWeapon_f(gentity_t *ent)
+{
+	vec3_t	forward;
+
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	TossClientWeapon( ent, forward, 200 );
+}
 #endif // _DEBUG
 
 static int printfClientNum;
@@ -3153,6 +3161,7 @@ static const clientCommand_t commands[] = {
 	{ "thedestroyer", Cmd_TheDestroyer_f, CMD_CHEAT | CMD_ALIVE | CMD_NOINTERMISSION },
 	{ "addbot", Cmd_AddBot_f, 0 },
 #ifdef _DEBUG
+	{ "dropweapon", Cmd_DropWeapon_f, CMD_ALIVE | CMD_CHEAT },
 	{ "headexplodey", Cmd_HeadExplodey_f, CMD_CHEAT },
 	{ "g2animent", G_CreateExampleAnimEnt, CMD_CHEAT },
 	{ "loveandpeace", Cmd_LoveAndPeace_f, CMD_CHEAT },
