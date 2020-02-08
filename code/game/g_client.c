@@ -719,13 +719,9 @@ void CopyToBodyQue( gentity_t *ent ) {
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
 	body->physicsBounce = 0;		// don't bounce
-	if ( body->s.groundEntityNum == ENTITYNUM_NONE ) {
-		body->s.pos.trType = TR_GRAVITY;
-		body->s.pos.trTime = level.time;
-		VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
-	} else {
-		body->s.pos.trType = TR_STATIONARY;
-	}
+	body->s.pos.trType = TR_GRAVITY;
+	body->s.pos.trTime = level.time;
+	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 	body->s.event = 0;
 
 	body->s.weapon = ent->s.bolt2;
