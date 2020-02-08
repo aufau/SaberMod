@@ -716,7 +716,6 @@ static void CG_MapRestart( void ) {
 		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
 		CG_CenterPrint( CG_GetStripEdString("SVINGAME", "BEGIN_DUEL"), 120 );
 	}
-	trap_Cvar_Set("cg_thirdPerson", "0");
 }
 
 #ifdef MISSIONPACK
