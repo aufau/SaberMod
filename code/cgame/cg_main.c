@@ -680,7 +680,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_dismember, "cg_dismember", "0", CVAR_ARCHIVE },
 
-	{ &cg_thirdPerson, "cg_thirdPerson", "0", 0 },
+	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", CVAR_CHEAT },
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT },
 	{ &cg_thirdPersonPitchOffset, "cg_thirdPersonPitchOffset", "0", CVAR_CHEAT },
