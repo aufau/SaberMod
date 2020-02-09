@@ -490,6 +490,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
+				setCvar                 ui_visited_setup 2 ;
 				close					ingame_setup ;
 				open                    ingame_setup_original ;
 			}
