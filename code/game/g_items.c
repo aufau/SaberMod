@@ -2199,7 +2199,7 @@ void G_RunItem( gentity_t *ent ) {
 	// check think function
 	G_RunThink( ent );
 
-	if ( g_removeInaccessibleItems.integer && !ent->freeOnStop ) {
+	if ( g_removeUnreachableItems.integer && !ent->freeOnStop ) {
 		contents = G_PointEntityContents( ent->r.currentOrigin, ent->s.number );
 		if ( contents & CONTENTS_NODROP ) {
 			ent->freeOnStop = qtrue;

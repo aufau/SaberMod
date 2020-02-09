@@ -541,7 +541,7 @@ void SP_trigger_hurt( gentity_t *self ) {
 	self->r.contents = CONTENTS_TRIGGER;
 
 	// falling to death trigger - can't pick anything from it
-	if (g_removeInaccessibleItems.integer && self->damage == -1) {
+	if (g_removeUnreachableItems.integer && self->damage == -1) {
 		self->r.contents |= CONTENTS_NODROP;
 	}
 
