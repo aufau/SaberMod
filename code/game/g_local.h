@@ -342,6 +342,8 @@ struct gentity_s {
 
 	gitem_t		*item;			// for bonus items
 
+	qboolean	freeOnStop;
+
 	// 1. Number of a client who should be blamed for this entity
 	// 2. ENTITYNUM_WORLD for entities that should be always broadcasted
 	// 3. ENTITYNUM_NONE for entities that don't belong to anyone but

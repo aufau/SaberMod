@@ -2129,11 +2129,8 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 		G_SetOrigin( ent, trace->endpos );
 		ent->s.groundEntityNum = trace->entityNum;
 
-		if (g_removeInaccessibleItems.integer) {
-			int	contents = G_PointEntityContents(trace->endpos, ent->s.number);
-			if (contents & CONTENTS_NODROP) {
-				G_FreeItem( ent );
-			}
+		if (ent->freeOnStop) {
+			G_FreeItem( ent );
 		}
 		return;
 	}
@@ -2201,6 +2198,13 @@ void G_RunItem( gentity_t *ent ) {
 
 	// check think function
 	G_RunThink( ent );
+
+	if ( g_removeInaccessibleItems.integer && !ent->freeOnStop ) {
+		contents = G_PointEntityContents( ent->r.currentOrigin, ent->s.number );
+		if ( contents & CONTENTS_NODROP ) {
+			ent->freeOnStop = qtrue;
+		}
+	}
 
 	if ( tr.fraction == 1 ) {
 		return;
