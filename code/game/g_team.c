@@ -674,8 +674,7 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 		team = TEAM_FREE;
 	}
 
-	Team_ReturnFlagSound( Team_ResetFlag( team ), team );
-	// Reset Flag will delete this entity
+	Team_ReturnFlag( team );
 }
 
 
