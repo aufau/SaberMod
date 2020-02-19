@@ -25,6 +25,7 @@
 * Fix for player connecting to a team gametype server causing lag.
 * Fix for UI model selector going out of sync.
 * Fix for the infamous player ghosting bug aka skin bug.
+* Fix for flag not returning to base when falling to void on some maps.
 * Fixes for multiple bugs when playing on a server with high uptime.
 * Fixes many more issues.
 
