@@ -26,7 +26,7 @@ LBURG   = bin/lburg
 
 tools = $(AS) $(LCC) $(RCC) $(CPP) $(LBURG)
 
-CFLAGS		= -ggdb3 -fvisibility=hidden -pipe -fsanitize=address,pointer-compare,pointer-subtract,leak,undefined -fsanitize-recover -fsanitize-address-use-after-scope
+CFLAGS		= -ggdb3 -fvisibility=hidden -pipe
 INCLUDES	= -Icode/cgame -Icode/game -Icode/ui
 DEFS		= -DJK2AWARDS
 VERSION		:= $(shell git describe --always --tags --dirty)
