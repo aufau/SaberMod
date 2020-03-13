@@ -385,13 +385,16 @@ static void UI_Cmd_Execute(void) {
 		COM_DefaultExtension(filename, sizeof(filename), ".cfg");
 		len = trap_FS_FOpenFile(filename, &f, FS_READ);
 
-		if (f && len > 0) {
+		if (len > 0) {
 			buf = (char *)BG_TempAlloc(len + 1);
 			trap_FS_Read(buf, len, f);
-			trap_FS_FCloseFile(f);
 			buf[len] = '\0';
 			UI_Cbuf_InsertText(buf);
 			BG_TempFree(len);
+		}
+
+		if (f) {
+			trap_FS_FCloseFile(f);
 		}
 
 		return;
