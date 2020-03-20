@@ -3225,7 +3225,6 @@ void G_RunPausedFrame( void ) {
 			client->sess.spectatorState != SPECTATOR_NOT)
 		{
 				SpectatorClientEndFrame( &g_entities[i] );
-				return;
 		}
 	}
 
