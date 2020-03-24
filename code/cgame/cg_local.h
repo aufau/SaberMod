@@ -1015,6 +1015,7 @@ typedef struct {
 	qhandle_t	teamBlueShader;
 
 	qhandle_t	balloonShader;
+	qhandle_t	warpShader;
 	qhandle_t	connectionShader;
 
 	qhandle_t	tracerShader;

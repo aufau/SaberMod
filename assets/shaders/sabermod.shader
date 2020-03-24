@@ -57,3 +57,13 @@ gfx/menus/menu_blendbox2_new
         tcMod scroll -1.7 0
     }
 }
+
+gfx/mp/warp
+{
+    nopicmip
+    nomipmaps
+    {
+        map gfx/2d/net
+        blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+    }
+}

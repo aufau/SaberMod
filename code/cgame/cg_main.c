@@ -1616,6 +1616,7 @@ static void CG_RegisterGraphics( void ) {
 	}
 
 	cgs.media.balloonShader = trap_R_RegisterShaderNoMip( "gfx/mp/chat_icon" );
+	cgs.media.warpShader = trap_R_RegisterShaderNoMip( "gfx/mp/warp" );
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
