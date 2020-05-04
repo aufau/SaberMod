@@ -1642,7 +1642,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	}
 
 	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
-	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 ? qtrue : qfalse;
+	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 || ent->r.svFlags & SVF_BOT ? qtrue : qfalse;
 	if (client->pers.registered) {
 		if (client->sess.sessionTeam != TEAM_SPECTATOR && !client->sess.motdSeen) {
 			trap_SendServerCommand( clientNum, "motd" );

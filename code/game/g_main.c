@@ -941,6 +941,9 @@ void AddTournamentPlayer( void ) {
 			client->sess.spectatorClient < 0  ) {
 			continue;
 		}
+		if (g_requireClientside.integer && !client->pers.registered) {
+			continue;
+		}
 
 		if ( !nextInLine || client->sess.spectatorNum > nextInLine->sess.spectatorNum ) {
 			nextInLine = client;

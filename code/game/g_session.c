@@ -208,7 +208,12 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qbool
 				if ( level.numNonSpectatorClients >= 2 ) {
 					sess->sessionTeam = TEAM_SPECTATOR;
 				} else {
-					sess->sessionTeam = TEAM_FREE;
+					if (g_requireClientside.integer && !client->pers.registered) {
+						sess->sessionTeam = TEAM_SPECTATOR;
+					}
+					else {
+						sess->sessionTeam = TEAM_FREE;
+					}
 				}
 				break;
 			}
