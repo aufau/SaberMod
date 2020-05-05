@@ -2229,7 +2229,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 			continue;
 		}
 		if ( !strcmp( arg1, voteCmds[i].name ) ) {
-			voteCmd = (voteCmd_t)i;
+			voteCmd = (teamVoteCmd_t)i;
 			break;
 		}
 	}
