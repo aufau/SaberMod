@@ -175,6 +175,15 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 	CG_Text_Paint ( x, y, 1.0f, colorWhite, label, 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 }
 
+static const char *CG_FormatNetDamage(int netDamage) {
+	char sign = netDamage > 0 ? '+' : '-';
+	int net = abs(netDamage);
+	int integer = net / 10;
+	int fractional = net - 10 * integer;
+
+	return va("%c%d.%dk", sign, integer, fractional);
+}
+
 static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float scale, score_t *score)
 {
 	clientInfo_t	*ci = &cgs.clientinfo[score->client];
@@ -226,7 +235,7 @@ static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float sca
 	case SBC_NET_DMG:
 		if (spectator) {
 		} else if (score->netDamage != 0) {
-			CG_Text_Paint (x, y, s, colorWhite, va("%+.1fk", score->netDamage / 10.0f),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+			CG_Text_Paint (x, y, s, colorWhite, CG_FormatNetDamage(score->netDamage),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		} else {
 			CG_Text_Paint (x, y, s, colorWhite, " 0",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
