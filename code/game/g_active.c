@@ -1933,7 +1933,7 @@ void G_RunClient( gentity_t *ent ) {
 	{
 		client->ps.eFlags |= EF_CONNECTION;
 
-		if (g_antiWarpTime.integer == 2)
+		if (g_antiWarp.integer == 2)
 		{
 			// create a fake user command to make him move, causing client
 			// prediction error for a warping player
