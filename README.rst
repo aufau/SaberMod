@@ -620,6 +620,7 @@ Authors
   + Witold *fau* Piłat <witold.pilat@gmail.com> 2015-2020
   + Dziablo 2015-2016
   + Alereon 2019
+  + TriForceX 2020
 
 Thanks
 ------
