@@ -114,8 +114,7 @@ gfx/menus/menu_buttonback_new.jpg gfx/menus/menu_buttonback2_new.jpg	\
 scripts/arenas.txt scripts/duel.arena
 
 svs_zip		:= $(name)-$(VERSION).zip
-svs_assets := server.cfg reset.cfg modes/ scripts/arenas.txt	\
-scripts/duel.arena
+svs_assets := server.cfg reset.cfg modes/
 svs_doc := README.rst LICENSE.txt CHANGELOG.rst cvar-calculator.html	\
 assets/SOURCE.txt
 
