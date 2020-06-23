@@ -498,7 +498,7 @@ Round-Based Gametypes
 .....................
 
 In round-based gametypes players spawn with all available weapons and
-items (controlled by *g_spawnWeapons8 and *g_spawnItems* cvars),
+items (controlled by *g_spawnWeapons* and *g_spawnItems* cvars),
 however there are no pickups on the map. Players gain one point for
 killing an enemy and one point for each 50 damage dealt to the enemy
 team. A round lasts until either one team is eliminated or a timelimit
