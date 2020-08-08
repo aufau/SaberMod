@@ -2156,6 +2156,59 @@ static team_t GetRoundWinner( const char **explanation )
 	return winner;
 }
 
+static team_t GetTeamWinner( const char **explanation )
+{
+	static char	expl[128];
+	team_t		winner = TEAM_FREE;
+
+	*explanation = expl;
+
+	if (level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]) {
+		winner = TEAM_RED;
+	} else if (level.teamScores[TEAM_RED] < level.teamScores[TEAM_BLUE]) {
+		winner = TEAM_BLUE;
+	}
+
+	if (winner == TEAM_FREE) {
+		Com_sprintf( expl, sizeof( expl ), "%s", "Match draw" );
+	} else {
+		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+			" won the match", BG_TeamColor( winner ),
+			BG_TeamName( winner, CASE_NORMAL ));
+	}
+
+	return winner;
+}
+
+static gclient_t *GetFFAWinner( const char **explanation )
+{
+	static char	expl[128];
+	gclient_t	*winner = NULL;
+
+	*explanation = expl;
+
+	if (level.numPlayingClients > 0) {
+		winner = level.clients + level.sortedClients[0];
+	}
+
+	if (level.numPlayingClients > 1) {
+		gclient_t	*second = level.clients + level.sortedClients[1];
+
+		if (winner->pers.persistant[PERS_SCORE] == second->pers.persistant[PERS_SCORE]) {
+			winner = NULL;
+		}
+	}
+
+	if (winner) {
+		Com_sprintf( expl, sizeof( expl ),
+			"%s" S_COLOR_WHITE " won the match", winner->info.netname);
+	} else {
+		Q_strncpyz( expl, "Match draw", sizeof( expl ) );
+	}
+
+	return winner;
+}
+
 /*
 =================
 G_QueueServerCommand
@@ -2350,25 +2403,26 @@ void CheckExitRules( void ) {
 
 	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
-			if ( GT_Round(level.gametype) ) {
-				const char	*explanation;
-				team_t		winner = GetRoundWinner( &explanation );
+			const char	*explanation;
 
+			if ( level.gametype == GT_REDROVER ) {
+				GetFFAWinner( &explanation );
+				AddTeamScore( level.intermission_origin, TEAM_RED, 1 );
+				LogRoundExit( TEAM_RED, "Timelimit hit." );
+			} else if ( GT_Round(level.gametype) ) {
+				team_t		winner = GetRoundWinner( &explanation );
 				AddTeamScore( level.intermission_origin, winner, 1 );
-				if ( level.gametype == GT_REDROVER ) {
-					G_QueueServerCommand( "print \"%s.\n\"",
-						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) );
-				} else {
-					G_QueueServerCommand( "print \"%s. %s.\n\"",
-						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation );
-				}
 				LogRoundExit( winner, "Timelimit hit." );
+			} else if ( GT_Team(level.gametype) ) {
+				GetTeamWinner( &explanation );
+				LogExit( "Timelimit hit." );
 			} else {
-				G_QueueServerCommand( "print \"%s.\n\"",
-					G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) );
+				GetFFAWinner( &explanation );
 				LogExit( "Timelimit hit." );
 			}
 
+			G_QueueServerCommand( "print \"%s. %s.\n\"",
+				G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation );
 			return;
 		}
 	}
