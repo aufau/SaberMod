@@ -44,6 +44,7 @@ typedef struct {
 	const char * const	label;
 	const char * const	shortLabel;
 	const int			width;
+	const char * const	format;
 	qboolean			disabled;
 } statColumn_t;
 
@@ -51,19 +52,19 @@ typedef struct {
 
 // Keep this in the same order as playerStat_t
 static statColumn_t statCol[STATS_MAX] = {
-	{ "Score",			"S", 4 },
-	{ "Kills",			"K", 3 },
-	{ "Captures",		"Cap", 3 },
-	{ "Defends",		"Def", 3 },
-	{ "Assists",		"Ast", 3 },
-	{ "Accuracy",		"Acc", 3 },
-	{ "Impressive",		"Imp", 3 },
-	{ "Damage",			"Dmg", 5 },
-	{ "Net Damage",		"Net", 5 },
-	{ "Deaths",			"D", 3 },
-	{ "Received",		"Rcv", 5 },
-	{ "Team Damage",	"TDmg", 5 },
-	{ "Team Received",	"TRcv", 5 },
+	{ "Score",			"S"   , 4, "%d" },
+	{ "Kills",			"K"   , 3, "%d" },
+	{ "Captures",		"Cap" , 3, "%d" },
+	{ "Defends",		"Def" , 3, "%d" },
+	{ "Assists",		"Ast" , 3, "%d" },
+	{ "Accuracy",		"Acc" , 3, "%d" },
+	{ "Impressive",		"Imp" , 3, "%d" },
+	{ "Damage",			"Dmg" , 5, "%d" },
+	{ "Net Damage",		"Net" , 5, "%+d" },
+	{ "Deaths",			"D"   , 3, "%d" },
+	{ "Received",		"Rcv" , 5, "%d" },
+	{ "Team Damage",	"TDmg", 5, "%d" },
+	{ "Team Received",	"TRcv", 5, "%d" },
 };
 
 static const playerStat_t logColumns[] =
@@ -163,18 +164,22 @@ static void PrintStatsRow( const char *name, const playerStat_t *columns, const 
 
 	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
-		const char *value = va("%i", stats[stat]);
-		int len = strlen(value);
+		char value[16];
+		int len;
 
 		if (statCol[stat].disabled)
 			continue;
 
+		Com_sprintf(value, sizeof(value), statCol[stat].format, stats[stat]);
+		len = strlen(value);
+
 		if (stats[stat] >= 1000 && len > statCol[stat].width) {
-			value = va("%ik", stats[stat] / 1000);
+			Com_sprintf(value, sizeof(value), statCol[stat].format, stats[stat] / 1000);
+			Q_strcat(value, sizeof(value), "k");
 			len = strlen(value);
 		}
 		if (len > statCol[stat].width) {
-			value = "";
+			Q_strncpyz(value, "", sizeof(value));
 			len = 0;
 		}
 
