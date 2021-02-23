@@ -1616,10 +1616,10 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
+gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity, int blameEntityNum ) {
 	gentity_t	*dropped;
 
-	dropped = G_Spawn( ENTITYNUM_WORLD );
+	dropped = G_Spawn( blameEntityNum );
 
 	dropped->s.eType = ET_ITEM;
 	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
@@ -1712,7 +1712,7 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
 	VectorScale( velocity, 150, velocity );
 	velocity[2] += 200 + crandom() * 50;
 
-	return LaunchItem( item, ent->s.pos.trBase, velocity );
+	return LaunchItem( item, ent->s.pos.trBase, velocity, ent->s.number );
 }
 
 
