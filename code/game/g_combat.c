@@ -628,7 +628,7 @@ void TossClientWeapon(gentity_t *self, const vec3_t direction, float speed)
 	vel[1] = direction[1]*speed;
 	vel[2] = direction[2]*speed;
 
-	launched = LaunchItem(item, self->client->ps.origin, vel);
+	launched = LaunchItem(item, self->client->ps.origin, vel, self->s.number);
 
 	launched->s.generic1 = self->s.number;
 	launched->s.powerups = level.time + 1500;
