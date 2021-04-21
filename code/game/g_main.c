@@ -3090,12 +3090,14 @@ void G_RewindTime( int msec ) {
 
 #define ADJUST(x) if ((x) > 0) (x) += msec
 
-	ADJUST(level.startTime);
 	ADJUST(level.warmupTime);
 	ADJUST(level.intermissiontime);
 	ADJUST(level.roundQueued);
 	ADJUST(level.intermissionQueued);
 	ADJUST(level.exitTime);
+	ADJUST(level.idleTime);
+
+	if(level.startTime < level.time) level.startTime += msec;
 
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 	trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
@@ -3182,7 +3184,8 @@ void G_RewindTime( int msec ) {
 			ADJUST(client->lastSaberStorageTime);
 			ADJUST(client->dangerTime);
 			ADJUST(client->forcePowerSoundDebounce);
-
+			
+			ADJUST(client->pers.enterTime);
 			ADJUST(client->pers.teamState.lastfraggedcarrier);
 			ADJUST(client->pers.teamState.lasthurtcarrier);
 			ADJUST(client->pers.teamState.lastreturnedflag);
