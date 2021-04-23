@@ -558,7 +558,7 @@ build selected target. Most useful are:
 - **shared** build shared module libraries that should be used for
   debugging and development.
 - **assets** create assets.pk3 - an amalgamation of all SaberMod
-  clientside and serverside assets which is usef!ul for development, as
+  clientside and serverside assets which is useful for development, as
   they will not be loaded from outside of a pk3.
 - **serverside** create a full release zip package.
 
