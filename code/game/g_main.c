@@ -2782,7 +2782,7 @@ void CheckVote( void ) {
 			}
 		}
 	}
-	if ( !level.voteTime ) {
+	if ( !level.voteTime || level.unpauseTime > level.time ) {
 		return;
 	}
 
@@ -3095,12 +3095,14 @@ void G_RewindTime( int msec ) {
 	ADJUST(level.roundQueued);
 	ADJUST(level.intermissionQueued);
 	ADJUST(level.exitTime);
+	ADJUST(level.voteTime);
 	ADJUST(level.idleTime);
 
-	if(level.startTime < level.time) level.startTime += msec;
+	level.startTime += msec;
 
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 	trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
+	trap_SetConfigstring(CS_VOTE_TIME, va("%i", level.voteTime));
 
 	for (i = 0; i < level.maxclients; i++) {
 		if (level.clients[i].pers.connected != CON_DISCONNECTED) {
