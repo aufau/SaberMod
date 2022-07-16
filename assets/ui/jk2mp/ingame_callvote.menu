@@ -808,6 +808,33 @@
 			name                    rules
 			group                   grpCallVote
 			type                    ITEM_TYPE_NUMERICFIELD
+			text                    @SABERMENUS_LIFE_LIMIT
+			descText                @SABERMENUS_LIFE_LIMIT_DESC
+			style                   0
+			rect                    120 150 230 20
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              120
+			textaligny              -2
+			font                    2
+			textscale               .8
+			forecolor               1 1 1 1
+			visible                 0
+			cvar                    ui_vote_lifelimit
+			cvarTest                ui_voteRule
+			enableCvar              { 0 lifelimit }
+			mouseEnter              { show highlight6 }
+			mouseExit               { hide highlight6 }
+			action
+			{
+				setCvar                 ui_voteRule lifelimit ;
+			}
+		}
+
+		itemDef
+		{
+			name                    rules
+			group                   grpCallVote
+			type                    ITEM_TYPE_NUMERICFIELD
 			text                    @SABERMENUS_TEAMSIZE
 			descText                @SABERMENUS_TEAMSIZE_DESC
 			style                   0

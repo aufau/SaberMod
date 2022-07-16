@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 101
+COUNT 102
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -933,4 +933,14 @@ INDEX 100
    TEXT_LANGUAGE3 "Life Limit:"
    TEXT_LANGUAGE6 "Life Limit:"
    TEXT_LANGUAGE8 "Life Limit:"
+}
+INDEX 101
+{
+   REFERENCE LIFE_LIMIT_DESC
+   NOTES "Ingame callvote menu"
+   TEXT_LANGUAGE1 "Lives per round."
+   TEXT_LANGUAGE2 "Lives per round."
+   TEXT_LANGUAGE3 "Lives per round."
+   TEXT_LANGUAGE6 "Lives per round."
+   TEXT_LANGUAGE8 "Lives per round."
 }

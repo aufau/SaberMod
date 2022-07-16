@@ -104,6 +104,7 @@ typedef enum {
 	CV_POLL,
 	CV_REFEREE,
 	CV_ABORT,
+	CV_LIFELIMIT,
 	CV_MAX
 } voteCmd_t;
 

@@ -1799,6 +1799,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "poll",			"Poll",			" <question>" },	// CV_POLL
 		{ "referee",		"Referee",		" <name|num>" },	// CV_REFEREE
 		{ "abort",			"Abort Match",	"" },				// CV_ABORT
+		{ "lifelimit",		"Lifelimit",	" <lives>" },		// CV_LIFELIMIT
 	};
 
 	if ( ent->client->sess.referee ) {
