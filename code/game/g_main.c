@@ -1885,7 +1885,7 @@ void LogExit( const char *string ) {
 	}
 }
 
-static void LogRoundExit( team_t team, const char *string )
+static void LogRoundExitTeam( team_t team, const char *string )
 {
 	const char *param1;
 
@@ -1901,10 +1901,10 @@ static void LogRoundExit( team_t team, const char *string )
 		param1 = BG_TeamName( team, CASE_UPPER );
 	}
 
-	G_LogPrintf( LOG_GAME, "RoundExit: %s: %s\n", param1, string );
+	G_LogPrintf( LOG_GAME, "RoundExitTeam: %s: %s\n", param1, string );
 }
 
-static void LogRoundExitLMS( gentity_t *ent, const char *explanation )
+static void LogRoundExit( gentity_t *ent, const char *explanation )
 {
 	const char	*string;
 	int			num;
@@ -1920,7 +1920,7 @@ static void LogRoundExitLMS( gentity_t *ent, const char *explanation )
 		string = explanation;
 	}
 
-	G_LogPrintf( LOG_GAME, "RoundExitLMS: %d: %s\n", num, string );
+	G_LogPrintf( LOG_GAME, "RoundExit: %d: %s\n", num, string );
 	
 	// update CS_SCORES1 and CS_SCORES2
 	CalculateRanks(); // calls CheckExitRules!
@@ -2474,7 +2474,7 @@ void CheckExitRules( void ) {
 				BG_TeamName(forfeitTeam, CASE_NORMAL) );
 
 			if ( GT_Round(level.gametype) ) {
-				LogRoundExit( forfeitTeam, "Team forfeited." );
+				LogRoundExitTeam( forfeitTeam, "Team forfeited." );
 			} else {
 				LogExit( "Team forfeited." );
 			}
@@ -2497,14 +2497,14 @@ void CheckExitRules( void ) {
 			if ( level.gametype == GT_REDROVER ) {
 				GetFFAWinner( &explanation );
 				AddTeamScore( level.intermission_origin, TEAM_RED, 1 );
-				LogRoundExit( TEAM_RED, "Timelimit hit." );
+				LogRoundExitTeam( TEAM_RED, "Timelimit hit." );
 			} else if ( level.gametype == GT_LMS ) {
 				explanation = "No winner";
-				LogRoundExitLMS( NULL, "Timelimit hit." );
+				LogRoundExit( NULL, "Timelimit hit." );
 			} else if ( GT_Round(level.gametype) && GT_Team(level.gametype) ) {
 				team_t		winner = GetRoundTeamWinner( &explanation );
 				AddTeamScore( level.intermission_origin, winner, 1 );
-				LogRoundExit( winner, "Timelimit hit." );
+				LogRoundExitTeam( winner, "Timelimit hit." );
 			} else if ( GT_Team(level.gametype) ) {
 				GetTeamWinner( &explanation );
 				LogExit( "Timelimit hit." );
@@ -2539,7 +2539,7 @@ void CheckExitRules( void ) {
 				} else {
 					G_QueueServerCommand( "print \"Team eliminated. %s.\n\"", explanation );
 				}
-				LogRoundExit( winner, "Team eliminated." );
+				LogRoundExitTeam( winner, "Team eliminated." );
 				return;
 			}
 		} else {
@@ -2553,14 +2553,14 @@ void CheckExitRules( void ) {
 
 			if ( count == 0 ) {
 				G_QueueServerCommand( "print \"No man standing.\n\"" );
-				LogRoundExitLMS( NULL, "No man standing." );
+				LogRoundExit( NULL, "No man standing." );
 			} else if ( count == 1 ) {
 				gentity_t *lms = GetLastManStanding( );
 				// AddScore calls CalculateRanks calls CheckExitRules calls AddScore
 				// AddScore( lms, lms->r.currentOrigin, 1 );
 				lms->client->pers.persistant[PERS_SCORE]++;
 				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " won the round.\n\"", lms->client->info.netname );
-				LogRoundExitLMS( lms, "Last man standing" );
+				LogRoundExit( lms, "Last man standing" );
 			}
 		}
 	}
