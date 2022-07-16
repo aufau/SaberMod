@@ -4838,6 +4838,7 @@ static void UI_RunMenuScript(const char **args)
 			trap_Cvar_Set( "ui_vote_fraglimit", Info_ValueForKey(info, "fraglimit") );
 			trap_Cvar_Set( "ui_vote_capturelimit", Info_ValueForKey(info, "capturelimit") );
 			trap_Cvar_Set( "ui_vote_roundlimit", Info_ValueForKey(info, "roundlimit") );
+			trap_Cvar_Set( "ui_vote_lifelimit", Info_ValueForKey(info, "lifelimit") );
 			trap_Cvar_Set( "ui_vote_teamsize", Info_ValueForKey(info, "teamsize") );
 		}
 		else

@@ -295,6 +295,30 @@
 		itemDef
 		{
 			name                    about
+			rect                    10 160 300 20
+			type                    4
+			style                   0
+			text                    @SABERMENUS_LIFE_LIMIT
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"10" ;
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_lifelimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
 			style                   WINDOW_STYLE_SHADER
 			rect                    10 185 300 25
 			background              "gfx/menus/menu_buttonback_new" // Frame around button
