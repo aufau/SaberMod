@@ -154,20 +154,20 @@ typedef enum {
 #define G2_MODEL_PART	50
 
 typedef enum {
-	GT_FFA,				// free for all
-	GT_HOLOCRON,		// holocron ffa
-	GT_JEDIMASTER,		// jedi master
-	GT_TOURNAMENT,		// one on one tournament
-	GT_SINGLE_PLAYER,	// single player ffa
+	GT_FFA,				// 0 - free for all
+	GT_HOLOCRON,		// 1 - holocron ffa
+	GT_JEDIMASTER,		// 2 - jedi master
+	GT_TOURNAMENT,		// 3 - one on one tournament
+	GT_SINGLE_PLAYER,	// 4 - single player ffa
 
 	//-- team games go after this --
 
-	GT_TEAM,			// team deathmatch
-	GT_SAGA,			// saga
-	GT_CTF,				// capture the flag
-	GT_CTY,
-	GT_REDROVER,		// slain join your team
-	GT_CLANARENA,		// round-based tffa
+	GT_TEAM,			// 5 - team deathmatch
+	GT_SAGA,			// 6 - saga
+	GT_CTF,				// 7 - capture the flag
+	GT_CTY,				// 8 - capture the ysalamiri
+	GT_REDROVER,		// 9 - slain join your team
+	GT_CLANARENA,		// 10 - round-based tffa
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
