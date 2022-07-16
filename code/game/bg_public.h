@@ -346,7 +346,7 @@ typedef enum {
 	PERS_HITS,						// total points damage inflicted so damage beeps can sound on change
 	PERS_RANK,						// player rank or team rank
 	PERS_TEAM,						// player team
-	PERS_SPAWN_COUNT,				// incremented every respawn
+	PERS_SPAWN_COUNT,				// incremented every respawn - tracked by cgame to detect respawn
 	PERS_PLAYEREVENTS,				// 16 bits that can be flipped for events
 	PERS_ATTACKER,					// clientnum of last damage inflicter
 	PERS_KILLS,						// how many enemies you killed
@@ -358,6 +358,7 @@ typedef enum {
 	PERS_ASSIST_COUNT,				// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,		// kills with the guantlet
 	PERS_CAPTURES,					// captures
+	PERS_LIVES,						// remaining lives
 	PERS_MAX
 } persEnum_t;
 

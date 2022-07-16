@@ -599,7 +599,6 @@ typedef struct {
 	// store latched cvars here that we want to get at often
 	int			maxclients;
 	gametype_t	gametype;
-	int			lives;					// lives in round-based gametypes
 
 	int			framenum;
 	int			snapnum;				// snapshot currently being prepared
@@ -1318,6 +1317,7 @@ extern	vmCvar_t	g_refereePassword;
 extern	vmCvar_t	g_allowTeamVote;
 extern	vmCvar_t	g_vampiricDamage;
 extern	vmCvar_t	g_removeUnreachableItems;
+extern	vmCvar_t	g_lifelimit;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

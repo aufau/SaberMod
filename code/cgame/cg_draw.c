@@ -1219,6 +1219,10 @@ void CG_DrawHUD(centity_t	*cent)
 		scoreStr = va("Score: %i%s", cg.snap->ps.persistant[PERS_SCORE], scoreBiasStr);
 	}
 #endif
+	else if (GT_Round(cgs.gametype) && cgs.lifelimit > 1)
+	{
+		scoreStr = va("Lives: %i", cg.snap->ps.persistant[PERS_LIVES]);
+	}
 	else
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
@@ -1228,8 +1232,6 @@ void CG_DrawHUD(centity_t	*cent)
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
 		if (cgs.gametype == GT_REDROVER) {
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
-		} else if (cgs.fraglimit > 1) {
-			scoreStr = va("Lives: %i", cgs.fraglimit - cg.snap->ps.persistant[PERS_SPAWN_COUNT]);
 		} else {
 			scoreStr = va("Round Limit: %i", cgs.roundlimit);
 		}

@@ -151,6 +151,7 @@ vmCvar_t	g_spawnItems;
 vmCvar_t	g_spawnShield;
 vmCvar_t	g_spawnWeapons;
 vmCvar_t	g_roundlimit;
+vmCvar_t	g_lifelimit;
 vmCvar_t	g_roundWarmup;
 vmCvar_t	g_kickMethod;
 vmCvar_t	g_infiniteAmmo;
@@ -329,6 +330,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_spawnShield, "g_spawnShield", "25", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_lifelimit, "lifelimit", "1", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_kickMethod, "g_kickMethod", "1", /* CVAR_SERVERINFO | */ CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
@@ -1658,7 +1660,6 @@ static void NextRound( void )
 {
 	int		i;
 
-	level.lives = MAX(1, g_fraglimit.integer);
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
 	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
@@ -1680,8 +1681,7 @@ static void NextRound( void )
 			if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 				continue;
 
-			// used for counting lives
-			ent->client->pers.persistant[PERS_SPAWN_COUNT] = 0;
+			ent->client->pers.persistant[PERS_LIVES] = MAX(0, g_lifelimit.integer - 1);
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 				respawn( ent );
@@ -2103,6 +2103,7 @@ static team_t GetRoundWinner( const char **explanation )
 	team_t		winner;
 	int			health[TEAM_NUM_TEAMS] = { 0 };
 	int			count[TEAM_NUM_TEAMS] = { 0 };
+	int			lives[TEAM_NUM_TEAMS] = { 0 };
 	int			i;
 
 	*explanation = expl;
@@ -2111,14 +2112,20 @@ static team_t GetRoundWinner( const char **explanation )
 		gclient_t *client = &level.clients[i];
 
 		if ( client->pers.connected == CON_CONNECTED &&
-			client->sess.spectatorState == SPECTATOR_NOT &&
-			client->ps.stats[STAT_HEALTH] > 0 &&
-			client->ps.fallingToDeath == qfalse )
+			client->sess.spectatorState == SPECTATOR_NOT)
 		{
 			team_t team = client->sess.sessionTeam;
-			count[team]++;
-			health[team] += client->ps.stats[STAT_HEALTH];
-			health[team] += client->ps.stats[STAT_ARMOR];
+
+			lives[team] += client->ps.persistant[PERS_LIVES];
+
+			if (client->ps.stats[STAT_HEALTH] > 0 &&
+				client->ps.fallingToDeath == qfalse) {
+				count[team]++;
+				health[team] += MAX(0, client->ps.stats[STAT_HEALTH]);
+				health[team] += MAX(0, client->ps.stats[STAT_ARMOR]);
+			} else if (client->ps.persistant[PERS_LIVES] > 0) {
+				count[team]++;
+			}
 		}
 	}
 
@@ -2141,6 +2148,20 @@ static team_t GetRoundWinner( const char **explanation )
 				BG_TeamName( winner, CASE_NORMAL ), count[winner],
 				count[winner] > 1 ? "s" : "" );
 		}
+		return winner;
+	}
+
+	if ( lives[TEAM_RED] > lives[TEAM_BLUE] ) {
+		winner = TEAM_RED;
+	} else if ( lives[TEAM_BLUE] > lives[TEAM_RED] ) {
+		winner = TEAM_BLUE;
+	}
+
+	if ( winner != TEAM_SPECTATOR ) {
+		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+			" won the round (%d %s remaining)", BG_TeamColor( winner ),
+			BG_TeamName( winner, CASE_NORMAL ), lives[winner],
+			lives[winner] > 1 ? "lives" : "life" );
 		return winner;
 	}
 

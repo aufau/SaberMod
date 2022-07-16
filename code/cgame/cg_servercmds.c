@@ -180,7 +180,7 @@ static void CG_ParseServerinfo( const char *info ) {
 	cgs.fDisable = atoi( Info_ValueForKey( info, "fdisable" ) );
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
-	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
+	cgs.lifelimit = atoi( Info_ValueForKey( info, "lifelimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.roundlimit = atoi( Info_ValueForKey( info, "roundlimit" ) );
@@ -218,6 +218,7 @@ static void CG_ParseServerinfo( const char *info ) {
 	trap_Cvar_Set ( "ui_about_capturelimit", va("%i", cgs.capturelimit ) );
 	trap_Cvar_Set ( "ui_about_timelimit", va("%i", cgs.timelimit ) );
 	trap_Cvar_Set ( "ui_about_roundlimit", va("%i", cgs.roundlimit ) );
+	trap_Cvar_Set ( "ui_about_lifelimit", va("%i", cgs.lifelimit ) );
 	trap_Cvar_Set ( "ui_about_maxclients", va("%i", cgs.maxclients ) );
 	trap_Cvar_Set ( "ui_about_teamsize", Info_ValueForKey( info, "teamsize" ) );
 	trap_Cvar_Set ( "ui_about_dmflags", va("%i", cgs.dmflags ) );

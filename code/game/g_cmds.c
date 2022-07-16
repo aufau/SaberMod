@@ -62,7 +62,6 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 	for (i=0 ; i < numSorted ; i++) {
 		int		ping;
-		int		lives = 0;
 
 		cl = &level.clients[level.sortedClients[i]];
 
@@ -85,17 +84,13 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		netDamage -= cl->pers.totalDamageTakenFromEnemies;
 		netDamage /= 100; // Don't send exact data
 
-		if (level.round > 0 && !level.roundQueued && level.gametype != GT_REDROVER) {
-			lives = level.lives - cl->pers.persistant[PERS_SPAWN_COUNT];
-		}
-
 		Com_sprintf (entry, sizeof(entry),
 			" %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
 			level.sortedClients[i],
 			cl->pers.persistant[PERS_SCORE],
 			ping,
 			(level.time - cl->pers.enterTime)/60000,
-			lives,
+			cl->pers.persistant[PERS_LIVES],
 //			scoreFlags,
 			g_entities[level.sortedClients[i]].s.powerups,
 			accuracy,

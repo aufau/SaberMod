@@ -872,7 +872,7 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 				continue;
 			}
 
-			if (client->pers.persistant[PERS_SPAWN_COUNT] >= level.lives) {
+			if (client->pers.persistant[PERS_LIVES] <= 0) {
 				if (client->ps.stats[STAT_HEALTH] <= 0 ||
 					client->ps.fallingToDeath) {
 					continue;
@@ -1589,6 +1589,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
+	client->pers.persistant[PERS_LIVES] = MAX(0, g_lifelimit.integer - 1);
 
 	G_UpdateClientReadyFlags();
 

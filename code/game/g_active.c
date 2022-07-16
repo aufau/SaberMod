@@ -1108,13 +1108,16 @@ void G_Respawn( gentity_t *ent ) {
 			G_SwitchTeam(ent);
 		respawn( ent );
 	} else if ( level.round > 0 && !level.roundQueued &&
-		client->pers.persistant[PERS_SPAWN_COUNT] >= level.lives ) {
+		client->pers.persistant[PERS_LIVES] <= 0 ) {
 		team_t	team = client->sess.sessionTeam;
 
 		// currently this is the only entry point for spactating while
 		// not in TEAM_SPECTATOR. The exit is in NextRound.
 		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, FOLLOW_TEAM );
 	} else {
+		if ( level.round > 0 && !level.roundQueued ) {
+			client->pers.persistant[PERS_LIVES] = MAX(0, client->pers.persistant[PERS_LIVES] - 1);
+		}
 		respawn( ent );
 	}
 }
@@ -2033,7 +2036,7 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				client->ps = cl->ps;
 				client->ps.pm_flags |= PMF_FOLLOW;
 				client->ps.eFlags = flags;
-				// client->ps.persistant[PERS_SPAWN_COUNT] = client->pers.persistant[PERS_SPAWN_COUNT];
+				client->ps.persistant[PERS_SPAWN_COUNT] = client->pers.persistant[PERS_SPAWN_COUNT];
 			} else if ( client->sess.spectatorClient >= 0 ) {
 				StopFollowing(ent);
 			}
