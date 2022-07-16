@@ -1746,7 +1746,7 @@ static void G_ScoreKill( gentity_t *self, gentity_t *attacker, meansOfDeath_t me
 			}
 		}
 	}
-	else
+	else if (level.gametype != GT_LMS)
 	{
 		AddScore( attacker, self->r.currentOrigin, 1 );
 	}
@@ -1806,7 +1806,7 @@ static void G_ScoreTeamKill( gentity_t *self, gentity_t *attacker, meansOfDeath_
 			AddScore( attacker, self->r.currentOrigin, -1 );
 		}
 	}
-	else
+	else if (level.gametype != GT_LMS)
 	{
 		if ( meansOfDeath != MOD_LEAVE )
 			AddScore( attacker, self->r.currentOrigin, -1 );
@@ -3477,7 +3477,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			client->pers.totalDamageTakenFromEnemies += take;
 
-			if (GT_Round(level.gametype)) {
+			if (level.gametype == GT_CLANARENA) {
 				int	oldScore, newScore;
 
 				oldScore = attacker->client->pers.totalDamageDealtToEnemies / RND_DAMAGE_SCORE;

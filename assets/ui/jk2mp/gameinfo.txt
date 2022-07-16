@@ -11,8 +11,9 @@
 // 6 - GT_SAGA, // saga
 // 7 - GT_CTF, // capture the flag
 // 8 - GT_CTY, // capture the ysalimari
-// 9 - GT_REDROVER,
-// 10 - GT_CLANARENA,
+// 9 - GT_REDROVER, // redrover
+// 10 - GT_CLANARENA, // clan arena
+// 11 - GT_LMS, // last man standing
 
 gametypes
 {
@@ -25,6 +26,7 @@ gametypes
 	{ "Capture the Ysalimari" 8 }
 	{ "Red Rover" 9 }
 	{ "Clan Arena" 10 }
+	{ "Last Man Standing" 11 }
 }
 
 // english name, map name, vs count, par times per gametype valid gametyes for ui
@@ -46,4 +48,5 @@ joingametypes
 	{ "Capture the Ysalimari" 8 }
 	{ "Red Rover" 9 }
 	{ "Clan Arena" 10 }
+	{ "Last Man Standing" 11 }
 }

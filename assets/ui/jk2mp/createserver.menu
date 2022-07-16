@@ -504,6 +504,8 @@
 				"6" ;
 				"7" ;
 				"8" ;
+				"9" ;
+				"10" ;
 			}
 			rect                    207 113 221 20
 			textalign               ITEM_ALIGN_RIGHT

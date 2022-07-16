@@ -1,7 +1,7 @@
 VERSION 1
 ID 137
 REFERENCE SABERINGAME
-COUNT 19
+COUNT 21
 INDEX 0
 {
    REFERENCE TEAMSIZE
@@ -173,6 +173,16 @@ INDEX 18
    TEXT_LANGUAGE3 "Match will resume in %d seconds"
    TEXT_LANGUAGE6 "Match will resume in %d seconds"
    TEXT_LANGUAGE8 "Match will resume in %d seconds"
+}
+INDEX 19
+{
+   REFERENCE RULES_LAST_MAN_STANDING_1
+   NOTES "On map loading screen"
+   TEXT_LANGUAGE1 "Rules:  Defeat all enemies to be the last man standing."
+   TEXT_LANGUAGE2 "Rules:  Defeat all enemies to be the last man standing."
+   TEXT_LANGUAGE3 "Rules:  Defeat all enemies to be the last man standing."
+   TEXT_LANGUAGE6 "Rules:  Defeat all enemies to be the last man standing."
+   TEXT_LANGUAGE8 "Rules:  Defeat all enemies to be the last man standing."
 }
 
 // Don't remove, replace or reorder items. Always update COUNT.

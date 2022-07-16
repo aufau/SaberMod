@@ -159,20 +159,18 @@ typedef enum {
 	GT_JEDIMASTER,		// 2 - jedi master
 	GT_TOURNAMENT,		// 3 - one on one tournament
 	GT_SINGLE_PLAYER,	// 4 - single player ffa
-
-	//-- team games go after this --
-
 	GT_TEAM,			// 5 - team deathmatch
 	GT_SAGA,			// 6 - saga
 	GT_CTF,				// 7 - capture the flag
 	GT_CTY,				// 8 - capture the ysalamiri
 	GT_REDROVER,		// 9 - slain join your team
 	GT_CLANARENA,		// 10 - round-based tffa
+	GT_LMS,				// 11 - last man standing ffa
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
-#define GT_Team(x) ((x) >= GT_TEAM)
+#define GT_Team(x) ((x) >= GT_TEAM && (x) <= GT_CLANARENA)
 #define GT_Round(x) ((x) >= GT_REDROVER)
 #define GT_Valid(x) (0 <= (x) && (x) < GT_MAX_GAME_TYPE)
 

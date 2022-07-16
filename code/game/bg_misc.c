@@ -38,6 +38,7 @@ const char * const gametypeLong[GT_MAX_GAME_TYPE] = {
 	"Capture the Ysalamiri",
 	"Red Rover",
 	"Clan Arena",
+	"Last Man Standing",
 };
 
 const char * const gametypeShort[GT_MAX_GAME_TYPE] = {
@@ -52,6 +53,7 @@ const char * const gametypeShort[GT_MAX_GAME_TYPE] = {
 	"CTY",
 	"REDROVER",
 	"CLANARENA",
+	"LMS",
 };
 
 //rww - not putting @ in front of these because

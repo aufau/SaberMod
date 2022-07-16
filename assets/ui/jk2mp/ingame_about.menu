@@ -110,6 +110,7 @@
 				@MENUS1_CAPTURE_THE_YSALIMARI 8
 				@SABERMENUS_RED_ROVER   9
 				@SABERMENUS_CLAN_ARENA  10
+				@SABERMENUS_LAST_MAN_STANDING 11
 			}
 
 			textalignx              110
@@ -204,6 +205,7 @@
 				"8" ;
 				"9" ;
 				"10" ;
+				"11" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_fraglimit"
@@ -255,6 +257,7 @@
 			{
 				"9" ;
 				"10" ;
+				"11" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_roundlimit"
@@ -303,6 +306,7 @@
 			showCvar
 			{
 				"10" ;
+				"11" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_lifelimit"

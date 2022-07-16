@@ -1662,7 +1662,11 @@ static void NextRound( void )
 
 	level.roundQueued = level.time + (g_roundWarmup.integer - 1) * 1000;
 	// repeat the round in case of draw
-	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
+	if (GT_Team(level.gametype) && level.gametype != GT_REDROVER) {
+		level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
+	} else {
+		level.round++;
+	}
 	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
 	trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
 	trap_SetConfigstring(CS_INTERMISSION, "");
@@ -1900,6 +1904,28 @@ static void LogRoundExit( team_t team, const char *string )
 	G_LogPrintf( LOG_GAME, "RoundExit: %s: %s\n", param1, string );
 }
 
+static void LogRoundExitLMS( gentity_t *ent, const char *explanation )
+{
+	const char	*string;
+	int			num;
+
+	level.intermissionQueued = level.time;
+	trap_SetConfigstring( CS_INTERMISSION, "1" );
+
+	if (ent) {
+		num = (int)(ent - g_entities);
+		string = ent->client->info.netname;
+	} else {
+		num = -1;
+		string = explanation;
+	}
+
+	G_LogPrintf( LOG_GAME, "RoundExitLMS: %d: %s\n", num, string );
+	
+	// update CS_SCORES1 and CS_SCORES2
+	CalculateRanks(); // calls CheckExitRules!
+}
+
 qboolean gDidDuelStuff = qfalse; //gets reset on game reinit
 
 /*
@@ -2092,12 +2118,12 @@ qboolean ScoreIsTied( void ) {
 
 /*
 =============
-GetStrongerTeam
+GetRoundTeamWinner
 
 Returns stronger team out of red and blue, or spectator on draw
 =============
 */
-static team_t GetRoundWinner( const char **explanation )
+static team_t GetRoundTeamWinner( const char **explanation )
 {
 	static char	expl[128];
 	team_t		winner;
@@ -2236,6 +2262,43 @@ static gclient_t *GetFFAWinner( const char **explanation )
 }
 
 /*
+=============
+GetLastManStanding
+
+Returns last man standing entity or NULL
+
+This MUST return an entity when TeamCount(-1, TEAM_FREE, qfalse)
+returns 1 (when there are no team players)
+=============
+*/
+gentity_t *GetLastManStanding( void ) {
+	int			i;
+	gentity_t	*ent = NULL;
+
+	for ( i = 0 ; i < level.maxclients ; i++ ) {
+		gclient_t	*client = &level.clients[i];
+
+		if (client->pers.connected == CON_DISCONNECTED ||
+			client->sess.spectatorState != SPECTATOR_NOT) {
+			continue;
+		}
+
+		if (client->pers.persistant[PERS_LIVES] > 0 ||
+			(client->ps.stats[STAT_HEALTH] > 0 && !client->ps.fallingToDeath))
+		{
+			if (ent) {
+				// there is two or more men standing
+				return NULL;
+			}
+
+			ent = &g_entities[i];
+		}
+	}
+
+	return ent;
+}
+
+/*
 =================
 G_QueueServerCommand
 
@@ -2334,14 +2397,14 @@ void CheckExitRules( void ) {
 				qboolean abort = qfalse;
 				qboolean roundlimitHit = qfalse;
 
-				if ( level.gametype == GT_REDROVER ) {
+				if (level.gametype == GT_REDROVER || level.gametype == GT_LMS) {
 					if ( level.numPlayingClients < 2 )
 						abort = qtrue;
 					if ( g_roundlimit.integer > 0 && level.round >= g_roundlimit.integer ) {
 						roundlimitHit = qtrue;
 						trap_SendServerCommand( -1, "print \"Roundlimit hit.\n\"" );
 					}
-				} else {
+				} else if (GT_Team(level.gametype)) {
 					int	redCount = TeamCount( -1, TEAM_RED, qtrue );
 					int	blueCount = TeamCount( -1, TEAM_BLUE, qtrue );
 
@@ -2435,8 +2498,11 @@ void CheckExitRules( void ) {
 				GetFFAWinner( &explanation );
 				AddTeamScore( level.intermission_origin, TEAM_RED, 1 );
 				LogRoundExit( TEAM_RED, "Timelimit hit." );
-			} else if ( GT_Round(level.gametype) ) {
-				team_t		winner = GetRoundWinner( &explanation );
+			} else if ( level.gametype == GT_LMS ) {
+				explanation = "No winner";
+				LogRoundExitLMS( NULL, "Timelimit hit." );
+			} else if ( GT_Round(level.gametype) && GT_Team(level.gametype) ) {
+				team_t		winner = GetRoundTeamWinner( &explanation );
 				AddTeamScore( level.intermission_origin, winner, 1 );
 				LogRoundExit( winner, "Timelimit hit." );
 			} else if ( GT_Team(level.gametype) ) {
@@ -2453,27 +2519,49 @@ void CheckExitRules( void ) {
 		}
 	}
 
+	// begin first round of the game or quit when not enough players
 	if ( GT_Round(level.gametype) ) {
-		int redCount = TeamCount( -1, TEAM_RED, qfalse );
-		int blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
+		if ( GT_Team(level.gametype) ) {
+			int redCount = TeamCount( -1, TEAM_RED, qfalse );
+			int blueCount = TeamCount( -1, TEAM_BLUE, qfalse );
 
-		// begin first round of the game
-		if ( level.round == 0 ) {
-			if ( redCount > 0 && blueCount > 0 )
-				NextRound();
-			return;
-		} else if ( redCount == 0 || blueCount == 0 ) {
-			const char	*explanation;
-			team_t		winner = GetRoundWinner( &explanation );
+			if ( level.round == 0 ) {
+				if ( redCount > 0 && blueCount > 0 )
+					NextRound();
+				return;
+			} else if ( redCount == 0 || blueCount == 0 ) {
+				const char	*explanation;
+				team_t		winner = GetRoundTeamWinner( &explanation );
 
-			AddTeamScore( level.intermission_origin, winner, 1 );
-			if ( level.gametype == GT_REDROVER ) {
-				G_QueueServerCommand( "print \"Team eliminated.\n\"" );
-			} else {
-				G_QueueServerCommand( "print \"Team eliminated. %s.\n\"", explanation );
+				AddTeamScore( level.intermission_origin, winner, 1 );
+				if ( level.gametype == GT_REDROVER ) {
+					G_QueueServerCommand( "print \"Team eliminated.\n\"" );
+				} else {
+					G_QueueServerCommand( "print \"Team eliminated. %s.\n\"", explanation );
+				}
+				LogRoundExit( winner, "Team eliminated." );
+				return;
 			}
-			LogRoundExit( winner, "Team eliminated." );
-			return;
+		} else {
+			int count = TeamCount( -1, TEAM_FREE, qfalse );
+
+			if ( level.round == 0 ) {
+				if ( count > 1 )
+					NextRound();
+				return;
+			}
+
+			if ( count == 0 ) {
+				G_QueueServerCommand( "print \"No man standing.\n\"" );
+				LogRoundExitLMS( NULL, "No man standing." );
+			} else if ( count == 1 ) {
+				gentity_t *lms = GetLastManStanding( );
+				// AddScore calls CalculateRanks calls CheckExitRules calls AddScore
+				// AddScore( lms, lms->r.currentOrigin, 1 );
+				lms->client->pers.persistant[PERS_SCORE]++;
+				G_QueueServerCommand( "print \"%s" S_COLOR_WHITE " won the round.\n\"", lms->client->info.netname );
+				LogRoundExitLMS( lms, "Last man standing" );
+			}
 		}
 	}
 
@@ -2699,6 +2787,10 @@ void CheckTournament( void ) {
 			notEnough = qtrue;
 		}
 
+		if ( level.numPlayingClients < 2 ) {
+			notEnough = qtrue;
+		}
+
 		if ( !notEnough && GT_Team(level.gametype) && level.gametype != GT_REDROVER ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE, qtrue );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED, qtrue );
@@ -2706,8 +2798,6 @@ void CheckTournament( void ) {
 			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
 				notEnough = qtrue;
 			}
-		} if ( level.numPlayingClients < 2 ) {
-			notEnough = qtrue;
 		}
 
 		if ( notEnough ) {

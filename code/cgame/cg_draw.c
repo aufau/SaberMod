@@ -1230,7 +1230,7 @@ void CG_DrawHUD(centity_t	*cent)
 	UI_DrawScaledProportionalString(cgs.screenWidth-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
 	if (GT_Round(cgs.gametype) && cgs.round > 0) {
-		if (cgs.gametype == GT_REDROVER) {
+		if (cgs.gametype == GT_REDROVER || cgs.gametype == GT_LMS) {
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
 		} else {
 			scoreStr = va("Round Limit: %i", cgs.roundlimit);
@@ -2010,7 +2010,7 @@ static void CG_DrawCountdown( void )
 	char		*s;
 	int			msec;
 
-	if (cgs.gametype != GT_CLANARENA) {
+	if (!GT_Round(cgs.gametype)) {
 		return;
 	}
 	if (!cgs.timelimit) {

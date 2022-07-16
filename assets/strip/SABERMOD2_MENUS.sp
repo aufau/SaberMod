@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 102
+COUNT 103
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -943,4 +943,14 @@ INDEX 101
    TEXT_LANGUAGE3 "Lives per round."
    TEXT_LANGUAGE6 "Lives per round."
    TEXT_LANGUAGE8 "Lives per round."
+}
+INDEX 102
+{
+   REFERENCE LAST_MAN_STANDING
+   NOTES "Ingame about menu"
+   TEXT_LANGUAGE1 "Last Man Standing"
+   TEXT_LANGUAGE2 "Last Man Standing"
+   TEXT_LANGUAGE3 "Last Man Standing"
+   TEXT_LANGUAGE6 "Last Man Standing"
+   TEXT_LANGUAGE8 "Last Man Standing"
 }

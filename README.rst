@@ -515,6 +515,12 @@ Clan Arena (g_gametype 10)
   team is eliminated, round is over. Team who hits the round limit
   first wins the match.
 
+Last Man Standing (g_gametype 11)
+  Player who dies must spectate until the end of a round. When
+  everyone else is dead, last man standing receives 1 point and the
+  game progresses to next round. There are no points for killing
+  enemies or dealing damage.
+
 Server Modes
 ............
 
