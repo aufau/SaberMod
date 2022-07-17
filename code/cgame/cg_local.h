@@ -441,7 +441,6 @@ typedef struct {
 	int				score;
 	int				ping;
 	int				time;
-	int				scoreFlags;
 	int				powerUps;
 	int				accuracy;
 	int				impressiveCount;
@@ -455,6 +454,7 @@ typedef struct {
 	int				kills;
 	int				deaths;
 	int				netDamage;
+	int				lives;
 } score_t;
 
 // each client has an associated clientInfo_t
@@ -1396,6 +1396,7 @@ typedef struct {
 	int				capturelimit;
 	int				timelimit;
 	int				roundlimit;
+	int				lifelimit;
 	int				maxclients;
 	qboolean		needpass;
 	qboolean		jediVmerc;

@@ -248,6 +248,7 @@ void G_UpdateCollisionMap(void)
 		}
 		break;
 	case GT_TOURNAMENT:
+	case GT_LMS:
 		break;
 	default:	// Team
 		if (g_dmflags.integer & DF_TEAM_PASS) {

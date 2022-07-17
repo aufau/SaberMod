@@ -80,6 +80,7 @@ typedef enum {
 	SBC_W_L_SM,
 	SBC_K_D,
 	SBC_NET_DMG,
+	SBC_LIVES,
 	SBC_MAX
 } sbColumn_t;
 
@@ -94,10 +95,13 @@ static sbColumnData_t columnData[SBC_MAX];
 static const sbColumn_t ffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_NET_DMG, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t iffaColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t ffaDuelColumns[] = { SBC_SCORE, SBC_W_L_SM, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ffa1lifeLMSColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ffaLMSColumns[] = { SBC_LIVES, SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t duelColumns[] = { SBC_SCORE, SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t duelFraglimit1Columns[] = { SBC_W_L, SBC_PING, SBC_TIME, SBC_MAX };
 static const sbColumn_t ctfColumns[] = { SBC_SCORE, SBC_K_D, SBC_CAP, SBC_AST, SBC_DEF, SBC_PING, SBC_TIME, SBC_MAX };
-static const sbColumn_t caColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t ca1lifeColumns[] = { SBC_SCORE, SBC_K_D, SBC_PING, SBC_TIME, SBC_MAX };
+static const sbColumn_t caColumns[] = { SBC_LIVES, SBC_SCORE, SBC_PING, SBC_TIME, SBC_MAX };
 
 static void CG_InitScoreboardColumn(sbColumn_t field, const char *label, const char *maxValue, float scale)
 {
@@ -167,6 +171,10 @@ static void CG_DrawScoreboardLabel(sbColumn_t field, float x, float y)
 	case SBC_NET_DMG:
 		label = "Net";
 		CG_InitScoreboardColumn(field, label, "-99.9k", SB_SCALE);
+		break;
+	case SBC_LIVES:
+		label = "Lives";
+		CG_InitScoreboardColumn(field, label, "99", SB_SCALE_LARGE);
 		break;
 	case SBC_MAX:
 		return;
@@ -238,6 +246,11 @@ static void CG_DrawScoreboardField(sbColumn_t field, float x, float y, float sca
 			CG_Text_Paint (x, y, s, colorWhite, CG_FormatNetDamage(score->netDamage),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		} else {
 			CG_Text_Paint (x, y, s, colorWhite, " 0",0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
+		}
+		break;
+	case SBC_LIVES:
+		if (!spectator) {
+			CG_Text_Paint (x, y, s, colorWhite, va("%i", score->lives),0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_SMALL );
 		}
 		break;
 	case SBC_MAX:
@@ -387,7 +400,7 @@ static void CG_DrawClientScore( int y, const sbColumn_t *columns, score_t *score
 		}
 	}
 	else if ( GT_Round(cgs.gametype) && cg.predictedPlayerState.pm_type != PM_INTERMISSION &&
-		score->dead && ci->team != TEAM_SPECTATOR )
+		score->dead && score->lives <= 0 && ci->team != TEAM_SPECTATOR )
 	{
 		UI_DrawScaledProportionalString(SB_RIGHT_MARKER_X, y + 2,
 			CG_GetStripEdString("SABERINGAME", "DEAD"), UI_RIGHT, colorRed, 0.7f * scale);
@@ -614,7 +627,18 @@ qboolean CG_DrawOldScoreboard( void ) {
 		columns = ctfColumns;
 		break;
 	case GT_CLANARENA:
-		columns = caColumns;
+		if (cgs.lifelimit > 1) {
+			columns = caColumns;
+		} else {
+			columns = ca1lifeColumns;
+		}
+		break;
+	case GT_LMS:
+		if (cgs.lifelimit > 1) {
+			columns = ffaLMSColumns;
+		} else {
+			columns = ffa1lifeLMSColumns;
+		}
 		break;
 	default:
 		columns = ffaColumns;

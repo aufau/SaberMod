@@ -859,19 +859,24 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	int		count = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		// this is used for game rules and after map restart so
-		// count CON_CONNECTING clients too.
-		if (level.clients[i].pers.connected == CON_DISCONNECTED ||
-			level.clients[i].sess.sessionTeam != team ||
-			i == ignoreClientNum ) {
+		gclient_t	*client = &level.clients[i];
+
+		if (client->pers.connected == CON_DISCONNECTED ||
+			client->sess.sessionTeam != team ||
+			i == ignoreClientNum) {
 			continue;
 		}
 
 		if ( !dead ) {
-			if (level.clients[i].sess.spectatorState != SPECTATOR_NOT ||
-				level.clients[i].ps.stats[STAT_HEALTH] <= 0 ||
-				level.clients[i].ps.fallingToDeath) {
+			if (client->sess.spectatorState != SPECTATOR_NOT) {
 				continue;
+			}
+
+			if (client->pers.persistant[PERS_LIVES] <= 0) {
+				if (client->ps.stats[STAT_HEALTH] <= 0 ||
+					client->ps.fallingToDeath) {
+					continue;
+				}
 			}
 		}
 
@@ -1584,6 +1589,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
+	client->pers.persistant[PERS_LIVES] = MAX(0, g_lifelimit.integer - 1);
 
 	G_UpdateClientReadyFlags();
 

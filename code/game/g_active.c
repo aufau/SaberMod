@@ -1107,13 +1107,17 @@ void G_Respawn( gentity_t *ent ) {
 		if ( !level.roundQueued )
 			G_SwitchTeam(ent);
 		respawn( ent );
-	} else if ( level.round > 0 && !level.roundQueued && !level.warmupTime) {
+	} else if ( level.round > 0 && !level.roundQueued &&
+		client->pers.persistant[PERS_LIVES] <= 0 ) {
 		team_t	team = client->sess.sessionTeam;
 
 		// currently this is the only entry point for spactating while
 		// not in TEAM_SPECTATOR. The exit is in NextRound.
 		SetTeamSpec( ent, team, SPECTATOR_FOLLOW, FOLLOW_TEAM );
 	} else {
+		if ( level.round > 0 && !level.roundQueued ) {
+			client->pers.persistant[PERS_LIVES] = MAX(0, client->pers.persistant[PERS_LIVES] - 1);
+		}
 		respawn( ent );
 	}
 }

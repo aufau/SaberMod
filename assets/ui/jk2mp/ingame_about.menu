@@ -110,6 +110,7 @@
 				@MENUS1_CAPTURE_THE_YSALIMARI 8
 				@SABERMENUS_RED_ROVER   9
 				@SABERMENUS_CLAN_ARENA  10
+				@SABERMENUS_LAST_MAN_STANDING 11
 			}
 
 			textalignx              110
@@ -204,6 +205,7 @@
 				"8" ;
 				"9" ;
 				"10" ;
+				"11" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_fraglimit"
@@ -255,6 +257,7 @@
 			{
 				"9" ;
 				"10" ;
+				"11" ;
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_roundlimit"
@@ -282,6 +285,31 @@
 			}
 			maxPaintChars           12
 			cvar                    "ui_about_roundlimit"
+			textalign               ITEM_ALIGN_RIGHT
+			textalignx              160
+			textaligny              2
+			font                    2
+			textscale               .9
+			forecolor               1 1 1 1
+			visible                 1
+			decoration
+		}
+
+		itemDef
+		{
+			name                    about
+			rect                    10 160 300 20
+			type                    4
+			style                   0
+			text                    @SABERMENUS_LIFE_LIMIT
+			cvarTest                "ui_about_gametype"
+			showCvar
+			{
+				"10" ;
+				"11" ;
+			}
+			maxPaintChars           12
+			cvar                    "ui_about_lifelimit"
 			textalign               ITEM_ALIGN_RIGHT
 			textalignx              160
 			textaligny              2

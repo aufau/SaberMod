@@ -1219,16 +1219,23 @@ void CG_DrawHUD(centity_t	*cent)
 		scoreStr = va("Score: %i%s", cg.snap->ps.persistant[PERS_SCORE], scoreBiasStr);
 	}
 #endif
+	else if (GT_Round(cgs.gametype) && cgs.lifelimit > 1)
+	{
+		scoreStr = va("Lives: %i", cg.snap->ps.persistant[PERS_LIVES]);
+	}
 	else
 	{	// Don't draw a bias.
 		scoreStr = va("Score: %i", cg.snap->ps.persistant[PERS_SCORE]);
 	}
 	UI_DrawScaledProportionalString(cgs.screenWidth-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
-	if (GT_Round(cgs.gametype) && cgs.round > 0) {
-		if (cgs.gametype == GT_REDROVER) {
+	if (GT_Round(cgs.gametype) && cgs.round > 0 && cgs.roundlimit != 1) {
+		if (cgs.roundlimit <= 0) {
+			scoreStr = va("Round: %i", cgs.round);
+		} else if (cgs.gametype == GT_REDROVER || cgs.gametype == GT_LMS) {
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
 		} else {
+			// Team round gametypes last until one team score hits roundlimit
 			scoreStr = va("Round Limit: %i", cgs.roundlimit);
 		}
 		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
@@ -2006,7 +2013,7 @@ static void CG_DrawCountdown( void )
 	char		*s;
 	int			msec;
 
-	if (cgs.gametype != GT_CLANARENA) {
+	if (!GT_Round(cgs.gametype)) {
 		return;
 	}
 	if (!cgs.timelimit) {

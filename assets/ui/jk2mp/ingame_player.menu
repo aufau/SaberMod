@@ -1183,7 +1183,8 @@
 				"1" ;
 				"2" ;
 				"3" ;
-				"4"
+				"4" ;
+				"11" ;
 			}
 			descText                @MENUS2_CHANGES_AND_JOIN_THE
 			visible                 1
@@ -1240,7 +1241,8 @@
 				"1" ;
 				"2" ;
 				"3" ;
-				"4"
+				"4" ;
+				"11" ;
 			}
 			descText                @MENUS2_AND_JOIN_THE_BLUE_TEAM
 			visible                 1

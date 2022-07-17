@@ -154,25 +154,23 @@ typedef enum {
 #define G2_MODEL_PART	50
 
 typedef enum {
-	GT_FFA,				// free for all
-	GT_HOLOCRON,		// holocron ffa
-	GT_JEDIMASTER,		// jedi master
-	GT_TOURNAMENT,		// one on one tournament
-	GT_SINGLE_PLAYER,	// single player ffa
-
-	//-- team games go after this --
-
-	GT_TEAM,			// team deathmatch
-	GT_SAGA,			// saga
-	GT_CTF,				// capture the flag
-	GT_CTY,
-	GT_REDROVER,		// slain join your team
-	GT_CLANARENA,		// round-based tffa
+	GT_FFA,				// 0 - free for all
+	GT_HOLOCRON,		// 1 - holocron ffa
+	GT_JEDIMASTER,		// 2 - jedi master
+	GT_TOURNAMENT,		// 3 - one on one tournament
+	GT_SINGLE_PLAYER,	// 4 - single player ffa
+	GT_TEAM,			// 5 - team deathmatch
+	GT_SAGA,			// 6 - saga
+	GT_CTF,				// 7 - capture the flag
+	GT_CTY,				// 8 - capture the ysalamiri
+	GT_REDROVER,		// 9 - slain join your team
+	GT_CLANARENA,		// 10 - round-based tffa
+	GT_LMS,				// 11 - last man standing ffa
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
 #define GT_Flag(x) ((x) == GT_CTF || (x) == GT_CTY )
-#define GT_Team(x) ((x) >= GT_TEAM)
+#define GT_Team(x) ((x) >= GT_TEAM && (x) <= GT_CLANARENA)
 #define GT_Round(x) ((x) >= GT_REDROVER)
 #define GT_Valid(x) (0 <= (x) && (x) < GT_MAX_GAME_TYPE)
 
@@ -346,7 +344,7 @@ typedef enum {
 	PERS_HITS,						// total points damage inflicted so damage beeps can sound on change
 	PERS_RANK,						// player rank or team rank
 	PERS_TEAM,						// player team
-	PERS_SPAWN_COUNT,				// incremented every respawn
+	PERS_SPAWN_COUNT,				// incremented every respawn - tracked by cgame to detect respawn
 	PERS_PLAYEREVENTS,				// 16 bits that can be flipped for events
 	PERS_ATTACKER,					// clientnum of last damage inflicter
 	PERS_KILLS,						// how many enemies you killed
@@ -358,6 +356,7 @@ typedef enum {
 	PERS_ASSIST_COUNT,				// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,		// kills with the guantlet
 	PERS_CAPTURES,					// captures
+	PERS_LIVES,						// remaining lives
 	PERS_MAX
 } persEnum_t;
 

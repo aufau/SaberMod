@@ -156,6 +156,7 @@ static int G_GetMapTypeBits(const char *type)
 			typeBits |= (1 << GT_TEAM);
 			typeBits |= (1 << GT_REDROVER);
 			typeBits |= (1 << GT_CLANARENA);
+			typeBits |= (1 << GT_LMS);
 		}
 		if( strstr( type, "holocron" ) ) {
 			typeBits |= (1 << GT_HOLOCRON);
@@ -694,6 +695,7 @@ void G_CheckMinimumPlayers( void ) {
 	case GT_FFA:
 	case GT_HOLOCRON:
 	case GT_JEDIMASTER:
+	case GT_LMS:
 	default:
 		if (minplayers >= level.maxclients) {
 			minplayers = level.maxclients-1;

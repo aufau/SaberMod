@@ -448,6 +448,10 @@ void CG_DrawInformation( void ) {
 			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
 		y += iPropHeight;
 		break;
+	case GT_LMS:
+		UI_DrawProportionalString( x, y, CG_GetStripEdString("SABERINGAME", "RULES_LAST_MAN_STANDING_1"),
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+		y += iPropHeight;
 	default:
 		break;
 	}

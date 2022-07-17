@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 100
+COUNT 103
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -923,4 +923,34 @@ INDEX 99
    TEXT_LANGUAGE3 "Demo & Screenshot"
    TEXT_LANGUAGE6 "Demo & Screenshot"
    TEXT_LANGUAGE8 "Demo & Screenshot"
+}
+INDEX 100
+{
+   REFERENCE LIFE_LIMIT
+   NOTES "Ingame about menu"
+   TEXT_LANGUAGE1 "Life Limit:"
+   TEXT_LANGUAGE2 "Life Limit:"
+   TEXT_LANGUAGE3 "Life Limit:"
+   TEXT_LANGUAGE6 "Life Limit:"
+   TEXT_LANGUAGE8 "Life Limit:"
+}
+INDEX 101
+{
+   REFERENCE LIFE_LIMIT_DESC
+   NOTES "Ingame callvote menu"
+   TEXT_LANGUAGE1 "Lives per round."
+   TEXT_LANGUAGE2 "Lives per round."
+   TEXT_LANGUAGE3 "Lives per round."
+   TEXT_LANGUAGE6 "Lives per round."
+   TEXT_LANGUAGE8 "Lives per round."
+}
+INDEX 102
+{
+   REFERENCE LAST_MAN_STANDING
+   NOTES "Ingame about menu"
+   TEXT_LANGUAGE1 "Last Man Standing"
+   TEXT_LANGUAGE2 "Last Man Standing"
+   TEXT_LANGUAGE3 "Last Man Standing"
+   TEXT_LANGUAGE6 "Last Man Standing"
+   TEXT_LANGUAGE8 "Last Man Standing"
 }

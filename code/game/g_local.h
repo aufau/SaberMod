@@ -104,6 +104,7 @@ typedef enum {
 	CV_POLL,
 	CV_REFEREE,
 	CV_ABORT,
+	CV_LIFELIMIT,
 	CV_MAX
 } voteCmd_t;
 
@@ -1318,6 +1319,7 @@ extern	vmCvar_t	g_refereePassword;
 extern	vmCvar_t	g_allowTeamVote;
 extern	vmCvar_t	g_vampiricDamage;
 extern	vmCvar_t	g_removeUnreachableItems;
+extern	vmCvar_t	g_lifelimit;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

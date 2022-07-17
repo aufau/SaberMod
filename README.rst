@@ -288,6 +288,9 @@ teamsize <size>
 roundlimit <limit>
   Number of rounds in a round-based match.
 
+lifelimit <limit>
+  Number of lives per round in a round-based match.
+
 duel_fraglimit
   Removed. Use roundlimit instead.
 
@@ -328,7 +331,7 @@ g_allowVote <0|1|bitmask>
   1024 - Roundlimit      2048 - Teamsize        4096 - Remove
   8192 - WK/NK           16384 - Mode           32768 - Match Mode
   65536 - Capturelimit   131072 - Poll          262144 - Referee
-  524288 - Abort
+  524288 - Abort         524288 - Lifelimit
   =====================  =====================  =====================
 
 g_antiWarp <0|1|2>
@@ -502,7 +505,9 @@ items (controlled by *g_spawnWeapons* and *g_spawnItems* cvars),
 however there are no pickups on the map. Players gain one point for
 killing an enemy and one point for each 50 damage dealt to the enemy
 team. A round lasts until either one team is eliminated or a timelimit
-is hit. Match ends when a roundlimit is hit.
+is hit. Match ends when a roundlimit is hit. Lifelimit is a new
+setting that allows players to respawn in a single run until their
+lives run out.
 
 Red Rover (g_gametype 9)
   It can be described as FFA with a twist. There are two teams, player
@@ -514,6 +519,12 @@ Clan Arena (g_gametype 10)
   Player who dies must spectate until the end of a round. When one
   team is eliminated, round is over. Team who hits the round limit
   first wins the match.
+
+Last Man Standing (g_gametype 11)
+  Player who dies must spectate until the end of a round. When
+  everyone else is dead, last man standing receives 1 point and the
+  game progresses to next round. There are no points for killing
+  enemies or dealing damage.
 
 Server Modes
 ............

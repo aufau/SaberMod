@@ -47,12 +47,11 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	int			stringlength;
 	int			i, j;
 	gclient_t	*cl;
-	int			numSorted, scoreFlags, accuracy, dead, netDamage;
+	int			numSorted, accuracy, dead, netDamage;
 
 	// send the latest information on all clients
 	string[0] = 0;
 	stringlength = 0;
-	scoreFlags = 0;
 
 	numSorted = level.numConnectedClients;
 
@@ -91,7 +90,8 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 			cl->pers.persistant[PERS_SCORE],
 			ping,
 			(level.time - cl->pers.enterTime)/60000,
-			scoreFlags,
+			cl->pers.persistant[PERS_LIVES],
+//			scoreFlags,
 			g_entities[level.sortedClients[i]].s.powerups,
 			accuracy,
 			cl->pers.persistant[PERS_KILLED],
@@ -1799,6 +1799,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		{ "poll",			"Poll",			" <question>" },	// CV_POLL
 		{ "referee",		"Referee",		" <name|num>" },	// CV_REFEREE
 		{ "abort",			"Abort Match",	"" },				// CV_ABORT
+		{ "lifelimit",		"Lifelimit",	" <lives>" },		// CV_LIFELIMIT
 	};
 
 	if ( ent->client->sess.referee ) {
