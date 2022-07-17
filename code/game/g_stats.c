@@ -2,7 +2,7 @@
 ================================================================================
 This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -44,6 +44,7 @@ typedef struct {
 	const char * const	label;
 	const char * const	shortLabel;
 	const int			width;
+	const char * const	format;
 	qboolean			disabled;
 } statColumn_t;
 
@@ -51,19 +52,19 @@ typedef struct {
 
 // Keep this in the same order as playerStat_t
 static statColumn_t statCol[STATS_MAX] = {
-	{ "Score",			"S", 4 },
-	{ "Kills",			"K", 3 },
-	{ "Captures",		"Cap", 3 },
-	{ "Defends",		"Def", 3 },
-	{ "Assists",		"Ast", 3 },
-	{ "Accuracy",		"Acc", 3 },
-	{ "Impressive",		"Imp", 3 },
-	{ "Damage",			"Dmg", 5 },
-	{ "Net Damage",		"Net", 5 },
-	{ "Deaths",			"D", 3 },
-	{ "Received",		"Rcv", 5 },
-	{ "Team Damage",	"TDmg", 5 },
-	{ "Team Received",	"TRcv", 5 },
+	{ "Score",			"S"   , 4, "%d" },
+	{ "Kills",			"K"   , 3, "%d" },
+	{ "Captures",		"Cap" , 3, "%d" },
+	{ "Defends",		"Def" , 3, "%d" },
+	{ "Assists",		"Ast" , 3, "%d" },
+	{ "Accuracy",		"Acc" , 3, "%d" },
+	{ "Impressive",		"Imp" , 3, "%d" },
+	{ "Damage",			"Dmg" , 5, "%d" },
+	{ "Net Damage",		"Net" , 5, "%+d" },
+	{ "Deaths",			"D"   , 3, "%d" },
+	{ "Received",		"Rcv" , 5, "%d" },
+	{ "Team Damage",	"TDmg", 5, "%d" },
+	{ "Team Received",	"TRcv", 5, "%d" },
 };
 
 static const playerStat_t logColumns[] =
@@ -150,39 +151,40 @@ static void PrintStatsSeparator( const playerStat_t *columns, const char *colorS
 		va("print \"%s%s\n\"", colorString, line));
 }
 
-static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, const int *bestStats )
+static void PrintStatsRow( const char *name, const playerStat_t *columns, const int stats[STATS_MAX], const int bestStats[STATS_MAX] )
 {
 	char		line[2 * DEFAULT_CONSOLE_WIDTH + 1]; // extra space for color codes
 	char		*p = line;
 	const char	*e = line + sizeof(line);
-	int			stats[STATS_MAX];
 	size_t		pad;
 	int			i;
 
-	GetStats(stats, cl);
-
-	pad = MAX_NAME_LEN - Q_PrintStrlen(cl->info.netname);
-	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, cl->info.netname, Spaces(pad));
+	pad = MAX_NAME_LEN - Q_PrintStrlen(name);
+	p += Com_sprintf(p, e - p, "%s%s" S_COLOR_WHITE, name, Spaces(pad));
 
 	for (i = 0; columns[i] != STATS_MAX; i++) {
 		playerStat_t stat = columns[i];
-		const char *value = va("%i", stats[stat]);
-		int len = strlen(value);
+		char value[16];
+		int len;
 
 		if (statCol[stat].disabled)
 			continue;
 
+		Com_sprintf(value, sizeof(value), statCol[stat].format, stats[stat]);
+		len = strlen(value);
+
 		if (stats[stat] >= 1000 && len > statCol[stat].width) {
-			value = va("%ik", stats[stat] / 1000);
+			Com_sprintf(value, sizeof(value), statCol[stat].format, stats[stat] / 1000);
+			Q_strcat(value, sizeof(value), "k");
 			len = strlen(value);
 		}
 		if (len > statCol[stat].width) {
-			value = "";
+			Q_strncpyz(value, "", sizeof(value));
 			len = 0;
 		}
 
 		pad = statCol[stat].width - len;
-		if (stats[stat] == bestStats[stat]) {
+		if (bestStats && stats[stat] == bestStats[stat]) {
 			p += Com_sprintf(p, e - p, S_COLOR_GREEN " %s%s" S_COLOR_WHITE, value, Spaces(pad));
 		} else {
 			p += Com_sprintf(p, e - p, " %s%s", value, Spaces(pad));
@@ -192,10 +194,36 @@ static void PrintClientStats( gclient_t *cl, const playerStat_t *columns, const 
 	trap_SendServerCommand(-1, va("print \"%s\n\"", line));
 }
 
+static void PrintTeamStats( team_t team, const playerStat_t *columns, int stats[MAX_CLIENTS][STATS_MAX], int bestStats[STATS_MAX] )
+{
+	int	totalStats[STATS_MAX] = { 0 };
+	int	totalStatsCounter = 0;
+	int	i, j;
+	gclient_t	*cl;
+
+	PrintStatsSeparator(columns, BG_TeamColor(team));
+	for (i = 0; i < level.numPlayingClients; i++) {
+		cl = level.clients + level.sortedClients[i];
+		if (cl->sess.sessionTeam == team) {
+			PrintStatsRow(cl->info.netname, columns, stats[i], bestStats);
+			totalStatsCounter++;
+			for (j = 0; j < STATS_MAX; j++) {
+				totalStats[j] += stats[i][j];
+			}
+		}
+	}
+
+	if (totalStatsCounter > 0) {
+		totalStats[STATS_ACC] /= totalStatsCounter;
+		PrintStatsSeparator(columns, BG_TeamColor(team));
+		PrintStatsRow("Team Total:", columns, totalStats, NULL);
+	}
+}
+
 void G_PrintStats(void) {
 	const playerStat_t	*columns;
 	gclient_t			*cl;
-	int					stats[STATS_MAX];
+	int					stats[MAX_CLIENTS][STATS_MAX];
 	int					bestStats[STATS_MAX];
 	qboolean			reallyBest[STATS_MAX] = { qfalse };
 	int					i, j;
@@ -204,27 +232,30 @@ void G_PrintStats(void) {
 		return;
 	}
 
-	cl = &level.clients[level.sortedClients[0]];
-	GetStats(bestStats, cl);
+	for (i = 0; i < level.numPlayingClients; i++) {
+		cl = &level.clients[level.sortedClients[i]];
+		GetStats(stats[i], cl);
+	}
+
+	for (i = 0; i < STATS_MAX; i++) {
+		bestStats[i] = stats[0][i];
+	}
 
 	for (i = 1; i < level.numPlayingClients; i++) {
-		cl = &level.clients[level.sortedClients[i]];
-		GetStats(stats, cl);
-
 		for (j = 0; j <= STATS_MAX_ASC; j++) {
-			if (stats[j] != bestStats[j]) {
+			if (stats[i][j] != bestStats[j]) {
 				reallyBest[j] = qtrue;
 			}
-			if (stats[j] > bestStats[j]) {
-				bestStats[j] = stats[j];
+			if (stats[i][j] > bestStats[j]) {
+				bestStats[j] = stats[i][j];
 			}
 		}
 		for (; j < STATS_MAX; j++) {
-			if (stats[j] != bestStats[j]) {
+			if (stats[i][j] != bestStats[j]) {
 				reallyBest[j] = qtrue;
 			}
-			if (stats[j] < bestStats[j]) {
-				bestStats[j] = stats[j];
+			if (stats[i][j] < bestStats[j]) {
+				bestStats[j] = stats[i][j];
 			}
 		}
 	}
@@ -258,20 +289,12 @@ void G_PrintStats(void) {
 		}
 
 		PrintStatsHeader(columns);
-
-		PrintStatsSeparator(columns, BG_TeamColor(TEAM_RED));
-		for (i = 0; i < level.numPlayingClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_RED)
-				PrintClientStats(cl, columns, bestStats);
-		}
-
-		PrintStatsSeparator(columns, BG_TeamColor(TEAM_BLUE));
-		for (i = 0; i < level.numPlayingClients; i++) {
-			cl = level.clients + level.sortedClients[i];
-			if (cl->sess.sessionTeam == TEAM_BLUE) {
-				PrintClientStats(cl, columns, bestStats);
-			}
+		if (level.teamScores[TEAM_RED] >= level.teamScores[TEAM_BLUE]) {
+			PrintTeamStats(TEAM_RED, columns, stats, bestStats);
+			PrintTeamStats(TEAM_BLUE, columns, stats, bestStats);
+		} else {
+			PrintTeamStats(TEAM_BLUE, columns, stats, bestStats);
+			PrintTeamStats(TEAM_RED, columns, stats, bestStats);
 		}
 	} else {
 		if (g_instagib.integer) {
@@ -283,11 +306,10 @@ void G_PrintStats(void) {
 		}
 
 		PrintStatsHeader(columns);
-
 		PrintStatsSeparator(columns, BG_TeamColor(TEAM_FREE));
 		for (i = 0; i < level.numPlayingClients; i++) {
 			cl = level.clients + level.sortedClients[i];
-			PrintClientStats(cl, columns, bestStats);
+			PrintStatsRow(cl->info.netname, columns, stats[i], bestStats);
 		}
 	}
 

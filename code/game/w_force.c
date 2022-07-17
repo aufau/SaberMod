@@ -3,7 +3,7 @@
 This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -3143,6 +3143,19 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				{
 					G_ReflectMissile( self, push_list[x], forward );
 				}
+			}
+			else if ( push_list[x]->s.eType == ET_ITEM && push_list[x]->r.contents &&
+				(g_pushableItems.integer & (1 << push_list[x]->item->giType)) )
+			{
+				float velocity = pull ? -650.0f : 650.0f;
+
+				push_list[x]->s.pos.trType = TR_GRAVITY;
+				push_list[x]->s.pos.trTime = level.time;
+				VectorCopy(push_list[x]->r.currentOrigin, push_list[x]->s.pos.trBase);
+				VectorScale(forward, velocity, push_list[x]->s.pos.trDelta);
+				push_list[x]->s.eFlags |= EF_BOUNCE_HALF;
+				push_list[x]->nextthink = level.time + 30000;
+				push_list[x]->think = RespawnItem;
 			}
 			else if ( !Q_stricmp( "func_door", push_list[x]->classname ) && (push_list[x]->spawnflags&2) )
 			{//push/pull the door

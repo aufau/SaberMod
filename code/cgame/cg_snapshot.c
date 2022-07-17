@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -72,6 +72,17 @@ static void CG_TransitionEntity( centity_t *cent ) {
 	CG_CheckEvents( cent );
 }
 
+/*
+==================
+CG_UpdateSnapshotVariables
+
+Update global variables derived from current snapshot
+==================
+*/
+static void CG_UpdateSnapshotVariables( const snapshot_t *snap ) {
+	cg.spec.following = snap->ps.pm_flags & PMF_FOLLOW ||
+		(cg.demoPlayback && snap->ps.pm_type != PM_SPECTATOR);
+}
 
 /*
 ==================
@@ -102,6 +113,8 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 	CG_BuildSolidList();
 
 	CG_ExecuteNewServerCommands( snap->serverCommandSequence );
+
+	CG_UpdateSnapshotVariables( snap );
 
 	// set our local weapon selection pointer to
 	// what the server has indicated the current weapon is
@@ -173,6 +186,8 @@ static void CG_TransitionSnapshot( void ) {
 
 	cg.nextSnap = NULL;
 
+	CG_UpdateSnapshotVariables( cg.snap );
+
 	// check for playerstate transition events
 	if ( oldFrame ) {
 		playerState_t	*ops, *ps;
@@ -182,7 +197,7 @@ static void CG_TransitionSnapshot( void ) {
 		// teleporting checks are irrespective of prediction
 		if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT ) {
 			cg.thisFrameTeleport = qtrue;	// will be cleared by prediction code
-		} else if ( cg_camerafps.integer >= CAMERA_MIN_FPS ) {
+		} else if ( cg_smoothCamera.integer ) {
 			cg.thisFrameTeleport = qfalse;	// clear for interpolated player with new camera damping
 		}
 
@@ -361,6 +376,8 @@ void CG_ProcessSnapshots( void ) {
 			// we can't continue until we get a snapshot
 			return;
 		}
+
+		CG_StartAutoDemo();
 
 		// set our weapon selection to what
 		// the playerstate is currently using

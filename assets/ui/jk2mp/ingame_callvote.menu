@@ -16,6 +16,8 @@
 		descColor               .235 .882 .847 1        // Focus color for text and items
 		descAlignment           ITEM_ALIGN_LEFT
 		disableColor            .7 .7 .7 1
+		aspectAlign             1
+
 		onopen
 		{
 			hide                    grpcallVote ;
@@ -381,10 +383,37 @@
 			textscale               .9
 			forecolor               0.65 0.65 1 1
 			visible                 0
+			cvarTest                ui_gameStatus
+			hideCvar                { 2 } // match
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
 				exec                    "cmd callvote map_restart" ;
+				uiScript                closeingame
+			}
+		}
+
+		itemDef
+		{
+			name                    misc
+			text                    @SABERMENUS_ABORT
+			descText                @SABERMENUS_ABORT_DESC
+			group                   grpCallVote
+			rect                    120 45 230 30
+			type                    1
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              115
+			textaligny              -2
+			font                    2
+			textscale               .9
+			forecolor               0.65 0.65 1 1
+			visible                 0
+			cvarTest                ui_gameStatus
+			showCvar                { 2 } // match
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "cmd callvote abort" ;
 				uiScript                closeingame
 			}
 		}
@@ -500,7 +529,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote match 1" ;
+				exec                    "cmd callvote matchmode 1" ;
 				uiScript                closeingame
 			}
 		}
@@ -522,7 +551,7 @@
 			action
 			{
 				play                    "sound/interface/button1.wav" ;
-				exec                    "cmd callvote match 0" ;
+				exec                    "cmd callvote matchmode 0" ;
 				uiScript                closeingame
 			}
 		}

@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -227,7 +227,7 @@ void CG_InitSagaMode(void)
 		goto failure;
 	}
 
-	Q_strncpyz(mapname, cgs.mapname, sizeof(mapname));
+	Q_strncpyz(mapname, cgs.mappath, sizeof(mapname));
 
 	i = strlen(mapname)-1;
 

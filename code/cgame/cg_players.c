@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -1022,7 +1022,6 @@ static void CG_RefereeMode(qboolean enable) {
 
 	trap_Cvar_Set("ui_referee", va("%d", enable));
 
-	UpdateCommand("referee");
 	UpdateCommand("unreferee");
 	UpdateCommand("lockteam");
 	UpdateCommand("unlockteam");
@@ -1031,6 +1030,8 @@ static void CG_RefereeMode(qboolean enable) {
 	UpdateCommand("help");
 	UpdateCommand("pause");
 	UpdateCommand("unpause");
+	UpdateCommand("allready");
+	UpdateCommand("abort");
 }
 
 /*
@@ -3310,7 +3311,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	}
 
 	if ( cent->currentState.eFlags & EF_CONNECTION ) {
-		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
+		CG_PlayerFloatSprite( cent, cgs.media.warpShader );
 		return;
 	}
 

@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -719,13 +719,9 @@ void CopyToBodyQue( gentity_t *ent ) {
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
 	body->physicsBounce = 0;		// don't bounce
-	if ( body->s.groundEntityNum == ENTITYNUM_NONE ) {
-		body->s.pos.trType = TR_GRAVITY;
-		body->s.pos.trTime = level.time;
-		VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
-	} else {
-		body->s.pos.trType = TR_STATIONARY;
-	}
+	body->s.pos.trType = TR_GRAVITY;
+	body->s.pos.trTime = level.time;
+	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 	body->s.event = 0;
 
 	body->s.weapon = ent->s.bolt2;
@@ -865,7 +861,7 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		gclient_t	*client = &level.clients[i];
 
-		if (client->pers.connected != CON_CONNECTED ||
+		if (client->pers.connected == CON_DISCONNECTED ||
 			client->sess.sessionTeam != team ||
 			i == ignoreClientNum) {
 			continue;
@@ -877,8 +873,8 @@ int TeamCount( int ignoreClientNum, team_t team, qboolean dead ) {
 			}
 
 			if (client->pers.persistant[PERS_SPAWN_COUNT] >= level.lives) {
-				if (level.clients[i].ps.stats[STAT_HEALTH] <= 0 ||
-					level.clients[i].ps.fallingToDeath) {
+				if (client->ps.stats[STAT_HEALTH] <= 0 ||
+					client->ps.fallingToDeath) {
 					continue;
 				}
 			}
@@ -1017,7 +1013,7 @@ ClientSetName
 ============
 */
 static void ClientSetName( gclient_t *client, const char *in ) {
-	char	cleanName[MAX_NETNAME - 3]; // "(9)" suffix
+	char	cleanName[MAX_NETNAME - 5]; // "^7(1)" suffix
 	char	*name;
 	int		clientNum;
 	int		i, num;
@@ -1065,7 +1061,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
             characters++;
             *p++ = ch;
         }
-    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 3);
+    } while ( ch != '\0' && p < end && characters + spaces < MAX_NAME_LEN - 3); // "(1)" suffix
 
     *p = '\0';
 
@@ -1095,7 +1091,7 @@ static void ClientSetName( gclient_t *client, const char *in ) {
 		if (free) {
 			break;
 		}
-		Com_sprintf(name, MAX_NETNAME, "%s(%c)", cleanName, '0' + num);
+		Com_sprintf(name, MAX_NETNAME, "%s" S_COLOR_WHITE "(%c)", cleanName, '0' + num);
 		num++;
 	}
 }
@@ -1469,11 +1465,11 @@ const char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	client->pers.connected = CON_CONNECTING;
 	client->pers.enterTime = level.time;
 
+	G_ReadSessionData( client );
 	// read or initialize the session data
 	if ( firstTime || level.newSession ) {
-		G_InitSessionData( client, userinfo, isBot );
+		G_InitSessionData( client, userinfo, isBot, firstTime );
 	}
-	G_ReadSessionData( client );
 
 	if( isBot ) {
 		ent->r.svFlags |= SVF_BOT;
@@ -1651,7 +1647,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	}
 
 	gameversion = Info_ValueForKey(userinfo, GAMEVERSION);
-	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 ? qtrue : qfalse;
+	client->pers.registered = strcmp(gameversion, GIT_VERSION) == 0 || ent->r.svFlags & SVF_BOT ? qtrue : qfalse;
 	if (client->pers.registered) {
 		if (client->sess.sessionTeam != TEAM_SPECTATOR && !client->sess.motdSeen) {
 			trap_SendServerCommand( clientNum, "motd" );

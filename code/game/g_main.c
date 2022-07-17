@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -160,11 +160,18 @@ vmCvar_t	g_unlagged;
 vmCvar_t	g_unlaggedMaxPing;
 vmCvar_t	g_ingameMotd;
 vmCvar_t	g_macroscan;
+vmCvar_t	g_timeoutDuration;
 vmCvar_t	g_timeoutLimit;
 vmCvar_t	g_requireClientside;
 vmCvar_t	g_allowRefVote;
+vmCvar_t	g_antiWarp;
 vmCvar_t	g_antiWarpTime;
 vmCvar_t	g_spSkill;
+vmCvar_t	g_pushableItems;
+vmCvar_t	g_refereePassword;
+vmCvar_t	g_allowTeamVote;
+vmCvar_t	g_vampiricDamage;
+vmCvar_t	g_removeUnreachableItems;
 
 
 // bk001129 - made static to avoid aliasing
@@ -174,12 +181,11 @@ static cvarTable_t gameCvarTable[] = {
 
 	// noset vars
 	{ NULL, "gamename", GAME_VERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
-	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
-	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
+	{ &g_MaxHolocronCarry, "g_MaxHolocronCarry", "3", /* CVAR_SERVERINFO | */ CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
 	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_teamsize, "teamsize", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue  },
@@ -188,7 +194,7 @@ static cvarTable_t gameCvarTable[] = {
 	// change anytime vars
 	{ &g_ff_objectives, "g_ff_objectives", "0", /*CVAR_SERVERINFO |*/  CVAR_NORESTART, 0, qtrue },
 
-	{ &g_trueJedi, "g_jediVmerc", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qtrue },
+	{ &g_trueJedi, "g_jediVmerc", "0", /* CVAR_SERVERINFO | */ CVAR_LATCH | CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_autoMapCycle, "g_autoMapCycle", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_dmflags, "dmflags", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
@@ -196,7 +202,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_maxForceRank, "g_maxForceRank", "6", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 	{ &g_forceBasedTeams, "g_forceBasedTeams", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 	{ &g_privateDuel, "g_privateDuel", "1", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
-	{ &g_saberLocking, "g_saberLocking", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_saberLocking, "g_saberLocking", "1", /* CVAR_SERVERINFO | */ CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_saberLockFactor, "g_saberLockFactor", "6", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_saberTraceSaberFirst, "g_saberTraceSaberFirst", "1", CVAR_ARCHIVE, 0, qtrue  },
 
@@ -292,8 +298,8 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_debugUp, "g_debugUp", "0", 0, 0, qfalse },
 #endif
 
-	{ &g_redteam, "g_redteam", "Empire", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue },
-	{ &g_blueteam, "g_blueteam", "Rebellion", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue  },
+	{ &g_redteam, "g_redteam", "Empire", CVAR_ARCHIVE /* | CVAR_SERVERINFO */ | CVAR_USERINFO , 0, qtrue, qtrue },
+	{ &g_blueteam, "g_blueteam", "Rebellion", CVAR_ARCHIVE /* | CVAR_SERVERINFO */ | CVAR_USERINFO , 0, qtrue, qtrue  },
 	{ &g_singlePlayer, "ui_singlePlayerActive", "", 0, 0, qfalse, qfalse  },
 
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
@@ -324,7 +330,7 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_spawnWeapons, "g_spawnWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_roundlimit, "roundlimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_roundWarmup, "g_roundWarmup", "10", CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_kickMethod, "g_kickMethod", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_kickMethod, "g_kickMethod", "1", /* CVAR_SERVERINFO | */ CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_infiniteAmmo, "g_infiniteAmmo", "0", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_instagib, "g_instagib", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_voteCooldown, "g_voteCooldown", "3", CVAR_ARCHIVE, 0, qfalse  },
@@ -332,11 +338,18 @@ static cvarTable_t gameCvarTable[] = {
 	{ &g_unlaggedMaxPing, "g_unlaggedMaxPing", "200", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_ingameMotd, "g_ingameMotd", "none", CVAR_ARCHIVE, 0, qfalse  },
 	{ &g_macroscan, "g_macroscan", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &g_timeoutDuration, "g_timeoutDuration", "60", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_timeoutLimit, "g_timeoutLimit", "2", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_requireClientside, "g_requireClientside", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_allowRefVote, "g_allowRefVote", "-1", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_antiWarpTime, "g_antiWarpTime", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_antiWarpTime, "g_antiWarpTime", "1000", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_spSkill, "g_spSkill", "2", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_pushableItems, "g_pushableItems", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_refereePassword, "g_refereePassword", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_allowTeamVote, "g_allowTeamVote", "-1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_vampiricDamage, "g_vampiricDamage", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_removeUnreachableItems, "g_removeUnreachableItems", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 };
 
 void G_InitGame					( int levelTime, int randomSeed, int restart );
@@ -606,10 +619,11 @@ void G_RegisterCvars( void ) {
 
 	// initialize with g_defaultMode string. Main server config should
 	// always execute default mode cfg
-	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM );
+	trap_Cvar_Register( &g_mode, "g_mode", g_modeDefault.string, CVAR_ROM | CVAR_SERVERINFO );
+
+	trap_Cvar_Register( NULL, "g_status", va("%d", GAMESTATUS_DEFAULT), CVAR_ROM | CVAR_SERVERINFO );
 
 	trap_Cvar_Set( "gamename", GAME_VERSION );
-	trap_Cvar_Set( "gamedate", __DATE__ );
 
 	if (remapped) {
 		G_RemapTeamShaders();
@@ -682,7 +696,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_Printf ("------- Game Initialization -------\n");
 	G_Printf ("gamename: %s\n", GAMEVERSION);
-	G_Printf ("gamedate: %s\n", __DATE__);
 
 	id_srand( randomSeed );
 	srand( randomSeed );
@@ -701,6 +714,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.snapnum = 1;
 	level.duelist1 = -1;
 	level.duelist2 = -1;
+	level.forfeitTeam = TEAM_SPECTATOR;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
@@ -927,8 +941,11 @@ void AddTournamentPlayer( void ) {
 			client->sess.spectatorClient < 0  ) {
 			continue;
 		}
+		if (g_requireClientside.integer && !client->pers.registered) {
+			continue;
+		}
 
-		if ( !nextInLine || client->sess.spectatorTime < nextInLine->sess.spectatorTime ) {
+		if ( !nextInLine || client->sess.spectatorNum > nextInLine->sess.spectatorNum ) {
 			nextInLine = client;
 		}
 	}
@@ -941,6 +958,33 @@ void AddTournamentPlayer( void ) {
 
 	// set them to free-for-all team
 	SetTeam( &g_entities[ nextInLine - level.clients ], TEAM_FREE );
+}
+
+/*
+=======================
+AddTournamentQueue
+
+Add client to end of tournament queue
+=======================
+*/
+
+void AddTournamentQueue(gclient_t *client)
+{
+	int index;
+	gclient_t *curclient;
+
+	for(index = 0; index < level.maxclients; index++)
+	{
+		curclient = &level.clients[index];
+
+		if(curclient->pers.connected != CON_DISCONNECTED)
+		{
+			if(curclient == client)
+				curclient->sess.spectatorNum = 0;
+			else if(curclient->sess.sessionTeam == TEAM_SPECTATOR)
+				curclient->sess.spectatorNum++;
+		}
+	}
 }
 
 /*
@@ -1189,10 +1233,10 @@ int QDECL SortRanks( const int *a, const int *b ) {
 		if (ta && !tb)	return 1;
 		if (!ta && tb)	return -1;
 
-		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
+		if ( ca->sess.spectatorNum > cb->sess.spectatorNum ) {
 			return -1;
 		}
-		if ( ca->sess.spectatorTime > cb->sess.spectatorTime ) {
+		if ( ca->sess.spectatorNum < cb->sess.spectatorNum ) {
 			return 1;
 		}
 		return 0;
@@ -1612,7 +1656,6 @@ static void Shuffle( void )
 
 static void NextRound( void )
 {
-	char	warmup[8];
 	int		i;
 
 	level.lives = MAX(1, g_fraglimit.integer);
@@ -1620,10 +1663,8 @@ static void NextRound( void )
 	// repeat the round in case of draw
 	level.round = level.teamScores[TEAM_RED] + level.teamScores[TEAM_BLUE] + 1;
 	trap_SetConfigstring(CS_ROUND, va("%i", level.round));
-	trap_GetConfigstring(CS_WARMUP, warmup, sizeof(warmup));
-	if ( warmup[0] == '\0' ) {
-		trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
-	}
+	trap_SetConfigstring(CS_WARMUP, va("%i", level.roundQueued));
+	trap_SetConfigstring(CS_INTERMISSION, "");
 
 	if ( level.gametype == GT_REDROVER ) {
 		Shuffle(); // calls CheckExitRules
@@ -1840,18 +1881,20 @@ void LogExit( const char *string ) {
 	}
 }
 
-static void LogRoundExit( team_t winner, const char *string )
+static void LogRoundExit( team_t team, const char *string )
 {
 	const char *param1;
 
 	level.intermissionQueued = level.time;
+	trap_SetConfigstring( CS_INTERMISSION, "1" );
+
 	// update CS_SCORES1 and CS_SCORES2
 	CalculateRanks(); // calls CheckExitRules!
 
-	if ( winner == TEAM_SPECTATOR ) {
+	if ( team == TEAM_SPECTATOR ) {
 		param1 = "DRAW";
 	} else {
-		param1 = BG_TeamName( winner, CASE_UPPER );
+		param1 = BG_TeamName( team, CASE_UPPER );
 	}
 
 	G_LogPrintf( LOG_GAME, "RoundExit: %s: %s\n", param1, string );
@@ -2118,6 +2161,59 @@ static team_t GetRoundWinner( const char **explanation )
 	return winner;
 }
 
+static team_t GetTeamWinner( const char **explanation )
+{
+	static char	expl[128];
+	team_t		winner = TEAM_FREE;
+
+	*explanation = expl;
+
+	if (level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]) {
+		winner = TEAM_RED;
+	} else if (level.teamScores[TEAM_RED] < level.teamScores[TEAM_BLUE]) {
+		winner = TEAM_BLUE;
+	}
+
+	if (winner == TEAM_FREE) {
+		Com_sprintf( expl, sizeof( expl ), "%s", "Match draw" );
+	} else {
+		Com_sprintf( expl, sizeof( expl ), "%s%s" S_COLOR_WHITE
+			" won the match", BG_TeamColor( winner ),
+			BG_TeamName( winner, CASE_NORMAL ));
+	}
+
+	return winner;
+}
+
+static gclient_t *GetFFAWinner( const char **explanation )
+{
+	static char	expl[128];
+	gclient_t	*winner = NULL;
+
+	*explanation = expl;
+
+	if (level.numPlayingClients > 0) {
+		winner = level.clients + level.sortedClients[0];
+	}
+
+	if (level.numPlayingClients > 1) {
+		gclient_t	*second = level.clients + level.sortedClients[1];
+
+		if (winner->pers.persistant[PERS_SCORE] == second->pers.persistant[PERS_SCORE]) {
+			winner = NULL;
+		}
+	}
+
+	if (winner) {
+		Com_sprintf( expl, sizeof( expl ),
+			"%s" S_COLOR_WHITE " won the match", winner->info.netname);
+	} else {
+		Q_strncpyz( expl, "Match draw", sizeof( expl ) );
+	}
+
+	return winner;
+}
+
 /*
 =================
 G_QueueServerCommand
@@ -2249,6 +2345,11 @@ void CheckExitRules( void ) {
 					G_PrintStats();
 					BeginIntermission();
 					return;
+				} else if ( level.forfeitTeam == TEAM_BLUE || level.forfeitTeam == TEAM_RED ) {
+					LogExit("Team forfeited.");
+					G_PrintStats();
+					BeginIntermission();
+					return;
 				} else if ( roundlimitHit ) {
 					LogExit("Roundlimit hit.");
 					G_PrintStats();
@@ -2272,6 +2373,31 @@ void CheckExitRules( void ) {
 		return;
 	}
 
+	// engine runs few frames after map restart before adding clients
+	if (g_doWarmup.integer && GT_Team(level.gametype) && level.time - level.startTime > 5000) {
+		team_t	forfeitTeam = TEAM_SPECTATOR;
+
+		if (TeamCount(-1, TEAM_RED, qtrue) == 0 || level.forfeitTeam == TEAM_RED) {
+			forfeitTeam = TEAM_RED;
+		}
+		if (TeamCount( -1, TEAM_BLUE, qtrue ) == 0 || level.forfeitTeam == TEAM_BLUE) {
+			forfeitTeam = TEAM_BLUE;
+		}
+
+		if (forfeitTeam != TEAM_SPECTATOR) {
+			G_QueueServerCommand( "print \"%s%s" S_COLOR_WHITE " forfeited.\n\"",
+				BG_TeamColor(forfeitTeam),
+				BG_TeamName(forfeitTeam, CASE_NORMAL) );
+
+			if ( GT_Round(level.gametype) ) {
+				LogRoundExit( forfeitTeam, "Team forfeited." );
+			} else {
+				LogExit( "Team forfeited." );
+			}
+			return;
+		}
+	}
+
 	// check for sudden death
 	if ( level.gametype != GT_TOURNAMENT || !g_timelimit.integer ) {
 		// always wait for sudden death
@@ -2282,25 +2408,26 @@ void CheckExitRules( void ) {
 
 	if ( g_timelimit.integer ) {
 		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
-			if ( GT_Round(level.gametype) ) {
-				const char	*explanation;
-				team_t		winner = GetRoundWinner( &explanation );
+			const char	*explanation;
 
+			if ( level.gametype == GT_REDROVER ) {
+				GetFFAWinner( &explanation );
+				AddTeamScore( level.intermission_origin, TEAM_RED, 1 );
+				LogRoundExit( TEAM_RED, "Timelimit hit." );
+			} else if ( GT_Round(level.gametype) ) {
+				team_t		winner = GetRoundWinner( &explanation );
 				AddTeamScore( level.intermission_origin, winner, 1 );
-				if ( level.gametype == GT_REDROVER ) {
-					trap_SendServerCommand( -1, va( "print \"%s.\n\"",
-							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
-				} else {
-					trap_SendServerCommand( -1, va( "print \"%s. %s.\n\"",
-							G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation ) );
-				}
 				LogRoundExit( winner, "Timelimit hit." );
+			} else if ( GT_Team(level.gametype) ) {
+				GetTeamWinner( &explanation );
+				LogExit( "Timelimit hit." );
 			} else {
-				trap_SendServerCommand( -1, va( "print \"%s.\n\"",
-						G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ) ) );
+				GetFFAWinner( &explanation );
 				LogExit( "Timelimit hit." );
 			}
 
+			G_QueueServerCommand( "print \"%s. %s.\n\"",
+				G_GetStripEdString( "SVINGAME", "TIMELIMIT_HIT" ), explanation );
 			return;
 		}
 	}
@@ -2601,17 +2728,10 @@ void CheckTournament( void ) {
 }
 
 static void G_AnnouncePollResults( void ) {
-	int	withdrew = level.numVotingClients - level.voteYes - level.voteNo;
-
-	trap_SendServerCommand( -1, va( "cp \"%s\n\n"
-			S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
-			S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\n"
-			S_COLOR_WHITE "Withdrew: " S_COLOR_CYAN "%d\"",
-			level.voteDisplayString, level.voteYes, level.voteNo, withdrew ) );
-	G_LogPrintf( LOG_VOTE, "Poll: %d %d %d: %s\n", level.voteYes, level.voteNo,
-		withdrew, level.voteString );
-	trap_SendServerCommand( -1, va("print \"Poll finished. Yes: %d, No: %d, Withdrew: %d\n\"",
-			level.voteYes, level.voteNo, withdrew ) );
+	G_SendServerCommand( -1, "cp \"%s\n\n"
+		S_COLOR_WHITE "Yes: " S_COLOR_GREEN "%d   "
+		S_COLOR_WHITE "No: "  S_COLOR_RED   "%d\"",
+		level.voteDisplayString, level.voteYes, level.voteNo );
 }
 
 /*
@@ -2620,6 +2740,8 @@ CheckVote
 ==================
 */
 void CheckVote( void ) {
+	int		majority;
+
 	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
 		level.voteExecuteTime = 0;
 		level.voteCooldown = level.time + g_voteCooldown.integer * 1000;
@@ -2669,53 +2791,51 @@ void CheckVote( void ) {
 		return;
 	}
 
+	majority = level.numVotingClients / 2 + 1;
+
 	if (level.voteCmd == CV_KICK && level.clients[level.voteArg].pers.connected == CON_DISCONNECTED )
 	{
 		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 	}
 	else if ( level.time - level.voteTime >= VOTE_TIME )
 	{
-		if ( level.voteCmd == CV_POLL ) {
-			G_AnnouncePollResults();
-		} else {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		}
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 	}
-	else if ( level.voteCmd == CV_POLL )
+	else if ( level.voteReferee == VOTE_YES )
 	{
-		// assume question is formulated in such a way that owner votes "yes"
-		if ( level.voteYes == 0 ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		} else if ( level.voteYes + level.voteNo == level.numVotingClients ) {
-			G_AnnouncePollResults();
-		} else {
-			return;
-		}
+		trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
+		level.voteExecuteTime = level.time + 3000;
+		G_LogPrintf( LOG_VOTE | LOG_REFEREE, "Referee: %d VotePassed: %d %d %d: %s\n",
+			level.voteClient, level.voteCmd, level.voteYes, level.voteNo,
+			level.voteDisplayString );
+	}
+	else if ( level.voteReferee == VOTE_NO )
+	{
+		trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
+	}
+	else if ( level.voteYes >= majority )
+	{
+		// execute the command, then remove the vote
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
+		level.voteExecuteTime = level.time + 3000;
+		G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
+			level.voteYes, level.voteNo, level.voteDisplayString );
+	}
+	else if ( level.numVotingClients - level.voteNo < majority || level.voteYes == 0 )
+	{
+		// same behavior as a timeout
+		trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
 	}
 	else
 	{
-		if ( level.voteReferee == VOTE_YES ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote passed by a referee decision.") );
-			level.voteExecuteTime = level.time + 3000;
-			G_LogPrintf( LOG_VOTE | LOG_REFEREE, "Referee: %d VotePassed: %d %d %d: %s\n",
-				level.voteClient, level.voteCmd, level.voteYes, level.voteNo,
-				level.voteDisplayString );
-		} else if ( level.voteReferee == VOTE_NO ) {
-			trap_SendServerCommand( -1, va("print \"%s\n\"", "Vote failed by a referee decision.") );
-		} else if ( level.voteYes > level.numVotingClients/2 ) {
-			// execute the command, then remove the vote
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEPASSED")) );
-			level.voteExecuteTime = level.time + 3000;
-			G_LogPrintf( LOG_VOTE, "VotePassed: %d %d %d: %s\n", level.voteCmd,
-				level.voteYes, level.voteNo, level.voteDisplayString );
-		} else if ( level.voteYes == 0 || level.voteNo >= level.numVotingClients/2 ) {
-			// same behavior as a timeout
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "VOTEFAILED")) );
-		} else {
-			// still waiting for a majority
-			return;
-		}
+		// still waiting for a majority
+		return;
 	}
+
+	if ( level.voteCmd == CV_POLL ) {
+		G_AnnouncePollResults();
+	}
+
 	level.voteTime = 0;
 	trap_SetConfigstring( CS_VOTE_TIME, "" );
 
@@ -2805,12 +2925,13 @@ CheckTeamVote
 static void CheckTeamVote( team_t team ) {
 	int cs_offset;
 
-	if ( team == TEAM_RED )
+	if ( team == TEAM_RED ) {
 		cs_offset = 0;
-	else if ( team == TEAM_BLUE )
+	} else if ( team == TEAM_BLUE ) {
 		cs_offset = 1;
-	else
+	} else {
 		return;
+	}
 
 	if ( !level.teamVoteTime[cs_offset] ) {
 		return;
@@ -2820,19 +2941,22 @@ static void CheckTeamVote( team_t team ) {
 	} else {
 		if ( level.teamVoteYes[cs_offset] > level.numteamVotingClients[cs_offset]/2 ) {
 			// execute the command, then remove the vote
-			trap_SendServerCommand( -1, va("print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED")) );
+			G_SendServerCommand( -1, "print \"%s\n\"", G_GetStripEdString("SVINGAME", "TEAMVOTEPASSED") );
+			G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s\n",
+				BG_TeamName(team, CASE_UPPER), level.teamVoteCmd[cs_offset],
+				level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
+				level.teamVoteString[cs_offset]);
 			//
-			if ( !strncmp( "leader", level.teamVoteString[cs_offset], 6) ) {
-				int clientNum = atoi(level.teamVoteString[cs_offset] + 7);
+			switch ( level.teamVoteCmd[cs_offset] ) {
+			case CTV_LEADER:
 				//set the team leader
-				SetLeader(team, clientNum);
-				G_LogPrintf( LOG_VOTE, "TeamVotePassed: %s %d %d %d: %s is the new %s team leader\n",
-					BG_TeamName(team, CASE_UPPER), clientNum,
-					level.teamVoteYes[cs_offset], level.teamVoteNo[cs_offset],
-					level.clients[clientNum].info.netname, BG_TeamName(team, CASE_LOWER) );
-			}
-			else {
-				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );
+				SetLeader(team, level.teamVoteArg[cs_offset]);
+				break;
+			case CTV_FORFEIT:
+				level.forfeitTeam = team;
+				break;
+			default:
+				G_Error("CheckTeamVote: bad vote");
 			}
 		} else if ( level.teamVoteYes[cs_offset] == 0 ||
 			level.teamVoteNo[cs_offset] >= level.numteamVotingClients[cs_offset]/2 ) {
@@ -2868,11 +2992,17 @@ void CheckCvars( void ) {
 	}
 
 	if ( g_ingameMotd.modificationCount != motdMod ) {
+		motdMod = g_ingameMotd.modificationCount;
 		if ( g_ingameMotd.string[0] && Q_stricmp( g_ingameMotd.string, "none" ) ) {
 			char	motd[MAX_INFO_STRING];
+			int		i;
 
 			Q_strncpyz( motd, g_ingameMotd.string, sizeof( motd ) );
 			trap_SetConfigstring( CS_INGAME_MOTD, Q_SanitizeStr( motd ) );
+
+			for (i = 0; i < level.maxclients; i++) {
+				level.clients[i].sess.motdSeen = qfalse;
+			}
 		} else {
 			trap_SetConfigstring( CS_INGAME_MOTD, "" );
 		}
@@ -2960,21 +3090,163 @@ void SlowMoDuelTimescale(void) {
 	}
 }
 
+void G_RewindTime( int msec ) {
+	int		i, j;
+
+#define ADJUST(x) if ((x) > 0) (x) += msec
+
+	ADJUST(level.startTime);
+	ADJUST(level.warmupTime);
+	ADJUST(level.intermissiontime);
+	ADJUST(level.roundQueued);
+	ADJUST(level.intermissionQueued);
+	ADJUST(level.exitTime);
+
+	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+	trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
+
+	for (i = 0; i < level.maxclients; i++) {
+		if (level.clients[i].pers.connected != CON_DISCONNECTED) {
+			gentity_t		*ent = &g_entities[i];
+			gclient_t		*client = ent->client;
+			playerState_t	*ps = &client->ps;
+
+			ADJUST(ent->s.constantLight);
+			ADJUST(ent->s.emplacedOwner);
+
+			ADJUST(ps->weaponChargeTime);
+			ADJUST(ps->weaponChargeSubtractTime);
+			ADJUST(ps->externalEventTime);
+			ADJUST(ps->painTime);
+			ADJUST(ps->lastOnGround);
+			ADJUST(ps->saberLockTime);
+			ADJUST(ps->saberDidThrowTime);
+			ADJUST(ps->saberHitWallSoundDebounceTime);
+			ADJUST(ps->rocketLastValidTime);
+			ADJUST(ps->rocketLockTime);
+			ADJUST(ps->rocketTargetTime);
+			ADJUST(ps->emplacedTime);
+			ADJUST(ps->droneFireTime);
+			ADJUST(ps->droneExistTime);
+			ADJUST(ps->holocronCantTouchTime);
+			ADJUST(ps->electrifyTime);
+			ADJUST(ps->saberBlockTime);
+			ADJUST(ps->otherKillerTime);
+			ADJUST(ps->otherKillerDebounceTime);
+			ADJUST(ps->forceHandExtendTime);
+			ADJUST(ps->forceRageDrainTime);
+			ADJUST(ps->forceGripMoveInterval);
+			ADJUST(ps->footstepTime);
+			ADJUST(ps->otherSoundTime);
+			ADJUST(ps->duelTime);
+			ADJUST(ps->holdMoveTime);
+			ADJUST(ps->forceAllowDeactivateTime);
+			ADJUST(ps->zoomTime);
+			ADJUST(ps->zoomLockTime);
+			ADJUST(ps->useDelay);
+			ADJUST(ps->fallingToDeath);
+			ADJUST(ps->saberIdleWound);
+			ADJUST(ps->saberAttackWound);
+			ADJUST(ps->saberThrowDelay);
+
+			for (j = 0; j < MAX_POWERUPS; j++) {
+				if (ps->powerups[j] < INT_MAX) {
+					ADJUST(ps->powerups[j]);
+				}
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->holocronsCarried[j]);
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->fd.forcePowerDebounce[j]);
+			}
+
+			for (j = 0; j < NUM_FORCE_POWERS; j++) {
+				ADJUST(ps->fd.forcePowerDuration[j]);
+			}
+
+			ADJUST(ps->fd.forcePowerRegenDebounceTime);
+			ADJUST(ps->fd.forceJumpAddTime);
+			ADJUST(ps->fd.forceGripDamageDebounceTime);
+			ADJUST(ps->fd.forceGripStarted);
+			ADJUST(ps->fd.forceGripBeingGripped);
+			ADJUST(ps->fd.forceGripUseTime);
+			ADJUST(ps->fd.forceGripSoundTime);
+			ADJUST(ps->fd.forceHealTime);
+			ADJUST(ps->fd.forceRageRecoveryTime);
+			ADJUST(ps->fd.forceDrainTime);
+
+			ADJUST(client->invulnerableTimer);
+			ADJUST(client->respawnTime);
+			ADJUST(client->inactivityTime);
+			ADJUST(client->rewardTime);
+			ADJUST(client->airOutTime);
+			ADJUST(client->lastKillTime);
+			ADJUST(client->lastSaberStorageTime);
+			ADJUST(client->dangerTime);
+			ADJUST(client->forcePowerSoundDebounce);
+
+			ADJUST(client->pers.teamState.lastfraggedcarrier);
+			ADJUST(client->pers.teamState.lasthurtcarrier);
+			ADJUST(client->pers.teamState.lastreturnedflag);
+			ADJUST(client->pers.teamState.flagsince);
+		}
+	}
+
+	for (i = 0; i < level.num_entities; i++) {
+		if (g_entities[i].inuse) {
+			gentity_t	*ent = &g_entities[i];
+
+			if (ent->s.pos.trType != TR_STATIONARY) {
+				ent->s.pos.trTime += msec;
+			}
+			if (ent->s.apos.trType != TR_STATIONARY) {
+				ent->s.apos.trTime += msec;
+			}
+			// ADJUST(ent->s.time);
+			// ADJUST(ent->s.time2);
+
+			ADJUST(ent->nextthink);
+
+			ADJUST(ent->aimDebounceTime);
+			ADJUST(ent->painDebounceTime);
+			ADJUST(ent->attackDebounceTime);
+			ADJUST(ent->freetime);
+			ADJUST(ent->eventTime);
+			ADJUST(ent->timestamp);
+			ADJUST(ent->setTime);
+			ADJUST(ent->pain_debounce_time);
+			ADJUST(ent->fly_sound_debounce_time);
+			ADJUST(ent->last_move_time);
+			ADJUST(ent->time1);
+			ADJUST(ent->time2);
+
+			// ent->s.genericenemyindex
+			// ent->s.powerups
+			// ent->bolt_RArm
+			// ent->bolt_LArm
+			// ent->bolt_LLeg
+			// ent->bolt_Head
+
+		}
+	}
+}
+
 /*
 ================
-G_RunPausedFrame
+G_CheckPausedFrame
 ================
 */
-qboolean G_RunPausedFrame( int levelTime ) {
+qboolean G_CheckPausedFrame( int levelTime ) {
 	static int		pauseTime = 0;
 	static int		unpauseTime = 0;
-	static qboolean paused = qfalse;
 
 	if (level.unpauseTime > levelTime)
 	{
-		if (!paused)
+		if (!pauseTime)
 		{
-			paused = qtrue;
 			pauseTime = levelTime;
 			G_Printf("Game paused\n");
 		}
@@ -2984,158 +3256,38 @@ qboolean G_RunPausedFrame( int levelTime ) {
 			unpauseTime = level.unpauseTime;
 			trap_SetConfigstring(CS_UNPAUSE, va("%d", unpauseTime));
 		}
+
+		return qtrue;
 	}
-	else
+	else if (pauseTime)
 	{
-		if (paused)
+		G_RewindTime(levelTime - pauseTime);
+		pauseTime = 0;
+		unpauseTime = 0;
+		trap_SetConfigstring(CS_UNPAUSE, "");
+		G_Printf("Game unpaused\n");
+	}
+
+	return qfalse;
+}
+
+/*
+================
+G_RunPausedFrame
+================
+*/
+void SpectatorClientEndFrame( gentity_t *ent );
+void G_RunPausedFrame( void ) {
+	int			i;
+
+	for (i=0; i < level.maxclients; i++) {
+		gclient_t	*client = &level.clients[i];
+
+		if (client->pers.connected == CON_CONNECTED &&
+			client->sess.spectatorState != SPECTATOR_NOT)
 		{
-			int		time = levelTime - pauseTime;
-			int		i, j;
-
-			paused = qfalse;
-			trap_SetConfigstring(CS_UNPAUSE, "");
-			G_Printf("Game unpaused\n");
-
-#define ADJUST(x) if ((x) > 0) (x) += time;
-
-			ADJUST(level.startTime)
-			ADJUST(level.warmupTime)
-			ADJUST(level.intermissiontime)
-			ADJUST(level.roundQueued)
-			ADJUST(level.intermissionQueued)
-			ADJUST(level.exitTime)
-
-			trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
-			trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
-
-			for (i = 0; i < level.maxclients; i++) {
-				if (level.clients[i].pers.connected != CON_DISCONNECTED) {
-					gentity_t		*ent = &g_entities[i];
-					gclient_t		*client = ent->client;
-					playerState_t	*ps = &client->ps;
-
-					ADJUST(ent->s.constantLight)
-					ADJUST(ent->s.emplacedOwner)
-
-					ADJUST(ps->weaponChargeTime)
-					ADJUST(ps->weaponChargeSubtractTime)
-					ADJUST(ps->externalEventTime)
-					ADJUST(ps->painTime)
-					ADJUST(ps->lastOnGround)
-					ADJUST(ps->saberLockTime)
-					ADJUST(ps->saberDidThrowTime)
-					ADJUST(ps->saberHitWallSoundDebounceTime)
-					ADJUST(ps->rocketLastValidTime)
-					ADJUST(ps->rocketLockTime)
-					ADJUST(ps->rocketTargetTime)
-					ADJUST(ps->emplacedTime)
-					ADJUST(ps->droneFireTime)
-					ADJUST(ps->droneExistTime)
-					ADJUST(ps->holocronCantTouchTime)
-					ADJUST(ps->electrifyTime)
-					ADJUST(ps->saberBlockTime)
-					ADJUST(ps->otherKillerTime)
-					ADJUST(ps->otherKillerDebounceTime)
-					ADJUST(ps->forceHandExtendTime)
-					ADJUST(ps->forceRageDrainTime)
-					ADJUST(ps->forceGripMoveInterval)
-					ADJUST(ps->footstepTime)
-					ADJUST(ps->otherSoundTime)
-					ADJUST(ps->duelTime)
-					ADJUST(ps->holdMoveTime)
-					ADJUST(ps->forceAllowDeactivateTime)
-					ADJUST(ps->zoomTime)
-					ADJUST(ps->zoomLockTime)
-					ADJUST(ps->useDelay)
-					ADJUST(ps->fallingToDeath)
-					ADJUST(ps->saberIdleWound)
-					ADJUST(ps->saberAttackWound)
-					ADJUST(ps->saberThrowDelay)
-
-					for (j = 0; j < MAX_POWERUPS; j++) {
-						ADJUST(ps->powerups[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->holocronsCarried[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->fd.forcePowerDebounce[j])
-					}
-
-					for (j = 0; j < NUM_FORCE_POWERS; j++) {
-						ADJUST(ps->fd.forcePowerDuration[j])
-					}
-
-					ADJUST(ps->fd.forcePowerRegenDebounceTime)
-					ADJUST(ps->fd.forceJumpAddTime)
-					ADJUST(ps->fd.forceGripDamageDebounceTime)
-					ADJUST(ps->fd.forceGripStarted)
-					ADJUST(ps->fd.forceGripBeingGripped)
-					ADJUST(ps->fd.forceGripUseTime)
-					ADJUST(ps->fd.forceGripSoundTime)
-					ADJUST(ps->fd.forceHealTime)
-					ADJUST(ps->fd.forceRageRecoveryTime)
-					ADJUST(ps->fd.forceDrainTime)
-
-					ADJUST(client->invulnerableTimer)
-					ADJUST(client->respawnTime)
-					ADJUST(client->inactivityTime)
-					ADJUST(client->rewardTime)
-					ADJUST(client->airOutTime)
-					ADJUST(client->lastKillTime)
-					ADJUST(client->lastSaberStorageTime)
-					ADJUST(client->dangerTime)
-					ADJUST(client->forcePowerSoundDebounce)
-
-					ADJUST(client->pers.teamState.lastfraggedcarrier)
-					ADJUST(client->pers.teamState.lasthurtcarrier)
-					ADJUST(client->pers.teamState.lastreturnedflag)
-					ADJUST(client->pers.teamState.flagsince)
-				}
-			}
-
-			for (i = 0; i < level.num_entities; i++) {
-				if (g_entities[i].inuse) {
-					gentity_t	*ent = &g_entities[i];
-
-					if (ent->s.pos.trType != TR_STATIONARY) {
-						ent->s.pos.trTime += time;
-					}
-					if (ent->s.apos.trType != TR_STATIONARY) {
-						ent->s.apos.trTime += time;
-					}
-					// ADJUST(ent->s.time)
-					// ADJUST(ent->s.time2)
-
-					ADJUST(ent->nextthink)
-
-					ADJUST(ent->aimDebounceTime)
-					ADJUST(ent->painDebounceTime)
-					ADJUST(ent->attackDebounceTime)
-					ADJUST(ent->freetime)
-					ADJUST(ent->eventTime)
-					ADJUST(ent->timestamp)
-					ADJUST(ent->setTime)
-					ADJUST(ent->pain_debounce_time)
-					ADJUST(ent->fly_sound_debounce_time)
-					ADJUST(ent->last_move_time)
-					ADJUST(ent->time1)
-					ADJUST(ent->time2)
-
-					// ent->s.genericenemyindex
-					// ent->s.powerups
-					// ent->bolt_RArm
-					// ent->bolt_LArm
-					// ent->bolt_LLeg
-					// ent->bolt_Head
-
-				}
-			}
+				SpectatorClientEndFrame( &g_entities[i] );
 		}
-
-		return qfalse;
 	}
 
 	// get any cvar changes
@@ -3150,8 +3302,6 @@ qboolean G_RunPausedFrame( int levelTime ) {
 
 	// for tracking changes
 	CheckCvars();
-
-	return qtrue;
 }
 
 /*
@@ -3188,7 +3338,8 @@ void G_RunFrame( int levelTime ) {
 	level.time = levelTime;
 	msec = level.time - level.previousTime;
 
-	if (G_RunPausedFrame(levelTime)) {
+	if (G_CheckPausedFrame(levelTime)) {
+		G_RunPausedFrame();
 		return;
 	}
 
@@ -3316,7 +3467,7 @@ end = trap_Milliseconds();
 	CheckCvars();
 
 	// garbage collection
-	G_FreeUnusedEntities();
+	// G_FreeUnusedEntities();
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {

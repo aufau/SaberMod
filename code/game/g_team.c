@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -674,8 +674,7 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 		team = TEAM_FREE;
 	}
 
-	Team_ReturnFlagSound( Team_ResetFlag( team ), team );
-	// Reset Flag will delete this entity
+	Team_ReturnFlag( team );
 }
 
 
@@ -719,7 +718,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 
 	heldTime = (level.time - cl->pers.teamState.flagsince) / 1000;
 
-	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag",
+	G_LogPrintf(LOG_FLAG, "FlagCapture: %i %s: %s captured the %s flag\n",
 		other->s.number, BG_TeamName(BG_OtherTeam(team), CASE_UPPER),
 		cl->info.netname, BG_TeamName(BG_OtherTeam(team), CASE_LOWER));
 	PrintCTFMessage(other->s.number, team, heldTime, CTFMESSAGE_PLAYER_CAPTURED_FLAG);
@@ -1041,6 +1040,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	int			cnt;
 	int			clients[TEAM_MAXOVERLAY];
 	gclient_t	*client = ent->client;
+	team_t		team = client->ps.persistant[PERS_TEAM];
 
 	if ( !client->info.teamInfo )
 		return;
@@ -1051,9 +1051,10 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	for (i = 0, cnt = 0; i < level.maxclients && cnt < TEAM_MAXOVERLAY; i++) {
 		gclient_t *cl = level.clients + level.sortedClients[i];
 
-		if (cl != client &&
+		if (cl->ps.clientNum != client->ps.clientNum &&
 			cl->pers.connected == CON_CONNECTED &&
-			cl->sess.sessionTeam ==	client->sess.sessionTeam ) {
+			cl->sess.spectatorState == SPECTATOR_NOT &&
+			cl->sess.sessionTeam ==	team) {
 			clients[cnt++] = level.sortedClients[i];
 		}
 	}
@@ -1110,13 +1111,14 @@ void CheckTeamStatus(void) {
 		}
 
 		for (i = 0; i < level.maxclients; i++) {
-			ent = g_entities + i;
+			gentity_t	*ent = g_entities + i;
+			team_t		team = ent->client->ps.persistant[PERS_TEAM];
 
 			if ( ent->client->pers.connected != CON_CONNECTED ) {
 				continue;
 			}
 
-			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+			if (team == TEAM_RED ||	team == TEAM_BLUE) {
 				TeamplayInfoMessage( ent );
 			}
 		}

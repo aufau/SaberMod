@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -377,7 +377,7 @@ void UI_LoadModes( const char *directory ) {
 	}
 
 	uiInfo.modeCount = nummodes;
-	uiInfo.modeIndex = 0;
+	Menu_SetFeederSelection(NULL, FEEDER_MODES, 0, NULL);
 	Q_strncpyz(uiInfo.modeDir, dir, sizeof(uiInfo.modeDir));
 }
 
@@ -477,7 +477,7 @@ void UI_LoadServerMaps( void ) {
 	}
 
 	uiInfo.serverMapCount = i;
-	uiInfo.serverMapIndex = 0;
+	Menu_SetFeederSelection(NULL, FEEDER_SERVER_MAPS, 0, NULL);
 
 	if ( ui_longMapName.integer ) {
 		qsort( uiInfo.serverMapList, uiInfo.serverMapCount, sizeof( uiInfo.serverMapList[0] ), SortServerMapsName );

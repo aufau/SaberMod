@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -728,17 +728,16 @@ level.num_entities garbage collection
 =================
 */
 void G_FreeUnusedEntities( void ) {
-	int			lastEntity = 0;
 	int			i;
 
-	for (i = 0; i < level.num_entities; i++) {
+	for (i = level.num_entities - 1; i >= MAX_CLIENTS; i--) {
 		if (g_entities[i].inuse) {
-			lastEntity = i;
+			break;
 		}
 	}
 
-	if (lastEntity + 1 < level.num_entities) {
-		level.num_entities = lastEntity + 1;
+	if (i + 1 < level.num_entities) {
+		level.num_entities = i + 1;
 		trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 			&level.clients[0].ps, sizeof( level.clients[0] ) );
 	}
@@ -1218,3 +1217,15 @@ void G_ROFF_NotetrackCallback( gentity_t *cent, const char *notetrack)
 	}
 }
 
+int G_PointEntityContents(const vec3_t point, int passEntityNum)
+{
+	int	touch[MAX_GENTITIES];
+	int	contents, num, i;
+
+	num = G_EntitiesInBox(point, point, touch, MAX_GENTITIES, passEntityNum);
+	contents = 0;
+	for (i = 0; i < num; i++) {
+		contents |= g_entities[touch[i]].r.contents;
+	}
+	return contents;
+}

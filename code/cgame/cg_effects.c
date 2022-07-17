@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -243,8 +243,7 @@ static void CG_ThrowChunk( const vec3_t origin, const vec3_t velocity, qhandle_t
 // Since we have shared verts when we tesselate the glass sheet, it helps to have a
 //	random offset table set up up front.
 
-static float offX[20][20],
-			offZ[20][20];
+#define GLASS_GRID	20
 
 #define	FX_ALPHA_NONLINEAR	0x00000004
 #define FX_APPLY_PHYSICS	0x02000000
@@ -300,36 +299,16 @@ static void CG_DoGlassQuad( vec3_t p[4], vec2_t uv[4], qboolean stick, int time,
 
 	//rww - this is dirty.
 
-	i = 0;
-	i_2 = 0;
-
-	while (i < 4)
-	{
-		while (i_2 < 3)
-		{
+	for (i = 0; i < 4; i++) {
+		for (i_2 = 0; i_2 < 3; i_2++) {
 			apArgs.p[i][i_2] = p[i][i_2];
-
-			i_2++;
 		}
-
-		i_2 = 0;
-		i++;
 	}
 
-	i = 0;
-	i_2 = 0;
-
-	while (i < 4)
-	{
-		while (i_2 < 2)
-		{
+	for (i = 0; i < 4; i++) {
+		for (i_2 = 0; i_2 < 2; i_2++) {
 			apArgs.ev[i][i_2] = uv[i][i_2];
-
-			i_2++;
 		}
-
-		i_2 = 0;
-		i++;
 	}
 
 	apArgs.numVerts = 4;
@@ -419,28 +398,6 @@ static void CG_CalcHeightWidth( vec3_t verts[4], float *height, float *width )
 // let "p" be the position vector of an arbitrary point in 3D
 //dist = len( crossprod(p-a,v) ) / len(v);
 
-void CG_InitGlass( void )
-{
-	int i, t;
-
-	// Build a table first, so that we can do a more unpredictable crack scheme
-	//	do it once, up front to save a bit of time.
-	for ( i = 0; i < 20; i++ )
-	{
-		for ( t = 0; t < 20; t++ )
-		{
-			offX[t][i] = crandom() * 0.03f;
-			offZ[i][t] = crandom() * 0.03f;
-		}
-	}
-}
-
-void Vector2Set(vec2_t a,float b,float c)
-{
-	a[0] = b;
-	a[1] = c;
-}
-
 #define TIME_DECAY_SLOW		0.1f
 #define TIME_DECAY_MED		0.04f
 #define TIME_DECAY_FAST		0.009f
@@ -452,14 +409,14 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 	float		height, width;
 	float		stepWidth, stepHeight;
 	float		timeDecay;
-	float		x, z;
-	float		xx, zz;
 	float		dif;
 	int			time = 0;
 	int			glassShards = 0;
 	qboolean	stick = qtrue;
 	vec3_t		subVerts[4];
 	vec2_t		biPoints[4];
+	float		biGridX[GLASS_GRID + 1][GLASS_GRID + 1];
+	float		biGridZ[GLASS_GRID + 1][GLASS_GRID + 1];
 
 	// To do a smarter tesselation, we should figure out the relative height and width of the brush face,
 	//	then use this to pick a lod value from 1-3 in each axis.  This will give us 1-9 lod levels, which will
@@ -471,144 +428,71 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 	// Pick "LOD" for height
 	if ( height < 100 )
 	{
-		stepHeight = 0.2f;
 		mxHeight = 5;
 		timeDecay = TIME_DECAY_SLOW;
 	}
 	else if ( height > 220 )
 	{
-		stepHeight = 0.05f;
-		mxHeight = 20;
+		mxHeight = GLASS_GRID;
 		timeDecay = TIME_DECAY_FAST;
 	}
 	else
 	{
-		stepHeight = 0.1f;
 		mxHeight = 10;
 		timeDecay = TIME_DECAY_MED;
 	}
 
 	// Pick "LOD" for width
-	/*
 	if ( width < 100 )
 	{
-		stepWidth = 0.2f;
 		mxWidth = 5;
 		timeDecay = ( timeDecay + TIME_DECAY_SLOW ) * 0.5f;
 	}
 	else if ( width > 220 )
 	{
-		stepWidth = 0.05f;
-		mxWidth = 20;
+		mxWidth = GLASS_GRID;
 		timeDecay = ( timeDecay + TIME_DECAY_FAST ) * 0.5f;
 	}
 	else
 	{
-		stepWidth = 0.1f;
 		mxWidth = 10;
 		timeDecay = ( timeDecay + TIME_DECAY_MED ) * 0.5f;
 	}
-	*/
 
-	//Attempt to scale the glass directly to the size of the window
+	stepWidth = 1.0f / mxWidth;
+	stepHeight = 1.0f / mxHeight;
 
-	stepWidth = (0.25f - (width*0.0002f)); //(width*0.0005));
-	mxWidth = width*0.2f;
-	timeDecay = ( timeDecay + TIME_DECAY_FAST ) * 0.5f;
+	// Glass surface is cut into shards with a mxWidth x mxHeight
+	// grid. Each piece is animated by the FX system independently
 
-	if (stepWidth < 0.05f)
-	{
-		stepWidth = 0.05f;
+	// offset grid crossing points with random values to create
+	// various shapes of glass shards
+	for ( i = 0; i <= mxHeight; i++ ) {
+		float z = (float)i / mxHeight;
+
+		for ( t = 0; t <= mxWidth; t++ ) {
+			float x = (float)t / mxWidth;
+
+			// Offset break points inside, not on the boundary
+			if (i > 0 && t > 0 && i < mxHeight && t < mxWidth) {
+				biGridX[i][t] = x + 0.49f * stepWidth * crandom();
+				biGridZ[i][t] = z + 0.49f * stepHeight * crandom();
+			} else {
+				biGridX[i][t] = x;
+				biGridZ[i][t] = z;
+			}
+		}
 	}
-	if (mxWidth < 5)
-	{
-		mxWidth = 5;
-	}
 
-	for ( z = 0.0f, i = 0; i < 19 && z < 1.0f; z += stepHeight, i++ )
+	// create glass shards based on crossing points
+	for ( i = 0; i < mxHeight; i++ )
 	{
-		for ( x = 0.0f, t = 0; i < 19 && x < 1.0f; x += stepWidth, t++ )
+		for ( t = 0; t < mxWidth; t++ )
 		{
-			// This is nasty..
-			if ( t > 0 && t < mxWidth )
-			{
-				xx = x - offX[i][t];
-			}
-			else
-			{
-				xx = x;
-			}
-
-			if ( i > 0 && i < mxHeight )
-			{
-				zz = z - offZ[t][i];
-			}
-			else
-			{
-				zz = z;
-			}
-
-			Vector2Set( biPoints[0], xx, zz );
-
-			if ( t + 1 > 0 && t + 1 < mxWidth )
-			{
-				xx = x - offX[i][t + 1];
-			}
-			else
-			{
-				xx = x;
-			}
-
-			if ( i > 0 && i < mxHeight )
-			{
-				zz = z - offZ[t + 1][i];
-			}
-			else
-			{
-				zz = z;
-			}
-
-			Vector2Set( biPoints[1], xx + stepWidth, zz );
-
-			if ( t + 1 > 0 && t + 1 < mxWidth )
-			{
-				xx = x - offX[i + 1][t + 1];
-			}
-			else
-			{
-				xx = x;
-			}
-
-			if ( i + 1 > 0 && i + 1 < mxHeight )
-			{
-				zz = z - offZ[t + 1][i + 1];
-			}
-			else
-			{
-				zz = z;
-			}
-
-			Vector2Set( biPoints[2], xx + stepWidth, zz + stepHeight);
-
-			if ( t > 0 && t < mxWidth )
-			{
-				xx = x - offX[i + 1][t];
-			}
-			else
-			{
-				xx = x;
-			}
-
-			if ( i + 1 > 0 && i + 1 < mxHeight )
-			{
-				zz = z - offZ[t][i + 1];
-			}
-			else
-			{
-				zz = z;
-			}
-
-			Vector2Set( biPoints[3], xx, zz + stepHeight );
+			Vector2Set( biPoints[0], biGridX[i][t], biGridZ[i][t] );
+			Vector2Set( biPoints[1], biGridX[i][t + 1], biGridZ[i][t + 1] );
+			Vector2Set( biPoints[2], biGridX[i + 1][t + 1], biGridZ[i + 1][t + 1] );
+			Vector2Set( biPoints[3], biGridX[i + 1][t], biGridZ[i + 1][t] );
 
 			CG_CalcBiLerp( verts, subVerts, biPoints );
 
@@ -651,7 +535,20 @@ void CG_GlassShatter(int entnum, vec3_t dmgPt, vec3_t dmgDir, float dmgRadius, i
 
 	if (cgs.inlineDrawModel[cg_entities[entnum].currentState.modelindex])
 	{
+		// FIXME: trap_R_GetBModelVerts() should return corner
+		// coordinates of the glass surface, but brush models are
+		// partitioned by the bsp algorithm and it may return a
+		// surface partition instead of the whole thing (which may be
+		// have only 3 verts, like on duel_training)
 		trap_R_GetBModelVerts(cgs.inlineDrawModel[cg_entities[entnum].currentState.modelindex], verts, normal);
+
+		/*
+		CG_TestLine( verts[0], verts[1], 1000000, -1, 1);
+		CG_TestLine( verts[1], verts[2], 1000000, -1, 1);
+		CG_TestLine( verts[2], verts[3], 1000000, -1, 1);
+		CG_TestLine( verts[3], verts[0], 1000000, -1, 1);
+		*/
+
 		CG_DoGlass(verts, normal, dmgPt, dmgDir, dmgRadius, maxShards);
 	}
 	//otherwise something awful has happened.

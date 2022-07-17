@@ -30,6 +30,8 @@ copy ..\ui_syscalls.asm .
 @if errorlevel 1 goto quit
 %cc% ../ui_gameinfo.c
 @if errorlevel 1 goto quit
+%cc% ../ui_macroscan.c
+@if errorlevel 1 goto quit
 
 ..\..\..\bin\q3asm -f ../ui
 @if errorlevel 1 goto quit

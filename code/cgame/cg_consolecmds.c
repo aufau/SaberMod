@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -434,7 +434,7 @@ static void CG_Players_f( void ) {
 	if (!Q_stricmp(CG_Argv(1), "?")) {
 		CG_Printf(
 			"Flag legend:\n"
-			S_COLOR_CYAN "  Bot" S_COLOR_WHITE " - bot\n"
+			S_COLOR_CYAN "Bot" S_COLOR_WHITE " - bot\n"
 			S_COLOR_MAGENTA "  H" S_COLOR_WHITE " - player uses handicap\n"
 			S_COLOR_RED "R  " S_COLOR_WHITE " - referee\n"
 			);
@@ -521,6 +521,10 @@ static void CG_Seek_f( void ) {
 		return;
 	}
 
+	if (cg.seekTime) {
+		return;
+	}
+
 	arg = CG_Argv(1);
 
 	if (arg[0] == '+') {
@@ -547,6 +551,7 @@ static void CG_Seek_f( void ) {
 	switch (type) {
 	case SEEK_FORWARD:
 		cg.seekTime = cg.serverTime + msec;
+		cg.fastSeek = qfalse;
 		break;
 	case SEEK_BACKWARD:
 		msec = cg.serverTime - msec - cgs.levelStartTime;
@@ -558,6 +563,7 @@ static void CG_Seek_f( void ) {
 	case SEEK_TIME:
 		if (cgs.levelStartTime + msec >= cg.serverTime) {
 			cg.seekTime = cgs.levelStartTime + msec;
+			cg.fastSeek = qtrue;
 		} else {
 			if (msec < 0) {
 				msec = 0;	// prevent looping infinitely
@@ -567,6 +573,55 @@ static void CG_Seek_f( void ) {
 		break;
 	}
 }
+
+/*
+==================
+CG_CycleSpectatorMode
+==================
+*/
+static void CG_CycleSpectatorMode( int dir ) {
+	static const char *specModeNames[SPECMODE_MAX] = {
+		"Follow",
+		"Free Angles"
+	};
+
+	if (cg.spec.following) {
+		cg.spec.mode = (cg.spec.mode + SPECMODE_MAX + dir) % SPECMODE_MAX;
+
+		if (cg.spec.mode == SPECMODE_FREEANGLES) {
+			usercmd_t	cmd;
+			int			cmdNum;
+
+			cmdNum = trap_GetCurrentCmdNumber();
+			trap_GetUserCmd(cmdNum, &cmd);
+
+			PM_SetDeltaAngles(cg.spec.delta_angles, cg.snap->ps.viewangles, &cmd);
+		}
+
+		CG_Printf("Spectator Mode: %s\n", specModeNames[cg.spec.mode]);
+	} else {
+		CG_Printf("Spectator Mode: Free\n");
+	}
+}
+
+/*
+==================
+CG_PrevSpectatorMode_f
+==================
+*/
+static void CG_PrevSpectatorMode_f( void ) {
+	CG_CycleSpectatorMode(-1);
+}
+
+/*
+==================
+CG_NextSpectatorMode_f
+==================
+*/
+static void CG_NextSpectatorMode_f( void ) {
+	CG_CycleSpectatorMode(1);
+}
+
 
 typedef struct {
 	const char	*cmd;
@@ -628,6 +683,8 @@ static const consoleCommand_t	commands[] = {
 	{ "players", CG_Players_f },
 	{ "motd", CG_PrintMotd_f },
 	{ "seek", CG_Seek_f },
+	{ "prevspecmode", CG_PrevSpectatorMode_f },
+	{ "nextspecmode", CG_NextSpectatorMode_f },
 };
 
 
@@ -709,9 +766,9 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
 
 	trap_AddCommand ("ragequit");
-	trap_AddCommand ("seek");
 	trap_AddCommand ("timeout");
 	trap_AddCommand ("timein");
+	trap_AddCommand ("referee");
 }
 
 void CG_ShutDownConsoleCommands( void ) {
@@ -755,7 +812,6 @@ void CG_ShutDownConsoleCommands( void ) {
 	trap_RemoveCommand ("loaddefered");	// spelled wrong, but not changing for demo
 
 	trap_RemoveCommand ("ragequit");
-	trap_RemoveCommand ("seek");
 	trap_RemoveCommand ("timeout");
 	trap_RemoveCommand ("timein");
 
@@ -770,4 +826,6 @@ void CG_ShutDownConsoleCommands( void ) {
 	trap_RemoveCommand ("help");
 	trap_RemoveCommand ("pause");
 	trap_RemoveCommand ("unpause");
+	trap_RemoveCommand ("allready");
+	trap_RemoveCommand ("abort");
 }

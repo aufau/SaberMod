@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -103,10 +103,21 @@ typedef enum {
 	CV_CAPTURELIMIT,
 	CV_POLL,
 	CV_REFEREE,
+	CV_ABORT,
 	CV_MAX
 } voteCmd_t;
 
 q_static_assert(CV_MAX <= 32);
+
+typedef enum {
+	CTV_INVALID,
+	CTV_FIRST,
+	CTV_LEADER = CTV_FIRST,
+	CTV_FORFEIT,
+	CTV_MAX
+} teamVoteCmd_t;
+
+q_static_assert(CTV_MAX <= 32);
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
@@ -331,6 +342,8 @@ struct gentity_s {
 
 	gitem_t		*item;			// for bonus items
 
+	qboolean	freeOnStop;
+
 	// 1. Number of a client who should be blamed for this entity
 	// 2. ENTITYNUM_WORLD for entities that should be always broadcasted
 	// 3. ENTITYNUM_NONE for entities that don't belong to anyone but
@@ -410,7 +423,7 @@ typedef struct {
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
 	team_t				sessionTeam;
-	int					spectatorTime;		// for determining next-in-line to play
+	int					spectatorNum;		// for determining next-in-line to play
 	spectatorState_t	spectatorState;
 	int					spectatorClient;	// for chasecam and follow mode
 	int					wins, losses;		// tournament stats
@@ -496,7 +509,6 @@ struct gclient_s {
 	int			lastCmdTime;		// level.time of last usercmd_t, for EF_CONNECTION
 									// we can't just use pers.lastCommand.time, because
 									// of the g_sycronousclients case
-	qboolean	warp;				// if anti-warp is active for EF_CONNECTION
 	int			buttons;
 	int			oldbuttons;
 	int			latched_buttons;
@@ -531,6 +543,7 @@ struct gclient_s {
 	int			airOutTime;			// time the players needs to breathe
 
 	int			lastKillTime;		// for multiple kill rewards
+	int			readyTime;			// last time ready command was issued
 
 	qboolean	fireHeld;			// used for hook
 	gentity_t	*hook;				// grapple hook if out
@@ -631,6 +644,8 @@ typedef struct {
 	int			voteClient;				// client who called current/last vote
 
 	// team voting state
+	teamVoteCmd_t	teamVoteCmd[2];		// current vote
+	int			teamVoteArg[2];
 	char		teamVoteString[2][MAX_STRING_CHARS];
 	int			teamVoteTime[2];		// level.time vote was called
 	int			teamVoteYes[2];
@@ -659,6 +674,7 @@ typedef struct {
 
 	int			roundQueued;			// new round was qualified, but we're
 										// doing a g_roundWarmup sec countdown
+	team_t		forfeitTeam;			// Team wants to forfeit the match
 
 	qboolean	locationLinked;			// target_locations get linked
 	gentity_t	*locationHead;			// head of the location list
@@ -728,7 +744,7 @@ void RespawnItem( gentity_t *ent );
 void UseHoldableItem( gentity_t *ent );
 void PrecacheItem (gitem_t *it);
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle );
-gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity );
+gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity, int blameEntityNum );
 void SetRespawn (gentity_t *ent, float delay);
 void G_SpawnItem (gentity_t *ent, gitem_t *item);
 void FinishSpawningItem( gentity_t *ent );
@@ -776,6 +792,8 @@ void	G_FreeUnusedEntities( void );
 
 void	G_TouchTriggers (gentity_t *ent);
 void	G_TouchSolids (gentity_t *ent);
+int		G_PointEntityContents(const vec3_t point, int passEntityNum);
+
 
 //
 // g_object.c
@@ -976,6 +994,7 @@ void FindIntermissionPoint( void );
 void SetLeader(team_t team, int client);
 void CheckTeamLeader( team_t team );
 void G_RunThink (gentity_t *ent);
+void AddTournamentQueue(gclient_t *client);
 void G_LogPrintf( int event, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
@@ -1022,7 +1041,7 @@ void Svcmd_GameMem_f( void );
 // g_session.c
 //
 void G_ReadSessionData( gclient_t *client );
-void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot );
+void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qboolean firstTime );
 
 void G_InitWorldSession( void );
 void G_WriteSessionData( void );
@@ -1102,8 +1121,8 @@ void G_PrintStats(void);
 void G_LogStats(void);
 
 // g_dimensions.c
-#define DEFAULT_DIMENSION	0x1
-#define ALL_DIMENSIONS		0xffffffff
+#define DEFAULT_DIMENSION	(1u << TEAM_FREE)
+#define ALL_DIMENSIONS		0xffffffffu
 
 void G_BlameForEntity( int blame, gentity_t *ent );
 unsigned G_GetFreeDuelDimension(void);
@@ -1287,11 +1306,18 @@ extern	vmCvar_t	g_instagib;
 extern	vmCvar_t	g_voteCooldown;
 extern	vmCvar_t	g_unlagged;
 extern	vmCvar_t	g_unlaggedMaxPing;
+extern	vmCvar_t	g_timeoutDuration;
 extern	vmCvar_t	g_timeoutLimit;
 extern	vmCvar_t	g_requireClientside;
 extern	vmCvar_t	g_allowRefVote;
+extern	vmCvar_t	g_antiWarp;
 extern	vmCvar_t	g_antiWarpTime;
 extern	vmCvar_t	g_spSkill;
+extern	vmCvar_t	g_pushableItems;
+extern	vmCvar_t	g_refereePassword;
+extern	vmCvar_t	g_allowTeamVote;
+extern	vmCvar_t	g_vampiricDamage;
+extern	vmCvar_t	g_removeUnreachableItems;
 
 void	trap_Print( const char *fmt );
 Q_NORETURN void	trap_Error( const char *fmt );

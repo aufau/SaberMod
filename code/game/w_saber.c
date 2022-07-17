@@ -3,7 +3,7 @@
 This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -2342,6 +2342,8 @@ void saberCheckRadiusDamage(gentity_t *saberent, int returning)
 
 	VectorSet( mins, -dist, -dist, -dist );
 	VectorSet( maxs,  dist,  dist,  dist );
+	VectorAdd( mins, saberent->r.currentOrigin, mins );
+	VectorAdd( maxs, saberent->r.currentOrigin, maxs );
 
 	num = G_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES, saberent->s.number );
 

@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -25,10 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // active (after loading) gameplay
 
 #include "cg_local.h"
-
-#include "../ui/ui_shared.h"
+#include "../../assets/ui/jk2mp/menudef.h"
 
 #ifdef MISSIONPACK
+#include "../ui/ui_shared.h"
+
 // used for scoreboard
 extern displayContextDef_t cgDC;
 menuDef_t *menuScoreboard = NULL;
@@ -1953,24 +1954,37 @@ static float CG_DrawTimer( float y ) {
 	int			mins, seconds, tens;
 	int			msec;
 
+	// msec is always growing
+	// positive - timer counting up
+	// negative - timer counting down
+
 	if (cg_drawTimer.integer >= 2) {
 		if (!cgs.timelimit) {
 			return y;
 		}
 
-		msec = cgs.timelimit * 60 * 1000;
-		if (!cg.warmup) {
-			msec -= cg.serverTime - cgs.levelStartTime;
-			// intermission or overtime
-			if (msec < 0) {
-				msec = -msec;
-			}
+		if (cg.intermissionStarted) {
+			msec = 0;
+		} else if (cg.warmup) {
+			msec = - cgs.timelimit * 60 * 1000;
+		} else {
+			msec = - cgs.timelimit * 60 * 1000 + cg.gameTime - cgs.levelStartTime;
 		}
 	} else {
-		msec = MAX(0, cg.serverTime - cgs.levelStartTime);
+		if (cg.warmup) {
+			msec = 0;
+		} else {
+			msec = cg.gameTime - cgs.levelStartTime;
+		}
 	}
 
-	seconds = msec / 1000;
+	// seconds = abs(floor(msec / 1000.0))
+	if (msec < 0) {
+		seconds = (- msec + 999) / 1000;
+	} else {
+		seconds = msec / 1000;
+	}
+
 	mins = seconds / 60;
 	seconds -= mins * 60;
 	tens = seconds / 10;
@@ -2005,7 +2019,7 @@ static void CG_DrawCountdown( void )
 	}
 
 	msec = cgs.timelimit * 60 * 1000;
-	msec -= cg.serverTime - cgs.levelStartTime;
+	msec -= cg.gameTime - cgs.levelStartTime;
 
 	if (msec < 0 || 16000 <= msec) {
 		return;
@@ -2013,7 +2027,7 @@ static void CG_DrawCountdown( void )
 
 	msec = MAX(0, msec);
 
-	s = va( "%d", msec / 1000 );
+	s = va( "%d", msec / 1000 + 1 );
 	UI_DrawProportionalString( 0.5f * cgs.screenWidth, 125, s, UI_CENTER, colorRed );
 }
 
@@ -2517,10 +2531,11 @@ static void CG_DrawLagometer( void ) {
 	// draw the graph
 	//
 	x = cgs.screenWidth - 48;
-	y = 480 - 144;
+	y = SCREEN_HEIGHT - 144;
 
 	trap_R_SetColor( NULL );
 	CG_DrawPic( x, y, 48, 48, cgs.media.lagometerShader );
+	x -= 1.0f; //lines the actual graph up with the background
 
 	ax = x;
 	ay = y;
@@ -2744,9 +2759,13 @@ CG_PrintMotd_f
 ==================
 */
 void CG_PrintMotd_f( void ) {
-	cg.centerPrintLock = qfalse;
-	CG_CenterPrint( CG_ConfigString( CS_INGAME_MOTD ), SCREEN_HEIGHT * 0.30f );
-	cg.centerPrintLock = qtrue;
+	const char *motd = CG_ConfigString( CS_INGAME_MOTD );
+
+	if (strcmp(motd, "")) {
+		cg.centerPrintLock = qfalse;
+		CG_CenterPrint( motd, SCREEN_HEIGHT * 0.30f );
+		cg.centerPrintLock = qtrue;
+	}
 }
 
 /*
@@ -2850,6 +2869,11 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 
 	if ( cg.predictedPlayerState.zoomMode != ZOOM_NONE )
 	{//not while scoped
+		return;
+	}
+
+	if (cg.spec.following && cg.spec.mode == SPECMODE_FREEANGLES)
+	{
 		return;
 	}
 
@@ -2971,8 +2995,8 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 	}
 	else
 	{
-		x = 0.5f * (cgs.screenWidth - w) + cg_crosshairX.value;
-		y = 0.5f * (SCREEN_HEIGHT - h) + cg_crosshairY.value;
+		x = 0.5f * cgs.screenWidth + cg_crosshairX.value;
+		y = 0.5f * SCREEN_HEIGHT + cg_crosshairY.value;
 	}
 
 	hShader = cgs.media.crosshairShader[ CLAMP( 0, NUM_CROSSHAIRS - 1, cg_drawCrosshair.integer ) ];
@@ -2980,7 +3004,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint, int chEntValid ) {
 	x += cg.refdef.x;
 	y += cg.refdef.y;
 
-	CG_DrawPic( x - 0.5f * w, y - 0.5f * w, w, h, hShader );
+	CG_DrawPic( x - 0.5f * w, y - 0.5f * h, w, h, hShader );
 	CG_DrawCrosshairIndicators( x, y, w, h );
 }
 
@@ -3674,10 +3698,11 @@ CG_DrawTeamVote
 static void CG_DrawTeamVote(void) {
 	char	*s;
 	int		sec, cs_offset;
+	team_t	team = cgs.clientinfo[cg.snap->ps.clientNum].team;
 
-	if ( cgs.clientinfo->team == TEAM_RED )
+	if ( team == TEAM_RED )
 		cs_offset = 0;
-	else if ( cgs.clientinfo->team == TEAM_BLUE )
+	else if ( team == TEAM_BLUE )
 		cs_offset = 1;
 	else
 		return;
@@ -3696,46 +3721,10 @@ static void CG_DrawTeamVote(void) {
 	if ( sec < 0 ) {
 		sec = 0;
 	}
-	if (strstr(cgs.teamVoteString[cs_offset], "leader"))
-	{
-		int i = 0;
 
-		while (cgs.teamVoteString[cs_offset][i] && cgs.teamVoteString[cs_offset][i] != ' ')
-		{
-			i++;
-		}
-
-		if (cgs.teamVoteString[cs_offset][i] == ' ')
-		{
-			int voteIndex = 0;
-			char voteIndexStr[256];
-
-			i++;
-
-			while (cgs.teamVoteString[cs_offset][i])
-			{
-				voteIndexStr[voteIndex] = cgs.teamVoteString[cs_offset][i];
-				voteIndex++;
-				i++;
-			}
-			voteIndexStr[voteIndex] = 0;
-
-			voteIndex = atoi(voteIndexStr);
-
-			s = va("TEAMVOTE(%i):(Make %s" S_COLOR_WHITE " the new team leader) yes:%i no:%i", sec, cgs.clientinfo[voteIndex].name,
-									cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-		}
-		else
-		{
-			s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
-									cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-		}
-	}
-	else
-	{
-		s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
+	s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
 								cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-	}
+
 	CG_DrawSmallString( 4, 90, s, 1.0F );
 }
 
@@ -3833,6 +3822,11 @@ static qboolean CG_DrawFollow( void )
 	const char	*s;
 	float		x;
 
+	if ( !cg_drawFollow.integer )
+	{
+		return qfalse;
+	}
+
 	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) )
 	{
 		return qfalse;
@@ -3847,24 +3841,25 @@ static qboolean CG_DrawFollow( void )
 	x = 0.5f * (cgs.screenWidth - CG_Text_Width(s, 2.0f, FONT_MEDIUM));
 	CG_Text_Paint (x, 80, 2.0f, colorWhite, s, 0, 0, 0, FONT_MEDIUM);
 
-	if ( !cg_drawSpectatorHints.integer ) {
-		return qtrue;
+	return qtrue;
+}
+
+static void CG_DrawScoreboardHints( void )
+{
+	const char	*s;
+	float		x;
+
+	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
+		return;
 	}
 
-	if ( !cg.showScores ) {
-		return qtrue;
+	if ( !cg_drawSpectatorHints.integer ) {
+		return;
 	}
 
 	if ( cg.demoPlayback ) {
-		return qtrue;
+		return;
 	}
-
-	// don't draw over item/force/weapon select bar
-	/*
-	if ( cg.iconHUDActive ) {
-		return qtrue;
-	}
-	*/
 
 	x = 0.5f * cgs.screenWidth;
 
@@ -3900,8 +3895,6 @@ static qboolean CG_DrawFollow( void )
 		s = CG_GetStripEdString("SABERINGAME", "FFA_FOLLOW_HINT");
 		UI_DrawProportionalString(x, 440, s, UI_CENTER, colorWhite);
 	}
-
-	return qtrue;
 }
 
 #ifdef UNUSED
@@ -3982,9 +3975,8 @@ static void CG_DrawWarmup( void ) {
 
 	if (cgs.unpauseTime > cg.serverTime)
 	{
-		sec = (cgs.unpauseTime - cg.serverTime) / 1000;
-
-		if (sec < 60) {
+		if (cgs.unpauseTime != UNPAUSE_TIME_NEVER) {
+			sec = (cgs.unpauseTime - cg.serverTime) / 1000 + 1;
 			s = va(CG_GetStripEdString("SABERINGAME", "MATCH_WILL_RESUME"), sec); // "Game will resume in %d seconds"
 		} else {
 			s = CG_GetStripEdString("SABERINGAME", "MATCH_PAUSED");
@@ -4061,9 +4053,7 @@ static void CG_DrawWarmup( void ) {
 
 	sec = ( sec - cg.gameTime );
 	if ( sec < 0 ) {
-		cg.warmup = 0;
 		sec = 0;
-		return;
 	}
 	sec /= 1000;
 //	s = va( "Starts in: %i", sec + 1 );
@@ -4818,12 +4808,14 @@ static void CG_Draw2D( void ) {
 		CG_DrawUpperRight();
 	}
 
-	CG_DrawFollow();
 	CG_DrawWarmup();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreBoardShowing = CG_DrawScoreboard();
-	if ( !cg.scoreBoardShowing) {
+	if ( cg.scoreBoardShowing) {
+		CG_DrawScoreboardHints();
+	} else {
+		CG_DrawFollow();
 		CG_DrawCenterString();
 		CG_DrawCountdown();
 	}

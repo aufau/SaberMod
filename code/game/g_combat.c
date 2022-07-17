@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -628,7 +628,7 @@ void TossClientWeapon(gentity_t *self, const vec3_t direction, float speed)
 	vel[1] = direction[1]*speed;
 	vel[2] = direction[2]*speed;
 
-	launched = LaunchItem(item, self->client->ps.origin, vel);
+	launched = LaunchItem(item, self->client->ps.origin, vel, self->s.number);
 
 	launched->s.generic1 = self->s.number;
 	launched->s.powerups = level.time + 1500;
@@ -2871,6 +2871,23 @@ qboolean G_ThereIsAMaster(void)
 	return qfalse;
 }
 
+static void G_VampiricDamage(gentity_t *predator, int damage) {
+	int drain, health, maxHealth;
+
+	if (predator->health <= 0) {
+		return;
+	}
+
+	drain = g_vampiricDamage.value * damage;
+	maxHealth = predator->client->ps.stats[STAT_MAX_HEALTH] * 2;
+
+	health = predator->health + drain;
+	predator->health = CLAMP(1, maxHealth, health);
+
+	health = predator->client->ps.stats[STAT_HEALTH] + drain;
+	predator->client->ps.stats[STAT_HEALTH] = CLAMP(1, maxHealth, health);
+}
+
 /*
 ============
 T_Damage
@@ -2901,6 +2918,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	const vec3_t direction, const vec3_t point, int damage, int dflags, meansOfDeath_t mod )
 {
 	gclient_t	*client;
+	int			takeHealth;
 	int			take;
 	int			asave;
 	int			knockback;
@@ -3336,7 +3354,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		gentity_t	*evEnt;
 
 		// Send off an event to show a shield shell on the player, pointing in the right direction.
-		evEnt = G_TempEntity(vec3_origin, EV_SHIELD_HIT, targ->s.number);
+		evEnt = G_TempEntity(targ->r.currentOrigin, EV_SHIELD_HIT, targ->s.number);
 		evEnt->s.otherEntityNum = targ->s.number;
 		evEnt->s.eventParm = DirToByte(dir);
 		evEnt->s.time2 = shieldAbsorbed + irand(-15, 15);
@@ -3431,17 +3449,21 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( oldHealth <= 0 )
 			return; // we were dead to begin with
 		else if ( targ->health <= 0 )
-			take = oldHealth;
+			takeHealth = oldHealth;
 		else
-			take = oldHealth - targ->health;
+			takeHealth = oldHealth - targ->health;
 
-		take += oldArmor - client->ps.stats[STAT_ARMOR];
+		take = takeHealth + oldArmor - client->ps.stats[STAT_ARMOR];
 
 		if (take == 0)
 			return;
 
 		if (g_damagePlums.integer || g_mvapi)
 			ScorePlum(attacker->s.number, client->ps.origin, take);
+
+		if (!OnSameTeam(targ, attacker)) {
+			G_VampiricDamage(attacker, takeHealth);
+		}
 
 		// don't log damage stats
 		if (level.warmupTime || level.intermissiontime || level.roundQueued )

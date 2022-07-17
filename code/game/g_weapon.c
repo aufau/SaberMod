@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -779,8 +779,9 @@ void WP_DisruptorAltFire( gentity_t *ent )
 			int preHealth = traceEnt->health;
 			int preLegs = 0;
 			int preTorso = 0;
+			qboolean isClient = (qboolean)!!traceEnt->client;
 
-			if (traceEnt->client)
+			if (isClient)
 			{
 				preLegs = traceEnt->client->ps.legsAnim;
 				preTorso = traceEnt->client->ps.torsoAnim;
@@ -789,7 +790,7 @@ void WP_DisruptorAltFire( gentity_t *ent )
 
 			G_Damage( traceEnt, ent, ent, forward, tr->endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
 
-			if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
+			if (isClient && preHealth > 0 && traceEnt->health <= 0 && fullCharge)
 			{ //was killed by a fully charged sniper shot, so disintegrate
 				VectorCopy(preAng, traceEnt->client->ps.viewangles);
 

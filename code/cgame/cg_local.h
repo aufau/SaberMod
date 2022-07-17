@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -93,7 +93,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NUM_FONT_SMALL	2
 #define NUM_FONT_CHUNKY	3
 
-#define	NUM_CROSSHAIRS		('j' - 'a' + 1)
+#define	NUM_CROSSHAIRS		('k' - 'a' + 1)
 
 #define TEAM_OVERLAY_MAXNAME_WIDTH	12
 #define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
@@ -661,6 +661,19 @@ typedef struct {
 #define MAX_REWARDSTACK		10
 #define MAX_SOUNDBUFFER		20
 
+typedef enum {
+	SPECMODE_FOLLOW,		// standard following mode
+	SPECMODE_FREEANGLES,	// spectator controls absolute camera angles
+	SPECMODE_MAX
+} specMode_t;
+
+typedef struct {
+	qboolean	following;			// if we're following another player
+	specMode_t	mode;
+	int			delta_angles[3];	// delta angles for free angles mode
+	int			thirdPersonRange;	// precalculated third person range
+} specData_t;
+
 //======================================================================
 
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
@@ -712,6 +725,7 @@ typedef struct {
 	qboolean	renderingThirdPerson;		// during deaths, chasecams, etc
 
 	int			seekTime;			// seek to given serverTime
+	qboolean	fastSeek;			// don't draw any intermediate frames
 	char		savedmaxfps[16];	// save com_maxfps value
 
 	// prediction state
@@ -758,6 +772,9 @@ typedef struct {
 
 	qboolean	hasFallVector;
 	vec3_t		fallVector;
+
+	// following spectator mode data
+	specData_t	spec;
 
 	// zoom key
 	qboolean	zoomed;
@@ -892,6 +909,7 @@ typedef struct {
 	vec3_t			saberFlashPos;
 
 	qboolean		queueMacroscan;
+	qboolean		demorecording;
 /*
 Ghoul2 Insert Start
 */
@@ -998,6 +1016,7 @@ typedef struct {
 	qhandle_t	teamBlueShader;
 
 	qhandle_t	balloonShader;
+	qhandle_t	warpShader;
 	qhandle_t	connectionShader;
 
 	qhandle_t	tracerShader;
@@ -1154,6 +1173,9 @@ typedef struct {
 
 	sfxHandle_t deploySeeker;
 	sfxHandle_t medkitSound;
+
+	sfxHandle_t pauseSound;
+	sfxHandle_t unpauseSound;
 
 	// teamplay sounds
 	sfxHandle_t redScoredSound;
@@ -1382,8 +1404,10 @@ typedef struct {
 	int				fDisable;
 	qboolean		privateDuel;
 	qboolean		instagib;
+	gameStatus_t	status;
 	qboolean		macroscan;
 
+	char			mappath[MAX_QPATH];
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
 	char			blueTeam[MAX_QPATH];
@@ -1614,10 +1638,12 @@ extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;
 
 extern	vmCvar_t		cg_chatBeep;
-extern	vmCvar_t		cg_camerafps;
+extern	vmCvar_t		cg_smoothCamera;
+extern	vmCvar_t		cg_smoothCameraFPS;
 extern	vmCvar_t		cg_crosshairColor;
 extern	vmCvar_t		cg_darkenDeadBodies;
 extern	vmCvar_t		cg_drawClock;
+extern	vmCvar_t		cg_drawFollow;
 extern	vmCvar_t		cg_drawSpectatorHints;
 extern	vmCvar_t		cg_duelGlow;
 extern	vmCvar_t		cg_fastSeek;
@@ -1627,9 +1653,12 @@ extern	vmCvar_t		cg_privateDuel;
 extern	vmCvar_t		cg_crosshairIndicators;
 extern	vmCvar_t		cg_crosshairIndicatorsSpec;
 extern	vmCvar_t		cg_widescreen;
-extern	vmCvar_t		cg_widescreenFov;
+extern	vmCvar_t		cg_fovAspectAdjust;
+extern	vmCvar_t		cg_autoSave;
+extern	vmCvar_t		cg_autoSaveFormat;
 
 extern	vmCvar_t		cg_ui_myteam;
+extern	vmCvar_t		cg_com_maxfps;
 /*
 Ghoul2 Insert Start
 */
@@ -1756,6 +1785,10 @@ void CG_PrevInventory_f(void);
 void CG_NextForcePower_f(void);
 void CG_PrevForcePower_f(void);
 void CG_WideScreenMode(qboolean on);
+const char *CG_AutoSaveFilename( void );
+void CG_StartAutoDemo( void );
+void CG_StopAutoDemo( void );
+void CG_UpdateAutoSave( void );
 
 //
 // cg_view.c
@@ -1839,26 +1872,6 @@ float CG_Text_Width(const char *text, float scale, font_t iMenuFont);
 float CG_Text_Height(const char *text, float scale, font_t iMenuFont);
 qboolean CG_YourTeamHasFlag(void);
 qboolean CG_OtherTeamHasFlag(void);
-
-// cg_newDraw.c
-void CG_SelectPrevPlayer(void);
-void CG_SelectNextPlayer(void);
-float CG_GetValue(int ownerDraw);
-qboolean CG_OwnerDrawVisible(int flags);
-void CG_RunMenuScript(const char **args);
-qboolean CG_DeferMenuScript(const char **args);
-void CG_ShowResponseHead(void);
-void CG_SetPrintString(int type, const char *p);
-void CG_InitTeamChat(void);
-void CG_GetTeamColor(vec4_t *color);
-const char *CG_GetGameStatusText(void);
-const char *CG_GetKillerText(void);
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, const vec3_t origin, const vec3_t angles );
-void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
-void CG_CheckOrderPending(void);
-qhandle_t CG_StatusHandle(int task);
-
-
 
 //
 // cg_player.c
@@ -1990,8 +2003,6 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 #endif
 void CG_TestLine( const vec3_t start, const vec3_t end, int time, unsigned int color, int radius);
 
-void CG_InitGlass( void );
-
 //
 // cg_snapshot.c
 //
@@ -2028,6 +2039,7 @@ void CG_VoiceChatLocal( int mode, qboolean voiceOnly, int clientNum, int color, 
 void CG_PlayBufferedVoiceChats( void );
 #endif
 void CG_UpdateConfigString( int num, qboolean init );
+void CG_PlayGameStateSounds( void );
 
 //
 // cg_playerstate.c

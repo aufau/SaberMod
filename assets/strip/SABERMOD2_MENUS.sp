@@ -1,7 +1,7 @@
 VERSION 1
 ID 138
 REFERENCE SABERMENUS
-COUNT 76
+COUNT 100
 INDEX 0
 {
    REFERENCE TEAM_SIZE
@@ -167,11 +167,11 @@ INDEX 17
 INDEX 18
 {
    REFERENCE SELECT_MODE
-   TEXT_LANGUAGE1 "Select desired mode."
-   TEXT_LANGUAGE2 "Select desired mode."
-   TEXT_LANGUAGE3 "Select desired mode."
-   TEXT_LANGUAGE6 "Select desired mode."
-   TEXT_LANGUAGE8 "Select desired mode."
+   TEXT_LANGUAGE1 "Double click to enter a directory."
+   TEXT_LANGUAGE2 "Double click to enter a directory."
+   TEXT_LANGUAGE3 "Double click to enter a directory."
+   TEXT_LANGUAGE6 "Double click to enter a directory."
+   TEXT_LANGUAGE8 "Double click to enter a directory."
 }
 INDEX 19
 {
@@ -257,11 +257,11 @@ INDEX 27
 INDEX 28
 {
    REFERENCE REWARDS_DESC
-   TEXT_LANGUAGE1 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE2 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE3 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE6 "Download "Jedi Knight Rewards 2" from jkhub.org."
-   TEXT_LANGUAGE8 "Download "Jedi Knight Rewards 2" from jkhub.org."
+   TEXT_LANGUAGE1 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE2 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE3 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE6 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
+   TEXT_LANGUAGE8 "Requires "Jedi Knight Rewards 2" mod from jkhub.org."
 }
 INDEX 29
 {
@@ -365,11 +365,11 @@ INDEX 39
 INDEX 40
 {
    REFERENCE MATCH_DESC
-   TEXT_LANGUAGE1 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE2 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE3 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE6 "Restrict spectator chat and disable damage plums."
-   TEXT_LANGUAGE8 "Restrict spectator chat and disable damage plums."
+   TEXT_LANGUAGE1 "Prevent spectators from interfering."
+   TEXT_LANGUAGE2 "Prevent spectators from interfering."
+   TEXT_LANGUAGE3 "Prevent spectators from interfering."
+   TEXT_LANGUAGE6 "Prevent spectators from interfering."
+   TEXT_LANGUAGE8 "Prevent spectators from interfering."
 }
 INDEX 41
 {
@@ -383,11 +383,11 @@ INDEX 41
 INDEX 42
 {
    REFERENCE PRACTICE_DESC
-   TEXT_LANGUAGE1 "Disable match mode restrictions."
-   TEXT_LANGUAGE2 "Disable match mode restrictions."
-   TEXT_LANGUAGE3 "Disable match mode restrictions."
-   TEXT_LANGUAGE6 "Disable match mode restrictions."
-   TEXT_LANGUAGE8 "Disable match mode restrictions."
+   TEXT_LANGUAGE1 "Disable spectator restrictions."
+   TEXT_LANGUAGE2 "Disable spectator restrictions."
+   TEXT_LANGUAGE3 "Disable spectator restrictions."
+   TEXT_LANGUAGE6 "Disable spectator restrictions."
+   TEXT_LANGUAGE8 "Disable spectator restrictions."
 }
 INDEX 43
 {
@@ -590,11 +590,11 @@ INDEX 64
 INDEX 65
 {
    REFERENCE WIDESCREEN_HUD
-   TEXT_LANGUAGE1 "Widescreen HUD"
-   TEXT_LANGUAGE2 "Widescreen HUD"
-   TEXT_LANGUAGE3 "Widescreen HUD"
-   TEXT_LANGUAGE6 "Widescreen HUD"
-   TEXT_LANGUAGE8 "Widescreen HUD"
+   TEXT_LANGUAGE1 "Widescreen HUD:"
+   TEXT_LANGUAGE2 "Widescreen HUD:"
+   TEXT_LANGUAGE3 "Widescreen HUD:"
+   TEXT_LANGUAGE6 "Widescreen HUD:"
+   TEXT_LANGUAGE8 "Widescreen HUD:"
 }
 INDEX 66
 {
@@ -608,11 +608,11 @@ INDEX 66
 INDEX 67
 {
    REFERENCE WIDESCREEN_FOV
-   TEXT_LANGUAGE1 "Widescreen FOV"
-   TEXT_LANGUAGE2 "Widescreen FOV"
-   TEXT_LANGUAGE3 "Widescreen FOV"
-   TEXT_LANGUAGE6 "Widescreen FOV"
-   TEXT_LANGUAGE8 "Widescreen FOV"
+   TEXT_LANGUAGE1 "Widescreen FOV:"
+   TEXT_LANGUAGE2 "Widescreen FOV:"
+   TEXT_LANGUAGE3 "Widescreen FOV:"
+   TEXT_LANGUAGE6 "Widescreen FOV:"
+   TEXT_LANGUAGE8 "Widescreen FOV:"
 }
 INDEX 68
 {
@@ -626,11 +626,11 @@ INDEX 68
 INDEX 69
 {
    REFERENCE CROSSHAIR_IND
-   TEXT_LANGUAGE1 "Crosshair Indicators"
-   TEXT_LANGUAGE2 "Crosshair Indicators"
-   TEXT_LANGUAGE3 "Crosshair Indicators"
-   TEXT_LANGUAGE6 "Crosshair Indicators"
-   TEXT_LANGUAGE8 "Crosshair Indicators"
+   TEXT_LANGUAGE1 "Crosshair Indicators:"
+   TEXT_LANGUAGE2 "Crosshair Indicators:"
+   TEXT_LANGUAGE3 "Crosshair Indicators:"
+   TEXT_LANGUAGE6 "Crosshair Indicators:"
+   TEXT_LANGUAGE8 "Crosshair Indicators:"
 }
 INDEX 70
 {
@@ -671,11 +671,11 @@ INDEX 73
 INDEX 74
 {
    REFERENCE CROSSHAIR_IND_SPEC
-   TEXT_LANGUAGE1 "Spectator Indicators"
-   TEXT_LANGUAGE2 "Spectator Indicators"
-   TEXT_LANGUAGE3 "Spectator Indicators"
-   TEXT_LANGUAGE6 "Spectator Indicators"
-   TEXT_LANGUAGE8 "Spectator Indicators"
+   TEXT_LANGUAGE1 "Spectator Indicators:"
+   TEXT_LANGUAGE2 "Spectator Indicators:"
+   TEXT_LANGUAGE3 "Spectator Indicators:"
+   TEXT_LANGUAGE6 "Spectator Indicators:"
+   TEXT_LANGUAGE8 "Spectator Indicators:"
 }
 INDEX 75
 {
@@ -685,4 +685,242 @@ INDEX 75
    TEXT_LANGUAGE3 "Draw crosshair indicators when spectating."
    TEXT_LANGUAGE6 "Draw crosshair indicators when spectating."
    TEXT_LANGUAGE8 "Draw crosshair indicators when spectating."
+}
+INDEX 76
+{
+   REFERENCE READY
+   NOTES "Menu button to ready up/down"
+   TEXT_LANGUAGE1 "Ready"
+   TEXT_LANGUAGE2 "Ready"
+   TEXT_LANGUAGE3 "Ready"
+   TEXT_LANGUAGE6 "Ready"
+   TEXT_LANGUAGE8 "Ready"
+}
+INDEX 77
+{
+   REFERENCE TIMEOUT
+   NOTES "Menu button to timeout"
+   TEXT_LANGUAGE1 "Timeout"
+   TEXT_LANGUAGE2 "Timeout"
+   TEXT_LANGUAGE3 "Timeout"
+   TEXT_LANGUAGE6 "Timeout"
+   TEXT_LANGUAGE8 "Timeout"
+}
+INDEX 78
+{
+   REFERENCE TIMEIN
+   NOTES "Menu button to timein"
+   TEXT_LANGUAGE1 "Timein"
+   TEXT_LANGUAGE2 "Timein"
+   TEXT_LANGUAGE3 "Timein"
+   TEXT_LANGUAGE6 "Timein"
+   TEXT_LANGUAGE8 "Timein"
+}
+INDEX 79
+{
+   REFERENCE SPECTATOR
+   NOTES "Controls / Spectator button"
+   TEXT_LANGUAGE1 "SPECTATOR"
+   TEXT_LANGUAGE2 "SPECTATOR"
+   TEXT_LANGUAGE3 "SPECTATOR"
+   TEXT_LANGUAGE6 "SPECTATOR"
+   TEXT_LANGUAGE8 "SPECTATOR"
+}
+INDEX 80
+{
+   REFERENCE SPECTATOR_DESC
+   NOTES "Controls / Spectator button description"
+   TEXT_LANGUAGE1 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE2 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE3 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE6 "Configure spectator and demo playback keys"
+   TEXT_LANGUAGE8 "Configure spectator and demo playback keys"
+}
+INDEX 81
+{
+   REFERENCE FOLLOW_FIRST
+   NOTES "Bind follow first player command"
+   TEXT_LANGUAGE1 "Follow First:"
+   TEXT_LANGUAGE2 "Follow First:"
+   TEXT_LANGUAGE3 "Follow First:"
+   TEXT_LANGUAGE6 "Follow First:"
+   TEXT_LANGUAGE8 "Follow First:"
+}
+INDEX 82
+{
+   REFERENCE FOLLOW_FIRST_DESC
+   NOTES "Bind follow first player command description"
+   TEXT_LANGUAGE1 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE2 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE3 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE6 "Follow scoreboard leader and step out of a duel queue."
+   TEXT_LANGUAGE8 "Follow scoreboard leader and step out of a duel queue."
+}
+INDEX 83
+{
+   REFERENCE NEXT_SPEC_MODE
+   NOTES "Bind nextspecmode command"
+   TEXT_LANGUAGE1 "Next Spectator Mode:"
+   TEXT_LANGUAGE2 "Next Spectator Mode:"
+   TEXT_LANGUAGE3 "Next Spectator Mode:"
+   TEXT_LANGUAGE6 "Next Spectator Mode:"
+   TEXT_LANGUAGE8 "Next Spectator Mode:"
+}
+INDEX 84
+{
+   REFERENCE NEXT_SPEC_MODE_DESC
+   NOTES "Bind nextspecmode command description"
+   TEXT_LANGUAGE1 "Cycle through spectator modes."
+   TEXT_LANGUAGE2 "Cycle through spectator modes."
+   TEXT_LANGUAGE3 "Cycle through spectator modes."
+   TEXT_LANGUAGE6 "Cycle through spectator modes."
+   TEXT_LANGUAGE8 "Cycle through spectator modes."
+}
+INDEX 85
+{
+   REFERENCE DEMO_SEEK_FORWARD
+   NOTES "Bind demo seek forward"
+   TEXT_LANGUAGE1 "Seek Forward:"
+   TEXT_LANGUAGE2 "Seek Forward:"
+   TEXT_LANGUAGE3 "Seek Forward:"
+   TEXT_LANGUAGE6 "Seek Forward:"
+   TEXT_LANGUAGE8 "Seek Forward:"
+}
+INDEX 86
+{
+   REFERENCE DEMO_SEEK_FORWARD_DESC
+   NOTES "Bind demo seek forward description"
+   TEXT_LANGUAGE1 "Seek forward during demo playback."
+   TEXT_LANGUAGE2 "Seek forward during demo playback."
+   TEXT_LANGUAGE3 "Seek forward during demo playback."
+   TEXT_LANGUAGE6 "Seek forward during demo playback."
+   TEXT_LANGUAGE8 "Seek forward during demo playback."
+}
+INDEX 87
+{
+   REFERENCE DEMO_SEEK_BACKWARD
+   NOTES "Bind demo seek backward"
+   TEXT_LANGUAGE1 "Seek Backward:"
+   TEXT_LANGUAGE2 "Seek Backward:"
+   TEXT_LANGUAGE3 "Seek Backward:"
+   TEXT_LANGUAGE6 "Seek Backward:"
+   TEXT_LANGUAGE8 "Seek Backward:"
+}
+INDEX 88
+{
+   REFERENCE DEMO_SEEK_BACKWARD_DESC
+   NOTES "Bind demo seek backward description"
+   TEXT_LANGUAGE1 "Seek backward during demo playback."
+   TEXT_LANGUAGE2 "Seek backward during demo playback."
+   TEXT_LANGUAGE3 "Seek backward during demo playback."
+   TEXT_LANGUAGE6 "Seek backward during demo playback."
+   TEXT_LANGUAGE8 "Seek backward during demo playback."
+}
+INDEX 89
+{
+   REFERENCE SMOOTH_CAMERA
+   TEXT_LANGUAGE1 "Smooth Camera:"
+   TEXT_LANGUAGE2 "Smooth Camera:"
+   TEXT_LANGUAGE3 "Smooth Camera:"
+   TEXT_LANGUAGE6 "Smooth Camera:"
+   TEXT_LANGUAGE8 "Smooth Camera:"
+}
+INDEX 90
+{
+   REFERENCE SMOOTH_CAMERA_DESC
+   TEXT_LANGUAGE1 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE2 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE3 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE6 "Fix 3rd person camera warping while maintaining original feel."
+   TEXT_LANGUAGE8 "Fix 3rd person camera warping while maintaining original feel."
+}
+INDEX 91
+{
+   REFERENCE READY_UP
+   NOTES "Bind ready up"
+   TEXT_LANGUAGE1 "Ready Up:"
+   TEXT_LANGUAGE2 "Ready Up:"
+   TEXT_LANGUAGE3 "Ready Up:"
+   TEXT_LANGUAGE6 "Ready Up:"
+   TEXT_LANGUAGE8 "Ready Up:"
+}
+INDEX 92
+{
+   REFERENCE READY_UP_DESC
+   NOTES "Bind ready up description"
+   TEXT_LANGUAGE1 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE2 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE3 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE6 "Ready up during warmup to start a match."
+   TEXT_LANGUAGE8 "Ready up during warmup to start a match."
+}
+INDEX 93
+{
+   REFERENCE ABORT
+   NOTES "Abort match callvote button"
+   TEXT_LANGUAGE1 "Abort Match"
+   TEXT_LANGUAGE2 "Abort Match"
+   TEXT_LANGUAGE3 "Abort Match"
+   TEXT_LANGUAGE6 "Abort Match"
+   TEXT_LANGUAGE8 "Abort Match"
+}
+INDEX 94
+{
+   REFERENCE ABORT_DESC
+   NOTES "Abort match callvote button description"
+   TEXT_LANGUAGE1 "Begin Vote to abort match."
+   TEXT_LANGUAGE2 "Begin Vote to abort match."
+   TEXT_LANGUAGE3 "Begin Vote to abort match."
+   TEXT_LANGUAGE6 "Begin Vote to abort match."
+   TEXT_LANGUAGE8 "Begin Vote to abort match."
+}
+INDEX 95
+{
+   REFERENCE AUTOSAVE
+   NOTES "Options / Auto Save button"
+   TEXT_LANGUAGE1 "Auto Save:"
+   TEXT_LANGUAGE2 "Auto Save:"
+   TEXT_LANGUAGE3 "Auto Save:"
+   TEXT_LANGUAGE6 "Auto Save:"
+   TEXT_LANGUAGE8 "Auto Save:"
+}
+INDEX 96
+{
+   REFERENCE AUTOSAVE_DESC
+   NOTES "Options / Auto Save button description"
+   TEXT_LANGUAGE1 "Automatically save match record."
+   TEXT_LANGUAGE2 "Automatically save match record."
+   TEXT_LANGUAGE3 "Automatically save match record."
+   TEXT_LANGUAGE6 "Automatically save match record."
+   TEXT_LANGUAGE8 "Automatically save match record."
+}
+INDEX 97
+{
+   REFERENCE SAVE_SCREEN
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Screenshot"
+   TEXT_LANGUAGE2 "Screenshot"
+   TEXT_LANGUAGE3 "Screenshot"
+   TEXT_LANGUAGE6 "Screenshot"
+   TEXT_LANGUAGE8 "Screenshot"
+}
+INDEX 98
+{
+   REFERENCE SAVE_DEMO
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Demo"
+   TEXT_LANGUAGE2 "Demo"
+   TEXT_LANGUAGE3 "Demo"
+   TEXT_LANGUAGE6 "Demo"
+   TEXT_LANGUAGE8 "Demo"
+}
+INDEX 99
+{
+   REFERENCE SAVE_BOTH
+   NOTES "Options / Auto Save option"
+   TEXT_LANGUAGE1 "Demo & Screenshot"
+   TEXT_LANGUAGE2 "Demo & Screenshot"
+   TEXT_LANGUAGE3 "Demo & Screenshot"
+   TEXT_LANGUAGE6 "Demo & Screenshot"
+   TEXT_LANGUAGE8 "Demo & Screenshot"
 }

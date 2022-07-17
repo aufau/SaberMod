@@ -2,7 +2,7 @@
 ================================================================================
 This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -58,20 +58,14 @@ void G_BlameForEntity( int blame, gentity_t *ent )
 		int		i;
 
 		if (blame == ENTITYNUM_WORLD) {
-			for (i = 0; i < level.maxclients; i++) {
-				snapshotIgnore[i] = 0;
-			}
+			memset(snapshotIgnore, 0, sizeof(snapshotIgnore[0]) * MAX_CLIENTS);
 		} else {
 			for (i = 0; i < level.maxclients; i++) {
 				gclient_t	*client = level.clients + i;
 
-				if (client->pers.connected == CON_CONNECTED &&
+				snapshotIgnore[i] = client->pers.connected == CON_CONNECTED &&
 					client->info.privateDuel && client->ps.duelInProgress &&
-					blame != i && blame != client->ps.duelIndex) {
-					snapshotIgnore[i] = 1;
-				} else {
-					snapshotIgnore[i] = 0;
-				}
+					blame != i && blame != client->ps.duelIndex;
 			}
 		}
 	}
@@ -194,24 +188,15 @@ static void G_DimensionTrace (trace_t *results, const vec3_t start, const vec3_t
 static int G_DimensionEntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount, int entityNum)
 {
 	gentity_t	*passEnt = g_entities + entityNum;
-	gentity_t	*ent;
-	int	fullEntityList[MAX_GENTITIES];
 	int	fullCount;
 	int	count;
 	int	i;
 
-	if (maxcount > MAX_GENTITIES) {
-		maxcount = MAX_GENTITIES;
-	}
+	fullCount = trap_EntitiesInBox(mins, maxs, entityList, maxcount);
 
-	fullCount = trap_EntitiesInBox(mins, maxs, fullEntityList, maxcount);
-
-	count = 0;
-	for (i = 0; i < fullCount; i++) {
-		ent = g_entities + fullEntityList[i];
-
-		if (G_Collide(ent, passEnt)) {
-			entityList[count] = fullEntityList[i];
+	for (i = 0, count = 0; i < fullCount; i++) {
+		if (G_Collide(g_entities + entityList[i], passEnt)) {
+			entityList[count] = entityList[i];
 			count++;
 		}
 	}

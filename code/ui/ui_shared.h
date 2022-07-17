@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -76,7 +76,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef CGAME
 #define STRING_POOL_SIZE (128*1024)
 #else
-#define STRING_POOL_SIZE (384*1024)
+#define STRING_POOL_SIZE (1024*1024)
 #endif
 #define MAX_STRING_HANDLES 4096
 
@@ -275,6 +275,10 @@ typedef struct itemDef_s {
 	const char	*descText;					//	Description text
 	int			appearanceSlot;				// order of appearance
 	font_t		iMenuFont;					// FONT_SMALL,FONT_MEDIUM,FONT_LARGE	// changed from 'font' so I could see what didn't compile, and differentiate between font handles returned from RegisterFont -ste
+
+	// SaberMod
+	float		aspectAlign;				// Around what point on X axis item should be shrunk in
+											// widescreen mode. 0 = left 0.5 = center 1 = right
 } itemDef_t;
 
 struct menuDef_s {
@@ -303,6 +307,10 @@ struct menuDef_s {
 	int			appearanceTime;				//	when next item should appear
 	int			appearanceCnt;				//	current item displayed
 	int			appearanceIncrement;		//
+
+	// SaberMod
+	float		aspectAlign;				// Around what point on X axis menu should be shrunk in
+											// widescreen mode. 0 = left 0.5 = center 1 = right
 };
 
 typedef struct {
@@ -404,7 +412,7 @@ typedef struct {
 	void (*getBindingBuf)( int keynum, char *buf, int buflen );
 	void (*setBinding)( int keynum, const char *binding );
 	void (*executeText)(int exec_when, const char *text );
-	Q_NORETURN void (*Error)(errorParm_t level, const char *error, ...);
+	Q_PTR_NORETURN void (*Error)(errorParm_t level, const char *error, ...);
 	void (*Print)(const char *msg, ...);
 	void (*Pause)(qboolean b);
 	int (*ownerDrawWidth)(int ownerDraw, float scale, font_t iMenuFont);
@@ -418,14 +426,13 @@ typedef struct {
 	qboolean (*isDown)(int keynum);
 	void (*getClipBoardData)(char *buf, int bufsize);
 
-  float			yscale;
-  float			xscale;
-  float			bias;
   int				realTime;
   int				frameTime;
 	int				clientTime;
 	int				cursorx;
 	int				cursory;
+	float			screenWidth;
+	float			screenHeight;
 	qboolean	debug;
 
   cachedAssets_t Assets;

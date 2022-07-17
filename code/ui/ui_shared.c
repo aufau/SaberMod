@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -228,7 +228,7 @@ const char *String_Alloc(const char *p) {
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
 		size_t ph = strPoolIndex;
-		strncpy(&strPool[strPoolIndex], p, len + 1);
+		strcpy(&strPool[strPoolIndex], p);
 		strPoolIndex += len + 1;
 
 		str = strHandle[hash];
@@ -896,6 +896,23 @@ void Menu_UpdatePosition(menuDef_t *menu) {
   }
 }
 
+static void Menu_AspectCorrect(menuDef_t *menu) {
+	if (menu->aspectAlign >= 0) {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+		float	align = menu->aspectAlign * (scale - 1) * menu->window.rect.w;
+		float	descXOffset = menu->descX - menu->window.rect.x;
+
+		menu->window.rect.x = menu->window.rect.x * scale + align;
+		menu->descX = menu->window.rect.x + descXOffset;
+	} else {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+
+		menu->window.rect.x *= scale;
+		menu->window.rect.w *= scale;
+		menu->descX *= scale;
+	}
+}
+
 void Menu_PostParse(menuDef_t *menu) {
 	if (menu == NULL) {
 		return;
@@ -903,9 +920,11 @@ void Menu_PostParse(menuDef_t *menu) {
 	if (menu->fullScreen) {
 		menu->window.rect.x = 0;
 		menu->window.rect.y = 0;
-		menu->window.rect.w = 640;
-		menu->window.rect.h = 480;
+		menu->window.rect.w = DC->screenWidth;
+		menu->window.rect.h = DC->screenHeight;
 	}
+
+	Menu_AspectCorrect(menu);
 	Menu_UpdatePosition(menu);
 }
 
@@ -3990,6 +4009,13 @@ static bind_t g_bindings[] =
 	{"cg_thirdperson !",-1,					-1,		-1,	-1},
 	{"saveDemo",		-1,					-1,		-1,	-1},
 	{"saveDemoLast",	-1,					-1,		-1,	-1},
+
+	// SaberMod
+	{"follow first",	-1,					-1,		-1,	-1},
+	{"nextspecmode",	-1,					-1,		-1,	-1},
+	{"seek +5s",		-1,					-1,		-1,	-1},
+	{"seek -15s",		-1,					-1,		-1,	-1},
+	{"ready",			A_F8,				-1,		-1,	-1},
 };
 
 
@@ -4224,7 +4250,7 @@ void Item_Bind_Paint(itemDef_t *item)
 		textWidth = DC->textWidth(g_nameBind1,(float) textScale, item->iMenuFont);
 		startingXPos = (item->textRect.x + item->textRect.w + 8);
 
-		while ((startingXPos + textWidth) >= SCREEN_WIDTH)
+		while ((startingXPos + textWidth) >= DC->screenWidth)
 		{
 			textScale -= .05f;
 			textWidth = DC->textWidth(g_nameBind1,(float) textScale, item->iMenuFont);
@@ -4370,6 +4396,7 @@ void Item_Model_Paint(itemDef_t *item)
 {
 	float x, y, w, h;
 	refdef_t refdef;
+	float			xscale, yscale;
 	refEntity_t		ent;
 	vec3_t			mins, maxs, origin;
 	vec3_t			angles;
@@ -4389,10 +4416,13 @@ void Item_Model_Paint(itemDef_t *item)
 	w = item->window.rect.w-2;
 	h = item->window.rect.h-2;
 
-	refdef.x = x * DC->xscale;
-	refdef.y = y * DC->yscale;
-	refdef.width = w * DC->xscale;
-	refdef.height = h * DC->yscale;
+	xscale = (float) DC->glconfig.vidWidth / DC->screenWidth;
+	yscale = (float) DC->glconfig.vidHeight / DC->screenHeight;
+
+	refdef.x = x * xscale;
+	refdef.y = y * yscale;
+	refdef.width = w * xscale;
+	refdef.height = h * yscale;
 
 	DC->modelBounds( item->asset, mins, maxs );
 
@@ -4557,21 +4587,23 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
 			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
+				float width = MIN(size + 1, listPtr->elementWidth);
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
 				if (image) {
-					DC->drawHandlePic(x+1, y+1, listPtr->elementWidth - 2, listPtr->elementHeight - 2, image);
+					float s1 = width / listPtr->elementWidth;
+					DC->drawStretchPic(x+1, y+1, width - 2, listPtr->elementHeight - 2, 0, 0, s1, 1, image);
 				}
 
 				if (i == item->cursorPos) {
-					DC->drawRect(x, y, listPtr->elementWidth-1, listPtr->elementHeight-1, item->window.borderSize, item->window.borderColor);
+					DC->drawRect(x, y, width-1, listPtr->elementHeight-1, item->window.borderSize, item->window.borderColor);
 				}
 
 				size -= listPtr->elementWidth;
 				x += listPtr->elementWidth;
 
-				if (size < listPtr->elementWidth) {
+				if (size <= 1) {
 					break;
 				}
 			}
@@ -4951,7 +4983,7 @@ void Item_Paint(itemDef_t *item)
 						{
 							// only this one will auto-shrink the scale until we eventually fit...
 							//
-							if (xPos + textWidth > (SCREEN_WIDTH-4)) {
+							if (xPos + textWidth > (DC->screenWidth-4)) {
 								fDescScale -= 0.001f;
 								continue;
 							}
@@ -5040,6 +5072,7 @@ void Menu_Init(menuDef_t *menu) {
 	menu->fadeAmount = DC->Assets.fadeAmount;
 	menu->fadeClamp = DC->Assets.fadeClamp;
 	menu->fadeCycle = DC->Assets.fadeCycle;
+	menu->aspectAlign = -1;
 	Window_Init(&menu->window);
 }
 
@@ -5141,6 +5174,7 @@ menuDef_t *Menus_ActivateByName(const char *p) {
 void Item_Init(itemDef_t *item) {
 	memset(item, 0, sizeof(itemDef_t));
 	item->textscale = 0.55f;
+	item->aspectAlign = -1;
 	Window_Init(&item->window);
 }
 
@@ -5240,7 +5274,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 	if (menu->fullScreen) {
 		// implies a background shader
 		// FIXME: make sure we have a default shader if fullscreen is set with no background
-		DC->drawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, menu->window.background );
+		DC->drawHandlePic( 0, 0, DC->screenWidth, DC->screenHeight, menu->window.background );
 	} else if (menu->window.background) {
 		// this allows a background shader without being full screen
 		//UI_DrawHandlePic(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, menu->backgroundShader);
@@ -6129,6 +6163,10 @@ qboolean ItemParse_lineHeight( itemDef_t *item, int handle )
 	return qtrue;
 }
 
+qboolean ItemParse_aspectAlign( itemDef_t *item, int handle ) {
+	return PC_Float_Parse(handle, &item->aspectAlign);
+}
+
 qboolean ItemParse_cvarFloat( itemDef_t *item, int handle ) {
 	editFieldDef_t *editPtr;
 
@@ -6417,6 +6455,9 @@ static keywordHash_t itemParseKeywords[] = {
 	{"maxLineChars",	ItemParse_maxLineChars,		NULL	},
 	{"lineHeight",		ItemParse_lineHeight,		NULL	},
 
+	// SaberMod
+	{"aspectAlign",		ItemParse_aspectAlign,		NULL	},
+
 	{0,					0,							0		}
 };
 
@@ -6472,6 +6513,42 @@ qboolean Item_Parse(int handle, itemDef_t *item) {
 		}
 	}
 	return qfalse; 	// bk001205 - LCC missing return value
+}
+
+
+static void Item_AspectCorrect(itemDef_t *item) {
+	if (item->parent->aspectAlign >= 0) {
+	} else if (item->aspectAlign >= 0) {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+		float	align = item->aspectAlign * (scale - 1) * item->window.rectClient.w;
+
+		item->window.rectClient.x = item->window.rectClient.x * scale + align;
+	} else {
+		float	scale = DC->screenWidth / SCREEN_WIDTH;
+
+		item->window.rectClient.x *= scale;
+		item->window.rectClient.w *= scale;
+		item->textalignx *= scale;
+		item->text2alignx *= scale;
+
+		switch (item->type) {
+		case ITEM_TYPE_LISTBOX:
+		{
+			listBoxDef_t	*listPtr = (listBoxDef_t *)item->typeData;
+			int				i;
+
+			for (i = 0; i < listPtr->numColumns; i++) {
+				listPtr->columnInfo[i].pos *= scale;
+				listPtr->columnInfo[i].width *= scale;
+			}
+			break;
+		}
+		}
+	}
+}
+
+static void Item_PostParse(itemDef_t *item) {
+	Item_AspectCorrect(item);
 }
 
 static void Item_TextScroll_BuildLines ( itemDef_t* item )
@@ -6729,6 +6806,10 @@ qboolean MenuParse_name( itemDef_t *item, int handle ) {
 	if (Q_stricmp(menu->window.name, "main") == 0) {
 		// default main as having focus
 		//menu->window.flags |= WINDOW_HASFOCUS;
+	}
+	// hack for JK2MV ingame setup menu
+	if (!strcmp(menu->window.name, "ingame_setup")) {
+		menu->aspectAlign = 0.5f;
 	}
 	return qtrue;
 }
@@ -7092,7 +7173,9 @@ qboolean MenuParse_itemDef( itemDef_t *item, int handle ) {
 			return qfalse;
 		}
 		Item_InitControls(menu->items[menu->itemCount]);
-		menu->items[menu->itemCount++]->parent = menu;
+		menu->items[menu->itemCount]->parent = menu;
+		Item_PostParse(menu->items[menu->itemCount]);
+		menu->itemCount++;
 	}
 	return qtrue;
 }
@@ -7113,6 +7196,13 @@ qboolean MenuParse_appearanceIncrement( itemDef_t *item, int handle )
 
 	menu->appearanceIncrement = appearanceIncrement;
 	return qtrue;
+}
+
+qboolean MenuParse_aspectAlign( itemDef_t *item, int handle )
+{
+	menuDef_t *menu = (menuDef_t*)item;
+
+	return PC_Float_Parse(handle, &menu->aspectAlign);
 }
 
 static keywordHash_t menuParseKeywords[] = {
@@ -7150,6 +7240,9 @@ static keywordHash_t menuParseKeywords[] = {
 	{"soundLoop",			MenuParse_soundLoop,	NULL	},
 	{"style",				MenuParse_style,		NULL	},
 	{"visible",				MenuParse_visible,		NULL	},
+
+	// SaberMod
+	{"aspectAlign",			MenuParse_aspectAlign,	NULL	},
 	{0,						0,						0		}
 };
 

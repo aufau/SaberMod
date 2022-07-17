@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -323,6 +323,7 @@ void UI_ShowPostGame(qboolean newHigh);
 void UI_ClearScores();
 void UI_LoadArenas(void);
 void UI_LoadForceConfig_List( void );
+void UI_WidescreenMode(qboolean on);
 
 //
 // ui_menu.c
@@ -459,92 +460,14 @@ extern void GraphicsOptions_Cache( void );
 extern void DriverInfo_Cache( void );
 
 //
-// ui_players.c
-//
-
-//FIXME ripped from cg_local.h
-typedef struct {
-	int			oldFrame;
-	int			oldFrameTime;		// time when ->oldFrame was exactly on
-
-	int			frame;
-	int			frameTime;			// time when ->frame will be exactly on
-
-	float		backlerp;
-
-	float		yawAngle;
-	qboolean	yawing;
-	float		pitchAngle;
-	qboolean	pitching;
-
-	int			animationNumber;	// may include ANIM_TOGGLEBIT
-	const animation_t	*animation;
-	int			animationTime;		// time when the first frame of the animation will be exact
-} lerpFrame_t;
-
-typedef struct {
-	// model info
-	qhandle_t		legsModel;
-	qhandle_t		legsSkin;
-	lerpFrame_t		legs;
-
-	qhandle_t		torsoModel;
-	qhandle_t		torsoSkin;
-	lerpFrame_t		torso;
-
-//	qhandle_t		headModel;
-//	qhandle_t		headSkin;
-
-	animation_t		animations[MAX_TOTALANIMATIONS];
-
-	qhandle_t		weaponModel;
-	qhandle_t		barrelModel;
-	qhandle_t		flashModel;
-	vec3_t			flashDlightColor;
-	int				muzzleFlashTime;
-
-	// currently in use drawing parms
-	vec3_t			viewAngles;
-	vec3_t			moveAngles;
-	weapon_t		currentWeapon;
-	int				legsAnim;
-	int				torsoAnim;
-
-	// animation vars
-	weapon_t		weapon;
-	weapon_t		lastWeapon;
-	weapon_t		pendingWeapon;
-	int				weaponTimer;
-	int				pendingLegsAnim;
-	int				torsoAnimationTimer;
-
-	int				pendingTorsoAnim;
-	int				legsAnimationTimer;
-
-	qboolean		chat;
-	qboolean		newModel;
-
-	qboolean		barrelSpinning;
-	float			barrelAngle;
-	int				barrelTime;
-
-	int				realWeapon;
-} playerInfo_t;
-
-//void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time );
-//void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model, const char *headmodel, char *teamName );
-//void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat );
-//qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName , const char *headName, const char *teamName);
-
-//
 // ui_atoms.c
 //
 // this is only used in the old ui, the new ui has it's own version
 typedef struct {
 	int					frametime;
 	int					realtime;
-	int					cursorx;
-	int					cursory;
+	float				cursorx;
+	float				cursory;
 	glconfig_t 	glconfig;
 	qboolean		debug;
 	qhandle_t		whiteShader;
@@ -556,7 +479,6 @@ typedef struct {
 	qhandle_t		rb_on;
 	qhandle_t		rb_off;
 	float				scale;
-	float				bias;
 	qboolean		demoversion;
 	qboolean		firstdraw;
 } uiStatic_t;
@@ -569,7 +491,7 @@ typedef struct {
 #define MAX_HEADNAME  32
 #define MAX_TEAMS 64
 #define MAX_GAMETYPES 16
-#define MAX_MAPS 128
+#define MAX_MAPS 512
 #define MAX_SPMAPS 16
 #define PLAYERS_PER_TEAM 8//5
 #define MAX_PINGREQUESTS		32
@@ -595,7 +517,7 @@ typedef struct {
 #define MAX_MODS 64
 #define MAX_DEMOS 256
 #define MAX_MOVIES 256
-#define MAX_PLAYERMODELS 256
+#define MAX_PLAYERMODELS 1024
 
 #define MAX_SCROLLTEXT_SIZE		4096
 #define MAX_SCROLLTEXT_LINES		64
@@ -838,7 +760,14 @@ typedef struct {
 
 	qboolean inGameLoad;
 
-	qboolean httpDownloads;
+	qboolean		httpDownloads;
+	int				mvapi;
+	float			screenWidth;
+	float			screenXFactor;
+	float			screenXFactorInv;
+	float			screenHeight;
+	float			screenYFactor;
+	float			screenYFactorInv;
 }	uiInfo_t;
 
 extern uiInfo_t uiInfo;
@@ -1018,6 +947,11 @@ qboolean trap_G2API_SetBoneAngles(void *ghoul2, int modelIndex, const char *bone
 /*
 Ghoul2 Insert End
 */
+
+// MVAPI
+
+void trap_MVAPI_SetVirtualScreen(float w, float h);
+
 //
 // ui_addbots.c
 //

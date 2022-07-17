@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -312,6 +312,9 @@ extern	pmove_t		*pm;
 
 // if a full pmove isn't done on the client, you can just update the angles
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
+void PM_UpdateViewAngles2( vec3_t viewangles, int *delta_angles, const usercmd_t *cmd );
+void PM_SetDeltaAngles(int *delta_angles, const vec3_t angle, const usercmd_t *ucmd);
+
 void Pmove (pmove_t *pmove);
 
 //===================================================================================
@@ -960,5 +963,13 @@ extern const forceSide_t forcePowerDarkLight[NUM_FORCE_POWERS];
 #define DEBRIS_SPECIALCASE_WOOD			0xfffd // -3
 #define DEBRIS_SPECIALCASE_GLASS		0xfffc // -4
 #define DEBRIS_SPECIALCASE_MIN			0xfffc
+
+#define UNPAUSE_TIME_NEVER		INT_MAX
+
+typedef enum {
+	GAMESTATUS_DEFAULT,
+	GAMESTATUS_WARMUP,
+	GAMESTATUS_MATCH
+} gameStatus_t;
 
 #endif //__BG_PUBLIC_H__

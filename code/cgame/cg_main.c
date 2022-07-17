@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -144,11 +144,13 @@ static int forceModelModificationCount = -1;
 static int drawTeamOverlayModificationCount = -1;
 static int crosshairColorModificationCount = -1;
 static int widescreenModificationCount = -1;
+static int autoSaveModificationCount = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 int  CG_MVAPI_Init( int apilevel );
 void CG_MVAPI_AfterInit( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
+void CG_MapChange( void );
 
 void CG_CalcEntityLerpPositions( centity_t *cent );
 void CG_ROFF_NotetrackCallback( centity_t *cent, const char *notetrack);
@@ -278,6 +280,7 @@ Q_EXPORT intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr
 		// this trap map be called more than once for a given map change, as the
 		// server is going to attempt to send out multiple broadcasts in hopes that
 		// the client will receive one of them
+		CG_StopAutoDemo();
 		cg.mMapChange = qtrue;
 		return 0;
 
@@ -567,10 +570,12 @@ vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 
 vmCvar_t	cg_chatBeep;
-vmCvar_t	cg_camerafps;
+vmCvar_t	cg_smoothCamera;
+vmCvar_t	cg_smoothCameraFPS;
 vmCvar_t	cg_crosshairColor;
 vmCvar_t	cg_darkenDeadBodies;
 vmCvar_t	cg_drawClock;
+vmCvar_t	cg_drawFollow;
 vmCvar_t	cg_drawSpectatorHints;
 vmCvar_t	cg_duelGlow;
 vmCvar_t	cg_fastSeek;
@@ -580,9 +585,12 @@ vmCvar_t	cg_privateDuel;
 vmCvar_t	cg_crosshairIndicators;
 vmCvar_t	cg_crosshairIndicatorsSpec;
 vmCvar_t	cg_widescreen;
-vmCvar_t	cg_widescreenFov;
+vmCvar_t	cg_fovAspectAdjust;
+vmCvar_t	cg_autoSave;
+vmCvar_t	cg_autoSaveFormat;
 
 vmCvar_t	cg_ui_myteam;
+vmCvar_t	cg_com_maxfps;
 
 vmCvar_t	cg_param1;
 vmCvar_t	cg_param2;
@@ -672,7 +680,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_dismember, "cg_dismember", "0", CVAR_ARCHIVE },
 
-	{ &cg_thirdPerson, "cg_thirdPerson", "0", 0 },
+	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", CVAR_CHEAT },
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT },
 	{ &cg_thirdPersonPitchOffset, "cg_thirdPersonPitchOffset", "0", CVAR_CHEAT },
@@ -732,22 +740,27 @@ static cvarTable_t cvarTable[] = { // bk001129
 //	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 
 	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE},
-	{ &cg_camerafps, "cg_camerafps", "0", CVAR_ARCHIVE},
+	{ &cg_smoothCamera, "cg_smoothCamera", "1", CVAR_ARCHIVE},
+	{ &cg_smoothCameraFPS, "cg_smoothCameraFPS", "0", CVAR_ARCHIVE},
 	{ &cg_crosshairColor, "cg_crosshairColor", "0", CVAR_ARCHIVE},
 	{ &cg_darkenDeadBodies, "cg_darkenDeadBodies", "0", CVAR_ARCHIVE},
 	{ &cg_drawClock, "cg_drawClock", "0", CVAR_ARCHIVE },
+	{ &cg_drawFollow, "cg_drawFollow", "1", CVAR_ARCHIVE },
 	{ &cg_drawSpectatorHints, "cg_drawSpectatorHints", "1", CVAR_ARCHIVE },
 	{ &cg_duelGlow, "cg_duelGlow", "1", CVAR_ARCHIVE},
-	{ &cg_fastSeek, "cg_fastSeek", "0", CVAR_ARCHIVE},
+	{ &cg_fastSeek, "cg_fastSeek", "1", CVAR_ARCHIVE},
 	{ &cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE},
 	{ &cg_followPowerup, "cg_followPowerup", "0", CVAR_ARCHIVE},
 	{ &cg_privateDuel, "cg_privateDuel", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_crosshairIndicators, "cg_crosshairIndicators", "0", CVAR_ARCHIVE},
 	{ &cg_crosshairIndicatorsSpec, "cg_crosshairIndicatorsSpec", "1", CVAR_ARCHIVE},
 	{ &cg_widescreen, "cg_widescreen", "1", CVAR_ARCHIVE},
-	{ &cg_widescreenFov, "cg_widescreenFov", "1", CVAR_ARCHIVE},
+	{ &cg_fovAspectAdjust, "cg_fovAspectAdjust", "0", CVAR_ARCHIVE},
+	{ &cg_autoSave, "cg_autoSave", "0", CVAR_ARCHIVE},
+	{ &cg_autoSaveFormat, "cg_autoSaveFormat", "[date]_[time] [gametype] [map] [name]", CVAR_ARCHIVE},
 
 	{ &cg_ui_myteam, "ui_myteam", "0", CVAR_ROM|CVAR_INTERNAL},
+	{ &cg_com_maxfps, "com_maxfps", "", 0},
 
 /*
 Ghoul2 Insert Start
@@ -782,8 +795,11 @@ void CG_RegisterCvars( void ) {
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 	widescreenModificationCount = cg_widescreen.modificationCount;
+	autoSaveModificationCount = cg_autoSave.modificationCount;
 
-	trap_Cvar_Register(NULL, GAMEVERSION, GIT_VERSION, CVAR_USERINFO | CVAR_ROM );
+	trap_Cvar_Register(NULL, GAMEVERSION, "", CVAR_USERINFO | CVAR_ROM );
+	// workaround for userinfo not being resent when registering an
+	// userinfo cvar in retail engine
 	trap_Cvar_Set( GAMEVERSION, GIT_VERSION );
 
 	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
@@ -959,6 +975,11 @@ void CG_UpdateCvars( void ) {
 	if ( widescreenModificationCount != cg_widescreen.modificationCount ) {
 		widescreenModificationCount = cg_widescreen.modificationCount;
 		CG_UpdateWidescreen();
+	}
+
+	if ( autoSaveModificationCount != cg_autoSave.modificationCount ) {
+		autoSaveModificationCount = cg_autoSave.modificationCount;
+		CG_UpdateAutoSave();
 	}
 }
 
@@ -1393,6 +1414,9 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.winnerSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM006" );
 	cgs.media.loserSound = trap_S_RegisterSound( "sound/chars/mothma/misc/40MOM010" );
+
+	cgs.media.pauseSound = trap_S_RegisterSound( "sound/effects/hologram_on" );
+	cgs.media.unpauseSound = trap_S_RegisterSound( "sound/effects/hologram_off" );
 }
 
 
@@ -1411,9 +1435,6 @@ static void CG_RegisterEffects( void )
 	{
 		CG_UpdateConfigString( CS_EFFECTS + i, qtrue );
 	}
-
-	// Set up the glass effects mini-system.
-	CG_InitGlass();
 }
 
 //===================================================================================
@@ -1475,9 +1496,9 @@ static void CG_RegisterGraphics( void ) {
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
 	trap_R_ClearScene();
 
-	CG_LoadingString( cgs.mapname );
+	CG_LoadingString( cgs.mappath );
 
-	trap_R_LoadWorldMap( cgs.mapname );
+	trap_R_LoadWorldMap( cgs.mappath );
 
 	// precache status bar pics
 	CG_LoadingString( "game media" );
@@ -1595,6 +1616,7 @@ static void CG_RegisterGraphics( void ) {
 	}
 
 	cgs.media.balloonShader = trap_R_RegisterShaderNoMip( "gfx/mp/chat_icon" );
+	cgs.media.warpShader = trap_R_RegisterShaderNoMip( "gfx/mp/warp" );
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
@@ -2644,14 +2666,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	}
 
 	// new config strings
-	for ( i = 0; i < CS_MAPS; i++ ) {
+	for ( i = CS_NEW; i < CS_MAPS; i++ ) {
 		CG_UpdateConfigString( i, qtrue );
 	}
 
 	// load the new map
 	CG_LoadingString( "collision map" );
 
-	trap_CM_LoadMap( cgs.mapname );
+	trap_CM_LoadMap( cgs.mappath );
 #ifdef MISSIONPACK
 	String_Init();
 #endif
@@ -2838,5 +2860,80 @@ void CG_PrevInventory_f(void)
 	{
 		cg.itemSelect = (holdable_t)bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
+	}
+}
+
+const char *CG_AutoSaveFilename( void ) {
+	static char	filename[MAX_QPATH];
+	const char	*info;
+	char		date[11];
+	char		time[6];
+	char		name[MAX_NETNAME];
+	char		map[MAX_NETNAME];
+	char		hostname[MAX_NAME_LENGTH];
+	const char	*tokens[20];
+	const char	*substs[20];
+	int			numTokens = 0;
+	qtime_t		t;
+
+	trap_RealTime(&t);
+	info = CG_ConfigString( CS_SERVERINFO );
+
+	Com_sprintf(date, sizeof(date), "%04i-%02i-%02i",
+		1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday);
+	tokens[numTokens] = "date";
+	substs[numTokens] = date;
+	numTokens++;
+
+	Com_sprintf(time, sizeof(time), "%02i-%02i",
+		t.tm_hour, t.tm_min );
+	tokens[numTokens] = "time";
+	substs[numTokens] = time;
+	numTokens++;
+
+	tokens[numTokens] = "gametype";
+	substs[numTokens] = gametypeShort[cgs.gametype];
+	numTokens++;
+
+	Q_strncpyz(name, cgs.clientinfo[cg.clientNum].name, sizeof(name));
+	tokens[numTokens] = "name";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(name));
+	numTokens++;
+
+	Q_strncpyz(hostname, Info_ValueForKey(info, "sv_hostname"), sizeof(hostname));
+	tokens[numTokens] = "server";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(hostname));
+	numTokens++;
+
+	Q_strncpyz(map, cgs.mapname, sizeof(map));
+	tokens[numTokens] = "map";
+	substs[numTokens] = Q_FS_CleanStr(Q_CleanStr(map));
+	numTokens++;
+
+	Com_ReplaceTokens(filename, sizeof(filename), cg_autoSaveFormat.string,
+		tokens, substs, numTokens);
+
+	return filename;
+}
+
+void CG_StartAutoDemo( void ) {
+	if ((cg_autoSave.integer & 2) && cgs.status != GAMESTATUS_WARMUP && !cg.demoPlayback) {
+		trap_SendConsoleCommand(va("record \"%s\"\n", CG_AutoSaveFilename()));
+		cg.demorecording = qtrue;
+	}
+}
+
+void CG_StopAutoDemo( void ) {
+	if (cg.demorecording) {
+		trap_SendConsoleCommand("stoprecord\n");
+		cg.demorecording = qfalse;
+	}
+}
+
+void CG_UpdateAutoSave( void ) {
+	if (cg_autoSave.integer & 2) {
+		CG_StartAutoDemo();
+	} else {
+		CG_StopAutoDemo();
 	}
 }

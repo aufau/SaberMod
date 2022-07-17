@@ -2,7 +2,7 @@
 ================================================================================
 This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -227,8 +227,12 @@ static void Ref_Announce_f(void) {
 static void Ref_Pause_f( void ) {
 	char	arg[MAX_TOKEN_CHARS];
 
+	if (level.intermissionQueued || level.intermissiontime) {
+		return;
+	}
+
 	if (trap_Argc() == 1) {
-		level.unpauseTime = INT_MAX;
+		level.unpauseTime = UNPAUSE_TIME_NEVER;
 	} else {
 		trap_Argv(1, arg, sizeof(arg));
 		level.unpauseTime = level.time + 1000 * atoi(arg);
@@ -236,12 +240,46 @@ static void Ref_Pause_f( void ) {
 
 	level.timeoutClient = -1;
 
-	ref.LogPrintf(LOG_REFEREE, "Pause\n");
+	ref.LogPrintf(LOG_REFEREE, "Pause:\n");
 }
 
 static void Ref_Unpause_f( void ) {
-	level.unpauseTime = level.time + 5000;
-	ref.LogPrintf(LOG_REFEREE, "Unpause\n");
+	if (level.unpauseTime > level.time + 5000) {
+		level.unpauseTime = level.time + 5000;
+		ref.LogPrintf(LOG_REFEREE, "Unpause:\n");
+	}
+}
+
+static void Ref_AllReady_f(void) {
+	if (level.warmupTime || level.intermissiontime) {
+		int	i;
+
+		for (i = 0; i < level.maxclients; i++) {
+			level.clients[i].pers.ready = qtrue;
+		}
+
+		G_UpdateClientReadyFlags();
+	}
+}
+
+static void Ref_Abort_f(void) {
+	if (level.warmupTime) {
+		ref.Printf("There is no ongoing match\n");
+		return;
+	}
+
+	if (!g_doWarmup.integer || level.gametype == GT_TOURNAMENT ) {
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 5\n" );
+	} else {
+		level.warmupTime = -1;
+		level.round = 0;
+		trap_Cvar_Set( "g_status", va("%d", GAMESTATUS_WARMUP) );
+		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+		trap_SetConfigstring( CS_ROUND, va("%i", level.round) );
+	}
+
+	G_SendServerCommand(-1, "print \"Match aborted.\n\"");
+	ref.LogPrintf( LOG_REFEREE, "Abort:\n" );
 }
 
 static void Ref_Help_f(void);
@@ -261,6 +299,8 @@ static const refereeCommand_t refCommands[] = {
 	{ "help", Ref_Help_f },
 	{ "pause", Ref_Pause_f },
 	{ "unpause", Ref_Unpause_f },
+	{ "allready", Ref_AllReady_f },
+	{ "abort", Ref_Abort_f },
 };
 
 static void Ref_Help_f(void) {

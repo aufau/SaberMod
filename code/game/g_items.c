@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -1355,6 +1355,12 @@ void RespawnItem( gentity_t *ent ) {
 			;
 	}
 
+	if (g_pushableItems.integer) {
+		// this breaks items that spawn on a mover. can be fixed by
+		// remembering original groundEntityNum and relative offset
+		G_SetOrigin(ent, ent->s.origin);
+	}
+
 	ent->r.contents = CONTENTS_TRIGGER;
 	//ent->s.eFlags &= ~EF_NODRAW;
 	ent->s.eFlags &= ~(EF_NODRAW | EF_ITEMPLACEHOLDER);
@@ -1610,10 +1616,10 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
+gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity, int blameEntityNum ) {
 	gentity_t	*dropped;
 
-	dropped = G_Spawn( ENTITYNUM_WORLD );
+	dropped = G_Spawn( blameEntityNum );
 
 	dropped->s.eType = ET_ITEM;
 	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
@@ -1706,7 +1712,7 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
 	VectorScale( velocity, 150, velocity );
 	velocity[2] += 200 + crandom() * 50;
 
-	return LaunchItem( item, ent->s.pos.trBase, velocity );
+	return LaunchItem( item, ent->s.pos.trBase, velocity, ent->s.number );
 }
 
 
@@ -1886,6 +1892,9 @@ void FinishSpawningItem( gentity_t *ent ) {
 		// allow to ride movers
 		ent->s.groundEntityNum = tr.entityNum;
 
+		// remember adjusted origin for RespawnItem --fau
+		VectorCopy( tr.endpos, ent->s.origin );
+
 		G_SetOrigin( ent, tr.endpos );
 	}
 
@@ -2024,19 +2033,6 @@ void SaveRegisteredItems( void ) {
 
 /*
 ============
-G_ItemDisabled
-============
-*/
-int G_ItemDisabled( gitem_t *item ) {
-
-	char name[128];
-
-	Com_sprintf(name, sizeof(name), "disable_%s", item->classname);
-	return trap_Cvar_VariableIntegerValue( name );
-}
-
-/*
-============
 G_SpawnItem
 
 Sets the clipping size and plants the object on the floor.
@@ -2072,8 +2068,6 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 
 	RegisterItem( item );
-	if ( G_ItemDisabled(item) )
-		return;
 
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item
@@ -2089,6 +2083,15 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 }
 
+static void G_FreeItem( gentity_t *ent )
+{
+	if (ent->item && ent->item->giType == IT_TEAM) {
+		Team_FreeEntity(ent);
+	} else if (ent->think != RespawnItem) {
+		// don't free pushed items
+		G_FreeEntity( ent );
+	}
+}
 
 /*
 ================
@@ -2120,11 +2123,15 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 	}
 
 	// check for stop
-	if ( trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40 ) {
+	if ( (trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40) || trace->startsolid ) {
 		trace->endpos[2] += 1.0f;	// make sure it is off ground
 		SnapVector( trace->endpos );
 		G_SetOrigin( ent, trace->endpos );
 		ent->s.groundEntityNum = trace->entityNum;
+
+		if (ent->freeOnStop) {
+			G_FreeItem( ent );
+		}
 		return;
 	}
 
@@ -2192,6 +2199,13 @@ void G_RunItem( gentity_t *ent ) {
 	// check think function
 	G_RunThink( ent );
 
+	if ( g_removeUnreachableItems.integer && !ent->freeOnStop ) {
+		contents = G_PointEntityContents( ent->r.currentOrigin, ent->s.number );
+		if ( contents & CONTENTS_NODROP ) {
+			ent->freeOnStop = qtrue;
+		}
+	}
+
 	if ( tr.fraction == 1 ) {
 		return;
 	}
@@ -2199,11 +2213,7 @@ void G_RunItem( gentity_t *ent ) {
 	// if it is in a nodrop volume, remove it
 	contents = trap_PointContents( ent->r.currentOrigin, -1 );
 	if ( contents & CONTENTS_NODROP ) {
-		if (ent->item && ent->item->giType == IT_TEAM) {
-			Team_FreeEntity(ent);
-		} else {
-			G_FreeEntity( ent );
-		}
+		G_FreeItem(ent);
 		return;
 	}
 

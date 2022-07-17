@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -39,19 +39,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #if defined _MSC_VER							// Microsoft Visual C++
 #define Q_EXPORT __declspec(dllexport)
-#define Q_NORETURN __declscpec(noreturn)
+#define Q_NORETURN __declspec(noreturn)
+#define Q_PTR_NORETURN // MSVC doesn't support noreturn function pointers
 #define q_unreachable() abort()
 #elif (defined __GNUC__ || defined __clang__)	// GCC & Clang
 #define Q_EXPORT __attribute__((visibility("default")))
 #define Q_NORETURN __attribute__((noreturn))
+#define Q_PTR_NORETURN Q_NORETURN
 #define q_unreachable() __builtin_unreachable()
 #elif (defined __SUNPRO_C)						// Sun Pro C Compiler
 #define Q_EXPORT __global
 #define Q_NORETURN
+#define Q_PTR_NORETURN
 #define q_unreachable() abort()
 #else											// Any ANSI C compiler
 #define Q_EXPORT
 #define Q_NORETURN
+#define Q_PTR_NORETURN
 #define q_unreachable() abort()
 #endif
 
@@ -97,6 +101,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #else
 
 #include <assert.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -396,7 +401,7 @@ typedef int		clipHandle_t;
 #define	MAX_OSPATH			256		// max length of a filesystem pathname
 #endif
 
-#define MAX_NETNAME			36		// max length of a client name + 1
+#define MAX_NETNAME			64		// max length of a client name + 1
 #define MAX_NAME_LEN		28		// max length of a printed client name
 #define	MAX_NAME_LENGTH		32		// arbitrary max string length used here and there
 #define MAX_TEAMNAME		32      // max length of a team name "spectators" but also g_blueTeam
@@ -793,6 +798,7 @@ typedef struct {
 #define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
 #define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
 #define Vector4Copy(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
+#define Vector2Set(v, x, y)		((v)[0]=(x), (v)[1]=(y))
 
 #define	SnapVector(v) ((v)[0]=(int)(v)[0],(v)[1]=(int)(v)[1],(v)[2]=(int)(v)[2])
 // just in case you do't want to use the macros
@@ -988,6 +994,8 @@ void Parse1DMatrix (const char **buf_p, int x, float *m);
 void Parse2DMatrix (const char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (const char **buf_p, int z, int y, int x, float *m);
 
+void Com_ReplaceTokens(char *dest, int destSize, const char *format, const char *tokens[], const char *substs[], int numTokens);
+
 int		QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 
@@ -1027,6 +1035,8 @@ void	Q_strcat( char *dest, size_t size, const char *src );
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
 char *Q_CleanStr( char *string );
+// removes characters not suitable for file name
+char *Q_FS_CleanStr( char *string );
 /* removes non-printable characters, expands \n and \\ */
 char *Q_SanitizeStr( char *string );
 // returns true if string is a decimal integer

@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -340,9 +340,15 @@ returning qfalse if not found
 qboolean G_CallSpawn( gentity_t *ent ) {
 	const spawn_t	*s;
 	gitem_t			*item;
+	char			disable[128];
 
 	if ( !ent->classname ) {
 		G_Printf ("G_CallSpawn: NULL classname\n");
+		return qfalse;
+	}
+
+	Com_sprintf( disable, sizeof(disable), "disable_%s", ent->classname );
+	if ( trap_Cvar_VariableIntegerValue( disable ) ) {
 		return qfalse;
 	}
 
@@ -856,6 +862,7 @@ void SP_worldspawn( void )
 	char		*text, temp[32];
 	int			i;
 	int			lengthRed, lengthBlue, lengthGreen;
+	gameStatus_t	gameStatus;
 
 	G_SpawnString( "classname", "", &text );
 	if ( Q_stricmp( text, "worldspawn" ) ) {
@@ -915,15 +922,49 @@ void SP_worldspawn( void )
 	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 
 	// see if we want a warmup time
-	trap_SetConfigstring( CS_WARMUP, "" );
-	if ( g_restarted.integer ) {
-		trap_Cvar_Set( "g_restarted", "0" );
-		level.warmupTime = 0;
-	} else if ( g_doWarmup.integer && level.gametype != GT_TOURNAMENT ) { // Turn it on
+	if (g_doWarmup.integer && level.gametype != GT_TOURNAMENT && !g_restarted.integer) {
 		level.warmupTime = -1;
-		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 		G_LogPrintf( LOG_GAME, "Warmup:\n" );
+	} else {
+		level.warmupTime = 0;
 	}
+
+	trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+
+	// determine match status
+	if (level.warmupTime) {
+		gameStatus = GAMESTATUS_WARMUP;
+	} else if (g_doWarmup.integer && level.gametype != GT_TOURNAMENT) {
+		gameStatus = GAMESTATUS_MATCH;
+	} else {
+		gameStatus = GAMESTATUS_DEFAULT;
+	}
+
+	trap_Cvar_Set( "g_status", va("%d", gameStatus) );
+
+	if (g_restarted.integer) {
+		trap_Cvar_Set( "g_restarted", "0" );
+	}
+
+	trap_SetConfigstring( CS_SCORES1, "" );
+	trap_SetConfigstring( CS_SCORES2, "" );
+
+	trap_SetConfigstring( CS_VOTE_TIME, "" );
+	trap_SetConfigstring( CS_VOTE_STRING, "" );
+	trap_SetConfigstring( CS_VOTE_YES, "" );
+	trap_SetConfigstring( CS_VOTE_NO, "" );
+
+	for (i = 0; i < 2; i++)
+	{
+		trap_SetConfigstring( CS_TEAMVOTE_TIME + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_STRING + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_YES + i, "" );
+		trap_SetConfigstring( CS_TEAMVOTE_NO + i, "" );
+	}
+
+	trap_SetConfigstring( CS_INTERMISSION, "" );
+	trap_SetConfigstring( CS_FLAGSTATUS, "" );
+	trap_SetConfigstring( CS_SHADERSTATE, "" );
 
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+0, defaultStyles[0][0]);
 	trap_SetConfigstring(CS_LIGHT_STYLES+(LS_STYLES_START*3)+1, defaultStyles[0][1]);
@@ -952,6 +993,9 @@ void SP_worldspawn( void )
 				i, lengthRed, lengthGreen, lengthBlue);
 		}
 	}
+
+	trap_SetConfigstring( CS_READY, "" );
+	trap_SetConfigstring( CS_UNPAUSE, "" );
 
 	// write available modes to CS_MODES
 	{

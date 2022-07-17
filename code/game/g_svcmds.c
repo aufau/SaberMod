@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -655,7 +655,6 @@ static void	Svcmd_Shuffle_f( void )
 	CheckTeamLeader( TEAM_RED );
 	CheckTeamLeader( TEAM_BLUE );
 
-	team = first;
 	for ( i = 0; i < level.maxclients; i++ ) {
 		gclient_t	*client = &level.clients[i];
 
@@ -821,6 +820,7 @@ static void Svcmd_Items_f( void ) {
 		{ "medpak", "item_medpak_instant" },
 		{ "shield_sm", "item_shield_sm_instant" },
 		{ "shield_lrg", "item_shield_lrg_instant" },
+		{ "shield_floor", "misc_shield_floor_unit" }
 	};
 
 

@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -55,7 +55,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 
 	s = va("%i %i %i %i %i %i %i %i %i %i %i %i",
 		client->sess.sessionTeam,
-		client->sess.spectatorTime,
+		client->sess.spectatorNum,
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
 		wins,
@@ -99,7 +99,7 @@ void G_ReadSessionData( gclient_t *client ) {
 
 	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i",
 		&sessionTeam,                 // bk010221 - format
-		&client->sess.spectatorTime,
+		&client->sess.spectatorNum,
 		&spectatorState,              // bk010221 - format
 		&client->sess.spectatorClient,
 		&client->sess.wins,
@@ -139,13 +139,21 @@ G_InitSessionData
 Called on a first-time connect
 ================
 */
-void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
+void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qboolean firstTime ) {
 	clientSession_t	*sess;
 	const char		*value;
 	int				clientNum;
+	qboolean		referee;
 
 	sess = &client->sess;
 	clientNum = client - level.clients;
+	referee = sess->referee;
+
+	memset(sess, 0, sizeof(*sess));
+
+	if ( !firstTime ) {
+		sess->referee = referee;
+	}
 
 	// initial team determination
 	if ( GT_Team(level.gametype) ) {
@@ -200,7 +208,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 				if ( level.numNonSpectatorClients >= 2 ) {
 					sess->sessionTeam = TEAM_SPECTATOR;
 				} else {
-					sess->sessionTeam = TEAM_FREE;
+					sess->sessionTeam = (g_requireClientside.integer && !client->pers.registered && !isBot) ? TEAM_SPECTATOR : TEAM_FREE;
 				}
 				break;
 			}
@@ -214,7 +222,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
 	else
 		sess->spectatorState = SPECTATOR_NOT;
 
-	sess->spectatorTime = level.time;
+	AddTournamentQueue( client );
 
 	G_WriteClientSessionData( client );
 }

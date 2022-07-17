@@ -92,6 +92,10 @@ copy ..\g_syscalls.asm .
 @if errorlevel 1 goto quit
 %cc%  ../g_unlagged.c
 @if errorlevel 1 goto quit
+%cc%  ../g_debug.c
+@if errorlevel 1 goto quit
+%cc%  ../g_referee.c
+@if errorlevel 1 goto quit
 
 ..\..\..\bin\q3asm -f ../game
 @if errorlevel 1 goto quit

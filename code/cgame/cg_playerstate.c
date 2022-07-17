@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -465,6 +465,17 @@ static void CG_CheckLocalSounds( const playerState_t *ps, const playerState_t *o
 
 /*
 ===============
+CG_StartIntermission
+===============
+*/
+static void CG_StartIntermission( void ) {
+	if (cg_autoSave.integer & 1 && !cg.demoPlayback) {
+		trap_SendConsoleCommand(va("screenshot \"%s\"\n", CG_AutoSaveFilename()));
+	}
+}
+
+/*
+===============
 CG_TransitionPlayerState
 
 ===============
@@ -477,6 +488,7 @@ void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops ) {
 
 	if ( cg.mapRestart ) {
 		CG_Respawn( ps );
+		CG_StartAutoDemo();
 		cg.mapRestart = qfalse;
 	}
 
@@ -490,6 +502,11 @@ void CG_TransitionPlayerState( const playerState_t *ps, playerState_t *ops ) {
 	// damage events (player is getting wounded)
 	if ( ps->damageEvent != ops->damageEvent && ps->damageCount ) {
 		CG_DamageFeedback( ps->damageYaw, ps->damagePitch, ps->damageCount );
+	}
+
+	if ( ps->pm_type == PM_INTERMISSION &&
+		ops->pm_type != PM_INTERMISSION ) {
+		CG_StartIntermission();
 	}
 
 	if ( ps->pm_type != PM_INTERMISSION &&

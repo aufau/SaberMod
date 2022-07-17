@@ -1,6 +1,6 @@
 # This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
-# Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+# Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -99,20 +99,22 @@ cls_doc		:= README.rst LICENSE.txt
 cls_assets := SOURCE.txt mv.info ui/jk2mpingame.txt						\
 ui/jk2mp/menudef.h ui/jk2mp/ingame_about.menu							\
 ui/jk2mp/ingame_join.menu ui/jk2mp/ingame_callvote.menu					\
-ui/jk2mp/createserver.menu ui/jk2mp/ingame_player.menu					\
-ui/jk2mp/ingame_setup_modoptions.menu									\
+ui/jk2mp/ingame_controls.menu ui/jk2mp/createserver.menu				\
+ui/jk2mp/ingame_player.menu ui/jk2mp/ingame_addbot.menu					\
+ui/jk2mp/ingame_leave.menu ui/jk2mp/ingame_playerforce.menu				\
+ui/jk2mp/ingame_vote.menu ui/jk2mp/ingame_setup_modoptions.menu			\
 ui/jk2mp/ingame_setup_modoptions2.menu ui/jk2mp/gameinfo.txt			\
 ui/jk2mp/setup.menu ui/jk2mp/ingame.menu								\
 ui/jk2mp/ingame_setup_original.menu ui/jk2mp/rules_games.menu			\
 strip/SABERMOD2_INGAME.sp strip/SABERMOD2_MENUS.sp						\
 shaders/sabermod.shader_mv shaders/sabermod.shader						\
-gfx/2d/crosshairj.tga gfx/2d/crosshairarrow.tga							\
+gfx/2d/crosshairj.tga gfx/2d/crosshairk.tga gfx/2d/crosshairarrow.tga	\
 gfx/menus/download.tga gfx/menus/missing.tga							\
 gfx/menus/menu_buttonback_new.jpg gfx/menus/menu_buttonback2_new.jpg	\
-scripts/arenas.txt
+scripts/arenas.txt scripts/duel.arena
 
 svs_zip		:= $(name)-$(VERSION).zip
-svs_assets	:= server.cfg reset.cfg modes/ scripts/
+svs_assets := server.cfg reset.cfg modes/
 svs_doc := README.rst LICENSE.txt CHANGELOG.rst cvar-calculator.html	\
 assets/SOURCE.txt
 
@@ -121,11 +123,11 @@ assets/SOURCE.txt
 all	: vm shared
 vm	: game cgame ui
 shared	: gameshared cgameshared uishared
-game	: base/vm/jk2mpgame.qvm version
-cgame	: base/vm/cgame.qvm version
+game	: base/vm/jk2mpgame.qvm
+cgame	: base/vm/cgame.qvm
 ui	: base/vm/ui.qvm
-gameshared	: base/jk2mpgame_$(ARCH).so version
-cgameshared	: base/cgame_$(ARCH).so version
+gameshared	: base/jk2mpgame_$(ARCH).so
+cgameshared	: base/cgame_$(ARCH).so
 uishared	: base/ui_$(ARCH).so
 tools	: $(tools)
 assets : base/
@@ -139,16 +141,16 @@ clientside : cgame ui | base/
 	vm/cgame.qvm vm/cgame.map vm/ui.qvm vm/ui.map; popd; zip			\
 	base/$(cls_pk3) $(cls_doc); pushd assets; zip ../base/$(cls_pk3)	\
 	$(cls_assets); popd
-serverside : clientside game | base/
+serverside : clientside game base/description.txt | base/
 	$(echo_cmd) "CREATE $(name).zip"
 	$(eval tmp := $(shell mktemp -d))
 	$(eval svs := $(tmp)/$(name))
-	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc; cp			\
-	$(svs_doc) $(svs)/doc; cp base/$(cls_pk3) $(svs); mkdir				\
-	$(svs)/vm; cp base/vm/jk2mpgame.qvm base/vm/jk2mpgame.map			\
-	$(svs)/vm; pushd assets; cp -r $(svs_assets) $(svs); popd; pushd	\
-	$(tmp); zip -r $(svs_zip) $(name); popd; cp $(tmp)/$(svs_zip)		\
-	base/; $(RM) -r $(tmp)
+	$(Q)set -e; $(RM) base/$(svs_zip); mkdir -p $(svs)/doc $(svs)/vm;	\
+	cp $(svs_doc) $(svs)/doc; pushd base; cp $(cls_pk3) $(svs); cp		\
+	vm/jk2mpgame.qvm vm/jk2mpgame.map $(svs)/vm; cp description.txt		\
+	$(svs); popd; pushd assets; cp -r $(svs_assets) $(svs); popd;		\
+	pushd $(tmp); zip -r $(svs_zip) $(name); popd; cp					\
+	$(tmp)/$(svs_zip) base/; $(RM) -r $(tmp)
 
 help	:
 	@echo 'Targets:'
@@ -168,11 +170,17 @@ help	:
 	@echo '  toolsclean     - Remove q3asm and q3lcc'
 	@echo '  depclean       - Remove generated dependency files'
 	@echo '  distclean      - Remove all generated files'
-version : FORCE
-	@touch code/game/bg_version.h
+
+out/version	: FORCE
+	@echo $(VERSION) | cmp -s - $@ || echo '$(VERSION)' > $@
+code/game/bg_version.h : out/version
+	@touch $@
+base/description.txt : out/version
+	@echo "CREATE $@"
+	$(file > $@,^2S^7aber^2M^7od-$(VERSION))
 
 FORCE	:
-.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools version FORCE
+.PHONY	: vm game cgame ui shared gameshared cgameshared uishared tools FORCE
 
 # QVM Targets
 
@@ -191,13 +199,13 @@ base/vm/ui.qvm : $(asm_ui) $(AS) code/ui/ui.q3asm | base/vm/
 # BAT Script Helpers
 
 code/game/game.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "jk2mpgame.qvm" $(srcs_game))
 code/cgame/cgame.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "cgame.qvm" $(srcs_cgame))
 code/ui/ui.q3asm : Makefile
-	$(echo_cmd) "CREATE $@"
+	@echo "CREATE $@"
 	$(file > $@,-o "ui.qvm" $(srcs_ui))
 
 # Shared Object Targets
@@ -268,9 +276,7 @@ $(eval $(call obj_template,ui))
 
 TOOLSDIR = code/tools
 
-TOOLS_DEFS := -DARCH_STRING=\"$(ARCH)\"
 TOOLS_CFLAGS = -O2 -Wno-unused-result
-TOOLS_CFLAGS += $(TOOLS_DEFS)
 
 srcs_asm = q3asm cmdlib
 srcs_lcc = lcc bytecode

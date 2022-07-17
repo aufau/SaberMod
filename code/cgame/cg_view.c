@@ -4,7 +4,7 @@ This file is part of SaberMod - Star Wars Jedi Knight II: Jedi Outcast mod.
 
 Copyright (C) 1999-2000 Id Software, Inc.
 Copyright (C) 1999-2002 Activision
-Copyright (C) 2015-2018 Witold Pilat <witold.pilat@gmail.com>
+Copyright (C) 2015-2021 Witold Pilat <witold.pilat@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms and conditions of the GNU General Public License,
@@ -253,6 +253,8 @@ static struct {
 	float		lastYaw;
 	int			lastTime;
 	float		lastTimeFrac;
+	qboolean	smooth;			// Use new, smooth camera damping
+	int			fps;			// FPS to emulate with smooth camera damping
 } cam;
 
 /*
@@ -316,7 +318,7 @@ CG_CalcTargetThirdPersonViewLocation
 */
 static void CG_CalcIdealThirdPersonViewLocation(void)
 {
-	float thirdPersonRange = cg_thirdPersonRange.value;
+	float thirdPersonRange = cg.spec.thirdPersonRange;
 #ifdef ATST
 	if (cg.snap && cg.snap->ps.usingATST)
 	{
@@ -374,7 +376,7 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 	// freeze when player is lagging
 	VectorCopy(pos->ideal, pos->prevIdeal);
 
-	if ( cg_camerafps.integer >= CAMERA_MIN_FPS )
+	if ( cam.smooth )
 	{
 		// FPS-independent solution thanks to semigroup property:
 		// If t1, t2 are positive time periods, dampfactor and
@@ -389,7 +391,7 @@ static void CG_DampPosition(dampPos_t *pos, float dampfactor, float dtime)
 		float	codampfactor;
 
 		// dtime is relative: physics time / emulated time
-		dtime *= cg_camerafps.value / 1000.0f;
+		dtime *= cam.fps / 1000.0f;
 		invdtime = 1.0f / dtime;
 		timeadjfactor = powf(dampfactor, dtime);
 		// shift = (idealDelta / dtime) * (dampfactor / (1 - dampfactor))
@@ -545,6 +547,15 @@ static void CG_OffsetThirdPersonView( void )
 	vec3_t	focusAngles;
 	float	dtime;
 
+	// Establish camera damping parameters
+	if (cg_smoothCameraFPS.integer) {
+		cam.fps = cg_smoothCameraFPS.integer;
+	} else if (cg_com_maxfps.integer) {
+		cam.fps = MIN(cg_com_maxfps.integer, 1000);
+	}
+
+	cam.smooth = cg_smoothCamera.integer && (cam.fps >= CAMERA_MIN_FPS);
+
 	// Set camera viewing direction.
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
@@ -577,7 +588,7 @@ static void CG_OffsetThirdPersonView( void )
 	dtime += cg.predictedTimeFrac - cam.lastTimeFrac;
 
 	// If we went back in time for some reason, or if we just started, reset the sample.
-	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport || cgs.unpauseTime > cg.serverTime)
+	if (cam.lastTime == 0 || dtime < 0.0f || cg.thisFrameTeleport || cg.snap->ps.pm_type == PM_PAUSED)
 	{
 		CG_ResetThirdPersonViewDamp();
 	}
@@ -592,7 +603,7 @@ static void CG_OffsetThirdPersonView( void )
 		{ // Normalize this angle so that it is between 0 and 180.
 			deltayaw = fabsf(deltayaw - 360.0f);
 		}
-		if (cg_camerafps.integer >= CAMERA_MIN_FPS) {
+		if (cam.smooth) {
 			if ( dtime > 0.0f ) {
 				stiffFactor = deltayaw / dtime;
 			} else {
@@ -1058,7 +1069,7 @@ static int CG_CalcFov( void ) {
 
 	// don't allow without cg_widescreen so people don't use it to
 	// stretch disruptor zoom mask
-    if ( cg_widescreen.integer && cg_widescreenFov.integer &&
+    if ( cg_widescreen.integer && cg_fovAspectAdjust.integer &&
 		cg.refdef.width * 3 > cg.refdef.height * 4 )
 	{
         // 4:3 screen with fov_x must fit INTO widescreen
@@ -1220,6 +1231,39 @@ qboolean CheckOutOfConstrict(float curAng)
 }
 #endif // UNUSED
 
+
+/*
+=================
+CG_CalcSpectatorView
+
+Calculate third person camera angles for spectator
+=================
+*/
+static void CG_CalcSpectatorView() {
+	static float	thirdPersonRangePos = 1;
+
+	if (cg.spec.following && cg.spec.mode == SPECMODE_FREEANGLES)
+	{
+		usercmd_t	cmd;
+		int			cmdNum;
+
+		cmdNum = trap_GetCurrentCmdNumber();
+		trap_GetUserCmd( cmdNum, &cmd );
+		PM_UpdateViewAngles2( cg.refdefViewAngles, cg.spec.delta_angles, &cmd );
+
+		thirdPersonRangePos -= cmd.forwardmove * cg.frametime / (1000.0f * 127.0f);
+
+		// don't allow it too close or camera damping makes it jumpy
+		if (thirdPersonRangePos < 0.3f) {
+			thirdPersonRangePos = 0.3f;
+		}
+
+		cg.spec.thirdPersonRange = 80.0f * thirdPersonRangePos * thirdPersonRangePos;
+	} else {
+		cg.spec.thirdPersonRange = cg_thirdPersonRange.value;
+	}
+}
+
 /*
 ===============
 CG_CalcViewValues
@@ -1311,6 +1355,7 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	if ( cg.renderingThirdPerson ) {
+		CG_CalcSpectatorView();
 		// back away from character
 		CG_OffsetThirdPersonView();
 	} else {
@@ -1559,21 +1604,27 @@ Screen Effect stuff ends here
 /*
 =================
 CG_SeekFrame
+
+Returns if rendering current frame should be skipped
 =================
 */
 static qboolean CG_SeekFrame( void ) {
+	qboolean skipFrame = qfalse;
+
 	if (!cg.seekTime) {
-		return qfalse;
+		return skipFrame;
 	}
 
 	if (cg.seekTime > cg.serverTime) {
+		// engine evaluates fixedtime ms of game time in next
+		// frame. 200 is a limit imposed by the engine.
 		trap_Cvar_Set( "fixedtime", va( "%d", cg.seekTime - cg.serverTime ) );
-		if (cg_fastSeek.integer) {
+		if (cg.fastSeek) {
 			if ( cg.savedmaxfps[0] == '\0' ) {
 				trap_Cvar_VariableStringBuffer( "com_maxfps", cg.savedmaxfps, sizeof( cg.savedmaxfps ) );
 				trap_Cvar_Set( "com_maxfps", "0" );
 			}
-			return qtrue;
+			skipFrame = cg_fastSeek.integer;
 		}
 	} else {
 		trap_Cvar_Set( "fixedtime", "0" );
@@ -1583,7 +1634,7 @@ static qboolean CG_SeekFrame( void ) {
 		cg.seekTime = 0;
 	}
 
-	return qfalse;
+	return skipFrame;
 }
 
 /*
@@ -1739,6 +1790,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	{
 		trap_FX_AddScheduledEffects();
 	}
+
+	CG_PlayGameStateSounds();
 
 	// add buffered sounds
 	CG_PlayBufferedSounds();
