@@ -890,6 +890,12 @@ static void SetTeamFromString( gentity_t *ent, char *s ) {
 			trap_SendServerCommand( clientNum, "print \"Game is full.\n\""); // TRANSLATE
 			return;
 		}
+
+		// new players need to wait for next round
+		if ( level.round > 0 && !level.roundQueued ) {
+			specState = SPECTATOR_FOLLOW;
+			ent->client->sess.spectatorClient = FOLLOW_FIRST;
+		}
 	}
 
 	if ( level.teamLock[team] ) {
