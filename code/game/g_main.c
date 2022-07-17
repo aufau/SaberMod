@@ -2531,20 +2531,23 @@ static void CheckIdle( void ) {
 
 	// reset to default mode if server is idle
 	if ( level.numVotingClients == 0 && g_modeIdleTime.integer > 0 && defaultMode ) {
-		if ( level.idleTime > 0 ) {
-			if ( level.idleTime + g_modeIdleTime.integer * 60000 < level.time + 15000 ) {
+		int modeChangeTime = level.idleTime + g_modeIdleTime.integer * 60000;
+
+		if ( !level.idleAnnounced ) {
+			if ( modeChangeTime < level.time + 15000 ) {
 				trap_SendServerCommand( -1, "print \"Server idle. Changing to default mode in 15 seconds...\n\"" );
-				level.idleTime = - level.idleTime; // change sign after annoncement
+				level.idleAnnounced = qtrue;
 			}
-		} else {
-			if ( - level.idleTime + g_modeIdleTime.integer * 60000 < level.time ) {
-				trap_SendConsoleCommand( EXEC_APPEND, "mode default\n" );
-				level.idleTime = level.time; // don't spam if it doesn't work
-			}
+		} else if ( modeChangeTime < level.time ) {
+			trap_SendConsoleCommand( EXEC_APPEND, "mode default\n" );
+			level.idleTime = level.time; // don't spam cmd if it doesn't work
+			level.idleAnnounced = qfalse;
 		}
 	} else {
-		if ( level.idleTime < 0 ) // mode change has been announced already
+		if ( level.idleAnnounced ) {
+			level.idleAnnounced = qfalse;
 			trap_SendServerCommand( -1, "print \"Mode change aborted.\n\"" );
+		}
 		level.idleTime = level.time;
 	}
 }
@@ -2976,6 +2979,7 @@ CheckCvars
 void CheckCvars( void ) {
 	static int passwordMod = -1;
 	static int motdMod = -1;
+	int i;
 
 	if ( g_password.modificationCount != passwordMod ) {
 		passwordMod = g_password.modificationCount;
@@ -3001,6 +3005,13 @@ void CheckCvars( void ) {
 		} else {
 			trap_SetConfigstring( CS_INGAME_MOTD, "" );
 		}
+	}
+
+	if (g_listEntity.integer) {
+		for (i = 0; i < MAX_GENTITIES; i++) {
+			G_Printf("%4i: %s\n", i, g_entities[i].classname);
+		}
+		trap_Cvar_Set("g_listEntity", "0");
 	}
 }
 
@@ -3088,16 +3099,20 @@ void SlowMoDuelTimescale(void) {
 void G_RewindTime( int msec ) {
 	int		i, j;
 
+	// adjust timers that are not checked during pause
+	// others like callvote timers should keep running
+	// see G_RunPausedFrame() to determine which timers are checked
+
 #define ADJUST(x) if ((x) > 0) (x) += msec
 
+	// level.startTime is 0 when you launch the game for first time
+	level.startTime += msec;
+	level.idleTime += msec;
 	ADJUST(level.warmupTime);
 	ADJUST(level.intermissiontime);
 	ADJUST(level.roundQueued);
 	ADJUST(level.intermissionQueued);
 	ADJUST(level.exitTime);
-	ADJUST(level.idleTime);
-
-	if(level.startTime < level.time) level.startTime += msec;
 
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 	trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
@@ -3184,7 +3199,7 @@ void G_RewindTime( int msec ) {
 			ADJUST(client->lastSaberStorageTime);
 			ADJUST(client->dangerTime);
 			ADJUST(client->forcePowerSoundDebounce);
-			
+
 			ADJUST(client->pers.enterTime);
 			ADJUST(client->pers.teamState.lastfraggedcarrier);
 			ADJUST(client->pers.teamState.lasthurtcarrier);
@@ -3271,11 +3286,37 @@ qboolean G_CheckPausedFrame( int levelTime ) {
 
 /*
 ================
+G_SendQueuedMessages
+
+Send client messages that were queued for future
+================
+*/
+static void G_SendQueuedMessages( void ) {
+	if (gQueueScoreMessage)
+	{
+		if (gQueueScoreMessageTime < level.time)
+		{
+			SendScoreboardMessageToAllClients();
+
+			gQueueScoreMessageTime = 0;
+			gQueueScoreMessage = qfalse;
+		}
+	}
+
+	// send queued server command to all players now
+	if ( level.snapnum == level.queuedCmdSnap ) {
+		trap_SendServerCommand( -1, level.queuedCmd );
+		level.queuedCmdSnap = 0;
+	}
+}
+
+/*
+================
 G_RunPausedFrame
 ================
 */
 void SpectatorClientEndFrame( gentity_t *ent );
-void G_RunPausedFrame( void ) {
+static void G_RunPausedFrame( void ) {
 	int			i;
 
 	for (i=0; i < level.maxclients; i++) {
@@ -3288,8 +3329,11 @@ void G_RunPausedFrame( void ) {
 		}
 	}
 
-	// get any cvar changes
-	G_UpdateCvars();
+	// see if server has been idle
+	CheckIdle();
+
+	// update to team status?
+	CheckTeamStatus();
 
 	// cancel vote if timed out
 	CheckVote();
@@ -3309,13 +3353,9 @@ G_RunFrame
 Advances the non-player objects in the world
 ================
 */
-
+static void G_RunPausedFrame( void );
+static void G_RunUnpausedFrame( void );
 void G_RunFrame( int levelTime ) {
-	int			i;
-	gentity_t	*ent;
-	int			msec;
-	int 		start, end;
-
 	if (gDoSlowMoDuel) {
 		SlowMoDuelTimescale();
 	}
@@ -3325,29 +3365,40 @@ void G_RunFrame( int levelTime ) {
 		return;
 	}
 
-	// send queued server command to all players now
-	if ( level.snapnum == level.queuedCmdSnap ) {
-		trap_SendServerCommand( -1, level.queuedCmd );
-		level.queuedCmdSnap = 0;
-	}
-
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
-	msec = level.time - level.previousTime;
-
-	if (G_CheckPausedFrame(levelTime)) {
-		G_RunPausedFrame();
-		return;
-	}
 
 	// get any cvar changes
 	G_UpdateCvars();
 
+	if (G_CheckPausedFrame(levelTime)) {
+		G_RunPausedFrame();
+	} else {
+		G_RunUnpausedFrame();
+	}
+
+	//At the end of the frame, send out the ghoul2 kill queue, if there is one
+	G_SendG2KillQueue();
+
+	// send queued client messages
+	G_SendQueuedMessages();
+
+	level.snapnum++;
+}
+
+/*
+================
+G_RunUnpausedFrame
+================
+*/
+static void G_RunUnpausedFrame( void ) {
+	int			i;
+	gentity_t	*ent;
+
 	//
 	// go through all allocated objects
 	//
-	start = trap_Milliseconds();
 	ent = &g_entities[0];
 	for (i=0 ; i<level.num_entities ; i++, ent++) {
 		G_EntityCheckRep( ent );
@@ -3427,11 +3478,9 @@ void G_RunFrame( int levelTime ) {
 
 		G_RunThink( ent );
 	}
-end = trap_Milliseconds();
 
 	trap_ROFF_UpdateEntities();
 
-start = trap_Milliseconds();
 	// perform final fixups on the players
 	ent = &g_entities[0];
 	for (i=0 ; i < level.maxclients ; i++, ent++ ) {
@@ -3440,7 +3489,6 @@ start = trap_Milliseconds();
 		}
 		G_EntityCheckRep( ent );
 	}
-end = trap_Milliseconds();
 
 	// see if server has been idle
 	CheckIdle();
@@ -3467,38 +3515,9 @@ end = trap_Milliseconds();
 	// garbage collection
 	// G_FreeUnusedEntities();
 
-	if (g_listEntity.integer) {
-		for (i = 0; i < MAX_GENTITIES; i++) {
-			G_Printf("%4i: %s\n", i, g_entities[i].classname);
-		}
-		trap_Cvar_Set("g_listEntity", "0");
-	}
-
-	//At the end of the frame, send out the ghoul2 kill queue, if there is one
-	G_SendG2KillQueue();
-
-
-	if (gQueueScoreMessage)
-	{
-		if (gQueueScoreMessageTime < level.time)
-		{
-			SendScoreboardMessageToAllClients();
-
-			gQueueScoreMessageTime = 0;
-			gQueueScoreMessage = qfalse;
-		}
-	}
-
 	if ( g_unlagged.integer ) {
 		G_BackupWorld();
 	}
-
-	level.snapnum++;
-
-	// suppress unused-but-set warnings
-	(void)start;
-	(void)end;
-	(void)msec;
 }
 
 const char *G_GetStripEdString(const char *refSection, const char *refName)

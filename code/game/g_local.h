@@ -683,7 +683,8 @@ typedef struct {
 
 	qboolean	teamLock[TEAM_NUM_TEAMS];
 	int			round;
-	int			idleTime;
+	int			idleTime;				// when server had non-idle players last
+	qboolean	idleAnnounced;			// idle mode change was announced already
 	qboolean	restarting;				// server is about to restart
 
 	char		queuedCmd[1024];
