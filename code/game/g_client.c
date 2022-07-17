@@ -1589,7 +1589,6 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
-	client->pers.persistant[PERS_LIVES] = MAX(0, g_lifelimit.integer - 1);
 
 	G_UpdateClientReadyFlags();
 
@@ -1695,6 +1694,12 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	if ( level.roundQueued || level.round == 0 )
 		if ( client->sess.sessionTeam != TEAM_SPECTATOR )
 			client->sess.spectatorState = SPECTATOR_NOT;
+
+	if ( client->sess.spectatorState == SPECTATOR_NOT ) {
+		client->pers.persistant[PERS_LIVES] = MAX(0, g_lifelimit.integer - 1);
+	} else {
+		client->pers.persistant[PERS_LIVES] = 0;
+	}
 
 	G_LogPrintf( LOG_BEGIN, "ClientBegin: %i %s %s: %s joined the %s team\n",
 		clientNum, BG_TeamName(client->sess.sessionTeam, CASE_UPPER), gameversion,
