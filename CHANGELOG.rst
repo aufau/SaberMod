@@ -6,6 +6,7 @@
 * Match referees promoted by admin or a popular vote.
 * Match pause and timeouts.
 * Unlagged CJK Instagib mode mimicking CJK mod mechanics.
+* Last Man Standing gametype (11).
 * Speed and movement crosshair indicators.
 * Smooth camera enabled by default.
 * Macro scan preventing kick script and other unfair binds.
