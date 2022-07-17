@@ -161,6 +161,8 @@
 			}
 		}
 
+		// START ACTION BUTTON VARIANTS
+
 		itemDef
 		{
 			name                    addBotButton
@@ -306,6 +308,74 @@
 				hide                    addBotButton
 			}
 		}
+
+		itemDef
+		{
+			name                    pause
+			text                    @SABERMENUS_PAUSE
+			type                    ITEM_TYPE_BUTTON
+			style                   WINDOW_STYLE_FILLED
+			rect                    145 0 70 32
+			font                    2
+			textscale               .8
+			textstyle               3
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              35
+			textaligny              2
+			forecolor               1 1 1 1
+			backcolor               0 0 0 0
+			visible                 1
+			cvarTest                ui_action_button
+			showCvar                { pause }
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "pause"
+			}
+			mouseenter
+			{
+				show                    addBotButton
+			}
+			mouseexit
+			{
+				hide                    addBotButton
+			}
+		}
+
+		itemDef
+		{
+			name                    unpause
+			text                    @SABERMENUS_UNPAUSE
+			type                    ITEM_TYPE_BUTTON
+			style                   WINDOW_STYLE_FILLED
+			rect                    145 0 70 32
+			font                    2
+			textscale               .8
+			textstyle               3
+			textalign               ITEM_ALIGN_CENTER
+			textalignx              35
+			textaligny              2
+			forecolor               1 1 1 1
+			backcolor               0 0 0 0
+			visible                 1
+			cvarTest                ui_action_button
+			showCvar                { unpause }
+			action
+			{
+				play                    "sound/interface/button1.wav" ;
+				exec                    "unpause"
+			}
+			mouseenter
+			{
+				show                    addBotButton
+			}
+			mouseexit
+			{
+				hide                    addBotButton
+			}
+		}
+
+		// END ACTION BUTTON VARIANTS
 
 		itemDef
 		{

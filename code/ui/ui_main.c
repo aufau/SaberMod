@@ -7252,6 +7252,7 @@ vmCvar_t	ui_longMapName;
 vmCvar_t	ui_widescreen;
 vmCvar_t	ui_action_button;
 vmCvar_t	ui_gameStatus;
+vmCvar_t	ui_referee;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t cvarTable[] = {
@@ -7338,6 +7339,7 @@ static cvarTable_t cvarTable[] = {
 	{ &ui_widescreen, "ui_widescreen", "1", CVAR_ARCHIVE | CVAR_LATCH},
 	{ &ui_action_button, "ui_action_button", "", CVAR_INTERNAL },
 	{ &ui_gameStatus, "ui_gameStatus", "", CVAR_INTERNAL },
+	{ &ui_referee, "ui_referee", "0", CVAR_ROM | CVAR_INTERNAL },
 };
 
 /*
@@ -7474,11 +7476,19 @@ static void UI_UpdateConfigStrings( void )
 	status = Info_ValueForKey(str, "g_status");
 
 	if (unpause) {
-		actionButton = "timein";
+		if (ui_referee.integer) {
+			actionButton = "unpause";
+		} else {
+			actionButton = "timein";
+		}
 	} else if (atoi(status) == GAMESTATUS_WARMUP) {
 		actionButton = "ready";
 	} else {
-		actionButton = "timeout";
+		if (ui_referee.integer) {
+			actionButton = "pause";
+		} else {
+			actionButton = "timeout";
+		}
 	}
 
 	if (strcmp(ui_gameStatus.string, status)) {
