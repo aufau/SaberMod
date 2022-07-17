@@ -111,7 +111,7 @@ shaders/sabermod.shader_mv shaders/sabermod.shader						\
 gfx/2d/crosshairj.tga gfx/2d/crosshairk.tga gfx/2d/crosshairarrow.tga	\
 gfx/menus/download.tga gfx/menus/missing.tga							\
 gfx/menus/menu_buttonback_new.jpg gfx/menus/menu_buttonback2_new.jpg	\
-scripts/arenas.txt scripts/duel.arena
+menu/art/disruptor.tga scripts/arenas.txt scripts/duel.arena
 
 svs_zip		:= $(name)-$(VERSION).zip
 svs_assets := server.cfg reset.cfg modes/

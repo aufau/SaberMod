@@ -1670,6 +1670,7 @@ void UpdateForceStatus()
 	{
 		char	info[MAX_INFO_STRING];
 		int		disabledForce = 0;
+		int		spawnWeapons;
 		qboolean trueJedi = qfalse, allForceDisabled = qfalse;
 
 		trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
@@ -1704,15 +1705,32 @@ void UpdateForceStatus()
 		}
 
 		//Moved this to happen after it's done with force power disabling stuff
-		if (uiForcePowersRank[FP_SABERATTACK] > 0 || ui_freeSaber.integer)
+		spawnWeapons = atoi(Info_ValueForKey(info, "g_spawnWeapons"));
+		spawnWeapons &= ~(1 << WP_STUN_BATON); // baton does not count
+
+		if ((uiForcePowersRank[FP_SABERATTACK] > 0 && !(disabledForce & (1 << FP_SABERATTACK))) ||
+			ui_freeSaber.integer)
 		{	// Show lightsaber stuff.
-			Menu_ShowItemByName(menu, "nosaber", qfalse);
 			Menu_ShowItemByName(menu, "yessaber", qtrue);
+			Menu_ShowItemByName(menu, "yesdisruptor", qfalse);
+			Menu_ShowItemByName(menu, "yesbaton", qfalse);
 		}
 		else
 		{
-			Menu_ShowItemByName(menu, "nosaber", qtrue);
 			Menu_ShowItemByName(menu, "yessaber", qfalse);
+
+			if (spawnWeapons == (1 << WP_DISRUPTOR))
+			{
+				// show disruptor icon in place of lightsaber
+				Menu_ShowItemByName(menu, "yesdisruptor", qtrue);
+				Menu_ShowItemByName(menu, "yesbaton", qfalse);
+			}
+			else
+			{
+				// show stun baton icon and text
+				Menu_ShowItemByName(menu, "yesdisruptor", qfalse);
+				Menu_ShowItemByName(menu, "yesbaton", qtrue);
+			}
 		}
 
 		// The leftmost button should be "apply" unless you are in spectator, where you can join any team.

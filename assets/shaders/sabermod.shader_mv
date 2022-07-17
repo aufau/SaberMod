@@ -15,3 +15,12 @@ gfx/menus/missing
 		blendFunc blend
 	}
 }
+
+menu/art/disruptor
+{
+	uiElementHD
+	{
+		map menu/art/disruptor.tga
+		blendFunc blend
+	}
+}

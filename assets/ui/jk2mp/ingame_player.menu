@@ -401,7 +401,7 @@
 		itemDef
 		{
 			name                    stunbatonicon
-			group                   nosaber
+			group                   yesbaton
 			style                   WINDOW_STYLE_SHADER
 			rect                    20 200 60 60
 			background              "gfx/hud/w_icon_stunbaton"
@@ -412,7 +412,7 @@
 
 		itemDef
 		{
-			name                    nosaber
+			name                    yesbaton
 			group                   "sabernonegroup"
 			text                    @MENUS3_NOSABER_STUN_1
 			type                    1
@@ -435,7 +435,7 @@
 		// Add Saber Attack for saber
 		itemDef
 		{
-			name                    nosaber
+			name                    yesbaton
 			group                   sabernoneconfigme
 			text                    @MENUS3_NOSABER_STUNA_1
 			text2                   @MENUS3_NOSABER_STUNA_2
@@ -458,6 +458,22 @@
 				"2"
 			}
 			visible                 0
+			decoration
+		}
+
+		//----------------------------------------
+		// DISRUPTOR (If saber is disabled and only weapon)
+		//----------------------------------------
+
+		itemDef
+		{
+			name                    disruptoricon
+			group                   yesdisruptor
+			style                   WINDOW_STYLE_SHADER
+			rect                    95 200 240 60
+			background              "menu/art/disruptor"
+			forecolor               1 1 1 1
+			visible                 1
 			decoration
 		}
 
