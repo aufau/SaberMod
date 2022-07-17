@@ -1229,10 +1229,13 @@ void CG_DrawHUD(centity_t	*cent)
 	}
 	UI_DrawScaledProportionalString(cgs.screenWidth-101, SCREEN_HEIGHT-23, scoreStr, UI_RIGHT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
 
-	if (GT_Round(cgs.gametype) && cgs.round > 0) {
-		if (cgs.gametype == GT_REDROVER || cgs.gametype == GT_LMS) {
+	if (GT_Round(cgs.gametype) && cgs.round > 0 && cgs.roundlimit != 1) {
+		if (cgs.roundlimit <= 0) {
+			scoreStr = va("Round: %i", cgs.round);
+		} else if (cgs.gametype == GT_REDROVER || cgs.gametype == GT_LMS) {
 			scoreStr = va("Round: %i/%i", cgs.round, cgs.roundlimit);
 		} else {
+			// Team round gametypes last until one team score hits roundlimit
 			scoreStr = va("Round Limit: %i", cgs.roundlimit);
 		}
 		UI_DrawScaledProportionalString(101, SCREEN_HEIGHT-23, scoreStr, UI_LEFT|UI_DROPSHADOW, colorTable[CT_WHITE], 0.7f);
