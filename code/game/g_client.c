@@ -1681,7 +1681,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		else
 		{
 			trap_SendServerCommand( clientNum, "print\"" S_LINE_PREFIX S_COLOR_WHITE
-				"Download " GAME_VERSION " clientside from https://github.com/aufau/SaberMod/releases\n\"" );
+				"Download " GAME_VERSION " clientside from " CLIENTSIDE_DOWNLOAD_URL "\n\"" );
 		}
 	}
 

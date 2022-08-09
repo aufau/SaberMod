@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define	GAMEVERSION			"SaberMod"
 #define GAMEVERSION_C		S_COLOR_BRAND "S" S_COLOR_WHITE "aber" S_COLOR_BRAND "M" S_COLOR_WHITE "od"
 #define AUTHOR				"fau"
+#define CLIENTSIDE_DOWNLOAD_URL	"https://github.com/aufau/SaberMod/releases"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			(-40)
