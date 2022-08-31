@@ -1508,7 +1508,7 @@ reswitch:
 			break;
 		case 'c':
 		default:
-			ch = va_arg(ap, char);
+			ch = (char)va_arg(ap, int);
 			if ( buf_p < buf_end ) {
 				*buf_p = ch;
 			}
