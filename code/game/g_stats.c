@@ -52,19 +52,19 @@ typedef struct {
 
 // Keep this in the same order as playerStat_t
 static statColumn_t statCol[STATS_MAX] = {
-	{ "Score",			"S"   , 4, "%d" },
-	{ "Kills",			"K"   , 3, "%d" },
-	{ "Captures",		"Cap" , 3, "%d" },
-	{ "Defends",		"Def" , 3, "%d" },
-	{ "Assists",		"Ast" , 3, "%d" },
-	{ "Accuracy",		"Acc" , 3, "%d" },
-	{ "Impressive",		"Imp" , 3, "%d" },
-	{ "Damage",			"Dmg" , 5, "%d" },
-	{ "Net Damage",		"Net" , 5, "%+d" },
-	{ "Deaths",			"D"   , 3, "%d" },
-	{ "Received",		"Rcv" , 5, "%d" },
-	{ "Team Damage",	"TDmg", 5, "%d" },
-	{ "Team Received",	"TRcv", 5, "%d" },
+	{ "Score",					"S"   , 4, "%d" },
+	{ "Kills",					"K"   , 3, "%d" },
+	{ "Captures",				"Cap" , 3, "%d" },
+	{ "Defends",				"Def" , 3, "%d" },
+	{ "Assists",				"Ast" , 3, "%d" },
+	{ "Accuracy",				"Acc" , 3, "%d" },
+	{ "Impressive",				"Imp" , 3, "%d" },
+	{ "Damage",					"Dmg" , 5, "%d" },
+	{ "Net Damage",				"Net" , 5, "%+d" },
+	{ "Deaths",					"D"   , 3, "%d" },
+	{ "Damage Received",		"Rcv" , 5, "%d" },
+	{ "Team Damage",			"TDmg", 5, "%d" },
+	{ "Team Damage Received",	"TRcv", 5, "%d" },
 };
 
 static const playerStat_t logColumns[] =
