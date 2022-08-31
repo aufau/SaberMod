@@ -2929,11 +2929,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	float		famt = 0;
 	float		hamt = 0;
 	int			shieldAbsorbed = 0;
-	vec3_t		dir;
+	vec3_t		dir = { 0 };
 
 	if (targ && targ->damageRedirect)
 	{
-		G_Damage(&g_entities[targ->damageRedirectTo], inflictor, attacker, dir, point, damage, dflags, mod);
+		G_Damage(&g_entities[targ->damageRedirectTo], inflictor, attacker, NULL, point, damage, dflags, mod);
 		return;
 	}
 
