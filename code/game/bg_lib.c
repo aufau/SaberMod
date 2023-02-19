@@ -1093,25 +1093,34 @@ float frexpf( float x, int *exp )
 
 float expf( float x )
 {
-    qboolean	invert = qfalse;
     float		fracX;
     float		result;
 	float		sum;
 	int			i;
 
-    if (x < 0.0f) {
-		invert = qtrue;
-		x = -x;
-    }
+	// Q_pown() here is a big accuracy loss for large exponents -
+	// should use lookup table instead
 
-    if (x > 1.0f) {
-		int intX = x; // truncf(x)
-		result = Q_pown(M_E, intX); // expf(intX)
-		fracX = x - intX;
-    } else {
-		result = 1.0f;
-		fracX = x;
-    }
+	if (x >= 0.0f) {
+		if (x >= 1.0f) {
+			int intX = x;
+			result = Q_pown(M_E, intX);
+			fracX = x - intX;
+		} else {
+			result = 1.0f;
+			fracX = x;
+		}
+	} else { // x < 0.0f
+		if (x <= -1.0f) {
+			int intX = x;
+			result = expf(intX);
+			result = Q_pown(1.0f / M_E, -intX);
+			fracX = x - intX;
+		} else {
+			result = 1.0f;
+			fracX = x;
+		}
+	}
 
 	// 11 was found experimentally, gives 1 ULP error in [0, 1] range
 
@@ -1131,12 +1140,7 @@ float expf( float x )
 	for (i = 11; i > 0; i--)
 		sum = 1.0f + fracX * sum / i;
 
-    // results has 1 ULP accuracy too
     result *= sum;
-
-	// doesn't work for x < -88 because expf(-x) = inf. w/e
-    if (invert)
-		result = 1.0f / result;
 
     return result;
 }
