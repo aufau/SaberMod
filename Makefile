@@ -61,7 +61,7 @@ endif
 
 # Sources
 
-srcs_game = g_main ai_main ai_util ai_wpnav bg_lib bg_misc bg_pmove		\
+srcs_game = g_main ai_main ai_util ai_wpnav bg_misc bg_pmove			\
 bg_panimate bg_slidemove bg_weapons bg_saber g_active g_bot g_client	\
 g_cmds g_combat g_items g_log g_mem g_misc g_missile g_mover g_object	\
 g_saga g_session g_spawn g_svcmds g_target g_team g_trigger g_utils		\
@@ -74,19 +74,18 @@ cg_playerstate cg_predict cg_saga cg_scoreboard cg_servercmds		\
 cg_snapshot cg_turret cg_view cg_weaponinit cg_weapons fx_blaster	\
 fx_bowcaster fx_bryarpistol fx_demp2 fx_disruptor fx_flechette		\
 fx_heavyrepeater fx_rocketlauncher bg_slidemove bg_weapons			\
-bg_panimate bg_pmove bg_lib bg_misc bg_saber q_math q_shared		\
-cg_syscalls
+bg_panimate bg_pmove bg_misc bg_saber q_math q_shared cg_syscalls
 
 srcs_ui = ui_main ui_atoms ui_force ui_shared ui_gameinfo bg_misc	\
-bg_weapons bg_lib q_math q_shared ui_syscalls ui_macroscan
+bg_weapons q_math q_shared ui_syscalls ui_macroscan
 
-dep_game	:= $(srcs_game:%=out/mod/%.d)
-dep_cgame	:= $(srcs_cgame:%=out/mod/%.d)
-dep_ui		:= $(srcs_ui:%=out/mod/%.d)
+dep_game	:= $(srcs_game:%=out/mod/%.d) out/mod/bg_lib.d
+dep_cgame	:= $(srcs_cgame:%=out/mod/%.d) out/mod/bg_lib.d
+dep_ui		:= $(srcs_ui:%=out/mod/%.d) out/mod/bg_lib.d
 
-asm_game	:= $(srcs_game:%=out/mod/%.asm)
-asm_cgame	:= $(srcs_cgame:%=out/mod/%.asm)
-asm_ui		:= $(srcs_ui:%=out/mod/%.asm)
+asm_game	:= $(srcs_game:%=out/mod/%.asm) out/mod/bg_lib.asm
+asm_cgame	:= $(srcs_cgame:%=out/mod/%.asm) out/mod/bg_lib.asm
+asm_ui		:= $(srcs_ui:%=out/mod/%.asm) out/mod/bg_lib.asm
 
 obj_game	:= $(srcs_game:%=out/mod/%.o)
 obj_cgame	:= $(srcs_cgame:%=out/mod/%.o)
@@ -200,13 +199,13 @@ base/vm/ui.qvm : $(asm_ui) $(AS) code/ui/ui.q3asm | base/vm/
 
 code/game/game.q3asm : Makefile
 	@echo "CREATE $@"
-	$(file > $@,-o "jk2mpgame.qvm" $(srcs_game))
+	$(file > $@,-o "jk2mpgame.qvm" $(srcs_game) bg_lib)
 code/cgame/cgame.q3asm : Makefile
 	@echo "CREATE $@"
-	$(file > $@,-o "cgame.qvm" $(srcs_cgame))
+	$(file > $@,-o "cgame.qvm" $(srcs_cgame) bg_lib)
 code/ui/ui.q3asm : Makefile
 	@echo "CREATE $@"
-	$(file > $@,-o "ui.qvm" $(srcs_ui))
+	$(file > $@,-o "ui.qvm" $(srcs_ui) bg_lib)
 
 # Shared Object Targets
 
