@@ -628,7 +628,7 @@ Authors
 * Raven Software 1999-2002
 * SaberMod developers 2015-2021
 
-  + fau <witold.pilat@gmail.com> 2015-2021
+  + fau 2015-2021
   + Dziablo 2015-2016
   + Alereon 2019
   + TriForceX 2020-2021
