@@ -235,6 +235,13 @@ equ trap_MVAPI_GetConnectionlessPacket		-702	; G_MVAPI_GET_CONNECTIONLESSPACKET
 equ trap_MVAPI_LocateGameData				-703	; G_MVAPI_LOCATE_GAME_DATA
 equ trap_MVAPI_ControlFixes					-704	; MVAPI_CONTROL_FIXES
 
+equ trap_MVAPI_DB_Prepare					-715	; MVAPI_DB_PREPARE
+equ trap_MVAPI_DB_Step						-716	; MVAPI_DB_STEP
+equ trap_MVAPI_DB_Column					-717	; MVAPI_DB_COLUMN
+equ trap_MVAPI_DB_Bind						-718	; MVAPI_DB_BIND
+equ trap_MVAPI_DB_Reset						-719	; MVAPI_DB_RESET
+equ trap_MVAPI_DB_Finalize					-720	; MVAPI_DB_FINALIZE
+
 ; hardcoded functions
 equ memset									-101	; G_MEMSET
 equ memcpy									-102	; G_MEMCPY
