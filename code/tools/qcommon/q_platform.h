@@ -157,6 +157,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define idx64 1
 #define ARCH_STRING "x86_64"
 #define Q3_LITTLE_ENDIAN
+#elif defined(__aarch64__) || defined(ARCH_ARM64)
+#define ARCH_STRING "arm64"
+#define Q3_LITTLE_ENDIAN
 #endif
 
 #define DLL_EXT ".dylib"
@@ -184,6 +187,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef __ppc__
 #define ARCH_STRING "ppc"
 #define Q3_BIG_ENDIAN
+#elif defined __arm__
+#define ARCH_STRING "arm"
+#define Q3_LITTLE_ENDIAN
 #elif defined __i386__
 #define ARCH_STRING "x86"
 #define Q3_LITTLE_ENDIAN
@@ -191,6 +197,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #undef idx64
 #define idx64 1
 #define ARCH_STRING "x86_64"
+#define Q3_LITTLE_ENDIAN
+#elif defined(__aarch64__) || defined(ARCH_ARM64)
+#define ARCH_STRING "arm64"
 #define Q3_LITTLE_ENDIAN
 #endif
 
