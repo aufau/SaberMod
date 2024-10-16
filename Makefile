@@ -47,7 +47,7 @@ endif
 ifeq ($(findstring -m32, $(ALL_CFLAGS)), -m32)
 	ARCH := i386
 else
-	ARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/x86_64/amd64/ )
+	ARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/x86_64/amd64/ | sed -e s/aarch64/arm64/ )
 endif
 
 # Set V=1 to print full compiler commands.
