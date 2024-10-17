@@ -3743,8 +3743,8 @@ void GetIdealDestination(bot_state_t *bs)
 					bs->wpDestination = gWPArray[idleWP];
 				}
 			}
-			else if (gWPArray[cWPIndex-1] && gWPArray[cWPIndex-1]->inuse &&
-				gWPArray[cWPIndex+1] && gWPArray[cWPIndex+1]->inuse)
+			else if (cWPIndex-1 >= 0 && gWPArray[cWPIndex-1] && gWPArray[cWPIndex-1]->inuse &&
+				cWPIndex+1 < gWPNum && gWPArray[cWPIndex+1] && gWPArray[cWPIndex+1]->inuse)
 			{
 				VectorSubtract(gWPArray[cWPIndex+1]->origin, usethisvec, a);
 				plusLen = VectorLength(a);
@@ -3759,6 +3759,12 @@ void GetIdealDestination(bot_state_t *bs)
 				{
 					bs->wpDestination = gWPArray[cWPIndex+1];
 				}
+			} else if (cWPIndex-1 >= 0 && gWPArray[cWPIndex-1] && gWPArray[cWPIndex-1]->inuse)
+			{
+				bs->wpDestination = gWPArray[cWPIndex-1];
+			} else if (cWPIndex+1 < gWPNum && gWPArray[cWPIndex+1] && gWPArray[cWPIndex+1]->inuse)
+			{
+				bs->wpDestination = gWPArray[cWPIndex+1];
 			}
 		}
 		else if (bChicken != 2 && bs->wpDestSwitchTime < level.time)
@@ -6310,7 +6316,8 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 				}
 			}
 		}
-		else if (gWPArray[goalWPIndex] && gWPArray[goalWPIndex]->inuse &&
+		else if (goalWPIndex >= 0 && goalWPIndex < gWPNum &&
+			gWPArray[goalWPIndex] && gWPArray[goalWPIndex]->inuse &&
 			!(gLevelFlags & LEVELFLAG_NOPOINTPREDICTION))
 		{
 			VectorSubtract(gWPArray[goalWPIndex]->origin, bs->origin, a);
@@ -6351,10 +6358,10 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 				desiredIndex = bs->wpCurrent->index-1;
 			}
 
-			if (gWPArray[desiredIndex] &&
-				gWPArray[desiredIndex]->inuse &&
-				desiredIndex < gWPNum &&
+			if (desiredIndex < gWPNum &&
 				desiredIndex >= 0 &&
+				gWPArray[desiredIndex] &&
+				gWPArray[desiredIndex]->inuse &&
 				PassWayCheck(bs, desiredIndex))
 			{
 				bs->wpCurrent = gWPArray[desiredIndex];
