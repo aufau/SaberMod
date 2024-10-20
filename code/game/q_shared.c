@@ -1540,14 +1540,14 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 // Broken id Tech 3 rand() implementation of linear congruential
 // generator algorithm. Uses low order bits that have short
 // periods. eg (rand() & 1) produces (1, 0, 1, 0, 1, 0, ...).
-static int id_randSeed = 0;
+static unsigned int id_randSeed = 0;
 
-void	id_srand( unsigned seed ) {
+void	id_srand( unsigned int seed ) {
 	id_randSeed = seed;
 }
 
 int		id_rand( void ) {
-	id_randSeed = (69069 * id_randSeed + 1);
+	id_randSeed = (69069u * id_randSeed + 1u);
 	return id_randSeed & ID_RAND_MAX;
 }
 

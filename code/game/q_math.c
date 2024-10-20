@@ -145,16 +145,16 @@ const vec3_t	bytedirs[NUMVERTEXNORMALS] =
 
 //==============================================================
 
-int		Q_rand( int *seed ) {
-	*seed = (69069 * *seed + 1);
+unsigned Q_rand( unsigned *seed ) {
+	*seed = (69069u * *seed + 1u);
 	return *seed;
 }
 
-float	Q_random( int *seed ) {
-	return ( Q_rand( seed ) & 0xffff ) * ( 1.0f / 0x10000 );
+float	Q_random( unsigned *seed ) {
+	return ( Q_rand( seed ) & 0xffffu ) * ( 1.0f / 0x10000 );
 }
 
-float	Q_crandom( int *seed ) {
+float	Q_crandom( unsigned *seed ) {
 	return 2.0f * ( Q_random( seed ) - 0.5f );
 }
 

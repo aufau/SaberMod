@@ -106,7 +106,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 				   int fadeInTime,
 				   int leFlags,
 				   qhandle_t hShader ) {
-	static int	seed = 0x92;
+	static unsigned	seed = 0x92u;
 	localEntity_t	*le;
 	refEntity_t		*re;
 //	int fadeInTime = startTime + duration / 2;

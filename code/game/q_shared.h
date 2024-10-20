@@ -900,9 +900,9 @@ int Q_log2(int val);
 
 float Q_acos(float c);
 
-int		Q_rand( int *seed );
-float	Q_random( int *seed );
-float	Q_crandom( int *seed );
+unsigned	Q_rand( unsigned *seed );
+float	Q_random( unsigned int *seed );
+float	Q_crandom( unsigned *seed );
 
 #define random()	((float)id_rand() * (1.0f / ID_RAND_MAX))
 #define crandom()	((float)id_rand() * (2.0f / ID_RAND_MAX) - 1.0f)

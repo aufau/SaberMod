@@ -52,7 +52,7 @@ typedef struct
 	vec3_t		previous_velocity;
 	int			previous_waterlevel;
 
-	int			seed;
+	unsigned	seed;
 } pml_t;
 
 extern	pml_t		pml;
