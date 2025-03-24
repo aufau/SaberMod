@@ -4246,6 +4246,7 @@ static void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *sa
 	saber_colors_t scolor;
 	vec3_t otherPos, otherDir, otherEnd;
 	float dualLen = 0.7f;
+	qboolean success;
 
 	saberEnt = &cg_entities[cent->currentState.saberEntityNum];
 
@@ -4295,11 +4296,15 @@ Ghoul2 Insert Start
 	// figure out where the actual model muzzle is
 	if (fromSaber)
 	{
-		trap_G2API_GetBoltMatrix(scent->ghoul2, 0, 0, &boltMatrix, futureAngles, origin, cg.time, cgs.gameModels, scent->modelScale);
+		success = trap_G2API_GetBoltMatrix(scent->ghoul2, 0, 0, &boltMatrix, futureAngles, origin, cg.time, cgs.gameModels, scent->modelScale);
 	}
 	else
 	{
-		trap_G2API_GetBoltMatrix(scent->ghoul2, 1, 0, &boltMatrix, futureAngles, origin, cg.time, cgs.gameModels, scent->modelScale);
+		success = trap_G2API_GetBoltMatrix(scent->ghoul2, 1, 0, &boltMatrix, futureAngles, origin, cg.time, cgs.gameModels, scent->modelScale);
+	}
+	if (!success)
+	{
+		return; // scent->ghoul2 has no bolts and boltMatrix was not initialized
 	}
 	// work the matrix axis stuff into the original axis and origins used.
 	trap_G2API_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, org_);
