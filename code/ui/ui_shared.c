@@ -4582,7 +4582,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 		thumb = Item_ListBox_ThumbDrawPosition(item);//Item_ListBox_ThumbPosition(item);
 		DC->drawHandlePic(thumb, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 		//
-		listPtr->endPos = listPtr->startPos;
+		listPtr->endPos = listPtr->startPos - 1;
 		size = item->window.rect.w - 2;
 		// items
 		// size contains max available space
@@ -4590,8 +4590,14 @@ void Item_ListBox_Paint(itemDef_t *item) {
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
-			for (i = listPtr->startPos; i < count; i++, listPtr->endPos++) {
-				float width = MIN(size + 1, listPtr->elementWidth);
+			for (i = listPtr->startPos; i < count && size > 0; i++) {
+				float width = listPtr->elementWidth;
+				if (size < width) {
+					// partially drawn item is not selectable
+					width = size + 1;
+				} else {
+					listPtr->endPos++;
+				}
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
@@ -4606,11 +4612,10 @@ void Item_ListBox_Paint(itemDef_t *item) {
 
 				size -= listPtr->elementWidth;
 				x += listPtr->elementWidth;
-
-				if (size <= 1) {
-					break;
-				}
 			}
+
+			if (listPtr->endPos < listPtr->startPos)
+				listPtr->endPos = listPtr->startPos;
 
 			listPtr->drawPadding = size;
 		} else {
