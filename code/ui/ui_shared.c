@@ -3203,6 +3203,8 @@ itemDef_t *Menu_SetPrevCursorItem(menuDef_t *menu) {
 
 		if (Item_SetFocus(menu->items[menu->cursorItem], DC->cursorx, DC->cursory)) {
 			Menu_HandleMouseMove(menu, menu->items[menu->cursorItem]->window.rect.x + 1, menu->items[menu->cursorItem]->window.rect.y + 1);
+			if ( oldCursor > 0 && menu->items[oldCursor] )
+				Item_MouseLeave(menu->items[oldCursor]); // Stop highlighting the last element.
       return menu->items[menu->cursorItem];
     }
   }
@@ -3231,6 +3233,8 @@ itemDef_t *Menu_SetNextCursorItem(menuDef_t *menu) {
     }
 		if (Item_SetFocus(menu->items[menu->cursorItem], DC->cursorx, DC->cursory)) {
 			Menu_HandleMouseMove(menu, menu->items[menu->cursorItem]->window.rect.x + 1, menu->items[menu->cursorItem]->window.rect.y + 1);
+			if ( oldCursor > 0 && menu->items[oldCursor] )
+				Item_MouseLeave(menu->items[oldCursor]); // Stop highlighting the last element.
       return menu->items[menu->cursorItem];
     }
 
