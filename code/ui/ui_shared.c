@@ -2299,9 +2299,9 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 				step = -1;
 			else if ( key == A_CURSOR_RIGHT || key == A_KP_6 )
 				step = 1;
-			else if ( key == A_MWHEELUP )
-				scroll = 1;
 			else if ( key == A_MWHEELDOWN )
+				scroll = 1;
+			else if ( key == A_MWHEELUP )
 				scroll = -1;
 		} else {
 			if ( key == A_CURSOR_UP || key == A_KP_8 )
