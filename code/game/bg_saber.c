@@ -535,51 +535,22 @@ static saberMoveName_t PM_SaberAnimTransitionAnim( saberMoveName_t curmove, sabe
 
 static saberQuadrant_t PM_SaberMoveQuadrantForMovement( usercmd_t *ucmd )
 {
-	if ( ucmd->rightmove > 0 )
-	{//moving right
-		if ( ucmd->forwardmove > 0 )
-		{//forward right = TL2BR slash
-			return Q_TL;
-		}
-		else if ( ucmd->forwardmove < 0 )
-		{//backward right = BL2TR uppercut
-			return Q_BL;
-		}
-		else
-		{//just right is a left slice
-			return Q_L;
-		}
+	moveDirection_t direction = PM_GetMovementDir(ucmd);
+
+	switch (direction) {
+	case DIR_BR  : return Q_BR;
+	case DIR_R   : return Q_R ;
+	case DIR_FR  : return Q_TR;
+	case DIR_F   : return Q_T ;
+	case DIR_FL  : return Q_TL;
+	case DIR_L   : return Q_L ;
+	case DIR_BL  : return Q_BL;
+	case DIR_B   : return Q_B ;
+	case DIR_NULL: return Q_R ;
 	}
-	else if ( ucmd->rightmove < 0 )
-	{//moving left
-		if ( ucmd->forwardmove > 0 )
-		{//forward left = TR2BL slash
-			return Q_TR;
-		}
-		else if ( ucmd->forwardmove < 0 )
-		{//backward left = BR2TL uppercut
-			return Q_BR;
-		}
-		else
-		{//just left is a right slice
-			return Q_R;
-		}
-	}
-	else
-	{//not moving left or right
-		if ( ucmd->forwardmove > 0 )
-		{//forward= T2B slash
-			return Q_T;
-		}
-		else if ( ucmd->forwardmove < 0 )
-		{//backward= T2B slash	//or B2T uppercut?
-			return Q_T;
-		}
-		else
-		{//Not moving at all
-			return Q_R;
-		}
-	}
+
+	assert(0);
+	return Q_R;
 }
 
 //===================================================================
@@ -1234,93 +1205,68 @@ float PM_GroundDistance(void)
 static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 {
 	saberMoveName_t newmove = LS_INVALID;
+	moveDirection_t direction = PM_GetMovementDir(&pm->cmd);
 
-	if ( pm->cmd.rightmove > 0 )
-	{//moving right
-		if ( pm->cmd.forwardmove > 0 )
-		{//forward right = TL2BR slash
-			newmove = LS_A_TL2BR;
-		}
-		else if ( pm->cmd.forwardmove < 0 )
-		{//backward right = BL2TR uppercut
-			newmove = LS_A_BL2TR;
-		}
-		else
-		{//just right is a left slice
-			newmove = LS_A_L2R;
-		}
-	}
-	else if ( pm->cmd.rightmove < 0 )
-	{//moving left
-		if ( pm->cmd.forwardmove > 0 )
-		{//forward left = TR2BL slash
-			newmove = LS_A_TR2BL;
-		}
-		else if ( pm->cmd.forwardmove < 0 )
-		{//backward left = BR2TL uppercut
-			newmove = LS_A_BR2TL;
-		}
-		else
-		{//just left is a right slice
-			newmove = LS_A_R2L;
-		}
-	}
-	else
-	{//not moving left or right
-		if ( pm->cmd.forwardmove > 0 )
-		{//forward= T2B slash
-			if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 &&
-				pm->ps->velocity[2] > 100 &&
-				PM_GroundDistance() < 32 &&
-				!BG_InSpecialJump(ANIM(pm->ps->legsAnim)) &&
-				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
-			{ //FLIP AND DOWNWARD ATTACK
-				trace_t tr;
+	switch (direction) {
+	case DIR_BR  : newmove = LS_A_BL2TR; break;
+	case DIR_R   : newmove = LS_A_L2R  ; break;
+	case DIR_FR  : newmove = LS_A_TL2BR; break;
+	case DIR_FL  : newmove = LS_A_TR2BL; break;
+	case DIR_L   : newmove = LS_A_R2L  ; break;
+	case DIR_BL  : newmove = LS_A_BR2TL; break;
+	case DIR_F   :
+		if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_2 &&
+			pm->ps->velocity[2] > 100 &&
+			PM_GroundDistance() < 32 &&
+			!BG_InSpecialJump(ANIM(pm->ps->legsAnim)) &&
+			!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
+		{ //FLIP AND DOWNWARD ATTACK
+			trace_t tr;
 
-				if (PM_SomeoneInFront(&tr))
-				{
-					newmove = PM_SaberFlipOverAttackMove(&tr);
-				}
-			}
-			else if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_1 &&
-				pm->ps->groundEntityNum != ENTITYNUM_NONE &&
-				(pm->ps->pm_flags & PMF_DUCKED) &&
-				pm->ps->weaponTime <= 0 &&
-				!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
-			{ //LUNGE (weak)
-				newmove = PM_SaberLungeAttackMove();
-			}
-			else
+			if (PM_SomeoneInFront(&tr))
 			{
-				newmove = LS_A_T2B;
+				newmove = PM_SaberFlipOverAttackMove(&tr);
 			}
 		}
-		else if ( pm->cmd.forwardmove < 0 )
-		{//backward= T2B slash//B2T uppercut?
-			if (PM_CanBackstab() && !BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
-			{ //BACKSTAB (attack varies by level)
-				if (pm->ps->fd.saberAnimLevel >= FORCE_LEVEL_2)
-				{//medium and higher attacks
-					if ( (pm->ps->pm_flags&PMF_DUCKED) || pm->cmd.upmove < 0 )
-					{
-						newmove = LS_A_BACK_CR;
-					}
-					else
-					{
-						newmove = LS_A_BACK;
-					}
+		else if (pm->ps->fd.saberAnimLevel == FORCE_LEVEL_1 &&
+			pm->ps->groundEntityNum != ENTITYNUM_NONE &&
+			(pm->ps->pm_flags & PMF_DUCKED) &&
+			pm->ps->weaponTime <= 0 &&
+			!BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
+		{ //LUNGE (weak)
+			newmove = PM_SaberLungeAttackMove();
+		}
+		else
+		{
+			newmove = LS_A_T2B;
+		}
+		break;
+	case DIR_B   :
+		if (PM_CanBackstab() && !BG_SaberInSpecialAttack(ANIM(pm->ps->torsoAnim)))
+		{ //BACKSTAB (attack varies by level)
+			if (pm->ps->fd.saberAnimLevel >= FORCE_LEVEL_2)
+			{//medium and higher attacks
+				if ( (pm->ps->pm_flags&PMF_DUCKED) || pm->cmd.upmove < 0 )
+				{
+					newmove = LS_A_BACK_CR;
 				}
 				else
-				{ //weak attack
-					newmove = LS_A_BACKSTAB;
+				{
+					newmove = LS_A_BACK;
 				}
 			}
 			else
-			{
-				newmove = LS_A_T2B;
+			{ //weak attack
+				newmove = LS_A_BACKSTAB;
 			}
 		}
-		else if ( PM_SaberInBounce( curmove ) )
+		else
+		{
+			newmove = LS_A_T2B;
+		}
+		break;
+	case DIR_NULL:
+		if ( PM_SaberInBounce( curmove ) )
 		{//bounces should go to their default attack if you don't specify a direction but are attacking
 			newmove = saberMoveData[curmove].chain_attack;
 
@@ -1343,6 +1289,7 @@ static saberMoveName_t PM_SaberAttackForMovement( saberMoveName_t curmove )
 
 			newmove = LS_A_T2B; //decided we don't like random attacks when idle, use an overhead instead.
 		}
+		break;
 	}
 
 	return newmove;

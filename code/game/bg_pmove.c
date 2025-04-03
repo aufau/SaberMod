@@ -425,38 +425,20 @@ to the facing dir
 ================
 */
 static void PM_SetMovementDir( void ) {
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
-		pm->ps->pm_flags |= PMF_STILL;
-	} else {
-		pm->ps->pm_flags &= ~PMF_STILL;
-	}
+	moveDirection_t direction = PM_GetMovementDir(&pm->cmd);
 
-	if ( pm->cmd.forwardmove || pm->cmd.rightmove ) {
-		if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 ) {
-			pm->ps->movementDir = 0;
-		} else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove > 0 ) {
-			pm->ps->movementDir = 1;
-		} else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove == 0 ) {
-			pm->ps->movementDir = 2;
-		} else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove < 0 ) {
-			pm->ps->movementDir = 3;
-		} else if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0 ) {
-			pm->ps->movementDir = 4;
-		} else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove < 0 ) {
-			pm->ps->movementDir = 5;
-		} else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove == 0 ) {
-			pm->ps->movementDir = 6;
-		} else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove > 0 ) {
-			pm->ps->movementDir = 7;
-		}
+	if (direction != DIR_NULL) {
+		pm->ps->pm_flags &= ~PMF_STILL;
+		pm->ps->movementDir = direction;
 	} else {
+		pm->ps->pm_flags |= PMF_STILL;
 		// if they aren't actively going directly sideways,
 		// change the animation to the diagonal so they
 		// don't stop too crooked
-		if ( pm->ps->movementDir == 2 ) {
-			pm->ps->movementDir = 1;
-		} else if ( pm->ps->movementDir == 6 ) {
-			pm->ps->movementDir = 7;
+		if ( pm->ps->movementDir == DIR_L ) {
+			pm->ps->movementDir = DIR_FL;
+		} else if ( pm->ps->movementDir == DIR_R ) {
+			pm->ps->movementDir = DIR_FR;
 		}
 	}
 }
@@ -508,31 +490,35 @@ qboolean PM_ForceJumpingUp(void)
 static void PM_JumpForDir( void )
 {
 	animNumber_t anim = BOTH_JUMP1;
-	if ( pm->cmd.forwardmove > 0 )
-	{
+	moveDirection_t direction = PM_GetMovementDir(&pm->cmd);
+
+	switch (direction) {
+	case DIR_F:
+	case DIR_FR:
+	case DIR_FL:
 		anim = BOTH_JUMP1;
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else if ( pm->cmd.forwardmove < 0 )
-	{
+		break;
+	case DIR_B:
+	case DIR_BR:
+	case DIR_BL:
 		anim = BOTH_JUMPBACK1;
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
-	else if ( pm->cmd.rightmove > 0 )
-	{
+		break;
+	case DIR_R:
 		anim = BOTH_JUMPRIGHT1;
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else if ( pm->cmd.rightmove < 0 )
-	{
+		break;
+	case DIR_L:
 		anim = BOTH_JUMPLEFT1;
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
+		break;
+	case DIR_NULL:
 		anim = BOTH_JUMP1;
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+		break;
 	}
+
 	if(!BG_InDeathAnim(ANIM(pm->ps->legsAnim)))
 	{
 		PM_SetAnim(SETANIM_LEGS,anim,SETANIM_FLAG_OVERRIDE, 100);
@@ -618,14 +604,14 @@ qboolean PM_AdjustAngleForWallRun( playerState_t *ps, usercmd_t *ucmd, qboolean 
 					fwdAngles[YAW] = ps->viewangles[YAW];
 					AngleVectors( fwdAngles, fwd, NULL, NULL );
 
-					if ( ucmd->forwardmove < 0 )
+					if ( PM_IsMovementDirBackward(ucmd) )
 					{//slower
 						speed = 100;
-					}
-					else if ( ucmd->forwardmove > 0 )
+					} else if ( PM_IsMovementDirForward(ucmd) )
 					{
 						speed = 250;//running speed
 					}
+
 					VectorScale( fwd, speed, ps->velocity );
 				}
 				ps->velocity[2] = zVel;//preserve z velocity
@@ -668,6 +654,8 @@ PM_CheckJump
 */
 static qboolean PM_CheckJump( void )
 {
+	moveDirection_t direction;
+
 	if (pm->ps->usingATST)
 	{
 		return qfalse;
@@ -709,27 +697,21 @@ static qboolean PM_CheckJump( void )
 		}
 	}
 
+	direction = PM_GetMovementDir(&pm->cmd);
+
 	if (pm->ps->forceJumpFlip)
 	{ //Forced jump anim
 		animNumber_t anim = BOTH_FORCEINAIR1;
 		int	parts = SETANIM_BOTH;
 
-		if ( pm->cmd.forwardmove > 0 )
-		{
-			anim = BOTH_FLIP_F;
+		switch (direction) {
+		case DIR_F: case DIR_FR: case DIR_FL: anim = BOTH_FLIP_F; break;
+		case DIR_B: case DIR_BR: case DIR_BL: anim = BOTH_FLIP_B; break;
+		case DIR_R:                           anim = BOTH_FLIP_R; break;
+		case DIR_L:                           anim = BOTH_FLIP_L; break;
+		case DIR_NULL:                        anim = BOTH_FORCEINAIR1; break;
 		}
-		else if ( pm->cmd.forwardmove < 0 )
-		{
-			anim = BOTH_FLIP_B;
-		}
-		else if ( pm->cmd.rightmove > 0 )
-		{
-			anim = BOTH_FLIP_R;
-		}
-		else if ( pm->cmd.rightmove < 0 )
-		{
-			anim = BOTH_FLIP_L;
-		}
+
 		if ( pm->ps->weaponTime )
 		{//FIXME: really only care if we're in a saber attack anim...
 			parts = SETANIM_LEGS;
@@ -763,7 +745,7 @@ static qboolean PM_CheckJump( void )
 							pm->ps->fd.forcePowersActive |= (1<<FP_LEVITATION);
 							pm->ps->fd.forceJumpSound = 1;
 							//play flip
-							if ((pm->cmd.forwardmove || pm->cmd.rightmove) && //pushing in a dir
+							if ((direction != DIR_NULL) && //pushing in a dir
 								legsAnim != BOTH_FLIP_F &&//not already flipping
 								legsAnim != BOTH_FLIP_B &&
 								legsAnim != BOTH_FLIP_R &&
@@ -772,22 +754,14 @@ static qboolean PM_CheckJump( void )
 								animNumber_t anim = BOTH_FORCEINAIR1;
 								int	parts = SETANIM_BOTH;
 
-								if ( pm->cmd.forwardmove > 0 )
-								{
-									anim = BOTH_FLIP_F;
+								switch (direction) {
+								case DIR_F: case DIR_FR: case DIR_FL: anim = BOTH_FLIP_F; break;
+								case DIR_B: case DIR_BR: case DIR_BL: anim = BOTH_FLIP_B; break;
+								case DIR_R:                           anim = BOTH_FLIP_R; break;
+								case DIR_L:                           anim = BOTH_FLIP_L; break;
+								case DIR_NULL:                        anim = BOTH_FORCEINAIR1; break;
 								}
-								else if ( pm->cmd.forwardmove < 0 )
-								{
-									anim = BOTH_FLIP_B;
-								}
-								else if ( pm->cmd.rightmove > 0 )
-								{
-									anim = BOTH_FLIP_R;
-								}
-								else if ( pm->cmd.rightmove < 0 )
-								{
-									anim = BOTH_FLIP_L;
-								}
+
 								if ( pm->ps->weaponTime )
 								{
 									parts = SETANIM_LEGS;
@@ -952,38 +926,42 @@ static qboolean PM_CheckJump( void )
 			animNumber_t	anim = ANIM_INVALID;
 			float		vertPush = 0;
 			qboolean	didKick = qfalse;
-			if ( pm->cmd.rightmove > 0 && pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
-			{//strafing right
-				if ( pm->cmd.forwardmove > 0 )
-				{//wall-run
+
+			switch (direction) {
+			case DIR_FR: // wall-run
+				if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 ) {
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.0f;
 					anim = BOTH_WALL_RUN_RIGHT;
 				}
-				else if ( pm->cmd.forwardmove == 0 )
-				{//wall-flip
+				break;
+			case DIR_R: // wall-flip
+				if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 ) {
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.25f;
 					anim = BOTH_WALL_FLIP_RIGHT;
 					didKick = qtrue;
 				}
-			}
-			else if ( pm->cmd.rightmove < 0 && pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 )
-			{//strafing left
-				if ( pm->cmd.forwardmove > 0 )
-				{//wall-run
+				break;
+			case DIR_FL: // wall-run
+				if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 ) {
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.0f;
 					anim = BOTH_WALL_RUN_LEFT;
 				}
-				else if ( pm->cmd.forwardmove == 0 )
-				{//wall-flip
+				break;
+			case DIR_L: // wall-flip
+				if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1 ) {
 					vertPush = forceJumpStrength[FORCE_LEVEL_2]/2.25f;
 					anim = BOTH_WALL_FLIP_LEFT;
 					didKick = qtrue;
 				}
-			}
-			else if ( pm->cmd.forwardmove < 0 && !(pm->cmd.buttons&BUTTON_ATTACK) )
-			{//backflip
-				vertPush = JUMP_VELOCITY;
-				anim = BOTH_FLIP_BACK1;//PM_PickAnim( BOTH_FLIP_BACK1, BOTH_FLIP_BACK3 );
+				break;
+			case DIR_B: // backflip
+				if ( !(pm->cmd.buttons&BUTTON_ATTACK) ) {
+					vertPush = JUMP_VELOCITY;
+					anim = BOTH_FLIP_BACK1;//PM_PickAnim( BOTH_FLIP_BACK1, BOTH_FLIP_BACK3 );
+				}
+				break;
+			default:
+				break;
 			}
 
 			vertPush += 128; //give them an extra shove
@@ -1173,7 +1151,7 @@ static qboolean PM_CheckJump( void )
 					return qfalse;
 				}
 			}
-			else if ( pm->cmd.forwardmove > 0 //pushing forward
+			else if ( (direction == DIR_F || direction == DIR_FR || direction == DIR_FL) //pushing forward
 				&& pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_1
 				&& pm->ps->velocity[2] > 200
 				&& PM_GroundDistance() <= 80 //unfortunately we do not have a happy ground timer like SP (this would use up more bandwidth if we wanted prediction workign right), so we'll just use the actual ground distance.
@@ -1274,7 +1252,7 @@ static qboolean PM_CheckJump( void )
 				}
 				else if ( pm->ps->fd.saberAnimLevel == FORCE_LEVEL_3 )
 				{//using strong attacks
-					if ( pm->cmd.forwardmove > 0 && //going forward
+					if ( (direction == DIR_F || direction == DIR_FR || direction == DIR_FL) && //going forward
 						(pm->cmd.buttons & BUTTON_ATTACK) && //must be holding attack still
 						PM_GroundDistance() < 32 &&
 						!BG_InSpecialJump(legsAnim))
@@ -1854,6 +1832,7 @@ static animNumber_t PM_TryRoll( void )
 	trace_t	trace;
 	animNumber_t	anim = ANIM_INVALID;
 	vec3_t fwd, right, traceto, mins, maxs, fwdAngles;
+	moveDirection_t direction;
 
 	if ( BG_SaberInAttack( pm->ps->saberMove )
 		|| BG_SaberInSpecialAttack( ANIM(pm->ps->torsoAnim) )
@@ -1876,8 +1855,12 @@ static animNumber_t PM_TryRoll( void )
 
 	AngleVectors( fwdAngles, fwd, right, NULL );
 
-	if ( pm->cmd.forwardmove )
-	{ //check forward/backward rolls
+	direction = PM_GetMovementDir(&pm->cmd);
+
+	switch (direction) {
+	case DIR_F: case DIR_FR: case DIR_FL:
+	case DIR_B: case DIR_BR: case DIR_BL:
+		// check forward/backward rolls
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 		{
 			anim = BOTH_ROLL_B;
@@ -1888,16 +1871,17 @@ static animNumber_t PM_TryRoll( void )
 			anim = BOTH_ROLL_F;
 			VectorMA( pm->ps->origin, 64, fwd, traceto );
 		}
-	}
-	else if ( pm->cmd.rightmove > 0 )
-	{ //right
+		break;
+	case DIR_R: // right
 		anim = BOTH_ROLL_R;
 		VectorMA( pm->ps->origin, 64, right, traceto );
-	}
-	else if ( pm->cmd.rightmove < 0 )
-	{ //left
+		break;
+	case DIR_L: // left
 		anim = BOTH_ROLL_L;
 		VectorMA( pm->ps->origin, -64, right, traceto );
+		break;
+	default:
+		break;
 	}
 
 	if ( anim != ANIM_INVALID )
@@ -4188,7 +4172,7 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 			ps->speed *= 0.8f;
 		}
 
-		if (cmd->forwardmove < 0)
+		if (PM_IsMovementDirBackward(cmd))
 		{
 			ps->torsoAnim = ( ( ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 				| BOTH_WALKBACK1;
@@ -4200,7 +4184,7 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 				| BOTH_RUN1;
 		}
 	}
-	else if ( cmd->forwardmove < 0 && !(cmd->buttons&BUTTON_WALKING) && pm->ps->groundEntityNum != ENTITYNUM_NONE )
+	else if ( PM_IsMovementDirBackward(cmd) && !(cmd->buttons&BUTTON_WALKING) && pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{//running backwards is slower than running forwards (like SP)
 		ps->speed *= 0.75f;
 	}
@@ -4249,7 +4233,7 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 		}
 	}
 
-	if ( BG_SaberInAttack( ps->saberMove ) && cmd->forwardmove < 0 )
+	if ( BG_SaberInAttack( ps->saberMove ) && PM_IsMovementDirBackward(cmd) )
 	{//if running backwards while attacking, don't run as fast.
 		switch( ps->fd.saberAnimLevel )
 		{
@@ -4294,7 +4278,7 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	else if (ps->weapon == WP_SABER && ps->fd.saberAnimLevel == FORCE_LEVEL_3 &&
 		PM_SaberInTransition(ps->saberMove))
 	{ //Now, we want to even slow down in transitions for level 3 (since it has chains and stuff now)
-		if (cmd->forwardmove < 0)
+		if (PM_IsMovementDirBackward(cmd))
 		{
 			ps->speed *= 0.4f;
 		}
@@ -4536,9 +4520,11 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// decide if backpedaling animations should be used
-	if ( pm->cmd.forwardmove < 0 ) {
+	// this must match code in CG_G2PlayerAngles() where legs
+	// angles are calculated
+	if ( PM_IsMovementDirBackward(&pm->cmd) ) {
 		pm->ps->pm_flags |= PMF_BACKWARDS_RUN;
-	} else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove ) ) {
+	} else if ( pm->cmd.forwardmove || pm->cmd.rightmove ) {
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_RUN;
 	}
 

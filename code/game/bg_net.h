@@ -65,6 +65,18 @@ typedef enum {
 	HANDEXTEND_TAUNT
 } forceHandAnims_t;
 
+typedef enum {
+	DIR_F = 0,
+	DIR_FL,
+	DIR_L,
+	DIR_BL,
+	DIR_B,
+	DIR_BR,
+	DIR_R,
+	DIR_FR,
+	DIR_NULL
+} moveDirection_t;
+
 // Okay, here lies the much-dreaded Pat-created FSM movement chart...  Heretic II strikes again!
 // Why am I inflicting this on you?  Well, it's better than hardcoded states.
 // Ideally this will be replaced with an external file or more sophisticated move-picker
@@ -267,7 +279,7 @@ typedef struct playerState_s {
 	int				torsoTimer;		// don't change low priority animations until this runs out
 	int				torsoAnim;		// mask off ANIM_TOGGLEBIT
 
-	int				movementDir;	// a number 0 to 7 that represents the reletive angle
+	moveDirection_t	movementDir;	// a number 0 to 7 that represents the reletive angle
 									// of movement to the view angle (axial and diagonals)
 									// when at rest, the value will remain unchanged
 									// used to twist the legs during strafing

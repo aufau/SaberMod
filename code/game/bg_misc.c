@@ -2330,6 +2330,62 @@ void BG_AdjustPositionForMover( const vec3_t in, const entityState_t *mover, int
 	// FIXME: origin change when on a rotating object
 }
 
+moveDirection_t PM_GetMovementDir( usercmd_t *ucmd )
+{
+	const float tan_pi_by_8  = 0.414213562f; // tan(1 * M_PI / 8)
+	const float tan_3pi_by_8 = 2.414213562f; // tan(3 * M_PI / 8)
+
+	qboolean above1 = (qboolean)(ucmd->forwardmove >  ucmd->rightmove * tan_3pi_by_8); // 1 o'clock
+	qboolean above2 = (qboolean)(ucmd->forwardmove >  ucmd->rightmove * tan_pi_by_8 ); // 2 o'clock
+	qboolean above3 = (qboolean)(ucmd->forwardmove > -ucmd->rightmove * tan_pi_by_8 ); // 4 o'clock
+	qboolean above4 = (qboolean)(ucmd->forwardmove > -ucmd->rightmove * tan_3pi_by_8); // 5 o'clock
+
+	if ( above1 )
+		if ( above3 )
+			if ( above4 )
+				return DIR_F;  // forward = T2B slash
+			else
+				return DIR_FL; // forward right = TL2BR slash
+		else
+			if ( above2 )
+				return DIR_L;  // just right is a left slice
+			else
+				return DIR_BL; // backward right = BL2TR uppercut
+	else
+		if ( above3 )
+			if ( above2 )
+				return DIR_FR; // forward left = TR2BL slash
+			else
+				return DIR_R;  // just left or not moving at all is a right slice
+		else
+			if ( above4 )
+				return DIR_BR; // backward left = BR2TL uppercut
+			else
+				if ( ucmd->forwardmove )
+					return DIR_B;
+				else
+					return DIR_NULL;
+}
+
+qboolean PM_IsMovementDirForward( usercmd_t *ucmd )
+{
+	const float tan_pi_by_8  = 0.414213562f; // tan(1 * M_PI / 8)
+
+	return (qboolean)(
+		(ucmd->forwardmove >  ucmd->rightmove * tan_pi_by_8) &&
+		(ucmd->forwardmove > -ucmd->rightmove * tan_pi_by_8));
+}
+
+qboolean PM_IsMovementDirBackward( usercmd_t *ucmd )
+{
+	const float tan_pi_by_8  = 0.414213562f; // tan(1 * M_PI / 8)
+
+	return (qboolean)(
+		(ucmd->forwardmove <  ucmd->rightmove * tan_pi_by_8) &&
+		(ucmd->forwardmove < -ucmd->rightmove * tan_pi_by_8));
+}
+
+
 /*
 =============================================================================
 

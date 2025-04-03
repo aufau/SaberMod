@@ -2815,10 +2815,8 @@ static void CG_DrawCrosshairIndicators(float x, float y, float w, float h) {
 			float arrowH = 0.5f * M_SQRT2 * h;
 			float arrowX = x - arrowW;
 			float arrowY = y;
-			int dir;
+			moveDirection_t dir = cg.snap->ps.movementDir;
 			int i;
-
-			dir = cg.snap->ps.movementDir;
 
 			if (dir < 0 || 8 <= dir) {
 				assert(0);

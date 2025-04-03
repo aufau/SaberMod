@@ -403,7 +403,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			other->client->pers.cmd.rightmove)
 			*/
 		if (other->client->ps.velocity[2] > 0 ||
-			other->client->pers.cmd.forwardmove < 0) //now we only do it if jumping or running backward. Should be able to full-on charge.
+			PM_IsMovementDirBackward(&other->client->pers.cmd)) //now we only do it if jumping or running backward. Should be able to full-on charge.
 		{
 			if (otherDefLevel > 0)
 			{
@@ -467,7 +467,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				otherOwner->client->pers.cmd.forwardmove ||
 				otherOwner->client->pers.cmd.rightmove)*/
 			if (otherOwner->client->ps.velocity[2] > 0 ||
-				otherOwner->client->pers.cmd.forwardmove < 0) //now we only do it if jumping or running backward. Should be able to full-on charge.
+				PM_IsMovementDirBackward(&otherOwner->client->pers.cmd)) //now we only do it if jumping or running backward. Should be able to full-on charge.
 			{
 				if (otherDefLevel > 0)
 				{

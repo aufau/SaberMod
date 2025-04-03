@@ -533,7 +533,7 @@ static void CG_EntityStateToPlayerState( entityState_t *s, playerState_t *ps ) {
 
 	ps->activeForcePass = s->activeForcePass;
 
-	ps->movementDir = s->angles2[YAW];
+	ps->movementDir = (moveDirection_t)s->angles2[YAW];
 	ps->legsAnim = s->legsAnim;
 	ps->torsoAnim = s->torsoAnim;
 	ps->clientNum = s->clientNum;

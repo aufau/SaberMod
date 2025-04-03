@@ -927,6 +927,10 @@ void	BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
 
 void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap, qboolean extrapolate );
 
+moveDirection_t PM_GetMovementDir( usercmd_t *ucmd );
+qboolean PM_IsMovementDirForward( usercmd_t *ucmd );
+qboolean PM_IsMovementDirBackward( usercmd_t *ucmd );
+
 void	BG_AdjustPositionForMover( const vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out );
 
 qboolean	BG_PlayerTouchesItem( const playerState_t *ps, const entityState_t *item, int atTime );
