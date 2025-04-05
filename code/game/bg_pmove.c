@@ -4431,8 +4431,10 @@ void PmoveSingle (pmove_t *pmove) {
 
 	// make sure walking button is clear if they are running, to avoid
 	// proxy no-footsteps cheats
-	if ( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 ) {
+	if ( abs( pm->cmd.forwardmove ) > 46 || abs( pm->cmd.rightmove ) > 46 ) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
+	} else {
+		pm->cmd.buttons |= BUTTON_WALKING;
 	}
 
 	// set the talk balloon flag
