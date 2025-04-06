@@ -930,6 +930,7 @@ void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 moveDirection_t PM_GetMovementDir( usercmd_t *ucmd );
 qboolean PM_IsMovementDirForward( usercmd_t *ucmd );
 qboolean PM_IsMovementDirBackward( usercmd_t *ucmd );
+float PM_BackpedalPenalty( usercmd_t *ucmd, float penalty );
 
 void	BG_AdjustPositionForMover( const vec3_t in, const entityState_t *mover, int fromTime, int toTime, vec3_t out );
 

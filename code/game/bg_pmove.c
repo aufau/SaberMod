@@ -4172,11 +4172,12 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 			ps->speed *= 0.8f;
 		}
 
+		ps->speed *= PM_BackpedalPenalty(cmd, 0.6f);
+
 		if (PM_IsMovementDirBackward(cmd))
 		{
 			ps->torsoAnim = ( ( ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 				| BOTH_WALKBACK1;
-			ps->speed *= 0.6f;
 		}
 		else
 		{
@@ -4184,9 +4185,9 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 				| BOTH_RUN1;
 		}
 	}
-	else if ( PM_IsMovementDirBackward(cmd) && !(cmd->buttons&BUTTON_WALKING) && pm->ps->groundEntityNum != ENTITYNUM_NONE )
+	else if ( !(cmd->buttons&BUTTON_WALKING) && pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{//running backwards is slower than running forwards (like SP)
-		ps->speed *= 0.75f;
+		ps->speed *= PM_BackpedalPenalty(cmd, 0.75f);
 	}
 
 	if (ps->fd.forcePowersActive & (1 << FP_GRIP))
@@ -4233,18 +4234,18 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 		}
 	}
 
-	if ( BG_SaberInAttack( ps->saberMove ) && PM_IsMovementDirBackward(cmd) )
+	if ( BG_SaberInAttack( ps->saberMove ) && cmd->forwardmove < 0 )
 	{//if running backwards while attacking, don't run as fast.
 		switch( ps->fd.saberAnimLevel )
 		{
 		case FORCE_LEVEL_1:
-			ps->speed *= 0.75f;
+			ps->speed *= PM_BackpedalPenalty(cmd, 0.75f);
 			break;
 		case FORCE_LEVEL_2:
-			ps->speed *= 0.60f;
+			ps->speed *= PM_BackpedalPenalty(cmd, 0.60f);
 			break;
 		case FORCE_LEVEL_3:
-			ps->speed *= 0.45f;
+			ps->speed *= PM_BackpedalPenalty(cmd, 0.45f);
 			break;
 		default:
 			break;
@@ -4278,14 +4279,8 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	else if (ps->weapon == WP_SABER && ps->fd.saberAnimLevel == FORCE_LEVEL_3 &&
 		PM_SaberInTransition(ps->saberMove))
 	{ //Now, we want to even slow down in transitions for level 3 (since it has chains and stuff now)
-		if (PM_IsMovementDirBackward(cmd))
-		{
-			ps->speed *= 0.4f;
-		}
-		else
-		{
-			ps->speed *= 0.6f;
-		}
+		// ps->speed -= ps->speed * (0.4f + 0.2f * PM_BackpedalPenaltyScale(cmd));
+		ps->speed *= 0.6f - PM_BackpedalPenalty(cmd, 0.2f);
 	}
 
 

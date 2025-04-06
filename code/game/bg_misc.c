@@ -2385,6 +2385,41 @@ qboolean PM_IsMovementDirBackward( usercmd_t *ucmd )
 		(ucmd->forwardmove < -ucmd->rightmove * tan_pi_by_8));
 }
 
+float PM_BackpedalPenalty( usercmd_t *ucmd, float penalty )
+{
+	// this function is used to apply speed penalty when moving
+	// backwards. Speed should be multiplied by its result.
+
+	// For compatibility with original game it must return 1 when
+	// ucmd->forwardmove >= 0 and return `penalty` when direction is
+	// any of: DIR_B, DIR_BR, DIR_BL
+#if 1
+	// continuous penalty scaling based on angle between 0 and 22.5
+	const float tan_pi_by_8  = 0.414213562f; // tan(1 * M_PI / 8)
+
+	if (ucmd->forwardmove >= 0) {
+		return 1.0f;
+	}
+
+	if (ucmd->forwardmove <=  ucmd->rightmove * tan_pi_by_8 &&
+		ucmd->forwardmove <= -ucmd->rightmove * tan_pi_by_8) {
+		return penalty;
+	}
+
+	{
+		float s = - (float)ucmd->forwardmove / abs(ucmd->rightmove);
+
+		// atanf() approximation. in this range max error is 0.6%
+		float scale =  s * (1 - s * s / 3) * (8 / M_PI);
+		// float scale = atanf(s) / (M_PI / 8);
+
+		return 1 + scale * (penalty - 1);
+	}
+#else
+	// sharp falloff when switching between DIR_R and DIR_BR
+	return PM_IsMovementDirBackward(ucmd) ? penalty : 1.0f;
+#endif
+}
 
 /*
 =============================================================================
