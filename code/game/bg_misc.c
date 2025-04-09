@@ -2394,24 +2394,24 @@ float PM_BackpedalPenalty( usercmd_t *ucmd, float penalty )
 	// ucmd->forwardmove >= 0 and return `penalty` when direction is
 	// any of: DIR_B, DIR_BR, DIR_BL
 #if 1
-	// continuous penalty scaling based on angle between 0 and 22.5
-	const float tan_pi_by_8  = 0.414213562f; // tan(1 * M_PI / 8)
+	// continuous penalty scaling based on angle between 0 and 45
+	const float tan_pi_by_4  = 1.0f; // tan(M_PI / 4)
 
 	if (ucmd->forwardmove >= 0) {
 		return 1.0f;
 	}
 
-	if (ucmd->forwardmove <=  ucmd->rightmove * tan_pi_by_8 &&
-		ucmd->forwardmove <= -ucmd->rightmove * tan_pi_by_8) {
+	if (ucmd->forwardmove <=  ucmd->rightmove * tan_pi_by_4 &&
+		ucmd->forwardmove <= -ucmd->rightmove * tan_pi_by_4) {
 		return penalty;
 	}
 
 	{
 		float s = - (float)ucmd->forwardmove / abs(ucmd->rightmove);
 
-		// atanf() approximation. in this range max error is 0.6%
-		float scale =  s * (1 - s * s / 3) * (8 / M_PI);
-		// float scale = atanf(s) / (M_PI / 8);
+		// polynomial approximation
+		float scale = s - s * (s - 1) * ((0.2447f * 4 / M_PI) + (0.0663f * 4 / M_PI) * s);
+		// float scale = atanf(s) / (M_PI / 4);
 
 		return 1 + scale * (penalty - 1);
 	}
